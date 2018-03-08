@@ -6,7 +6,7 @@ class Other extends React.Component {
         return (
             <div>
                 <p>Other</p>
-                <Button bsStyle="primary" onClick={this.props.callback.bind(this, "other")}>Next</Button>
+                <Button bsStyle="primary" onClick={this.props.callback.bind(this, "other")}>Submit</Button>
             </div>
         );
     }
