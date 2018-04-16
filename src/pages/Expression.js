@@ -48,13 +48,13 @@ class Expression extends React.Component {
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
-                            <Checkbox defaultChecked>
+                            <Checkbox>
                                 Site and Time of action data
                             </Checkbox>
-                            <Checkbox defaultChecked>
+                            <Checkbox>
                                 Microarray data
                             </Checkbox>
-                            <Checkbox defaultChecked>
+                            <Checkbox>
                                 RNAseq data
                             </Checkbox>
                             <br/>

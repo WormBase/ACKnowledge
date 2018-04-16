@@ -84,6 +84,14 @@ class Overview extends React.Component {
                                         <input className="form-control"/>
                                     </div>
                                 </div>
+                                <div>
+                                    <Checkbox>Gene model correction/update</Checkbox>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <button>Request New Gene Name/Report Gene-Sequence Link</button>
+                                    </div>
+                                </div>
                             </div>
                         </Panel.Body>
                     </Panel>
@@ -92,27 +100,56 @@ class Overview extends React.Component {
                             <Panel.Title componentClass="h3">Species identified in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <Checkbox defaultChecked>
-                                C. elegans
-                            </Checkbox>
-                            <Checkbox defaultChecked>
-                                C. briggsae
-                            </Checkbox>
-                            <label>Search for more species</label>
-                            <input className="form-control"/>
-                            <FormGroup
-                                controlId="formBasicText"
-                                validationState={this.getValidationState()}>
-                                <ControlLabel>Add new species</ControlLabel>
-                                <FormControl
-                                    type="text"
-                                    value={this.state.value}
-                                    placeholder="Enter text"
-                                    onChange={this.handleChange}
-                                />
-                                <FormControl.Feedback />
-                                <HelpBlock>Validation is based on string length.</HelpBlock>
-                            </FormGroup>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-5">
+                                        <label>Add more species</label>
+                                    </div>
+                                    <div className="col-sm-2">
+                                    </div>
+                                    <div className="col-sm-5">
+                                        <label>Identified species</label>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-5">
+                                        <FormControl componentClass="select" multiple>
+                                            <option value="select">select (multiple)</option>
+                                            <option value="other">...</option>
+                                        </FormControl>
+
+                                    </div>
+                                    <div className="col-sm-2" align="center">
+                                        <ButtonGroup className="align-middle">
+                                            <Button bsSize="small">
+                                                <Glyphicon glyph="chevron-right" />
+                                            </Button>
+                                            <br/><br/>
+                                            <Button bsSize="small">
+                                                <Glyphicon glyph="chevron-left" />
+                                            </Button>
+                                        </ButtonGroup>
+                                    </div>
+                                    <div className="col-sm-5">
+                                        <FormControl componentClass="select" multiple>
+                                            <option value="select">select (multiple)</option>
+                                            <option value="other">...</option>
+                                        </FormControl>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-5">
+                                        <label>Filter by autocompletion</label>
+                                        <input className="form-control"/>
+                                    </div>
+                                    <div className="col-sm-2">
+                                    </div>
+                                    <div className="col-sm-5">
+                                        <label>Filter by autocompletion</label>
+                                        <input className="form-control"/>
+                                    </div>
+                                </div>
+                            </div>
                         </Panel.Body>
                     </Panel>
                 </form>
