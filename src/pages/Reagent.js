@@ -14,12 +14,12 @@ class Reagent extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Add more transgenes</label>
+                                        <label>Identified transgenes</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Identified transgenes</label>
+                                        <label>Add new transgenes</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -79,6 +79,13 @@ class Reagent extends React.Component {
                                     <div className="col-sm-12">
                                         <div>
                                             <Checkbox>Antibodies are mentioned in the paper</Checkbox>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <div>
+                                            <Checkbox>Antibodies are generated in the paper</Checkbox>
                                         </div>
                                     </div>
                                 </div>

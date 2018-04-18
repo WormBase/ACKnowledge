@@ -38,12 +38,12 @@ class Overview extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Add more genes</label>
+                                        <label>Identified genes</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Identified genes</label>
+                                        <label>Add more genes</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -85,7 +85,7 @@ class Overview extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    <Checkbox>Gene model correction/update</Checkbox>
+                                    <Checkbox><big><strong>Gene model correction/update</strong></big></Checkbox>
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
@@ -103,12 +103,12 @@ class Overview extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Add more species</label>
+                                        <label>Identified species</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Identified species</label>
+                                        <label>Add more species</label>
                                     </div>
                                 </div>
                                 <div className="row">

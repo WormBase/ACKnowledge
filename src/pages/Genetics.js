@@ -17,12 +17,12 @@ class Genetics extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Add more alleles</label>
+                                        <label>Identified alleles</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Identified alleles</label>
+                                        <label>Add new alleles</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -64,7 +64,7 @@ class Genetics extends React.Component {
                                     </div>
                                 </div>
                                 <div>
-                                    <Checkbox>Allele sequence change</Checkbox>
+                                    <Checkbox><big><strong>Allele sequence change</strong></big></Checkbox>
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
@@ -82,12 +82,12 @@ class Genetics extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Add more strains</label>
+                                        <label>Identified strains</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Identified strains</label>
+                                        <label>Add new strains</label>
                                     </div>
                                 </div>
                                 <div className="row">

@@ -9,18 +9,29 @@ class Expression extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            value: ''
+            value: '',
+            active: false
         };
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleOtherCheckChange = this.handleOtherCheckChange.bind(this);
     }
 
     getValidationState() {
-        const length = this.state.value.length;
-        if (length > 10) return 'success';
-        else if (length > 5) return 'warning';
-        else if (length > 0) return 'error';
-        return null;
+        if (this.state.active === true) {
+            const length = this.state.value.length;
+            if (length > 0) {
+                return 'success';
+            } else {
+                return 'error';
+            }
+        } else {
+            return '';
+        }
+    }
+
+    handleOtherCheckChange(e) {
+        this.setState({ active: e.target.checked });
     }
 
     handleChange(e) {
@@ -62,7 +73,7 @@ class Expression extends React.Component {
                                 controlId="formBasicText"
                                 validationState={this.getValidationState()}>
                                 <Col componentClass={ControlLabel} sm={2}>
-                                    Add other
+                                    <Checkbox onChange={this.handleOtherCheckChange}>Add other</Checkbox>
                                 </Col>
                                 <Col componentClass={ControlLabel} sm={6}>
                                     <FormControl
@@ -72,7 +83,6 @@ class Expression extends React.Component {
                                         onChange={this.handleChange}
                                     />
                                     <FormControl.Feedback />
-                                    <HelpBlock>Validation is based on string length.</HelpBlock>
                                 </Col>
                             </FormGroup>
                         </Form>
