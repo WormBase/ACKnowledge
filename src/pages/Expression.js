@@ -65,9 +65,6 @@ class Expression extends React.Component {
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"/>
                             <Checkbox>
-                                Microarray data
-                            </Checkbox>
-                            <Checkbox>
                                 RNAseq data
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"/>
