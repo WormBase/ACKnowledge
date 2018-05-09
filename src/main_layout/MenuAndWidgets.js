@@ -55,6 +55,7 @@ class MenuAndWidgets extends React.Component {
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
+        this.handleClosePopup = this.handleClosePopup.bind(this);
     }
 
     handleSelectMenu(selected) {
@@ -69,6 +70,10 @@ class MenuAndWidgets extends React.Component {
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
         this.setState({completedSections: newCompletedSections, selectedMenu: newSelectedMenu});
         this.props.history.push(this.state.pages[newSelectedMenu - 1]);
+    }
+
+    handleClosePopup() {
+        this.setState({showPopup: false})
     }
 
     render() {
@@ -143,7 +148,9 @@ class MenuAndWidgets extends React.Component {
                             <Route exact path="/" render={() => (<Redirect to="/overview"/>)}/>
                             <Route path="/overview"
                                    render={() => <Overview callback={this.handleFinishedSection}
-                                                           showPopup={this.showPopup}/>}/>
+                                                           showPopup={this.state.showPopup}
+                                                           popupCallback={this.handleClosePopup}
+                                                           saved={this.state.completedSections["overview"]}/>}/>
                             <Route path="/genetics" render={() => <Genetics callback={this.handleFinishedSection}/>}/>
                             <Route path="/reagent" render={() => <Reagent callback={this.handleFinishedSection}/>}/>
                             <Route path="/expression"

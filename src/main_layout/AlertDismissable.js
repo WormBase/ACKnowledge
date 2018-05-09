@@ -20,8 +20,12 @@ class AlertDismissable extends React.Component {
         if (props["title"] !== undefined) {
             title = props["title"];
         }
+        let show = true;
+        if (props["show"] !== undefined) {
+            show = props["show"];
+        }
         this.state = {
-            show: true,
+            show: show,
             bsStyle: bsStyle,
             text: text,
             title: title
@@ -43,6 +47,8 @@ class AlertDismissable extends React.Component {
                     <strong>{this.state.title}</strong><p>{this.state.text}</p>
                 </Alert>
             );
+        } else {
+            return ("");
         }
     }
 }
