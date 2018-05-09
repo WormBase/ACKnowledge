@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Alert,
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock,
+    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Modal,
     Panel
 } from "react-bootstrap";
 import AlertDismissable from '../main_layout/AlertDismissable'
@@ -10,8 +10,10 @@ class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            value: ''
+            value: '',
+            showInitialPopup: true,
         };
+
 
         this.handleChange = this.handleChange.bind(this);
     }
@@ -32,16 +34,12 @@ class Overview extends React.Component {
         this.setState({show: false})
     }
 
+    popupClose = () => this.setState({ showInitialPopup: false });
+
     render() {
         return (
             <div>
                 <form>
-                    <AlertDismissable bsStyle="danger" title="Welcome" text="Revise the information presented below and
-                    click 'Continue to the next section' to save the data entered, you can return to this page any
-                    time."/>
-                    <Alert bsStyle="success">
-                        <strong>Well done!</strong> The data for this page has been saved, you can modify it any time.
-                    </Alert>
                     <Panel>
                         <Panel.Heading>
                             <Panel.Title componentClass="h3">Genes in the paper</Panel.Title>
@@ -176,11 +174,39 @@ class Overview extends React.Component {
                         </Panel.Body>
                     </Panel>
                 </form>
+                <Alert bsStyle="success">
+                    <strong>Well done!</strong> The data for this page has been saved, you can modify it any time.
+                </Alert>
                 <div align="right">
                     <Button bsStyle="success" onClick={this.props.callback.bind(this, "overview")}>Save and continue
                     </Button>
+                    <MyLargeModal show={this.state.showInitialPopup} onHide={this.popupClose} />
                 </div>
             </div>
+        );
+    }
+}
+
+class MyLargeModal extends React.Component {
+    render() {
+        return (
+            <Modal
+                {...this.props}
+                bsSize="medium"
+                aria-labelledby="contained-modal-title-sm">
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-lg">Welcome</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        Revise the information presented in each page of this form. To save the data entered in each
+                        page and move to the next, click 'Save and continue'. You can return to each page any time.
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={this.props.onHide}>Close</Button>
+                </Modal.Footer>
+            </Modal>
         );
     }
 }

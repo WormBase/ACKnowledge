@@ -22,19 +22,19 @@ class MenuAndWidgets extends React.Component {
                 currSelectedMenu = 1;
                 break;
             case "/expression":
-                currSelectedMenu = 2;
-                break;
-            case "/genetics":
-                currSelectedMenu = 3;
-                break;
-            case "/interactions":
                 currSelectedMenu = 4;
                 break;
-            case "/phenotypes":
+            case "/genetics":
+                currSelectedMenu = 2;
+                break;
+            case "/interactions":
                 currSelectedMenu = 5;
                 break;
-            case "/reagent":
+            case "/phenotypes":
                 currSelectedMenu = 6;
+                break;
+            case "/reagent":
+                currSelectedMenu = 3;
                 break;
             case "/other":
                 currSelectedMenu = 7;
@@ -46,11 +46,12 @@ class MenuAndWidgets extends React.Component {
                 currSelectedMenu = 1;
         }
         this.state = {
-            pages: ["overview", "expression", "genetics", "interactions", "phenotypes", "reagent", "other",
+            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "other",
                 "contact_info"],
             selectedMenu: currSelectedMenu,
             completedSections: {"overview": false, "expression": false, "genetics": false, "interactions": false,
-                "phenotypes": false, "reagent": false, "other": false, "contact_info": false}
+                "phenotypes": false, "reagent": false, "other": false, "contact_info": false},
+            showPopup: true
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
@@ -114,18 +115,18 @@ class MenuAndWidgets extends React.Component {
                                     <NavItem eventKey={1}>Overview (Genes and Species)
                                         &nbsp;{overviewOk}
                                     </NavItem></IndexLinkContainer>
-                                <IndexLinkContainer to="genetics" active={this.state.selectedMenu === 3}>
-                                    <NavItem eventKey={3}>Genetics&nbsp;{geneticsOk}</NavItem></IndexLinkContainer>
-                                <IndexLinkContainer to="reagent" active={this.state.selectedMenu === 6}>
-                                    <NavItem eventKey={6}>Reagent&nbsp;{reagentOk}</NavItem></IndexLinkContainer>
-                                <IndexLinkContainer to="expression" active={this.state.selectedMenu === 2}>
-                                    <NavItem eventKey={2}>Expression&nbsp;{expressionOk}</NavItem>
+                                <IndexLinkContainer to="genetics" active={this.state.selectedMenu === 2}>
+                                    <NavItem eventKey={2}>Genetics&nbsp;{geneticsOk}</NavItem></IndexLinkContainer>
+                                <IndexLinkContainer to="reagent" active={this.state.selectedMenu === 3}>
+                                    <NavItem eventKey={3}>Reagent&nbsp;{reagentOk}</NavItem></IndexLinkContainer>
+                                <IndexLinkContainer to="expression" active={this.state.selectedMenu === 4}>
+                                    <NavItem eventKey={4}>Expression&nbsp;{expressionOk}</NavItem>
                                 </IndexLinkContainer>
-                                <IndexLinkContainer to="interactions" active={this.state.selectedMenu === 4}>
-                                    <NavItem eventKey={4}>Interactions&nbsp;{interactionsOk}</NavItem>
+                                <IndexLinkContainer to="interactions" active={this.state.selectedMenu === 5}>
+                                    <NavItem eventKey={5}>Interactions&nbsp;{interactionsOk}</NavItem>
                                 </IndexLinkContainer>
-                                <IndexLinkContainer to="phenotypes" active={this.state.selectedMenu === 5}>
-                                    <NavItem eventKey={5}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
+                                <IndexLinkContainer to="phenotypes" active={this.state.selectedMenu === 6}>
+                                    <NavItem eventKey={6}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
                                 </IndexLinkContainer>
                                 <IndexLinkContainer to="other" active={this.state.selectedMenu === 7}>
                                     <NavItem eventKey={7}>Anything else?&nbsp;{otherOk}</NavItem></IndexLinkContainer>
@@ -141,7 +142,8 @@ class MenuAndWidgets extends React.Component {
                         <div className="panel-body">
                             <Route exact path="/" render={() => (<Redirect to="/overview"/>)}/>
                             <Route path="/overview"
-                                   render={() => <Overview callback={this.handleFinishedSection}/>}/>
+                                   render={() => <Overview callback={this.handleFinishedSection}
+                                                           showPopup={this.showPopup}/>}/>
                             <Route path="/genetics" render={() => <Genetics callback={this.handleFinishedSection}/>}/>
                             <Route path="/reagent" render={() => <Reagent callback={this.handleFinishedSection}/>}/>
                             <Route path="/expression"
