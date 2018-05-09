@@ -1,8 +1,10 @@
 import React from 'react';
 import {
+    Alert,
     Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock,
     Panel
 } from "react-bootstrap";
+import AlertDismissable from '../main_layout/AlertDismissable'
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -26,24 +28,34 @@ class Overview extends React.Component {
         this.setState({ value: e.target.value });
     }
 
+    handleDismissWelcome() {
+        this.setState({show: false})
+    }
+
     render() {
         return (
             <div>
                 <form>
+                    <AlertDismissable bsStyle="danger" title="Welcome" text="Revise the information presented below and
+                    click 'Continue to the next section' to save the data entered, you can return to this page any
+                    time."/>
+                    <Alert bsStyle="success">
+                        <strong>Well done!</strong> The data for this page has been saved, you can modify it any time.
+                    </Alert>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Genes identified in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Genes in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Identified genes</label>
+                                        <label>Add more genes</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Add more genes</label>
+                                        <label>Identified genes</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -74,22 +86,14 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search WormBase gene list</label>
                                         <input className="form-control"/>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search gene list</label>
                                         <input className="form-control"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Checkbox><big><strong>Gene model correction/update</strong></big></Checkbox>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <button>Request New Gene Name/Report Gene-Sequence Link</button>
                                     </div>
                                 </div>
                             </div>
@@ -97,18 +101,37 @@ class Overview extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Species identified in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Genes updates</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div>
+                                    <Checkbox><strong>Gene model correction/update</strong></Checkbox>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Button bsStyle="info">
+                                            Request New Gene Name/Report Gene-Sequence Link
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">Species in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Identified species</label>
+                                        <label>Add more species</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Add more species</label>
+                                        <label>Identified species</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -139,13 +162,13 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search WormBase species list</label>
                                         <input className="form-control"/>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search species list</label>
                                         <input className="form-control"/>
                                     </div>
                                 </div>
@@ -154,7 +177,8 @@ class Overview extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="primary" onClick={this.props.callback.bind(this, "overview")}>Next</Button>
+                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "overview")}>Save and continue
+                    </Button>
                 </div>
             </div>
         );

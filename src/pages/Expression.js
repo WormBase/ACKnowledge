@@ -50,36 +50,55 @@ class Expression extends React.Component {
             <div>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Categories Identified by Textpresso</Panel.Title>
+                        <Panel.Title componentClass="h3">Data in your paper</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <Form horizontal>
+                        <Form>
                             <Checkbox defaultChecked>
                                 Anatomic Expression data in WT condition <OverlayTrigger placement="top"
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
+                            <FormControl type="text" placeholder="Add details here"/>
                             <Checkbox>
                                 Site and Time of action data
                             </Checkbox>
+                            <FormControl type="text" placeholder="Add details here"/>
                             <Checkbox>
                                 Microarray data
                             </Checkbox>
                             <Checkbox>
                                 RNAseq data
                             </Checkbox>
-                            <br/>
+                            <FormControl type="text" placeholder="Add details here"/>
+                        </Form>
+                    </Panel.Body>
+                </Panel>
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">Microarrays</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <p>
+                            WormBase regularly imports microarray data from Gene Expression Omnibus. Please submit your
+                            microarray data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html">GEO</a>
+                        </p>
+                    </Panel.Body>
+                </Panel>
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">Add additional type of expression data</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <Form horizontal>
                             <FormGroup
                                 controlId="formBasicText"
                                 validationState={this.getValidationState()}>
-                                <Col componentClass={ControlLabel} sm={2}>
-                                    <Checkbox onChange={this.handleOtherCheckChange}>Add other</Checkbox>
-                                </Col>
                                 <Col componentClass={ControlLabel} sm={6}>
                                     <FormControl
                                         type="text"
                                         value={this.state.value}
-                                        placeholder="Enter text"
+                                        placeholder="Add details here"
                                         onChange={this.handleChange}
                                     />
                                     <FormControl.Feedback />
@@ -89,7 +108,8 @@ class Expression extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <div align="right">
-                    <Button bsStyle="primary" onClick={this.props.callback.bind(this, "expression")}>Next</Button>
+                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "expression")}>Save and continue
+                    </Button>
                 </div>
             </div>
         );

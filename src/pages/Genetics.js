@@ -11,18 +11,18 @@ class Genetics extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Alleles identified in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Alleles in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Identified alleles</label>
+                                        <label>Add new alleles</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Add new alleles</label>
+                                        <label>Identified alleles</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -53,22 +53,14 @@ class Genetics extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search WormBase allele list</label>
                                         <input className="form-control"/>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search allele list</label>
                                         <input className="form-control"/>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Checkbox><big><strong>Allele sequence change</strong></big></Checkbox>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <button>Submit New Allele Name</button>
                                     </div>
                                 </div>
                             </div>
@@ -76,18 +68,37 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Strains identified in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Alleles updates</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div>
+                                    <Checkbox><strong>Allele sequence change</strong></Checkbox>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Button bsStyle="info">
+                                            Submit New Allele Name
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">Strains in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Identified strains</label>
+                                        <label>Add new strains</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Add new strains</label>
+                                        <label>Identified strains</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -118,20 +129,22 @@ class Genetics extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search WormBase strain list</label>
                                         <input className="form-control"/>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search strain list</label>
                                         <input className="form-control"/>
                                     </div>
                                 </div>
                                 <br/>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <button>My strain is not listed: Submit to the CGC</button>
+                                        <Button bsStyle="info">
+                                            My strain is not listed: Submit to the CGC
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +152,8 @@ class Genetics extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="primary" onClick={this.props.callback.bind(this, "genetics")}>Next</Button>
+                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "genetics")}>Save and continue
+                    </Button>
                 </div>
             </div>
         );

@@ -8,18 +8,18 @@ class Reagent extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Transgenes identified in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Transgenes in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Identified transgenes</label>
+                                        <label>Add new transgenes</label>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Add new transgenes</label>
+                                        <label>Identified transgenes</label>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -50,20 +50,22 @@ class Reagent extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search WormBase transgene list</label>
                                         <input className="form-control"/>
                                     </div>
                                     <div className="col-sm-2">
                                     </div>
                                     <div className="col-sm-5">
-                                        <label>Filter by autocompletion</label>
+                                        <label>Search transgene list</label>
                                         <input className="form-control"/>
                                     </div>
                                 </div>
                                 <br/>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <button>Submit New Transgene Name</button>
+                                        <Button bsStyle="info">
+                                            Submit New Transgene Name
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -94,7 +96,8 @@ class Reagent extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="primary" onClick={this.props.callback.bind(this, "reagent")}>Next</Button>
+                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "reagent")}>Save and continue
+                    </Button>
                 </div>
             </div>
         );
