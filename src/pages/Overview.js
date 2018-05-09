@@ -38,7 +38,10 @@ class Overview extends React.Component {
         return (
             <div>
                 <AlertDismissable title="let'get started!" text="In this page you will see genes and species that have
-                been identified from your paper. Please validate the list by adding/removing entries." bsStyle="info"/>
+                been identified from your paper. Please validate the list by adding/removing entries." bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <form>
                     <Panel>
                         <Panel.Heading>
@@ -176,8 +179,6 @@ class Overview extends React.Component {
                         </Panel.Body>
                     </Panel>
                 </form>
-                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
-                time." bsStyle="success" show={this.props.saved}/>
                 <div align="right">
                     <Button bsStyle="success" onClick={this.props.callback.bind(this, "overview")}>Save and continue
                     </Button>
