@@ -1,8 +1,8 @@
 import React from 'react';
 import {
     Alert,
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Modal,
-    Panel
+    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Modal, OverlayTrigger,
+    Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from '../main_layout/AlertDismissable'
 
@@ -37,12 +37,24 @@ class Overview extends React.Component {
     popupClose = () => this.setState({ showInitialPopup: false });
 
     render() {
+        const geneTooltip = (
+            <Tooltip id="tooltip">
+                These are the genes identified in the paper, please add/remove to the list.
+            </Tooltip>
+        );
+
         return (
             <div>
+                <Alert bsStyle="info">
+                    <strong>Let'get started!</strong> In this page you will see genes and species that hace been
+                    identified from your paper. Please validate the list by adding/removing entries.
+                </Alert>
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Genes in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Genes in the paper <OverlayTrigger placement="top"
+                                                                                                overlay={geneTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
