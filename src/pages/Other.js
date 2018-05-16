@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, FormControl, Panel} from "react-bootstrap";
+import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Other extends React.Component {
@@ -44,10 +44,15 @@ class Other extends React.Component {
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="row">
-                                <div className="col-sm-12">
+                                <div className="col-sm-10">
                                     If you have unpublished data generated during this study, we encourage you to
                                     submit it at <a href="https://www.micropublication.org" target="_blank">
                                     micropublication.org</a>
+                                </div>
+                                <div className="col-sm-2">
+                                    <a href="https://www.micropublication.org" target="_blank">
+                                        <Image src="micropub_logo.png" responsive/>
+                                    </a>
                                 </div>
                             </div>
                         </Panel.Body>

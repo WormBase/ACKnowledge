@@ -10,8 +10,8 @@ class Genetics extends React.Component {
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find alleles and strains that have
-                been identified from your paper. Please validate the list as for the previous section. You can also
-                submit a new allele name and indicate an allele sequence change." bsStyle="info"
+                been identified in your paper. Please validate the list as for the previous section. You can also
+                indicate an allele sequence change and submit a new allele name." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>

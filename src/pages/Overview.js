@@ -46,7 +46,8 @@ class Overview extends React.Component {
         return (
             <div>
                 <AlertDismissable title="let'get started!" text="In this page you will see genes and species that have
-                been identified from your paper. Please validate the list by adding/removing entries." bsStyle="info"
+                been identified in your paper. Please validate the list by adding/removing entries. You can also
+                notify us for gene model updates." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>
@@ -121,9 +122,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info">
-                                            Request New Gene Name/Report Gene-Sequence Link
-                                        </Button>
+                                        <FormControl type="text" placeholder="Add details here"/>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -131,7 +130,9 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <FormControl type="text" placeholder="Add details here"/>
+                                        <Button bsStyle="info">
+                                            Request New Gene Name/Report Gene-Sequence Link
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

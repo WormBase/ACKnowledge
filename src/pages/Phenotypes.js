@@ -7,8 +7,9 @@ class Phenotypes extends React.Component {
     render() {
         return (
             <div>
-                <AlertDismissable title="" text="Check any phenotype and functional data present in your
-                paper. You can also provide additional information about the reference sentence in the paper."
+                <AlertDismissable title="" text="Here you can find phenotype and functional data that have
+                been identified in your paper. Please select/deselect the appropriate checkboxes and add any additional
+                information."
                                   bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any

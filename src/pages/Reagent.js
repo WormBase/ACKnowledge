@@ -6,9 +6,9 @@ class Reagent extends React.Component {
     render() {
         return (
             <div>
-                <AlertDismissable title="" text="Here you can find transgenes and antobodies that have
-                been identified from your paper. Please validate the list as for the previous section. You can also
-                submit a new allele name and indicate an allele sequence change." bsStyle="info"
+                <AlertDismissable title="" text="Here you can find transgenes that have been identified in your paper.
+                Please validate the list as for the previous section. You can also submit antibodies mentioned or
+                generated in the study." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>
