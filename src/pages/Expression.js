@@ -4,6 +4,7 @@ import {
     Checkbox, Col, ControlLabel, Form, FormControl, FormGroup, Glyphicon, HelpBlock, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Expression extends React.Component {
     constructor(props, context) {
@@ -48,6 +49,12 @@ class Expression extends React.Component {
 
         return (
             <div>
+                <AlertDismissable title="" text="Here you can find expression data that have
+                been identified from your paper. Please validate the list as for the previous section. You can also
+                submit a new allele name and indicate an allele sequence change." bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">Data in your paper</Panel.Title>

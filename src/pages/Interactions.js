@@ -3,11 +3,17 @@ import {
     Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Form,
     Panel, Col
 } from "react-bootstrap";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Interactions extends React.Component {
     render() {
         return (
             <div>
+                <AlertDismissable title="" text="Check any interaction data present in your paper. You can
+                also provide additional information about the reference sentence in the paper." bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">Data in your paper</Panel.Title>
@@ -28,7 +34,7 @@ class Interactions extends React.Component {
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"/>
                                 <FormControl.Feedback />
-                        </FormGroup>
+                            </FormGroup>
                         </Form>
                     </Panel.Body>
                 </Panel>

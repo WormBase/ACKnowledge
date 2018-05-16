@@ -1,11 +1,18 @@
 import React from 'react';
 import {Button, Checkbox, Form, FormGroup, Panel} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Phenotypes extends React.Component {
     render() {
         return (
             <div>
+                <AlertDismissable title="" text="Check any phenotype and functional data present in your
+                paper. You can also provide additional information about the reference sentence in the paper."
+                                  bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">Phenotype data in your paper</Panel.Title>
@@ -17,8 +24,8 @@ class Phenotypes extends React.Component {
                                     <Checkbox>Allele Phenotype</Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="default">
-                                        Enter Data
+                                    <Button bsStyle="info">
+                                        Add details
                                     </Button>
                                 </div>
                             </div>
@@ -27,8 +34,8 @@ class Phenotypes extends React.Component {
                                     <Checkbox>RNAi Phenotype</Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="default">
-                                        Enter Data
+                                    <Button bsStyle="info">
+                                        Add details
                                     </Button>
                                 </div>
                             </div>
@@ -37,8 +44,8 @@ class Phenotypes extends React.Component {
                                     <Checkbox>Transgene Overexpression Phenotype</Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="default">
-                                        Enter Data
+                                    <Button bsStyle="info">
+                                        Add details
                                     </Button>
                                 </div>
                             </div>
@@ -58,7 +65,7 @@ class Phenotypes extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox>Environmental Indiced Phenotype</Checkbox>
+                                    <Checkbox>Environmental Induced Phenotype</Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>

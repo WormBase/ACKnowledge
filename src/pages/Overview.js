@@ -31,7 +31,15 @@ class Overview extends React.Component {
     render() {
         const geneTooltip = (
             <Tooltip id="tooltip">
-                These are the genes identified in the paper, please add/remove to the list.
+                In the left box there are the genes identified in the paper and in the right one the genes available on
+                WormBase. Please add/remove to the list by moving the elements between the two boxes.
+            </Tooltip>
+        );
+
+        const speciesTooltip = (
+            <Tooltip id="tooltip">
+                In the left box there are the species identified in the paper and in the right one the species available
+                on WormBase. Please add/remove to the list by moving the elements between the two boxes.
             </Tooltip>
         );
 
@@ -104,7 +112,7 @@ class Overview extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Genes updates</Panel.Title>
+                            <Panel.Title componentClass="h3">Gene model updates</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
@@ -118,12 +126,22 @@ class Overview extends React.Component {
                                         </Button>
                                     </div>
                                 </div>
+                                <div className="row">
+                                    <div className="col-sm-12">&nbsp;</div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <FormControl type="text" placeholder="Add details here"/>
+                                    </div>
+                                </div>
                             </div>
                         </Panel.Body>
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Species in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Species in the paper <OverlayTrigger placement="top"
+                                                                                                  overlay={speciesTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">

@@ -1,10 +1,17 @@
 import React from 'react';
 import {Button, FormControl, Panel} from "react-bootstrap";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Other extends React.Component {
     render() {
         return (
             <div>
+                <AlertDismissable title="" text="In this page you can provide additional information present in your
+                paper."
+                                  bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <form>
                     <Panel>
                         <Panel.Heading>
@@ -25,6 +32,22 @@ class Other extends React.Component {
                                         </FormControl>
 
                                     </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">
+                                Do you have additional unpublished data?
+                            </Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    If you have unpublished data generated during this study, we encourage you to
+                                    submit it at <a href="https://www.micropublication.org" target="_blank">
+                                    micropublication.org</a>
                                 </div>
                             </div>
                         </Panel.Body>

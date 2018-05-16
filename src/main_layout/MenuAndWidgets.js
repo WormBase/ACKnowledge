@@ -151,16 +151,27 @@ class MenuAndWidgets extends React.Component {
                                                            showPopup={this.state.showPopup}
                                                            popupCallback={this.handleClosePopup}
                                                            saved={this.state.completedSections["overview"]}/>}/>
-                            <Route path="/genetics" render={() => <Genetics callback={this.handleFinishedSection}/>}/>
-                            <Route path="/reagent" render={() => <Reagent callback={this.handleFinishedSection}/>}/>
+                            <Route path="/genetics" render={() => <Genetics
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["genetics"]}/>}/>
+                            <Route path="/reagent" render={() => <Reagent
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["reagent"]}/>}/>
                             <Route path="/expression"
-                                   render={() => <Expression callback={this.handleFinishedSection}/>}/>
+                                   render={() => <Expression callback={this.handleFinishedSection}
+                                                             saved={this.state.completedSections["expression"]}/>}/>
                             <Route path="/interactions" render={() => <Interactions
-                                callback={this.handleFinishedSection}/>}/>
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["interactions"]}/>}/>
                             <Route path="/phenotypes" render={() => <Phenotypes
-                                callback={this.handleFinishedSection}/>}/>
-                            <Route path="/other" render={() => <Other callback={this.handleFinishedSection}/>}/>
-                            <Route path="/contact_info" render={() => <ContactInfo callback={this.handleFinishedSection}/>}/>
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["phenotypes"]}/>}/>
+                            <Route path="/other" render={() => <Other
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["other"]}/>}/>
+                            <Route path="/contact_info" render={() => <ContactInfo
+                                callback={this.handleFinishedSection}
+                                saved={this.state.completedSections["contact_info"]}/>}/>
                         </div>
                     </div>
                 </div>

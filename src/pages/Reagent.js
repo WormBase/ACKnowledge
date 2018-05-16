@@ -1,10 +1,17 @@
 import React from 'react';
-import {Button, ButtonGroup, Checkbox, FormControl, Glyphicon, Panel} from "react-bootstrap";
+import {Button, ButtonGroup, Checkbox, Form, FormControl, FormGroup, Glyphicon, Panel} from "react-bootstrap";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Reagent extends React.Component {
     render() {
         return (
             <div>
+                <AlertDismissable title="" text="Here you can find transgenes and antobodies that have
+                been identified from your paper. Please validate the list as for the previous section. You can also
+                submit a new allele name and indicate an allele sequence change." bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <form>
                     <Panel>
                         <Panel.Heading>
@@ -76,22 +83,19 @@ class Reagent extends React.Component {
                             <Panel.Title componentClass="h3">Antibodies</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <div>
-                                            <Checkbox>Antibodies are mentioned in the paper</Checkbox>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <div>
-                                            <Checkbox>Antibodies are generated in the paper</Checkbox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <Form>
+                                <FormGroup>
+                                    <Checkbox>
+                                        Antibodies are mentioned in the paper
+                                    </Checkbox>
+                                    <FormControl type="text" placeholder="Add details here"/>
+                                    <Checkbox>
+                                        Antibodies are generated in the paper
+                                    </Checkbox>
+                                    <FormControl type="text" placeholder="Add details here"/>
+                                    <FormControl.Feedback />
+                                </FormGroup>
+                            </Form>
                         </Panel.Body>
                     </Panel>
                 </form>

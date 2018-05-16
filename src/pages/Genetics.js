@@ -3,11 +3,18 @@ import {
     Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock,
     Panel
 } from "react-bootstrap";
+import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Genetics extends React.Component {
     render() {
         return (
             <div>
+                <AlertDismissable title="" text="Here you can find alleles and strains that have
+                been identified from your paper. Please validate the list as for the previous section. You can also
+                submit a new allele name and indicate an allele sequence change." bsStyle="info"
+                                  show={!this.props.saved}/>
+                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
+                time." bsStyle="success" show={this.props.saved}/>
                 <form>
                     <Panel>
                         <Panel.Heading>
