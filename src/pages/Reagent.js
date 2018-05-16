@@ -7,8 +7,8 @@ class Reagent extends React.Component {
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find transgenes that have been identified in your paper.
-                Please validate the list as for the previous section. You can also submit antibodies mentioned or
-                generated in the study." bsStyle="info"
+                Please validate the list as for the previous section. You can also submit information about antibodies
+                mentioned or generated in the study." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>
@@ -40,11 +40,11 @@ class Reagent extends React.Component {
                                     <div className="col-sm-2" align="center">
                                         <ButtonGroup className="align-middle">
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" />
+                                                <Glyphicon glyph="chevron-right" /> (Add)
                                             </Button>
                                             <br/><br/>
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" />
+                                                <Glyphicon glyph="chevron-left" /> (Remove)
                                             </Button>
                                         </ButtonGroup>
                                     </div>

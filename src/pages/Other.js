@@ -6,8 +6,8 @@ class Other extends React.Component {
     render() {
         return (
             <div>
-                <AlertDismissable title="" text="In this page you can provide additional information present in your
-                paper."
+                <AlertDismissable title="" text="In this page you can provide additional information in your paper or
+                comments to the WormBase team."
                                   bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any

@@ -46,6 +46,10 @@ class Expression extends React.Component {
                 upon treatment.
             </Tooltip>
         );
+        const expressionTooltip = (
+            <Tooltip id="expressionTooltip"> More text
+            </Tooltip>
+        );
 
         return (
             <div>
@@ -91,18 +95,19 @@ class Expression extends React.Component {
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Add additional type of expression data</Panel.Title>
+                        <Panel.Title componentClass="h3">Add additional type of expression data &nbsp;
+                        </Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <Form horizontal>
                             <FormGroup
                                 controlId="formBasicText"
                                 validationState={this.getValidationState()}>
-                                <Col componentClass={ControlLabel} sm={6}>
+                                <Col componentClass={ControlLabel} sm={7}>
                                     <FormControl
                                         type="text"
                                         value={this.state.value}
-                                        placeholder="Add details here"
+                                        placeholder="Add details here (e.g., qPCR, Proteomics)"
                                         onChange={this.handleChange}
                                     />
                                     <FormControl.Feedback />

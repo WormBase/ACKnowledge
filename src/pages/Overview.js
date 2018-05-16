@@ -31,21 +31,21 @@ class Overview extends React.Component {
     render() {
         const geneTooltip = (
             <Tooltip id="tooltip">
-                In the left box there are the genes identified in the paper and in the right one the genes available on
+                In the right box there are the genes identified in the paper and in the left one the genes available on
                 WormBase. Please add/remove to the list by moving the elements between the two boxes.
             </Tooltip>
         );
 
         const speciesTooltip = (
             <Tooltip id="tooltip">
-                In the left box there are the species identified in the paper and in the right one the species available
+                In the right box there are the species identified in the paper and in the left one the species available
                 on WormBase. Please add/remove to the list by moving the elements between the two boxes.
             </Tooltip>
         );
 
         return (
             <div>
-                <AlertDismissable title="let'get started!" text="In this page you will see genes and species that have
+                <AlertDismissable title="let's get started!" text="In this page you will see genes and species that have
                 been identified in your paper. Please validate the list by adding/removing entries. You can also
                 notify us for gene model updates." bsStyle="info"
                                   show={!this.props.saved}/>
@@ -81,11 +81,11 @@ class Overview extends React.Component {
                                     <div className="col-sm-2" align="center">
                                         <ButtonGroup className="align-middle">
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" />
+                                                <Glyphicon glyph="chevron-right" /> (Add)
                                             </Button>
                                             <br/><br/>
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" />
+                                                <Glyphicon glyph="chevron-left" /> (Remove)
                                             </Button>
                                         </ButtonGroup>
                                     </div>
@@ -167,11 +167,11 @@ class Overview extends React.Component {
                                     <div className="col-sm-2" align="center">
                                         <ButtonGroup className="align-middle">
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" />
+                                                <Glyphicon glyph="chevron-right" /> (Add)
                                             </Button>
                                             <br/><br/>
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" />
+                                                <Glyphicon glyph="chevron-left" /> (Remove)
                                             </Button>
                                         </ButtonGroup>
                                     </div>
@@ -235,8 +235,13 @@ class MyLargeModal extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <p>
-                            Revise the information presented in each page of this form. To save the data entered in each
-                            page and move to the next, click 'Save and continue'. You can return to each page any time.
+                            Thank you for helping WormBase curate your paper.
+                        </p>
+                        <p>
+                            Please review the information presented in each page of the form. If needed, you may revise what is there or add more information.
+                        </p>
+                        <p>
+                            To save the data entered in each page and move to the next, click 'Save and continue'. You can return to each page any time.
                         </p>
                     </Modal.Body>
                     <Modal.Footer>

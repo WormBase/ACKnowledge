@@ -43,11 +43,11 @@ class Genetics extends React.Component {
                                     <div className="col-sm-2" align="center">
                                         <ButtonGroup className="align-middle">
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" />
+                                                <Glyphicon glyph="chevron-right" /> (Add)
                                             </Button>
                                             <br/><br/>
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" />
+                                                <Glyphicon glyph="chevron-left" /> (Remove)
                                             </Button>
                                         </ButtonGroup>
                                     </div>
@@ -119,11 +119,11 @@ class Genetics extends React.Component {
                                     <div className="col-sm-2" align="center">
                                         <ButtonGroup className="align-middle">
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" />
+                                                <Glyphicon glyph="chevron-right" /> (Add)
                                             </Button>
                                             <br/><br/>
                                             <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" />
+                                                <Glyphicon glyph="chevron-left" /> (Remove)
                                             </Button>
                                         </ButtonGroup>
                                     </div>
