@@ -59,21 +59,7 @@ class Phenotypes extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <FormControl type="text" placeholder="Add details here"/>
-                                </div>
-                                <div className="col-sm-5">
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-7">
                                     <Checkbox>Environmental Induced Phenotype</Checkbox>
-                                </div>
-                                <div className="col-sm-5">
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-7">
-                                    <FormControl type="text" placeholder="Add details here"/>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>
