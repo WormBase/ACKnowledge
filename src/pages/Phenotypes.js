@@ -26,7 +26,7 @@ class Phenotypes extends React.Component {
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsStyle="info">
-                                        Add details
+                                        Add details in online form
                                     </Button>
                                 </div>
                             </div>
@@ -36,7 +36,7 @@ class Phenotypes extends React.Component {
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsStyle="info">
-                                        Add details
+                                        Add details in online form
                                     </Button>
                                 </div>
                             </div>
@@ -46,7 +46,7 @@ class Phenotypes extends React.Component {
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsStyle="info">
-                                        Add details
+                                        Add details in online form
                                     </Button>
                                 </div>
                             </div>
