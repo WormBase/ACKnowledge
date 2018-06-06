@@ -46,8 +46,8 @@ class Overview extends React.Component {
         return (
             <div>
                 <AlertDismissable title="Let's get started!" text="In this page you will see genes and species that have
-                been identified in your paper. Please validate the list by adding/removing entries. You can also
-                notify us for gene model updates." bsStyle="info"
+                been identified in your paper. Please validate the list by adding/removing entries in the identified
+                genes list. You can also notify us for gene model updates." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>
@@ -235,13 +235,13 @@ class MyLargeModal extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <p>
-                            Thank you for helping WormBase curate your paper.
+                            Thank you for filling out this form. By doing so, you are helping us incorporate your data into WormBase in a timely fashion.
                         </p>
                         <p>
                             Please review the information presented in each page of the form. If needed, you may revise what is there or add more information.
                         </p>
                         <p>
-                            To save the data entered in each page and move to the next, click 'Save and continue'. You can return to each page any time.
+                            To save the data entered in each page and move to the next, click 'Save and continue'. You can return to each page any time. When you are finished, please click on 'Finish and Submit' on the last page.
                         </p>
                     </Modal.Body>
                     <Modal.Footer>

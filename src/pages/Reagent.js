@@ -88,11 +88,13 @@ class Reagent extends React.Component {
                                     <Checkbox>
                                         Newly generated antibodies
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Enter name and details here"/>
+                                    <FormControl type="text" placeholder="Enter antibody name and details here"/>
                                     <Checkbox>
                                         Other antibodies used
                                     </Checkbox>
                                     <FormControl type="text" placeholder="Enter name and details here"/>
+                                    <br/>
+                                    <FormControl type="text" placeholder="Original Publication: PMID"/>
                                     <FormControl.Feedback />
                                 </FormGroup>
                             </Form>

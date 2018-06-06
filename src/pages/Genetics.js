@@ -70,6 +70,14 @@ class Genetics extends React.Component {
                                         <input className="form-control"/>
                                     </div>
                                 </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Button bsStyle="info">
+                                            Submit New allele name
+                                        </Button>
+                                    </div>
+                                </div>
                             </div>
                         </Panel.Body>
                     </Panel>
