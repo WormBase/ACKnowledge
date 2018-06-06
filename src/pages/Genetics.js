@@ -34,7 +34,7 @@ class Genetics extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -52,7 +52,7 @@ class Genetics extends React.Component {
                                         </ButtonGroup>
                                     </div>
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -75,7 +75,7 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Alleles updates</Panel.Title>
+                            <Panel.Title componentClass="h3">Allele sequence change</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
@@ -84,8 +84,8 @@ class Genetics extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info">
-                                            Submit New Allele Name
+                                        <Button bsStyle="info" href={"https://wormbase.org/submissions/allele_sequence.cgi"}>
+                                            Provide allele-sequence info
                                         </Button>
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ class Genetics extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -128,7 +128,7 @@ class Genetics extends React.Component {
                                         </ButtonGroup>
                                     </div>
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>

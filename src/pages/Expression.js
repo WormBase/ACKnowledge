@@ -61,7 +61,7 @@ class Expression extends React.Component {
                 time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Data in your paper</Panel.Title>
+                        <Panel.Title componentClass="h3">Expression data in the paper</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>

@@ -16,7 +16,7 @@ class Phenotypes extends React.Component {
                 time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Phenotype data in your paper</Panel.Title>
+                        <Panel.Title componentClass="h3">Phenotype data in the paper</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <div className="container-fluid">
@@ -83,7 +83,7 @@ class Phenotypes extends React.Component {
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Functional data in your paper</Panel.Title>
+                        <Panel.Title componentClass="h3">Functional data in the paper</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>

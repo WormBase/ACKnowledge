@@ -9,8 +9,8 @@ class App extends Component {
     render() {
         return (
             <div>
-                <Title title="&quot;The ENU-3 protein family members function in the Wnt pathway parallel to
-                UNC-6/Netrin to promote neuron axon outgrowth in C. elegans.&quot; Dev Biol, 2017"/>
+                <Title title="Florica RO et al. &quot;The ENU-3 protein family members function in the Wnt pathway
+                parallel to UNC-6/Netrin to promote neuron axon outgrowth in C. elegans.&quot; Dev Biol, 2017"/>
                 <div className="container">
                     <div className="row">
                         <Router>

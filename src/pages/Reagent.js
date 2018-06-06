@@ -31,7 +31,7 @@ class Reagent extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -49,7 +49,7 @@ class Reagent extends React.Component {
                                         </ButtonGroup>
                                     </div>
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -80,19 +80,19 @@ class Reagent extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Antibodies</Panel.Title>
+                            <Panel.Title componentClass="h3">Antibodies in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <Form>
                                 <FormGroup>
                                     <Checkbox>
-                                        Antibodies are mentioned in the paper
+                                        Newly generated antibodies
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Add details here"/>
+                                    <FormControl type="text" placeholder="Enter name and details here"/>
                                     <Checkbox>
-                                        Antibodies are generated in the paper
+                                        Other antibodies used
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Add details here"/>
+                                    <FormControl type="text" placeholder="Enter name and details here"/>
                                     <FormControl.Feedback />
                                 </FormGroup>
                             </Form>

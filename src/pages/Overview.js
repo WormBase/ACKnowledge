@@ -45,7 +45,7 @@ class Overview extends React.Component {
 
         return (
             <div>
-                <AlertDismissable title="let's get started!" text="In this page you will see genes and species that have
+                <AlertDismissable title="Let's get started!" text="In this page you will see genes and species that have
                 been identified in your paper. Please validate the list by adding/removing entries. You can also
                 notify us for gene model updates." bsStyle="info"
                                   show={!this.props.saved}/>
@@ -72,7 +72,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -90,7 +90,7 @@ class Overview extends React.Component {
                                         </ButtonGroup>
                                     </div>
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -131,7 +131,7 @@ class Overview extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Button bsStyle="info">
-                                            Request New Gene Name/Report Gene-Sequence Link
+                                            Request New Gene Name/Report Gene-Sequence
                                         </Button>
                                     </div>
                                 </div>
@@ -158,7 +158,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
@@ -176,7 +176,7 @@ class Overview extends React.Component {
                                         </ButtonGroup>
                                     </div>
                                     <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple>
+                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
                                             <option value="select">select (multiple)</option>
                                             <option value="other">...</option>
                                         </FormControl>
