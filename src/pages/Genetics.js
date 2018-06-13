@@ -4,6 +4,7 @@ import {
     Panel
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
+import MultipleSelect from "../page_components/multiple_select";
 
 class Genetics extends React.Component {
     render() {
@@ -21,64 +22,7 @@ class Genetics extends React.Component {
                             <Panel.Title componentClass="h3">Alleles in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Add new alleles</label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Identified alleles</label>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-
-                                    </div>
-                                    <div className="col-sm-2" align="center">
-                                        <ButtonGroup className="align-middle">
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" /> (Add)
-                                            </Button>
-                                            <br/><br/>
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" /> (Remove)
-                                            </Button>
-                                        </ButtonGroup>
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Search WormBase allele list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Search allele list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                </div>
-                                <br/>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <Button bsStyle="info">
-                                            Submit New allele name
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                            <MultipleSelect itemsNameSingular={"allele"} itemsNamePlural={"alleles"}/>
                         </Panel.Body>
                     </Panel>
                     <Panel>
@@ -105,64 +49,7 @@ class Genetics extends React.Component {
                             <Panel.Title componentClass="h3">Strains in the paper</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Add new strains</label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Identified strains</label>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-
-                                    </div>
-                                    <div className="col-sm-2" align="center">
-                                        <ButtonGroup className="align-middle">
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" /> (Add)
-                                            </Button>
-                                            <br/><br/>
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" /> (Remove)
-                                            </Button>
-                                        </ButtonGroup>
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Search WormBase strain list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Search strain list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                </div>
-                                <br/>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <Button bsStyle="info">
-                                            My strain is not listed: Submit to the CGC
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
+                            <MultipleSelect itemsNameSingular={"strain"} itemsNamePlural={"strains"}/>
                         </Panel.Body>
                     </Panel>
                 </form>

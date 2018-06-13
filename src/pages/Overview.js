@@ -5,6 +5,7 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from '../main_layout/AlertDismissable'
+import MultipleSelect from "../page_components/multiple_select";
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -59,56 +60,7 @@ class Overview extends React.Component {
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Add more genes</label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Identified genes</label>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-
-                                    </div>
-                                    <div className="col-sm-2" align="center">
-                                        <ButtonGroup className="align-middle">
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" /> (Add)
-                                            </Button>
-                                            <br/><br/>
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" /> (Remove)
-                                            </Button>
-                                        </ButtonGroup>
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Search WormBase gene list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Search gene list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                </div>
-                            </div>
+                            <MultipleSelect itemsNameSingular={"gene"} itemsNamePlural={"genes"}/>
                         </Panel.Body>
                     </Panel>
                     <Panel>
@@ -145,56 +97,7 @@ class Overview extends React.Component {
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Add more species</label>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Identified species</label>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-
-                                    </div>
-                                    <div className="col-sm-2" align="center">
-                                        <ButtonGroup className="align-middle">
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-right" /> (Add)
-                                            </Button>
-                                            <br/><br/>
-                                            <Button bsSize="small">
-                                                <Glyphicon glyph="chevron-left" /> (Remove)
-                                            </Button>
-                                        </ButtonGroup>
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <FormControl componentClass="select" multiple style={{height: '200px'}}>
-                                            <option value="select">select (multiple)</option>
-                                            <option value="other">...</option>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-5">
-                                        <label>Search WormBase species list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                    <div className="col-sm-2">
-                                    </div>
-                                    <div className="col-sm-5">
-                                        <label>Search species list</label>
-                                        <input className="form-control"/>
-                                    </div>
-                                </div>
-                            </div>
+                            <MultipleSelect itemsNameSingular={"species"} itemsNamePlural={"species"}/>
                         </Panel.Body>
                     </Panel>
                 </form>
