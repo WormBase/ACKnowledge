@@ -1,10 +1,34 @@
 import React from 'react';
-import {Button, ButtonGroup, Checkbox, Form, FormControl, FormGroup, Glyphicon, Panel} from "react-bootstrap";
+import {
+    Button,
+    ButtonGroup,
+    Checkbox,
+    Form,
+    FormControl,
+    FormGroup,
+    Glyphicon,
+    OverlayTrigger,
+    Panel, Tooltip
+} from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
 
 class Reagent extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            selectedTransgenes: ["transgene1", "transgene2", "transgene3"],
+            wormbaseTransgenes: ["transgene4", "transgene5", "transgene3"]
+        };
+    }
+
     render() {
+        const transgenesTooltip = (
+            <Tooltip id="tooltip">
+                Please validate the list of transgenes in your paper in the box below by adding or removing strains if required.
+            </Tooltip>
+        );
+
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find transgenes that have been identified in your paper.
@@ -17,9 +41,17 @@ class Reagent extends React.Component {
                     <Panel>
                         <Panel.Heading>
                             <Panel.Title componentClass="h3">Transgenes in the paper</Panel.Title>
+                            <OverlayTrigger placement="top" overlay={transgenesTooltip}>
+                                <Glyphicon glyph="question-sign"/>
+                            </OverlayTrigger>
                         </Panel.Heading>
                         <Panel.Body>
-                            <MultipleSelect itemsNameSingular={"transgene"} itemsNamePlural={"transgenes"}/>
+                            <MultipleSelect
+                                itemsNameSingular={"transgene"}
+                                itemsNamePlural={"transgenes"}
+                                selectedItems={this.state.selectedTransgenes}
+                                availableItems={this.state.wormbaseTransgenes}
+                            />
                         </Panel.Body>
                     </Panel>
                     <Panel>
