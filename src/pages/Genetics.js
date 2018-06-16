@@ -20,7 +20,7 @@ class Genetics extends React.Component {
     render() {
         const allelesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of genes in your paper in the box below by adding or removing genes if required.
+                Please validate the list of alleles in your paper in the box below by adding or removing alleles if required.
             </Tooltip>
         );
 
@@ -40,10 +40,9 @@ class Genetics extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Alleles in the paper</Panel.Title>
-                            <OverlayTrigger placement="top" overlay={allelesTooltip}>
+                            <Panel.Title componentClass="h3">Alleles in the paper <OverlayTrigger placement="top" overlay={allelesTooltip}>
                                 <Glyphicon glyph="question-sign"/>
-                            </OverlayTrigger>
+                            </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <MultipleSelect
@@ -57,9 +56,6 @@ class Genetics extends React.Component {
                     <Panel>
                         <Panel.Heading>
                             <Panel.Title componentClass="h3">Allele sequence change</Panel.Title>
-                            <OverlayTrigger placement="top" overlay={strainsTooltip}>
-                                <Glyphicon glyph="question-sign"/>
-                            </OverlayTrigger>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
@@ -78,7 +74,9 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Strains in the paper</Panel.Title>
+                            <Panel.Title componentClass="h3">Strains in the paper <OverlayTrigger placement="top" overlay={strainsTooltip}>
+                                    <Glyphicon glyph="question-sign"/>
+                                </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <MultipleSelect

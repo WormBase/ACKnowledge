@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
+import EditableTable from "../page_components/editable_table";
 
 class Reagent extends React.Component {
     constructor(props, context) {
@@ -40,10 +41,9 @@ class Reagent extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Transgenes in the paper</Panel.Title>
-                            <OverlayTrigger placement="top" overlay={transgenesTooltip}>
+                            <Panel.Title componentClass="h3">Transgenes in the paper <OverlayTrigger placement="top" overlay={transgenesTooltip}>
                                 <Glyphicon glyph="question-sign"/>
-                            </OverlayTrigger>
+                            </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <MultipleSelect
@@ -65,12 +65,8 @@ class Reagent extends React.Component {
                                         Newly generated antibodies
                                     </Checkbox>
                                     <FormControl type="text" placeholder="Enter antibody name and details here"/>
-                                    <Checkbox>
-                                        Other antibodies used
-                                    </Checkbox>
-                                    <FormControl type="text" placeholder="Enter name and details here"/>
                                     <br/>
-                                    <FormControl type="text" placeholder="Original Publication: PMID"/>
+                                    <EditableTable title={"Other Antibodies used"} columns={["Antibody", "Publication ID"]}/>
                                     <FormControl.Feedback />
                                 </FormGroup>
                             </Form>
