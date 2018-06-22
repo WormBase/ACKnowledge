@@ -78,7 +78,7 @@ class ProductTable extends React.Component {
                     <thead>
                     <tr>
                         <th>Antibody</th>
-                        <th>Publication ID</th>
+                        <th>Publication ID - PMID</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>

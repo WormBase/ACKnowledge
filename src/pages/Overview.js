@@ -15,10 +15,13 @@ class Overview extends React.Component {
             selectedGenes: ["21ur-5499", "homt-1", "puf-10", "21ur-9312", "21ur-9279", "usp-39", "21ur-3242", "str-55", "21ur-6970", "linc-90", "mir-232", "21ur-12212", "cyn-6", "21ur-7758"],
             wormbaseGenes: ["21ur-10308", "21ur-489", "21ur-3727", "21ur-253", "itsn-1", "pigv-1", "glb-30", "21ur-13589", "21ur-8661", "cdk-7", "fbxa-153", "21ur-14075", "21ur-2943", "21ur-7792", "bath-1", "clec-113", "21ur-10243", "glt-5", "gcy-12", "21ur-6598", "aagr-4", "ima-3", "21ur-2314", "21ur-11572", "cyn-17", "21ur-14681", "emb-25", "21ur-11688", "cox-5B", "fbxa-43", "21ur-12333", "srh-149", "21ur-10372", "21ur-4530", "21ur-13058", "srz-5", "lron-12", "21ur-6552", "dlc-6", "21ur-2236", "21ur-61", "snpc-1.3", "skpo-3", "21ur-3289", "21ur-14962", "21ur-5950", "fbxb-31", "ttr-57", "21ur-808", "chn-1", "sup-35", "rpl-5", "21ur-5829", "21ur-8171", "21ur-12738", "ptrn-1", "21ur-15038", "21ur-14955", "21ur-3929", "fbxc-23", "21ur-2400", "str-101", "21ur-14319", "bath-15", "nduo-3", "let-242", "21ur-13778", "21ur-5985", "tag-293", "21ur-9542", "21ur-11792", "21ur-9478", "21ur-15045", "fbxb-8", "21ur-9885", "21ur-7105", "cyn-1", "21ur-4518", "21ur-9581", "cnc-1", "21ur-2638", "bicd-1", "tbc-20", "21ur-10443", "21ur-2521", "21ur-933"],
             selectedSpecies: ["species1", "species2", "species3"],
-            wormbaseSpecies: ["species4", "species5", "species3"]
+            wormbaseSpecies: ["species4", "species5", "species3"],
+            cb_gmcorr: false
         };
 
         this.handleChange = this.handleChange.bind(this);
+        this.check_genemodel_cb = this.check_genemodel_cb.bind(this);
+        this.toggle_cb_gmcorr = this.toggle_cb_gmcorr.bind(this);
     }
 
     getValidationState() {
@@ -27,6 +30,14 @@ class Overview extends React.Component {
         else if (length > 5) return 'warning';
         else if (length > 0) return 'error';
         return null;
+    }
+
+    check_genemodel_cb() {
+        this.setState({cb_gmcorr: true});
+    }
+
+    toggle_cb_gmcorr() {
+        this.setState({cb_gmcorr: !this.state.cb_gmcorr});
     }
 
     handleChange(e) {
@@ -76,11 +87,13 @@ class Overview extends React.Component {
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div>
-                                    <Checkbox><strong>Gene model correction/update</strong></Checkbox>
+                                    <Checkbox checked={this.state.cb_gmcorr}
+                                              onClick={this.toggle_cb_gmcorr}>
+                                        <strong>Gene model correction/update</strong></Checkbox>
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <FormControl type="text" placeholder="Add details here"/>
+                                        <FormControl type="text" placeholder="Add details here" onClick={this.check_genemodel_cb}/>
                                     </div>
                                 </div>
                                 <div className="row">
@@ -88,7 +101,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info">
+                                        <Button bsStyle="info" onClick={this.check_genemodel_cb}>
                                             Request New Gene Name/Report Gene-Sequence
                                         </Button>
                                     </div>

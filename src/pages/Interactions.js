@@ -6,6 +6,46 @@ import {
 import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Interactions extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            cb_genetic: false,
+            cb_physical: false,
+            cb_regulatory: false
+        };
+
+        this.check_cb_genetic = this.check_cb_genetic.bind(this);
+        this.toggle_cb_genetic = this.toggle_cb_genetic.bind(this);
+        this.check_cb_physical = this.check_cb_physical.bind(this);
+        this.toggle_cb_physical = this.toggle_cb_physical.bind(this);
+        this.check_cb_regulatory = this.check_cb_regulatory.bind(this);
+        this.toggle_cb_regulatory = this.toggle_cb_regulatory.bind(this);
+    }
+
+    check_cb_genetic() {
+        this.setState({cb_genetic: true});
+    }
+
+    toggle_cb_genetic() {
+        this.setState({cb_genetic: !this.state.cb_genetic});
+    }
+
+    check_cb_physical() {
+        this.setState({cb_physical: true});
+    }
+
+    toggle_cb_physical() {
+        this.setState({cb_physical: !this.state.cb_physical});
+    }
+
+    check_cb_regulatory() {
+        this.setState({cb_regulatory: true});
+    }
+
+    toggle_cb_regulatory() {
+        this.setState({cb_regulatory: !this.state.cb_regulatory});
+    }
+
     render() {
         return (
             <div>
@@ -22,18 +62,18 @@ class Interactions extends React.Component {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox>
-                                    Genetic Interactions
+                                <Checkbox checked={this.state.cb_genetic} onClick={this.toggle_cb_genetic}>
+                                    <strong>Genetic Interactions</strong>
                                 </Checkbox>
-                                <FormControl type="text" placeholder="Add details here"/>
-                                <Checkbox>
-                                    Physical Interactions
+                                <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_genetic}/>
+                                <Checkbox checked={this.state.cb_physical} onClick={this.toggle_cb_physical}>
+                                    <strong>Physical Interactions</strong>
                                 </Checkbox>
-                                <FormControl type="text" placeholder="Add details here"/>
-                                <Checkbox>
-                                    Regulatory Interactions
+                                <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_physical}/>
+                                <Checkbox checked={this.state.cb_regulatory} onClick={this.toggle_cb_regulatory}>
+                                    <strong>Regulatory Interactions</strong>
                                 </Checkbox>
-                                <FormControl type="text" placeholder="Add details here"/>
+                                <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_regulatory}/>
                                 <FormControl.Feedback />
                             </FormGroup>
                         </Form>

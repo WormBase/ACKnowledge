@@ -11,11 +11,44 @@ class Expression extends React.Component {
         super(props, context);
         this.state = {
             value: '',
-            active: false
+            active: false,
+            cb_anatomic: true,
+            cb_site: false,
+            cb_rna: false
         };
 
+        this.check_cb_anatomic = this.check_cb_anatomic.bind(this);
+        this.toggle_cb_anatomic = this.toggle_cb_anatomic.bind(this);
+        this.check_cb_site = this.check_cb_site.bind(this);
+        this.toggle_cb_site = this.toggle_cb_site.bind(this);
+        this.check_cb_rna = this.check_cb_rna.bind(this);
+        this.toggle_cb_rna = this.toggle_cb_rna.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOtherCheckChange = this.handleOtherCheckChange.bind(this);
+    }
+
+    check_cb_anatomic() {
+        this.setState({cb_anatomic: true});
+    }
+
+    toggle_cb_anatomic() {
+        this.setState({cb_anatomic: !this.state.cb_anatomic});
+    }
+
+    check_cb_site() {
+        this.setState({cb_site: true});
+    }
+
+    toggle_cb_site() {
+        this.setState({cb_site: !this.state.cb_site});
+    }
+
+    check_cb_rna() {
+        this.setState({cb_rna: true});
+    }
+
+    toggle_cb_rna() {
+        this.setState({cb_rna: !this.state.cb_rna});
     }
 
     getValidationState() {
@@ -65,20 +98,20 @@ class Expression extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox defaultChecked>
-                                Anatomic Expression data in WT condition <OverlayTrigger placement="top"
+                            <Checkbox checked={this.state.cb_anatomic} onClick={this.toggle_cb_anatomic}>
+                                <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here"/>
-                            <Checkbox>
-                                Site and Time of action data
+                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_anatomic}/>
+                            <Checkbox checked={this.state.cb_site} onClick={this.toggle_cb_site}>
+                                <strong>Site and Time of action data</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here"/>
-                            <Checkbox>
-                                RNAseq data
+                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_site}/>
+                            <Checkbox checked={this.state.cb_rna} onClick={this.toggle_cb_rna}>
+                                <strong>RNAseq data</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here"/>
+                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_rna}/>
                         </Form>
                     </Panel.Body>
                 </Panel>

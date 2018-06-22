@@ -160,7 +160,7 @@ class MultipleSelect extends Component {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <input className="form-control" onChange={this.handleFilterIdChange}
-                                           placeholder={"Start typing to filter " + this.state.itemsNamePlural}/>
+                                           placeholder={"Search identified " + this.state.itemsNamePlural + " list"}/>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +175,7 @@ class MultipleSelect extends Component {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <input className="form-control"
-                                           placeholder={"Start typing to filter " + this.state.itemsNamePlural}
+                                           placeholder={"Search WormBase " + this.state.itemsNamePlural + " list"}
                                            onChange={this.handleFilterWBChange}/>
                                 </div>
                             </div>

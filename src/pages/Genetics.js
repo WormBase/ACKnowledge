@@ -13,8 +13,20 @@ class Genetics extends React.Component {
             selectedAlleles: ["allele1", "allele2", "allele3"],
             wormbaseAlleles: ["allele4", "allele5", "allele3"],
             selectedStrains: ["strain1", "strain2", "strain3"],
-            wormbaseStrains: ["strain4", "strain5", "strain3"]
+            wormbaseStrains: ["strain4", "strain5", "strain3"],
+            cb_allele: false
         };
+
+        this.check_cb_allele = this.check_cb_allele.bind(this);
+        this.toggle_cb_allele = this.toggle_cb_allele.bind(this);
+    }
+
+    check_cb_allele() {
+        this.setState({cb_allele: true});
+    }
+
+    toggle_cb_allele() {
+        this.setState({cb_allele: !this.state.cb_allele});
     }
 
     render() {
@@ -59,13 +71,16 @@ class Genetics extends React.Component {
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
-                                <div>
-                                    <Checkbox><strong>Allele sequence change</strong></Checkbox>
-                                </div>
                                 <div className="row">
-                                    <div className="col-sm-12">
-                                        <Button bsStyle="info" href={"https://wormbase.org/submissions/allele_sequence.cgi"}>
-                                            Provide allele-sequence info
+                                    <div className="col-sm-7">
+                                        <Checkbox checked={this.state.cb_allele}
+                                                  onClick={this.toggle_cb_allele}><strong>Allele sequence change</strong></Checkbox>
+                                    </div>
+                                    <div className="col-sm-5">
+                                        <Button bsStyle="info"
+                                                href={"https://wormbase.org/submissions/allele_sequence.cgi"} target="_blank"
+                                                onClick={this.check_cb_allele}>
+                                            Add details in online form
                                         </Button>
                                     </div>
                                 </div>
