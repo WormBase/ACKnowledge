@@ -3,6 +3,19 @@ import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Other extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            other: props["other"]
+        };
+    }
+
+    setOther(other) {
+        this.setState({
+            other: other
+        });
+    }
+
     render() {
         return (
             <div>
@@ -28,9 +41,13 @@ class Other extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <FormControl componentClass="textarea" multiple>
-                                        </FormControl>
-
+                                        <FormControl componentClass="textarea" multiple
+                                                     value={this.state.other}
+                                                     onChange={(event) => {
+                                                         this.props.otherCallback(event.target.value);
+                                                         this.setOther(event.target.value);
+                                                     }}
+                                        />
                                     </div>
                                 </div>
                             </div>

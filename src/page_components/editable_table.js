@@ -8,19 +8,15 @@ class EditableTable extends Component {
 
         //  this.state.products = [];
         this.state = {};
-        this.state.products = [
-            {
-                id: 1,
-                antobody: "",
-                publicationId: ""
-            }
-        ];
+        this.state.products = props["products"];
 
+        this.handleProductTable = this.handleProductTable.bind(this);
     }
     handleRowDel(product) {
         var index = this.state.products.indexOf(product);
         this.state.products.splice(index, 1);
         this.setState(this.state.products);
+        this.props.tableChangedCallback(this.state.products);
     };
 
     handleAddEvent(evt) {
@@ -32,7 +28,7 @@ class EditableTable extends Component {
         };
         this.state.products.push(product);
         this.setState(this.state.products);
-
+        this.props.tableChangedCallback(this.state.products);
     }
 
     handleProductTable(evt) {
@@ -43,16 +39,15 @@ class EditableTable extends Component {
         };
         var products = this.state.products.slice();
         var newProducts = products.map(function(product) {
-
             for (var key in product) {
-                if (key == item.name && product.id == item.id) {
+                if (key === item.name && product.id.toString() === item.id) {
                     product[key] = item.value;
-
                 }
             }
             return product;
         });
         this.setState({products:newProducts});
+        this.props.tableChangedCallback(newProducts);
         //  console.log(this.state.products);
     };
     render() {
@@ -60,7 +55,11 @@ class EditableTable extends Component {
         return (
             <div>
                 <label>Other Antibodies</label>
-                <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)} onRowAdd={this.handleAddEvent.bind(this)} onRowDel={this.handleRowDel.bind(this)} products={this.state.products} filterText={this.state.filterText}/>
+                <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)}
+                              onRowAdd={this.handleAddEvent.bind(this)}
+                              onRowDel={this.handleRowDel.bind(this)}
+                              products={this.state.products}
+                              filterText={this.state.filterText}/>
             </div>
         );
 
@@ -109,7 +108,7 @@ class ProductRow extends React.Component {
             <tr>
                 <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
                     type: "antibody",
-                    value: this.props.product.name,
+                    value: this.props.product.antibody,
                     id: this.props.product.id
                 }}/>
                 <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{

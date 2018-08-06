@@ -18,9 +18,10 @@ class Reagent extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            selectedTransgenes: ["transgene1", "transgene2", "transgene3"],
-            wormbaseTransgenes: ["transgene4", "transgene5", "transgene3"],
-            cb_newantib: false
+            selectedTransgenes: props["selectedTransgenes"],
+            cb_newantib: props["newAntib"],
+            cb_newantib_details: props["newAntibDetails"],
+            other_antib: props["otherAntibs"]
         };
 
         this.check_cb_newantib = this.check_cb_newantib.bind(this);
@@ -29,10 +30,35 @@ class Reagent extends React.Component {
 
     check_cb_newantib() {
         this.setState({cb_newantib: true});
+        this.props.newAntibCallback(true);
     }
 
     toggle_cb_newantib() {
-        this.setState({cb_newantib: !this.state.cb_newantib});
+        let newVal = !this.state.cb_newantib;
+        this.setState({cb_newantib: newVal});
+        this.props.newAntibCallback(newVal);
+    }
+
+    setSelectedTransgenes(transgenes) {
+        this.alleleSelect.setSelectedItems(transgenes);
+    }
+
+    setNewAntib(value) {
+        this.setState({
+            cb_newantib: value
+        });
+    }
+
+    setNewAntibDetails(value) {
+        this.setState({
+            cb_newantib_details: value
+        });
+    }
+
+    setOtherAntib(value) {
+        this.setState({
+            otherAntib: value
+        });
     }
 
     render() {
@@ -69,7 +95,8 @@ class Reagent extends React.Component {
                                 itemsNameSingular={"transgene"}
                                 itemsNamePlural={"transgenes"}
                                 selectedItems={this.state.selectedTransgenes}
-                                availableItems={this.state.wormbaseTransgenes}
+                                ref={instance => { this.alleleSelect = instance; }}
+                                selectedItemsCallback={this.props.selectedTransgenesCallback}
                             />
                         </Panel.Body>
                     </Panel>
@@ -85,9 +112,16 @@ class Reagent extends React.Component {
                                     <Checkbox checked={this.state.cb_newantib} onClick={this.toggle_cb_newantib}>
                                         <strong>Newly generated antibodies</strong>
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Enter antibody name and details here" onClick={this.check_cb_newantib}/>
+                                    <FormControl type="text" placeholder="Enter antibody name and details here"
+                                                 onClick={this.check_cb_newantib}
+                                                 value={this.state.cb_newantib_details}
+                                                 onChange={(event) => {this.setNewAntibDetails(event.target.value);
+                                                 this.props.newAntibDetailsCallback(event.target.value)}}/>
                                     <br/>
-                                    <EditableTable title={"Other Antibodies used"}/>
+                                    <EditableTable title={"Other Antibodies used"}
+                                                   tableChangedCallback={this.props.otherAntibsCallback}
+                                                   products={this.state.other_antib}
+                                    />
                                     <FormControl.Feedback />
                                 </FormGroup>
                             </Form>

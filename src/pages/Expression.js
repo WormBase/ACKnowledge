@@ -12,15 +12,23 @@ class Expression extends React.Component {
         this.state = {
             value: '',
             active: false,
-            cb_anatomic: true,
-            cb_site: false,
-            cb_rna: false
+            cb_anatomic: props["anatomicExpr"],
+            cb_anatomic_details: props["anatomicExprDetails"],
+            cb_site: props["siteAction"],
+            cb_site_details: props["siteActionDetails"],
+            cb_time: props["timeAction"],
+            cb_time_details: props["timeActionDetails"],
+            cb_rna: props["rnaSeq"],
+            cb_rna_details: props["rnaSeqDetails"],
+            additionalExpr: props["additionalExpr"]
         };
 
         this.check_cb_anatomic = this.check_cb_anatomic.bind(this);
         this.toggle_cb_anatomic = this.toggle_cb_anatomic.bind(this);
         this.check_cb_site = this.check_cb_site.bind(this);
         this.toggle_cb_site = this.toggle_cb_site.bind(this);
+        this.check_cb_time = this.check_cb_time.bind(this);
+        this.toggle_cb_time = this.toggle_cb_time.bind(this);
         this.check_cb_rna = this.check_cb_rna.bind(this);
         this.toggle_cb_rna = this.toggle_cb_rna.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -29,26 +37,46 @@ class Expression extends React.Component {
 
     check_cb_anatomic() {
         this.setState({cb_anatomic: true});
+        this.props.anatomicExprCallback(true);
     }
 
     toggle_cb_anatomic() {
-        this.setState({cb_anatomic: !this.state.cb_anatomic});
+        let newVal = !this.state.cb_anatomic;
+        this.setState({cb_anatomic: newVal});
+        this.props.anatomicExprCallback(newVal);
     }
 
     check_cb_site() {
         this.setState({cb_site: true});
+        this.props.siteActionCallback(true);
     }
 
     toggle_cb_site() {
-        this.setState({cb_site: !this.state.cb_site});
+        let newVal = !this.state.cb_site;
+        this.setState({cb_site: newVal});
+        this.props.siteActionCallback(newVal);
+    }
+
+    check_cb_time() {
+        this.setState({cb_time: true});
+        this.props.timeActionCallback(true);
+    }
+
+    toggle_cb_time() {
+        let newVal = !this.state.cb_time;
+        this.setState({cb_time: newVal});
+        this.props.siteActionCallback(newVal);
     }
 
     check_cb_rna() {
         this.setState({cb_rna: true});
+        this.props.rnaSeqCallback(true);
     }
 
     toggle_cb_rna() {
-        this.setState({cb_rna: !this.state.cb_rna});
+        let newVal = !this.state.cb_rna;
+        this.setState({cb_rna: newVal});
+        this.props.rnaSeqCallback(newVal);
     }
 
     getValidationState() {
@@ -70,6 +98,60 @@ class Expression extends React.Component {
 
     handleChange(e) {
         this.setState({ value: e.target.value });
+    }
+
+    setAnatomicExpr(anatomicExpr) {
+        this.setState({
+            cb_anatomic: anatomicExpr
+        });
+    }
+
+    setAnatomicExprDetails(anatomicExprDetails) {
+        this.setState({
+            cb_anatomic_details: anatomicExprDetails
+        });
+    }
+
+    setSiteAction(siteAction) {
+        this.setState({
+            cb_site: siteAction
+        });
+    }
+
+    setSiteActionDetails(siteActionDetails) {
+        this.setState({
+            cb_site_details: siteActionDetails
+        });
+    }
+
+    setTimeAction(timeAction) {
+        this.setState({
+            cb_time: timeAction
+        });
+    }
+
+    setTimeActionDetails(timeActionDetails) {
+        this.setState({
+            cb_time_details: timeActionDetails
+        });
+    }
+
+    setRnaSeq(rnaSeq) {
+        this.setState({
+            cb_rna: rnaSeq
+        });
+    }
+
+    setRnaSeqDetails(rnaSeqDetails) {
+        this.setState({
+            cb_rna_details: rnaSeqDetails
+        });
+    }
+
+    setAdditionalExpr(additionalExpr) {
+        this.setState({
+            additionalExpr: additionalExpr
+        });
     }
 
     render() {
@@ -103,15 +185,47 @@ class Expression extends React.Component {
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_anatomic}/>
+                            <FormControl type="text" placeholder="Add details here"
+                                         onClick={this.check_cb_anatomic}
+                                         value={this.state.cb_anatomic_details}
+                                         onChange={(event) => {
+                                             this.setAnatomicExprDetails(event.target.value);
+                                             this.props.anatomicExprDetailsCallback(event.target.value);
+                                         }}
+                            />
                             <Checkbox checked={this.state.cb_site} onClick={this.toggle_cb_site}>
-                                <strong>Site and Time of action data</strong>
+                                <strong>Site of action data</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_site}/>
+                            <FormControl type="text" placeholder="Add details here"
+                                         onClick={this.check_cb_site}
+                                         value={this.state.cb_site_details}
+                                         onChange={(event) => {
+                                             this.props.siteActionDetailsCallback(event.target.value);
+                                             this.setSiteActionDetails(event.target.value);
+                                         }}
+                            />
+                            <Checkbox checked={this.state.cb_time} onClick={this.toggle_cb_time}>
+                                <strong>Time of action data</strong>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="Add details here"
+                                         onClick={this.check_cb_time}
+                                         value={this.state.cb_time_details}
+                                         onChange={(event) => {
+                                             this.props.timeActionDetailsCallback(event.target.value);
+                                             this.setTimeActionDetails(event.target.value);
+                                         }}
+                            />
                             <Checkbox checked={this.state.cb_rna} onClick={this.toggle_cb_rna}>
                                 <strong>RNAseq data</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here" onClick={this.check_cb_rna}/>
+                            <FormControl type="text" placeholder="Add details here"
+                                         onClick={this.check_cb_rna}
+                                         value={this.state.cb_rna_details}
+                                         onChange={(event) => {
+                                             this.props.rnaSeqDetailsCallback(event.target.value);
+                                             this.setRnaSeqDetails(event.target.value);
+                                         }}
+                            />
                         </Form>
                     </Panel.Body>
                 </Panel>
@@ -139,9 +253,12 @@ class Expression extends React.Component {
                                 <Col componentClass={ControlLabel} sm={7}>
                                     <FormControl
                                         type="text"
-                                        value={this.state.value}
+                                        value={this.state.additionalExpr}
                                         placeholder="Add details here (e.g., qPCR, Proteomics)"
-                                        onChange={this.handleChange}
+                                        onChange={(event) => {
+                                            this.props.additionalExprCallback(event.target.value);
+                                            this.setAdditionalExpr(event.target.value);
+                                        }}
                                     />
                                     <FormControl.Feedback />
                                 </Col>

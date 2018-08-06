@@ -6,16 +6,13 @@ class MultipleSelect extends Component {
     constructor(props, context) {
         super(props, context);
         let selected = new Set(props["selectedItems"]);
-        let available = new Set(props["availableItems"]);
-        let difference = new Set([...available].filter(x => !selected.has(x)));
         this.state = {
             itemsNameSingular: props["itemsNameSingular"],
             itemsNamePlural: props["itemsNamePlural"],
             show: false,
             selectedItemsToDisplay: selected,
-            availableItemsToDisplay: difference,
             selectedItemsAll: selected,
-            availableItemsAll: difference,
+            availableItems: new Set(),
             itemsIdForm: undefined,
             tmpDeselectedItems: new Set(),
             tmpSelectedItems: new Set()
@@ -28,21 +25,18 @@ class MultipleSelect extends Component {
         this.handleAddSelectedToList = this.handleAddSelectedToList.bind(this);
         this.handleRemSelectedFromList = this.handleRemSelectedFromList.bind(this);
         this.handleFilterIdChange = this.handleFilterIdChange.bind(this);
-        this.handleFilterWBChange = this.handleFilterWBChange.bind(this);
     }
 
     handleAddSelectedToList() {
         if (this.state.tmpSelectedItems.size > 0) {
             let selectedMerged = new Set([...this.state.selectedItemsAll, ...this.state.tmpSelectedItems]);
-            let difference = new Set([...this.state.availableItemsAll].filter(x => !selectedMerged.has(x)));
             this.setState({
                 show: false,
                 selectedItemsToDisplay: selectedMerged,
                 selectedItemsAll: selectedMerged,
-                availableItemsToDisplay: difference,
-                availableItemsAll: difference,
                 tmpSelectedItems: new Set()
             });
+            this.props.selectedItemsCallback(selectedMerged);
         }
         else {
             this.setState({show: false});
@@ -61,16 +55,21 @@ class MultipleSelect extends Component {
         if (this.state.tmpDeselectedItems.size > 0) {
             let selectedNew = new Set([...this.state.selectedItemsAll].filter(x =>
                 !this.state.tmpDeselectedItems.has(x)));
-            let availableNew = new Set([...this.state.availableItemsAll, ...this.state.tmpDeselectedItems]);
             this.setState({
                 show: false,
                 selectedItemsToDisplay: selectedNew,
                 selectedItemsAll: selectedNew,
-                availableItemsToDisplay: availableNew,
-                availableItemsAll: availableNew,
                 tmpDeselectedItems: new Set()
             });
+            this.props.selectedItemsCallback(selectedNew);
         }
+    }
+
+    setSelectedItems(selectedItems) {
+        let selected = new Set(selectedItems);
+        this.setState({
+            selectedItemsToDisplay: selected,
+        });
     }
 
     handleClose() {
@@ -98,13 +97,15 @@ class MultipleSelect extends Component {
                 item.startsWith(e.target.value))});
     }
 
-    handleFilterWBChange(e) {
-        this.setState({availableItemsToDisplay: [...this.state.availableItemsAll].filter((item) =>
-                item.startsWith(e.target.value))});
-    }
-
     handleShow() {
         this.setState({ show: true });
+    }
+
+    handleSearchWB(searchString) {
+        let wbGenes = this.props.searchWBFunc(searchString);
+        this.setState({
+            availableItems: wbGenes
+        });
     }
 
     render(){
@@ -173,11 +174,16 @@ class MultipleSelect extends Component {
                     <Modal.Body>
                         <div className="container-fluid">
                             <div className="row">
-                                <div className="col-sm-12">
+                                <div className="col-sm-10">
                                     <input className="form-control"
                                            placeholder={"Search WormBase " + this.state.itemsNamePlural + " list"}
-                                           onChange={this.handleFilterWBChange}/>
+                                           ref={instance => { this.searchInput = instance; }}/>
                                 </div>
+                                <div className="col-sm-2">
+                                    <Button onClick={() => this.handleSearchWB(this.searchInput.value)} bsStyle="info">
+                                        <Glyphicon glyph="search"/></Button>
+                                </div>
+
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
@@ -190,7 +196,7 @@ class MultipleSelect extends Component {
                                                  style={{height: '200px'}}
                                                  defaultValue=""
                                                  onChange={this.handleChangeWBListSelection}>
-                                        {[...this.state.availableItemsToDisplay].sort().map(item =>
+                                        {[...this.state.availableItems].sort().map(item =>
                                             <option>{item}</option>)}
                                     </FormControl>
                                 </div>

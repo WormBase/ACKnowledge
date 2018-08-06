@@ -10,11 +10,9 @@ class Genetics extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            selectedAlleles: ["allele1", "allele2", "allele3"],
-            wormbaseAlleles: ["allele4", "allele5", "allele3"],
-            selectedStrains: ["strain1", "strain2", "strain3"],
-            wormbaseStrains: ["strain4", "strain5", "strain3"],
-            cb_allele: false
+            selectedAlleles: props["selectedAlleles"],
+            selectedStrains: props["selectedStrains"],
+            cb_allele: props["alleleSeqChange"]
         };
 
         this.check_cb_allele = this.check_cb_allele.bind(this);
@@ -23,11 +21,24 @@ class Genetics extends React.Component {
 
     check_cb_allele() {
         this.setState({cb_allele: true});
+        this.props.alleleSeqChangeCallback(true);
     }
 
     toggle_cb_allele() {
-        this.setState({cb_allele: !this.state.cb_allele});
+        let newVal = !this.state.cb_allele;
+        this.setState({cb_allele: newVal});
+        this.props.alleleSeqChangeCallback(newVal);
     }
+
+    setSelectedAlleles(allelelist) {
+        this.alleleSelect.setSelectedItems(allelelist);
+    }
+
+    setSelecedStrains(strains) {
+        this.strainSelect.setSelectedItems(strains);
+    }
+
+    setAlleleSeqChange(){}
 
     render() {
         const allelesTooltip = (
@@ -61,7 +72,8 @@ class Genetics extends React.Component {
                                 itemsNameSingular={"allele"}
                                 itemsNamePlural={"alleles"}
                                 selectedItems={this.state.selectedAlleles}
-                                availableItems={this.state.wormbaseAlleles}
+                                ref={instance => { this.alleleSelect = instance; }}
+                                selectedItemsCallback={this.props.selectedAllelesCallback}
                             />
                         </Panel.Body>
                     </Panel>
@@ -98,7 +110,8 @@ class Genetics extends React.Component {
                                 itemsNameSingular={"strain"}
                                 itemsNamePlural={"strains"}
                                 selectedItems={this.state.selectedStrains}
-                                availableItems={this.state.wormbaseStrains}
+                                ref={instance => { this.strainSelect = instance; }}
+                                selectedItemsCallback={this.props.selectedStrainsCallback}
                             />
                         </Panel.Body>
                     </Panel>
