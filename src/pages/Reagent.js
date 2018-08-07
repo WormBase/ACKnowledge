@@ -26,6 +26,7 @@ class Reagent extends React.Component {
 
         this.check_cb_newantib = this.check_cb_newantib.bind(this);
         this.toggle_cb_newantib = this.toggle_cb_newantib.bind(this);
+        this.searchWBTransgenes = this.searchWBTransgenes.bind(this);
     }
 
     check_cb_newantib() {
@@ -59,6 +60,22 @@ class Reagent extends React.Component {
         this.setState({
             otherAntib: value
         });
+    }
+
+    searchWBTransgenes(searchString) {
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgenes&userValue=' +
+            searchString)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    this.setState({show_fetch_data_error: true})
+                }
+            }).then(data => {
+            if (data === undefined) {
+                this.setState({show_fetch_data_error: true})
+            }
+        }).catch(() => this.setState({show_fetch_data_error: true}));
     }
 
     render() {
@@ -97,6 +114,7 @@ class Reagent extends React.Component {
                                 selectedItems={this.state.selectedTransgenes}
                                 ref={instance => { this.alleleSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedTransgenesCallback}
+                                searchWBFunc={this.searchWBTransgenes}
                             />
                         </Panel.Body>
                     </Panel>

@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import {Button, ButtonGroup, FormControl, Glyphicon, Label, Modal} from "react-bootstrap";
+import {Alert, Button, ButtonGroup, FormControl, Glyphicon, Label, Modal} from "react-bootstrap";
 
 class MultipleSelect extends Component {
     constructor(props, context) {
@@ -15,7 +15,8 @@ class MultipleSelect extends Component {
             availableItems: new Set(),
             itemsIdForm: undefined,
             tmpDeselectedItems: new Set(),
-            tmpSelectedItems: new Set()
+            tmpSelectedItems: new Set(),
+            show_fetch_data_error: false
         };
 
         this.handleShow = this.handleShow.bind(this);
@@ -75,7 +76,8 @@ class MultipleSelect extends Component {
     handleClose() {
         this.setState({
             show: false,
-            tmpSelectedItems: new Set()
+            tmpSelectedItems: new Set(),
+            show_fetch_data_error: false
         });
     }
 
@@ -103,12 +105,27 @@ class MultipleSelect extends Component {
 
     handleSearchWB(searchString) {
         let wbGenes = this.props.searchWBFunc(searchString);
-        this.setState({
-            availableItems: wbGenes
-        });
+        if (wbGenes !== undefined) {
+            this.setState({
+                availableItems: wbGenes
+            });
+        } else {
+            this.setState({
+                show_fetch_data_error: true
+            });
+        }
     }
 
     render(){
+        let data_fetch_err_alert = false;
+        if (this.state.show_fetch_data_error) {
+            data_fetch_err_alert = <Alert bsStyle="danger">
+                <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
+                Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
+                Wormbase Helpdesk</a>.
+            </Alert>;
+        }
+
         return (
             <div className="container-fluid">
                 <div className="row">
@@ -158,13 +175,18 @@ class MultipleSelect extends Component {
                                     &nbsp;
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <input className="form-control" onChange={this.handleFilterIdChange}
-                                           placeholder={"Search identified " + this.state.itemsNamePlural + " list"}/>
-                                </div>
-                            </div>
                         </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-12">
+                        &nbsp;
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-7">
+                        <input className="form-control" onChange={this.handleFilterIdChange}
+                               placeholder={"Start typing to filter " + this.state.itemsNamePlural + " list"}/>
                     </div>
                 </div>
                 <Modal show={this.state.show} onHide={this.handleClose}>
@@ -172,12 +194,15 @@ class MultipleSelect extends Component {
                         <Modal.Title>Select from Wormbase {this.state.itemsNameSingular} list</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
+                        {data_fetch_err_alert}
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-10">
                                     <input className="form-control"
                                            placeholder={"Search WormBase " + this.state.itemsNamePlural + " list"}
-                                           ref={instance => { this.searchInput = instance; }}/>
+                                           ref={instance => { this.searchInput = instance; }}
+                                           onKeyPress={(e) => {if (e.key === 'Enter') {this.handleSearchWB(this.searchInput.value)}}}
+                                    />
                                 </div>
                                 <div className="col-sm-2">
                                     <Button onClick={() => this.handleSearchWB(this.searchInput.value)} bsStyle="info">

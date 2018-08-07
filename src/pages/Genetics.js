@@ -17,6 +17,8 @@ class Genetics extends React.Component {
 
         this.check_cb_allele = this.check_cb_allele.bind(this);
         this.toggle_cb_allele = this.toggle_cb_allele.bind(this);
+        this.searchWBAlleles = this.searchWBAlleles.bind(this);
+        this.searchWBStrains = this.searchWBStrains.bind(this);
     }
 
     check_cb_allele() {
@@ -39,6 +41,38 @@ class Genetics extends React.Component {
     }
 
     setAlleleSeqChange(){}
+
+    searchWBAlleles(searchString) {
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=variation&userValue=' +
+            searchString)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    this.setState({show_fetch_data_error: true})
+                }
+            }).then(data => {
+            if (data === undefined) {
+                this.setState({show_fetch_data_error: true})
+            }
+        }).catch(() => this.setState({show_fetch_data_error: true}));
+    }
+
+    searchWBStrains(searchString) {
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strains&userValue=' +
+            searchString)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    this.setState({show_fetch_data_error: true})
+                }
+            }).then(data => {
+            if (data === undefined) {
+                this.setState({show_fetch_data_error: true})
+            }
+        }).catch(() => this.setState({show_fetch_data_error: true}));
+    }
 
     render() {
         const allelesTooltip = (
@@ -74,6 +108,7 @@ class Genetics extends React.Component {
                                 selectedItems={this.state.selectedAlleles}
                                 ref={instance => { this.alleleSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedAllelesCallback}
+                                searchWBFunc={this.searchWBAlleles}
                             />
                         </Panel.Body>
                     </Panel>
@@ -112,6 +147,7 @@ class Genetics extends React.Component {
                                 selectedItems={this.state.selectedStrains}
                                 ref={instance => { this.strainSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedStrainsCallback}
+                                searchWBFunc={this.searchWBStrains}
                             />
                         </Panel.Body>
                     </Panel>

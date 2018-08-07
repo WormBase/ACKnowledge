@@ -15,13 +15,15 @@ class Overview extends React.Component {
             selectedGenes: props["selectedGenes"],
             selectedSpecies: props["selectedSpecies"],
             cb_gmcorr: props["geneModCorr"],
-            cb_gmcorr_details: props["geneModCorrDetails"]
+            cb_gmcorr_details: props["geneModCorrDetails"],
+            show_fetch_data_error: false
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.check_genemodel_cb = this.check_genemodel_cb.bind(this);
         this.toggle_cb_gmcorr = this.toggle_cb_gmcorr.bind(this);
         this.searchWBGenes = this.searchWBGenes.bind(this);
+        this.searchWBSpecies = this.searchWBSpecies.bind(this);
     }
 
     getValidationState() {
@@ -80,7 +82,22 @@ class Overview extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            alert(data);
+        }).catch(() => this.setState({show_fetch_data_error: true}));
+    }
+
+    searchWBSpecies(searchString) {
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=species&userValue=' +
+            searchString)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    this.setState({show_fetch_data_error: true})
+                }
+            }).then(data => {
+            if (data === undefined) {
+                this.setState({show_fetch_data_error: true})
+            }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
 
@@ -172,6 +189,7 @@ class Overview extends React.Component {
                                 selectedItems={this.state.selectedSpecies}
                                 ref={instance => { this.speciesSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedSpeciesCallback}
+                                searchWBFunc={this.searchWBSpecies}
                             />
                         </Panel.Body>
                     </Panel>

@@ -171,10 +171,10 @@ class MenuAndWidgets extends React.Component {
             }
             let genemodCorrection = false;
             let genemodCorrectionDetails = "";
-            //if (data.genemodcorr.afp !== undefined && data.genemodcorr.afp !== "no") {
-            //    genemodCorrection = true;
-            //    geneModCorrectionDetails = data.genemodcorr.afp;
-            //}
+            if (data.genemodcorr.afp !== undefined && data.genemodcorr.afp !== null && data.genemodcorr.afp !== "no") {
+                genemodCorrection = true;
+                genemodCorrectionDetails = data.genemodcorr.afp;
+            }
             let selectedSpecies = new Set();
             if (data.species.afp !== undefined && data.species.afp !== "" && data.species.afp !== null) {
                 selectedSpecies = MenuAndWidgets.split_tfp_entities(data.species.afp, "Taxon ID ");
@@ -194,9 +194,10 @@ class MenuAndWidgets extends React.Component {
                 selectedAlleles = MenuAndWidgets.split_tfp_entities(data.variation.tfp, "");
             }
             let alleleSeqChange = false;
-            //if (data.alleleseqchange.afp !== undefined && data.alleleseqchange.afp !== "no") {
-            //    alleleSeqChange = true;
-            //}
+            if (data.alleleseqchange.afp !== undefined && data.alleleseqchange.afp !== null &&
+                data.alleleseqchange.afp !== "no") {
+                alleleSeqChange = true;
+            }
             let selectedStrains = new Set();
             if (data.strain.afp !== undefined && data.strain.afp !== "" && data.strain.afp !== null) {
                 selectedStrains = data.strain.afp.split(" | ");
@@ -230,9 +231,10 @@ class MenuAndWidgets extends React.Component {
                     publicationId: ""
                 }
             ];
-            //if (data.otherantibodies.afp !== undefined && data.otherantibodies.afp !== "") {
-            //    otherAntibodies = data.otherantibodies.afp;
-            //}
+            if (data.otherantibodies.afp !== undefined && data.otherantibodies.afp !== null &&
+                data.otherantibodies.afp !== "") {
+                otherAntibodies = data.otherantibodies.afp;
+            }
             if (this.reagent !== undefined) {
                 this.reagent.setSelectedTransgenes(selectedTransgenes);
                 this.reagent.setNewAntib(newAntib);
@@ -241,10 +243,10 @@ class MenuAndWidgets extends React.Component {
             }
             let anatomicExpr = false;
             let anatomicExprDetails = "";
-            //if (data.anatomicexpr.afp !== undefined && data.anatomicexpr.afp !== "no") {
-            //    anatomicExpr = true;
-            //    anatomicExprDetails = data.anatomicexpr.afp;
-            //}
+            if (data.anatomicexpr.afp !== undefined && data.anatomicexpr.afp !== "no") {
+                anatomicExpr = true;
+                anatomicExprDetails = data.anatomicexpr.afp;
+            }
             let siteAction = false;
             let siteActionDetails = "";
             if (data.siteaction.afp !== undefined && data.siteaction.afp !== null && data.siteaction.afp !== "no") {
@@ -259,14 +261,14 @@ class MenuAndWidgets extends React.Component {
             }
             let rnaSeq = false;
             let rnaSeqDetails = "";
-            //if (data.rnaseq.afp !== undefined && data.rnaseq.afp !== null && data.rnaseq.afp !== "no") {
-            //    rnaSeq = true;
-            //    rnaSeq = data.rnaseq.afp;
-            //}
+            if (data.rnaseq.afp !== undefined && data.rnaseq.afp !== null && data.rnaseq.afp !== "no") {
+                rnaSeq = true;
+                rnaSeqDetails = data.rnaseq.afp;
+            }
             let additionalExpr = "";
-            //if (data.additionalexpr.afp !== undefined && data.additionalexpr.afp !== null && data.additionalexpr.afp !== "") {
-            //    additionalExpr = data.additionalexpr.afp;
-            //}
+            if (data.additionalexpr.afp !== undefined && data.additionalexpr.afp !== null && data.additionalexpr.afp !== "") {
+                additionalExpr = data.additionalexpr.afp;
+            }
             if (this.expression !== undefined) {
                 this.expression.setAnatomicExpr(anatomicExpr);
                 this.expression.setAnatomicExprDetails(anatomicExprDetails);
@@ -353,9 +355,9 @@ class MenuAndWidgets extends React.Component {
                 chemical = true;
             }
             let env = false;
-            //if (data.envpheno.afp !== undefined && data.envpheno.afp !== "" && data.envpheno.afp !== null) {
-            //    env = true;
-            //}
+            if (data.envpheno.afp !== undefined && data.envpheno.afp !== "" && data.envpheno.afp !== null) {
+                env = true;
+            }
             if (this.phenotype !== undefined) {
                 if (svmAllele === true) {
                     this.phenotype.check_cb_allele();
@@ -680,7 +682,7 @@ class MenuAndWidgets extends React.Component {
         let data_fetch_err_alert = false;
         if (this.state.show_fetch_data_error) {
             data_fetch_err_alert = <Alert bsStyle="danger">
-                <Glyphicon glyph="warning-sign"/> <strong>Oooops!</strong><br/>
+                <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
                 We are having problems retrieving your data from the server and some components may
                 behave incorrectly. This could be caused by wrong credentials or by a network issue.
                 Please try again later or contact <a href="mailto:help@wormbase.org">
