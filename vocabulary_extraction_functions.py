@@ -193,7 +193,7 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id):
             regex_list_mod.extend(regex_list[1].split(", "))
         for regex_text in regex_list_mod:
             if re.match(re.compile(".*" + regex_text.lower() + ".*"), fulltext_copy):
-                papers_map[paper_id].append(species_id)
+                papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1])
                 fulltext_copy = re.sub(re.compile(regex_text), "", fulltext_copy)
 
 

@@ -30,4 +30,5 @@ def get_category_keywords_in_documents(api_token, paper_ids, category):
     req = urllib.request.Request(api_endpoint, data, headers={'Content-type': 'application/json',
                                                               'Accept': 'application/json'})
     res = urllib.request.urlopen(req)
-    return {doc["identifier"].split("/")[1][7:]: doc["matches"] for doc in json.loads(res.read().decode('utf-8'))}
+    return {doc["identifier"].split("/")[1][7:]: doc["matches"] if "matches" in doc else [] for doc in
+            json.loads(res.read().decode('utf-8'))}

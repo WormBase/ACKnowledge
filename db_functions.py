@@ -1,12 +1,15 @@
 from collections import defaultdict
+from typing import List
 
 
-def get_list_of_curatable_papers(cur):
+def get_set_of_curatable_papers(cur):
     """
-    get the list of curatable papers (i.e., papers that can be processed by AFP)
+    get the set of curatable papers (i.e., papers that can be processed by AFP)
 
-    :param cur: a DB cursor
-    :return (List[str]): the list of curatable papers
+    Args:
+        cur: a DB cursor
+    Returns:
+        Set[str]: the set of curatable papers
     """
     cur.execute("SELECT * FROM pap_primary_data WHERE pap_primary_data = 'primary'")
     rows = cur.fetchall()
@@ -14,28 +17,32 @@ def get_list_of_curatable_papers(cur):
     cur.execute("SELECT * FROM pap_type WHERE pap_type = '1'")
     rows = cur.fetchall()
     curatable_papers.extend([row[0] for row in rows])
-    return curatable_papers
+    return set(curatable_papers)
 
 
-def get_list_of_emailed_papers(cur):
+def get_set_of_afp_processed_papers(cur):
     """
-    get the list of papers that have already been processed by AFP (i.e., an email was sent to the authors)
+    get the set of papers that have already been processed by AFP
 
-    :param cur: a db cursor
-    :return (List[str]): the list of papers that have already been processed
+    Args:
+        cur: a db cursor
+    Returns:
+        Set[str]: the set of papers that have already been processed
     """
-    cur.execute("SELECT * FROM afp_email")
+    cur.execute("SELECT * FROM afp_passwd")
     rows = cur.fetchall()
-    emailed_papers = [row[0] for row in rows]
-    return emailed_papers
+    processed_papers = [row[0] for row in rows]
+    return set(processed_papers)
 
 
 def get_svm_flagged_papers(cur):
     """
     get the list of SVM flagged papers with their values
 
-    :param cur: a db cursor
-    :return (Dict[Dict[Bool]): a dictionary with papers ids as keys and, as values, dictionaries with data type as key
+    Args:
+         cur: a db cursor
+    Returns:
+        Dict[Dict[Bool]: a dictionary with papers ids as keys and, as values, dictionaries with data type as key
         and a bool values indicating if the paper is SVM positive or negative for each specific data type
     """
     cur.execute("SELECT A.cur_paper, A.cur_datatype, A.cur_svmdata \n"
@@ -48,7 +55,7 @@ def get_svm_flagged_papers(cur):
     rows = cur.fetchall()
     papers_svm_flags = defaultdict(lambda: defaultdict(bool))
     for row in rows:
-        papers_svm_flags[row[0]][row[1]] = row[2] != "NEG"
+        papers_svm_flags[row[0]][row[1]] = row[2] != "NEG" and row[2] != "low"
     return papers_svm_flags
 
 
@@ -56,8 +63,10 @@ def get_all_strains(cur):
     """
     get the list of all strains from the DB
 
-    :param cur: a DB cursor
-    :return (ist[str]): the list of strains
+    Args:
+        cur: a DB cursor
+    Returns:
+        List[str]: the list of strains
     """
     cur.execute("SELECT * FROM obo_name_strain")
     rows = cur.fetchall()
@@ -68,8 +77,10 @@ def get_all_transgenes(cur):
     """
     get the list of all transgenes and their synonyms from the DB
 
-    :param cur: a DB cursor
-    :return (ist[str]): the list of transgenes and synonyms
+    Args:
+        cur: a DB cursor
+    Returns:
+        List[str]: the list of transgenes and synonyms
     """
     cur.execute("SELECT * FROM trp_publicname")
     rows = cur.fetchall()
@@ -81,9 +92,105 @@ def get_all_transgenes(cur):
     return transgenes
 
 
-def _describe_table(cur, table_name):
-    cur.execute("select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where "
-                "table_name = '" + table_name + "'")
+def get_gene_name_id_map(cur):
+    """
+    get a map that returns the id of a gene given its symbol
+
+    Args:
+        cur: a DB cursor
+    Returns:
+        Dict[str, str]: the map between gene symbol and id
+    """
+    gene_name_id_map = {}
+    cur.execute("SELECT * FROM gin_locus WHERE joinkey != ''")
     rows = cur.fetchall()
-    for row in rows:
-        print(row)
+    gene_name_id_map.update({row[1]: row[0] for row in rows})
+    cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
+    rows = cur.fetchall()
+    gene_name_id_map.update({row[1]: row[0] for row in rows})
+    cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
+    rows = cur.fetchall()
+    gene_name_id_map.update({row[1]: row[0] for row in rows})
+    cur.execute("SELECT * FROM gin_seqname WHERE joinkey != ''")
+    rows = cur.fetchall()
+    gene_name_id_map.update({row[1]: row[0] for row in rows})
+    return gene_name_id_map
+
+
+def get_allele_name_id_map(cur):
+    """
+    get a map that returns the id of an allele given its symbol
+
+    Args:
+        cur: a DB cursor
+    Returns:
+        Dict[str, str]: the map between allele symbol and id
+    """
+    cur.execute("SELECT * FROM obo_name_variation WHERE joinkey != ''")
+    rows = cur.fetchall()
+    return {row[1]: row[0] for row in rows}
+
+
+def get_paper_title(cur, paper_id):
+    """
+    get paper title
+
+    Args:
+        cur: a DB cursor
+        paper_id: the id of the paper
+    Returns:
+        str: the title of the paper
+    """
+    cur.execute("SELECT * FROM pap_title WHERE joinkey = '{}'".format(paper_id))
+    return cur.fetchone()[1]
+
+
+def get_paper_journal(cur, paper_id):
+    """
+    get paper journal
+
+    Args:
+        cur: a DB cursor
+        paper_id: the id of the paper
+    Returns:
+        str: the journal of the paper
+    """
+    cur.execute("SELECT * FROM pap_journal WHERE joinkey = '{}'".format(paper_id))
+    return cur.fetchone()[1]
+
+
+def get_transgene_name_id_map(cur):
+    """
+    get a map that returns the id of a transgene given its symbol
+
+    Args:
+        cur: a DB cursor
+    Returns:
+        Dict[str, str]: the map between transgene symbol and id
+    """
+    transgene_name_id_map = {}
+    cur.execute("SELECT trp_name.trp_name, trp_publicname.trp_publicname "
+                "FROM trp_name, trp_publicname "
+                "WHERE trp_name.joinkey = trp_publicname.joinkey")
+    rows = cur.fetchall()
+    transgene_name_id_map.update({row[1]: row[0] for row in rows})
+    cur.execute("SELECT trp_name.trp_name, trp_synonym.trp_synonym "
+                "FROM trp_name, trp_synonym "
+                "WHERE trp_name.joinkey = trp_synonym.joinkey;")
+    rows = cur.fetchall()
+    transgene_name_id_map.update({row[1]: row[0] for row in rows})
+    return transgene_name_id_map
+
+
+def write_extracted_entities_in_paper(cur, publication_id, entities_ids: List[str], table_name):
+    cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
+        table_name, table_name, publication_id, " | ".join(entities_ids)))
+
+
+def write_passwd(cur, publication_id, passwd):
+    cur.execute("INSERT INTO afp_passwd (joinkey, afp_passwd) VALUES('{}', '{}')".format(publication_id, passwd))
+
+
+def write_email(cur, publication_id, email_addr_list: List[str]):
+    for email_addr in email_addr_list:
+        cur.execute("INSERT INTO afp_email (joinkey, afp_email) VALUES('{}', '{}')".format(publication_id, email_addr))
