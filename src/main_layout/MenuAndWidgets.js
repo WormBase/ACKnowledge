@@ -11,7 +11,7 @@ import Interactions from "../pages/Interactions";
 import Genetics from "../pages/Genetics";
 import Glyphicon from "react-bootstrap/es/Glyphicon";
 import ContactInfo from "../pages/ContactInfo";
-import qs from 'qs';
+import queryString from 'query-string';
 import Title from "./Title";
 
 class MenuAndWidgets extends React.Component {
@@ -47,7 +47,7 @@ class MenuAndWidgets extends React.Component {
             default:
                 currSelectedMenu = 1;
         }
-        let parameters = qs.parse(this.props.location.search);
+        let parameters = queryString.parse(this.props.location.search);
         this.state = {
             pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "other",
                 "contact_info"],
@@ -689,7 +689,7 @@ class MenuAndWidgets extends React.Component {
                 Wormbase Helpdesk</a>.
             </Alert>;
         }
-        let parameters = qs.parse(this.props.location.search);
+        let parameters = queryString.parse(this.props.location.search);
         return (
             <div>
                 {data_fetch_err_alert}
