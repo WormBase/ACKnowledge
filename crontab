@@ -1,0 +1,1 @@
+0 10 1 * * root afp_pipeline.py -t $(cat /etc/tpc_api_token | sed 's/\n//g') -L INFO -n50  >> /var/log/cron.log 2>&1
