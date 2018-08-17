@@ -64,7 +64,7 @@ class Reagent extends React.Component {
     }
 
     searchWBTransgenes(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgenes&userValue=' +
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgene&userValue=' +
             searchString)
             .then(res => {
                 if (res.status === 200) {
@@ -76,7 +76,7 @@ class Reagent extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             } else {
-                this.transgeneSelect.setSelectedItems(data);
+                this.transgeneSelect.setAvailableItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }

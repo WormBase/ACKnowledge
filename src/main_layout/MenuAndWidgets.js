@@ -145,7 +145,7 @@ class MenuAndWidgets extends React.Component {
         let final_entities_list = Array();
         for (let i in entities_split) {
             let entity_split = entities_split[i].split(";%;");
-            final_entities_list.push(entity_split[1] + " (" + prefix + entity_split[0] + ")");
+            final_entities_list.push(entity_split[1] + " ( " + prefix + entity_split[0] + " )");
         }
         return final_entities_list;
     }
@@ -200,9 +200,9 @@ class MenuAndWidgets extends React.Component {
             }
             let selectedStrains = new Set();
             if (data.strain.afp !== undefined && data.strain.afp !== "" && data.strain.afp !== null) {
-                selectedStrains = data.strain.afp.split(" | ");
+                selectedStrains = data.strain.afp.split(" | ").map((value) => value + " ( " + value + " )");
             } else if (data.strain.tfp !== undefined && data.strain.tfp !== "") {
-                selectedStrains = data.strain.tfp.split(" | ");
+                selectedStrains = data.strain.tfp.split(" | ").map((value) => value + " ( " + value + " )");
             }
             if (this.genetics !== undefined) {
                 this.genetics.setSelectedAlleles(selectedAlleles);

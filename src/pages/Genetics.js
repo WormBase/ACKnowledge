@@ -63,7 +63,7 @@ class Genetics extends React.Component {
     }
 
     searchWBStrains(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strains&userValue=' +
+        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strain&userValue=' +
             searchString)
             .then(res => {
                 if (res.status === 200) {

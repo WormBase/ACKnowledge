@@ -32,6 +32,7 @@ class MultipleSelect extends Component {
     handleAddSelectedToList() {
         if (this.state.tmpSelectedItems.size > 0) {
             let selectedMerged = new Set([...this.state.selectedItemsAll, ...this.state.tmpSelectedItems]);
+            selectedMerged.delete("more ...");
             this.setState({
                 show: false,
                 selectedItemsToDisplay: selectedMerged,
@@ -106,7 +107,7 @@ class MultipleSelect extends Component {
     }
 
     setAvailableItems(wbItems) {
-        if (wbItems !== undefined) {
+        if (wbItems !== undefined && wbItems !== "\n") {
             this.setState({
                 availableItems: new Set(wbItems.split("\n").filter((item) => item !== ''))
             });
@@ -221,7 +222,8 @@ class MultipleSelect extends Component {
                                     <FormControl componentClass="select" multiple
                                                  style={{height: '200px'}}
                                                  defaultValue=""
-                                                 onChange={this.handleChangeWBListSelection}>
+                                                 onChange={this.handleChangeWBListSelection}
+                                                 onDoubleClick={this.handleAddSelectedToList}>
                                         {[...this.state.availableItems].sort().map(item =>
                                             <option>{item}</option>)}
                                     </FormControl>
