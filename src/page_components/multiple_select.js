@@ -16,7 +16,8 @@ class MultipleSelect extends Component {
             itemsIdForm: undefined,
             tmpDeselectedItems: new Set(),
             tmpSelectedItems: new Set(),
-            show_fetch_data_error: false
+            show_fetch_data_error: false,
+            showMore: false
         };
 
         this.handleShow = this.handleShow.bind(this);
@@ -108,8 +109,19 @@ class MultipleSelect extends Component {
 
     setAvailableItems(wbItems) {
         if (wbItems !== undefined && wbItems !== "\n") {
+            let newAvailItems = new Set(wbItems.split("\n").filter((item) => item !== ''));
+            if (newAvailItems.has("more ...")) {
+                newAvailItems.delete("more ...");
+                this.setState({
+                    showMore: true
+                });
+            } else {
+                this.setState({
+                    showMore: false
+                });
+            }
             this.setState({
-                availableItems: new Set(wbItems.split("\n").filter((item) => item !== ''))
+                availableItems: newAvailItems
             });
         } else {
             this.setState({
@@ -126,6 +138,16 @@ class MultipleSelect extends Component {
                 Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
                 Wormbase Helpdesk</a>.
             </Alert>;
+        }
+
+        let more = false;
+        if (this.state.showMore) {
+            more =
+            <div className="row">
+                <div className="col-sm-12">
+                    Some results matching the query have been omitted. Try a different query to narrow down the results.
+                </div>
+            </div>
         }
 
         return (
@@ -229,6 +251,7 @@ class MultipleSelect extends Component {
                                     </FormControl>
                                 </div>
                             </div>
+                            {more}
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
