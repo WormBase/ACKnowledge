@@ -21,7 +21,8 @@ class Reagent extends React.Component {
             selectedTransgenes: props["selectedTransgenes"],
             cb_newantib: props["newAntib"],
             cb_newantib_details: props["newAntibDetails"],
-            other_antib: props["otherAntibs"]
+            other_antib: props["otherAntibs"],
+            transgeneSelect: undefined
         };
 
         this.check_cb_newantib = this.check_cb_newantib.bind(this);
@@ -41,7 +42,7 @@ class Reagent extends React.Component {
     }
 
     setSelectedTransgenes(transgenes) {
-        this.alleleSelect.setSelectedItems(transgenes);
+        this.transgeneSelect.setSelectedItems(transgenes);
     }
 
     setNewAntib(value) {
@@ -74,6 +75,8 @@ class Reagent extends React.Component {
             }).then(data => {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
+            } else {
+                this.transgeneSelect.setSelectedItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
@@ -112,7 +115,7 @@ class Reagent extends React.Component {
                                 itemsNameSingular={"transgene"}
                                 itemsNamePlural={"transgenes"}
                                 selectedItems={this.state.selectedTransgenes}
-                                ref={instance => { this.alleleSelect = instance; }}
+                                ref={instance => { this.transgeneSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedTransgenesCallback}
                                 searchWBFunc={this.searchWBTransgenes}
                             />

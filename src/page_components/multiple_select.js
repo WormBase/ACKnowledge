@@ -26,6 +26,7 @@ class MultipleSelect extends Component {
         this.handleAddSelectedToList = this.handleAddSelectedToList.bind(this);
         this.handleRemSelectedFromList = this.handleRemSelectedFromList.bind(this);
         this.handleFilterIdChange = this.handleFilterIdChange.bind(this);
+        this.setAvailableItems = this.setAvailableItems.bind(this);
     }
 
     handleAddSelectedToList() {
@@ -70,6 +71,7 @@ class MultipleSelect extends Component {
         let selected = new Set(selectedItems);
         this.setState({
             selectedItemsToDisplay: selected,
+            selectedItemsAll: selected
         });
     }
 
@@ -103,11 +105,10 @@ class MultipleSelect extends Component {
         this.setState({ show: true });
     }
 
-    handleSearchWB(searchString) {
-        let wbGenes = this.props.searchWBFunc(searchString);
-        if (wbGenes !== undefined) {
+    setAvailableItems(wbItems) {
+        if (wbItems !== undefined) {
             this.setState({
-                availableItems: wbGenes
+                availableItems: new Set(wbItems.split("\n").filter((item) => item !== ''))
             });
         } else {
             this.setState({
@@ -201,11 +202,11 @@ class MultipleSelect extends Component {
                                     <input className="form-control"
                                            placeholder={"Search WormBase " + this.state.itemsNamePlural + " list"}
                                            ref={instance => { this.searchInput = instance; }}
-                                           onKeyPress={(e) => {if (e.key === 'Enter') {this.handleSearchWB(this.searchInput.value)}}}
+                                           onKeyPress={(e) => {if (e.key === 'Enter') {this.props.searchWBFunc(this.searchInput.value)}}}
                                     />
                                 </div>
                                 <div className="col-sm-2">
-                                    <Button onClick={() => this.handleSearchWB(this.searchInput.value)} bsStyle="info">
+                                    <Button onClick={() => this.props.searchWBFunc(this.searchInput.value)} bsStyle="info">
                                         <Glyphicon glyph="search"/></Button>
                                 </div>
 

@@ -16,7 +16,9 @@ class Overview extends React.Component {
             selectedSpecies: props["selectedSpecies"],
             cb_gmcorr: props["geneModCorr"],
             cb_gmcorr_details: props["geneModCorrDetails"],
-            show_fetch_data_error: false
+            show_fetch_data_error: false,
+            geneSelect: undefined,
+            speciesSelect: undefined
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -81,6 +83,8 @@ class Overview extends React.Component {
             }).then(data => {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
+            } else {
+                this.geneSelect.setAvailableItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
@@ -97,6 +101,8 @@ class Overview extends React.Component {
             }).then(data => {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
+            } else {
+                this.speciesSelect.setAvailableItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }

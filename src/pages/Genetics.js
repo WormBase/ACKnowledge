@@ -12,7 +12,9 @@ class Genetics extends React.Component {
         this.state = {
             selectedAlleles: props["selectedAlleles"],
             selectedStrains: props["selectedStrains"],
-            cb_allele: props["alleleSeqChange"]
+            cb_allele: props["alleleSeqChange"],
+            alleleSelect: undefined,
+            strainSelect: undefined
         };
 
         this.check_cb_allele = this.check_cb_allele.bind(this);
@@ -54,6 +56,8 @@ class Genetics extends React.Component {
             }).then(data => {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
+            } else {
+                this.alleleSelect.setAvailableItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
@@ -70,6 +74,8 @@ class Genetics extends React.Component {
             }).then(data => {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
+            } else {
+                this.strainSelect.setAvailableItems(data);
             }
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
