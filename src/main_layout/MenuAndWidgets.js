@@ -13,6 +13,7 @@ import Glyphicon from "react-bootstrap/es/Glyphicon";
 import ContactInfo from "../pages/ContactInfo";
 import queryString from 'query-string';
 import Title from "./Title";
+import Disease from "../pages/Disease";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -38,22 +39,25 @@ class MenuAndWidgets extends React.Component {
             case "/reagent":
                 currSelectedMenu = 3;
                 break;
-            case "/other":
+            case "/disease":
                 currSelectedMenu = 7;
                 break;
-            case "/contact_info":
+            case "/other":
                 currSelectedMenu = 8;
+                break;
+            case "/contact_info":
+                currSelectedMenu = 9;
                 break;
             default:
                 currSelectedMenu = 1;
         }
         let parameters = queryString.parse(this.props.location.search);
         this.state = {
-            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "other",
+            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "disease", "other",
                 "contact_info"],
             selectedMenu: currSelectedMenu,
             completedSections: {"overview": false, "expression": false, "genetics": false, "interactions": false,
-                "phenotypes": false, "reagent": false, "other": false, "contact_info": false},
+                "phenotypes": false, "reagent": false, "disease": false, "other": false, "contact_info": false},
             showPopup: true,
             paper_id: parameters.paper,
             passwd: parameters.passwd,
@@ -99,7 +103,11 @@ class MenuAndWidgets extends React.Component {
             svmProteinDetails: "",
             chemical:false,
             env: false,
-            other: ""
+            other: "",
+            orthologDis: false,
+            transgenicDis: false,
+            modifiersDis: false,
+            disComments: ""
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
@@ -138,6 +146,10 @@ class MenuAndWidgets extends React.Component {
         this.rnaSeqDetailsModifiedCallback= this.rnaSeqDetailsModifiedCallback.bind(this);
         this.additionalExprModifiedCallback = this.additionalExprModifiedCallback.bind(this);
         this.otherModifiedCallback = this.otherModifiedCallback.bind(this);
+        this.orthologsModifiedCallback = this.orthologsModifiedCallback.bind(this);
+        this.transgenicModifiedCallback = this.transgenicModifiedCallback.bind(this);
+        this.modifiersModifiedCallback = this.modifiersModifiedCallback.bind(this);
+        this.disCommentsModifiedCallback = this.disCommentsModifiedCallback.bind(this);
     }
 
     static split_tfp_entities(entities_string, prefix) {
@@ -243,7 +255,8 @@ class MenuAndWidgets extends React.Component {
             }
             let anatomicExpr = false;
             let anatomicExprDetails = "";
-            if (data.anatomicexpr.afp !== undefined && data.anatomicexpr.afp !== "no") {
+            if (data.anatomicexpr.afp !== undefined && data.anatomicexpr.afp !== null && data.anatomicexpr.afp !==
+                "no") {
                 anatomicExpr = true;
                 anatomicExprDetails = data.anatomicexpr.afp;
             }
@@ -343,10 +356,10 @@ class MenuAndWidgets extends React.Component {
             }
             let svmProtein = false;
             let svmProteinDetails = "";
-            if (data.catalyticact.afp !== undefined && data.catalyticact.afp !== "" && data.catalyticact.afp !== null) {
+            if (data.catalyticact !== undefined && data.catalyticact.afp !== undefined && data.catalyticact.afp !== "" && data.catalyticact.afp !== null) {
                 svmProtein = true;
                 svmProteinDetails = data.catalyticact.afp;
-            } else if (data.catalyticact.svm !== undefined && (data.catalyticact.svm === "high" ||
+            } else if (data.catalyticact !== undefined && data.catalyticact.svm !== undefined && (data.catalyticact.svm === "high" ||
                 data.catalyticact.svm === "medium")) {
                 svmProtein = true;
             }
@@ -646,6 +659,31 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
+    orthologsModifiedCallback(value) {
+        this.setState({
+           orthologsDis: value
+        });
+    }
+
+    transgenicModifiedCallback(value) {
+        this.setState({
+            transgenicDis: value
+        });
+    }
+
+    modifiersModifiedCallback(value) {
+        this.setState({
+            modifiersDis: value
+        });
+    }
+
+    disCommentsModifiedCallback(value) {
+        this.setState({
+            disComments: value
+        });
+    }
+
+
     render() {
         let overviewOk = false;
         if (this.state.completedSections["overview"]) {
@@ -670,6 +708,10 @@ class MenuAndWidgets extends React.Component {
         let reagentOk = false;
         if (this.state.completedSections["reagent"]) {
             reagentOk = <Glyphicon glyph="ok"/>;
+        }
+        let diseaseOk = false;
+        if (this.state.completedSections["disease"]) {
+            diseaseOk = <Glyphicon glyph="ok"/>;
         }
         let otherOk = false;
         if (this.state.completedSections["other"]) {
@@ -719,10 +761,13 @@ class MenuAndWidgets extends React.Component {
                                         <IndexLinkContainer to={"phenotypes" + this.props.location.search} active={this.state.selectedMenu === 6}>
                                             <NavItem eventKey={6}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"other" + this.props.location.search} active={this.state.selectedMenu === 7}>
-                                            <NavItem eventKey={7}>Anything else?&nbsp;{otherOk}</NavItem></IndexLinkContainer>
-                                        <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 8}>
-                                            <NavItem eventKey={8}>Update contact info&nbsp;{contact_infoOk}</NavItem>
+                                        <IndexLinkContainer to={"disease" + this.props.location.search} active={this.state.selectedMenu === 7}>
+                                            <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
+                                        </IndexLinkContainer>
+                                        <IndexLinkContainer to={"other" + this.props.location.search} active={this.state.selectedMenu === 8}>
+                                            <NavItem eventKey={8}>Anything else?&nbsp;{otherOk}</NavItem></IndexLinkContainer>
+                                        <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 9}>
+                                            <NavItem eventKey={9}>Update contact info&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
                                     </Nav>
                                 </div>
@@ -833,6 +878,19 @@ class MenuAndWidgets extends React.Component {
                                                cb_env={this.state.env}
                                                envChanged={this.envChangedCallback}
                                                ref={instance => { this.phenotype = instance; }}
+                                           />}
+                                    />
+                                    <Route path="/disease"
+                                           render={() => <Disease callback={this.handleFinishedSection}
+                                                                  saved={this.state.completedSections["disease"]}
+                                                                  orthologs={this.state.orthologsDis}
+                                                                  orthologsCallback={this.orthologsModifiedCallback}
+                                                                  transgenic={this.state.transgenicDis}
+                                                                  transgenicCallback={this.transgenicModifiedCallback}
+                                                                  modifiers={this.state.modifiersDis}
+                                                                  modifiersCallback={this.modifiersModifiedCallback}
+                                                                  comments={this.state.disComments}
+                                                                  commentsCallback={this.disCommentsModifiedCallback}
                                            />}
                                     />
                                     <Route path="/other"

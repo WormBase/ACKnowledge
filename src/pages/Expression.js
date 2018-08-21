@@ -236,7 +236,8 @@ class Expression extends React.Component {
                     <Panel.Body>
                         <p>
                             WormBase regularly imports microarray data from Gene Expression Omnibus. Please submit your
-                            microarray data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html">GEO</a>
+                            microarray data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
+                                                  target={"_blank"}>GEO</a>
                         </p>
                     </Panel.Body>
                 </Panel>
