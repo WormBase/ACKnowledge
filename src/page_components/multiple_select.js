@@ -17,7 +17,8 @@ class MultipleSelect extends Component {
             tmpDeselectedItems: new Set(),
             tmpSelectedItems: new Set(),
             show_fetch_data_error: false,
-            showMore: false
+            showMore: false,
+            sampleQuery: props["sampleQuery"]
         };
 
         this.handleShow = this.handleShow.bind(this);
@@ -125,7 +126,8 @@ class MultipleSelect extends Component {
             });
         } else {
             this.setState({
-                show_fetch_data_error: true
+                availableItems: new Set(),
+                showMore: false
             });
         }
     }
@@ -168,7 +170,7 @@ class MultipleSelect extends Component {
                                      onChange={this.handleChangeIdentifiedListSelection}
                                      defaultValue=""
                                      style={{height: '200px'}}>
-                            {[...this.state.selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
+                            {[...this.state.selectedItemsToDisplay].map(item => <option>{item}</option>)}
                         </FormControl>
                     </div>
                     <div className="col-sm-5">
@@ -221,18 +223,13 @@ class MultipleSelect extends Component {
                         {data_fetch_err_alert}
                         <div className="container-fluid">
                             <div className="row">
-                                <div className="col-sm-10">
+                                <div className="col-sm-12">
                                     <input className="form-control"
-                                           placeholder={"Search WormBase " + this.state.itemsNamePlural + " list"}
+                                           placeholder={this.state.sampleQuery}
                                            ref={instance => { this.searchInput = instance; }}
-                                           onKeyPress={(e) => {if (e.key === 'Enter') {this.props.searchWBFunc(this.searchInput.value)}}}
+                                           onChange={(e) => {this.props.searchWBFunc(e.target.value)}}
                                     />
                                 </div>
-                                <div className="col-sm-2">
-                                    <Button onClick={() => this.props.searchWBFunc(this.searchInput.value)} bsStyle="info">
-                                        <Glyphicon glyph="search"/></Button>
-                                </div>
-
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
@@ -246,7 +243,7 @@ class MultipleSelect extends Component {
                                                  defaultValue=""
                                                  onChange={this.handleChangeWBListSelection}
                                                  onDoubleClick={this.handleAddSelectedToList}>
-                                        {[...this.state.availableItems].sort().map(item =>
+                                        {[...this.state.availableItems].map(item =>
                                             <option>{item}</option>)}
                                     </FormControl>
                                 </div>

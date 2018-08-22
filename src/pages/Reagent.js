@@ -118,6 +118,7 @@ class Reagent extends React.Component {
                                 ref={instance => { this.transgeneSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedTransgenesCallback}
                                 searchWBFunc={this.searchWBTransgenes}
+                                sampleQuery={"e.g. ctIs40"}
                             />
                         </Panel.Body>
                     </Panel>

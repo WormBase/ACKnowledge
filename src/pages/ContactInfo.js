@@ -29,7 +29,10 @@ class Other extends React.Component {
                                 <br/>
                                 <div className="row">
                                     <div className="col-sm-5">
-                                        <Button bsStyle="info">Update contact info and lineage</Button>
+                                        <Button bsStyle="info"
+                                                href={"http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/person_lineage.cgi?action=Display&number"}
+                                                target={"_blank"}>
+                                            Update contact info and lineage</Button>
                                     </div>
                                 </div>
                             </div>

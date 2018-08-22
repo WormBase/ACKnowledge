@@ -115,6 +115,7 @@ class Genetics extends React.Component {
                                 ref={instance => { this.alleleSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedAllelesCallback}
                                 searchWBFunc={this.searchWBAlleles}
+                                sampleQuery={"e.g. e1000"}
                             />
                         </Panel.Body>
                     </Panel>
@@ -154,6 +155,7 @@ class Genetics extends React.Component {
                                 ref={instance => { this.strainSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedStrainsCallback}
                                 searchWBFunc={this.searchWBStrains}
+                                sampleQuery={"e.g. CB4856"}
                             />
                         </Panel.Body>
                     </Panel>

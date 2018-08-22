@@ -143,6 +143,7 @@ class Overview extends React.Component {
                                 ref={instance => { this.geneSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedGenesCallback}
                                 searchWBFunc={this.searchWBGenes}
+                                sampleQuery={"e.g. dbl-1"}
                             />
                         </Panel.Body>
                     </Panel>
@@ -174,7 +175,9 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info" onClick={this.check_genemodel_cb}>
+                                        <Button bsStyle="info" onClick={this.check_genemodel_cb}
+                                                href={"http://www.wormbase.org/submissions/gene_name.cgi"}
+                                                target="_blank">
                                             Request New Gene Name/Report Gene-Sequence
                                         </Button>
                                     </div>
@@ -196,6 +199,7 @@ class Overview extends React.Component {
                                 ref={instance => { this.speciesSelect = instance; }}
                                 selectedItemsCallback={this.props.selectedSpeciesCallback}
                                 searchWBFunc={this.searchWBSpecies}
+                                sampleQuery={"e.g. "}
                             />
                         </Panel.Body>
                     </Panel>

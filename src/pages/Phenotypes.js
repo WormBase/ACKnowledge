@@ -124,7 +124,8 @@ class Phenotypes extends React.Component {
                                               onClick={this.toggle_cb_allele}><strong>Allele Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_allele}>
+                                    <Button bsStyle="info" onClick={this.check_cb_allele}
+                                            href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
                                 </div>
@@ -135,7 +136,8 @@ class Phenotypes extends React.Component {
                                               onClick={this.toggle_cb_rnai}><strong>RNAi Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_rnai}>
+                                    <Button bsStyle="info" onClick={this.check_cb_rnai}
+                                            href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
                                 </div>
@@ -146,7 +148,8 @@ class Phenotypes extends React.Component {
                                               onClick={this.toggle_cb_transgene}><strong>Transgene Overexpression Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_transgene}>
+                                    <Button bsStyle="info" onClick={this.check_cb_transgene}
+                                            href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
                                 </div>
