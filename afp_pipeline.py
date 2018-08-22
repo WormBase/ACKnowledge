@@ -73,6 +73,9 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
+    #TODO remove this line
+    curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
+                                                  "00053739", "00054192"]
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext from Textpresso")
     fulltexts_dict = {}
@@ -143,7 +146,7 @@ def main():
         write_extracted_entities_in_paper(cur, paper_id, list(gene_ids_in_documents[paper_id]), "tfp_genestudied")
         write_extracted_entities_in_paper(cur, paper_id, list(allele_ids_in_documents[paper_id]), "tfp_variation")
         write_extracted_entities_in_paper(cur, paper_id, list(set(species_in_papers_dict[paper_id])), "tfp_species")
-        write_extracted_entities_in_paper(cur, paper_id, strains_in_papers_dict[paper_id], "tfp_strain")
+        write_extracted_entities_in_paper(cur, paper_id, list(set(strains_in_papers_dict[paper_id])), "tfp_strain")
         write_extracted_entities_in_paper(cur, paper_id, list(transgene_ids_in_documents[paper_id]),
                                           "tfp_transgene")
         papers_passwd[paper_id] = time.time()
@@ -157,8 +160,6 @@ def main():
             url = "http://textpressocentral.org:5000?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal)
-            req = urllib.request.Request("http://tinyurl.com/api-create.php?url=" + url)
-            res = urllib.request.urlopen(req)
             send_email(paper_id, paper_title, paper_journal, url, ["valerio.arnaboldi@gmail.com"])
             write_email(cur, paper_id, ["valerio.arnaboldi@gmail.com"])
             #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])

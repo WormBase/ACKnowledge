@@ -188,12 +188,12 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id):
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id):
     fulltext_copy = fulltext.lower()
     for species_id, regex_list in SPECIES_REGEX_DICT.items():
-        regex_list_mod = [regex_list[0], regex_list[0][0] + ". " + " ".join(regex_list[0].split(" ")[1:])]
+        regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
         if regex_list[1]:
             regex_list_mod.extend(regex_list[1].split(", "))
         for regex_text in regex_list_mod:
             if re.match(re.compile(".*" + regex_text.lower() + ".*"), fulltext_copy):
-                papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1])
+                papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1].replace("\\", ""))
                 fulltext_copy = re.sub(re.compile(regex_text), "", fulltext_copy)
 
 
