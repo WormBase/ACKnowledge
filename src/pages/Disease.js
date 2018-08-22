@@ -17,43 +17,28 @@ class Disease extends React.Component {
             cb_modifiers: props["modifiers"],
             comments: props["comments"]
         };
-
-        this.check_cb_orthologs = this.check_cb_orthologs.bind(this);
-        this.check_cb_transgenic = this.check_cb_transgenic.bind(this);
-        this.check_cb_modifiers = this.check_cb_modifiers.bind(this);
-    }
-
-    check_cb_orthologs() {
-        this.setState({cb_orthologs: true});
-        this.props.orthologsExprCallback(true);
+        
+        this.toggle_cb_orthologs = this.toggle_cb_orthologs.bind(this);
+        this.toggle_cb_transgenic = this.toggle_cb_transgenic.bind(this);
+        this.toggle_cb_modifiers = this.toggle_cb_modifiers.bind(this);
     }
 
     toggle_cb_orthologs() {
         let newVal = !this.state.cb_orthologs;
         this.setState({cb_orthologs: newVal});
-        this.props.orthologsExprCallback(newVal);
-    }
-
-    check_cb_transgenic() {
-        this.setState({cb_transgenic: true});
-        this.props.transgenicExprCallback(true);
+        this.props.orthologsCallback(newVal);
     }
 
     toggle_cb_transgenic() {
         let newVal = !this.state.cb_transgenic;
         this.setState({cb_transgenic: newVal});
-        this.props.transgenicExprCallback(newVal);
-    }
-
-    check_cb_modifiers() {
-        this.setState({cb_modifiers: true});
-        this.props.modifiersExprCallback(true);
+        this.props.transgenicCallback(newVal);
     }
 
     toggle_cb_modifiers() {
         let newVal = !this.state.cb_modifiers;
         this.setState({cb_modifiers: newVal});
-        this.props.modifiersExprCallback(newVal);
+        this.props.modifiersCallback(newVal);
     }
 
     render() {
@@ -70,15 +55,14 @@ class Disease extends React.Component {
 
         return (
             <div>
-                <AlertDismissable title="" text="Here you can find disease data that have
-                been identified in your paper. If this paper reports a disease model, please choose one or more that it
+                <AlertDismissable title="" text="If this paper reports a disease model, please choose one or more that it
                 describes." bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
                 time." bsStyle="success" show={this.props.saved}/>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Disease data in the paper</Panel.Title>
+                        <Panel.Title componentClass="h3">Disease model data in the paper</Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
