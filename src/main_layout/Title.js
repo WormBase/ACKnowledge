@@ -8,6 +8,11 @@ class Title extends React.Component {
         };
     }
 
+    static removePdfTags(string) {
+        let regex = /(<([^>]+)>)/ig;
+        return string.replace(regex, "")
+    }
+
     render() {
         return (
             <div className="container">
@@ -18,7 +23,7 @@ class Title extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <h4 className="text-left">{this.state.title}</h4>
+                        <h4 className="text-left">{Title.removePdfTags(this.state.title)}</h4>
                     </div>
                 </div>
             </div>
