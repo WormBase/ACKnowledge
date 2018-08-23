@@ -72,39 +72,47 @@ class Overview extends React.Component {
     }
 
     searchWBGenes(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=gene&userValue=' +
-            searchString)
-            .then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=gene&userValue=' +
+                searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
+                } else {
+                    this.geneSelect.setAvailableItems(data);
                 }
-            }).then(data => {
-            if (data === undefined) {
-                this.setState({show_fetch_data_error: true})
-            } else {
-                this.geneSelect.setAvailableItems(data);
-            }
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.geneSelect.setAvailableItems("");
+        }
     }
 
     searchWBSpecies(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=species&userValue=' +
-            searchString)
-            .then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=species&userValue=' +
+                searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
+                } else {
+                    this.speciesSelect.setAvailableItems(data);
                 }
-            }).then(data => {
-            if (data === undefined) {
-                this.setState({show_fetch_data_error: true})
-            } else {
-                this.speciesSelect.setAvailableItems(data);
-            }
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.speciesSelect.setAvailableItems("");
+        }
     }
 
     render() {

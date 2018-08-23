@@ -64,21 +64,25 @@ class Reagent extends React.Component {
     }
 
     searchWBTransgenes(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgene&userValue=' +
-            searchString)
-            .then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgene&userValue=' +
+                searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
+                } else {
+                    this.transgeneSelect.setAvailableItems(data);
                 }
-            }).then(data => {
-            if (data === undefined) {
-                this.setState({show_fetch_data_error: true})
-            } else {
-                this.transgeneSelect.setAvailableItems(data);
-            }
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.transgeneSelect.setAvailableItems("");
+        }
     }
 
     render() {

@@ -17,7 +17,7 @@ class Disease extends React.Component {
             cb_modifiers: props["modifiers"],
             comments: props["comments"]
         };
-        
+
         this.toggle_cb_orthologs = this.toggle_cb_orthologs.bind(this);
         this.toggle_cb_transgenic = this.toggle_cb_transgenic.bind(this);
         this.toggle_cb_modifiers = this.toggle_cb_modifiers.bind(this);

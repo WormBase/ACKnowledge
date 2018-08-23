@@ -45,39 +45,47 @@ class Genetics extends React.Component {
     setAlleleSeqChange(){}
 
     searchWBAlleles(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=variation&userValue=' +
-            searchString)
-            .then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=variation&userValue=' +
+                searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
+                } else {
+                    this.alleleSelect.setAvailableItems(data);
                 }
-            }).then(data => {
-            if (data === undefined) {
-                this.setState({show_fetch_data_error: true})
-            } else {
-                this.alleleSelect.setAvailableItems(data);
-            }
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.alleleSelect.setAvailableItems("");
+        }
     }
 
     searchWBStrains(searchString) {
-        fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strain&userValue=' +
-            searchString)
-            .then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strain&userValue=' +
+                searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
+                } else {
+                    this.strainSelect.setAvailableItems(data);
                 }
-            }).then(data => {
-            if (data === undefined) {
-                this.setState({show_fetch_data_error: true})
-            } else {
-                this.strainSelect.setAvailableItems(data);
-            }
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.strainSelect.setAvailableItems("");
+        }
     }
 
     render() {
