@@ -21,8 +21,8 @@ TPC_PAPERS_PER_QUERY = 10
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
-    parser.add_argument("-t", "--textpresso-token", metavar="Textpresso API token", dest="textpresso_token",
-                        type=str, default="config.yml", help="configuration file. Default ./config.yaml")
+    parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-t", "--textpresso-token", metavar="Textpresso API token", dest="textpresso_token", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -76,6 +76,7 @@ def main():
     #TODO remove this line
     curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
                                                   "00053739", "00054192"]
+
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext from Textpresso")
     fulltexts_dict = {}
@@ -107,48 +108,71 @@ def main():
         fulltexts_dict = {key: fulltexts_dict[key] for key in list(fulltexts_dict)[0:args.num_papers]}
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
-    paper_ids = ["WBPaper" + paper_id for paper_id in list(fulltexts_dict.keys())]
-    logger.info("Getting list of genes for the selected papers from Textpresso")
-    genes_in_documents = get_category_keywords_in_documents(args.textpresso_token, paper_ids,
-                                                            "Gene (C. elegans) (tpgce:0000001)")
-    logger.info("Transforming gene keywords into gene ids")
-    gene_symbol_id_map = get_gene_name_id_map(cur)
-    gene_ids_in_documents = {paper_id: set([gene_symbol_id_map[gene_word] + ";%;" + gene_word for gene_word in
-                                            genes_list if gene_word in gene_symbol_id_map]) for
-                             paper_id, genes_list in genes_in_documents.items()}
-    logger.info("Getting list of alleles for the selected papers from Textpresso")
-    alleles_in_documents = get_category_keywords_in_documents(args.textpresso_token, paper_ids,
-                                                              "allele (C. elegans) (tpalce:0000001)")
-    logger.info("Transforming allele keywords into allele ids")
-    allele_symbol_id_map = get_allele_name_id_map(cur)
-    allele_ids_in_documents = {paper_id: set([allele_symbol_id_map[allele_word] + ";%;" + allele_word for
-                                              allele_word in allele_list if allele_word in allele_symbol_id_map])
-                               for paper_id, allele_list in alleles_in_documents.items()}
+    logger.info("Getting the list of entities from DB")
+    genes_vocabulary = set(get_all_genes(cur))
+    proteins_vocabulary = set([gene.upper() for gene in genes_vocabulary])
+    protein_gene_map = {gene.upper(): gene for gene in genes_vocabulary}
+    alleles_vocabulary = set(get_all_alleles(cur))
     strains_vocabulary = set(get_all_strains(cur))
     transgene_vocabulary = set(get_all_transgenes(cur))
+    genes_in_papers_dict = defaultdict(list)
+    proteins_in_papers_dict = defaultdict(list)
+    alleles_in_papers_dict = defaultdict(list)
     strains_in_papers_dict = defaultdict(list)
     transgenes_in_papers_dict = defaultdict(list)
     species_in_papers_dict = defaultdict(list)
     papers_passwd = {}
-    for paper_id, fulltext in fulltexts_dict.items():
-        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id)
-        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id)
-        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id)
-    logger.info("Transforming transgene keywords into transgene ids")
+
+    gene_symbol_id_map = get_gene_name_id_map(cur)
+    allele_symbol_id_map = get_allele_name_id_map(cur)
     transgene_symbol_id_map = get_transgene_name_id_map(cur)
+    cur.close()
+    conn.close()
+
+    for paper_id, fulltext in fulltexts_dict.items():
+        logger.info("Processing paper " + paper_id)
+        logger.info("Getting list of genes through string matching")
+        get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2)
+        logger.info("Getting list of proteins to genes through string matching")
+        get_matches_in_fulltext(fulltext, proteins_vocabulary, proteins_in_papers_dict, paper_id, 2)
+        logger.info("Getting list of alleles through string matching")
+        get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
+        logger.info("Getting list of strains through string matching")
+        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 2)
+        logger.info("Getting list of transgenes through string matching")
+        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 2)
+        logger.info("Getting list of species through string matching")
+        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id)
+    logger.info("Transforming gene keywords into gene ids")
+    for paper_id, proteins_list in proteins_in_papers_dict.items():
+        genes_in_papers_dict[paper_id].extend([protein_gene_map[protein] for protein in proteins_list])
+    gene_ids_in_documents = {paper_id: set([gene_symbol_id_map[gene_word] + ";%;" + gene_word for gene_word in
+                                            genes_list if gene_word in gene_symbol_id_map]) for
+                             paper_id, genes_list in genes_in_papers_dict.items()}
+    logger.info("Transforming allele keywords into allele ids")
+    allele_ids_in_documents = {paper_id: set([allele_symbol_id_map[allele_word] + ";%;" + allele_word for
+                                              allele_word in allele_list if allele_word in allele_symbol_id_map])
+                               for paper_id, allele_list in alleles_in_papers_dict.items()}
+    logger.info("Transforming transgene keywords into transgene ids")
     transgene_ids_in_documents = {paper_id: set([transgene_symbol_id_map[transgene_word] + ";%;" + transgene_word
                                                  for transgene_word in transgenes_in_papers_dict[paper_id] if
                                                  transgene_word in transgene_symbol_id_map]) for paper_id in
                                   list(fulltexts_dict.keys())}
 
     # 8. Write values extracted through tpc to DB and notify
+    conn = psycopg2.connect("dbname='testdb' user='valerio' password='asdf1234' host='131.215.52.92'")
+    cur = conn.cursor()
     for paper_id in list(fulltexts_dict.keys()):
-        write_extracted_entities_in_paper(cur, paper_id, list(gene_ids_in_documents[paper_id]), "tfp_genestudied")
-        write_extracted_entities_in_paper(cur, paper_id, list(allele_ids_in_documents[paper_id]), "tfp_variation")
-        write_extracted_entities_in_paper(cur, paper_id, list(set(species_in_papers_dict[paper_id])), "tfp_species")
-        write_extracted_entities_in_paper(cur, paper_id, list(set(strains_in_papers_dict[paper_id])), "tfp_strain")
-        write_extracted_entities_in_paper(cur, paper_id, list(transgene_ids_in_documents[paper_id]),
-                                          "tfp_transgene")
+        write_extracted_entities_in_paper(cur, paper_id, list(gene_ids_in_documents[paper_id])
+                                          if paper_id in gene_ids_in_documents else [], "tfp_genestudied")
+        write_extracted_entities_in_paper(cur, paper_id, list(allele_ids_in_documents[paper_id])
+                                          if paper_id in allele_ids_in_documents else [], "tfp_variation")
+        write_extracted_entities_in_paper(cur, paper_id, list(set(species_in_papers_dict[paper_id]))
+                                          if paper_id in species_in_papers_dict else [], "tfp_species")
+        write_extracted_entities_in_paper(cur, paper_id, list(set(strains_in_papers_dict[paper_id]))
+                                          if paper_id in strains_in_papers_dict else [], "tfp_strain")
+        write_extracted_entities_in_paper(cur, paper_id, list(transgene_ids_in_documents[paper_id])
+                                          if paper_id in transgene_ids_in_documents else [], "tfp_transgene")
         papers_passwd[paper_id] = time.time()
         write_passwd(cur, paper_id, papers_passwd[paper_id])
         paper_title = get_paper_title(cur, paper_id)
@@ -160,7 +184,7 @@ def main():
             url = "http://textpressocentral.org:5000?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal)
-            send_email(paper_id, paper_title, paper_journal, url, ["valerio.arnaboldi@gmail.com"])
+            send_email(paper_id, paper_title, paper_journal, url, ["valerio.arnaboldi@gmail.com"], args.email_passwd)
             write_email(cur, paper_id, ["valerio.arnaboldi@gmail.com"])
             #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])
             #write_email(cur, paper_id, email_addr_in_papers_dict[paper_id])

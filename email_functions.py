@@ -5,7 +5,7 @@ from email.message import EmailMessage
 from typing import List
 
 
-def send_email(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
+def send_email(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], email_passwd):
     email_content = """Dear Author,
   
 We have identified you as the corresponding author for the recently published paper:
@@ -35,12 +35,11 @@ WormBase""".format(paper_title, paper_journal, afp_link)
     msg = EmailMessage()
     msg.set_content(email_content)
     msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
-    msg['From'] = "Valerio Arnaboldi<valerio.arnaboldi@gmail.com>"
-    #msg['To'] = ", ".join(recipients)
-    msg['To'] = "valerio.arnaboldi@gmail.com"
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
 
-    gmail_user = "valerio.arnaboldi@gmail.com"
-    gmail_password = ".Man1984gusta#"
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
     logger = logging.getLogger("AFP Email module")
     try:
         server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)

@@ -59,6 +59,33 @@ def get_svm_flagged_papers(cur):
     return papers_svm_flags
 
 
+def get_all_genes(cur):
+    genes_names = set()
+    cur.execute("SELECT * FROM gin_locus WHERE joinkey != ''")
+    rows = cur.fetchall()
+    for row in rows:
+        genes_names.add(row[1])
+    cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
+    rows = cur.fetchall()
+    for row in rows:
+        genes_names.add(row[1])
+    cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
+    rows = cur.fetchall()
+    for row in rows:
+        genes_names.add(row[1])
+    cur.execute("SELECT * FROM gin_seqname WHERE joinkey != ''")
+    rows = cur.fetchall()
+    for row in rows:
+        genes_names.add(row[1])
+    return list(genes_names)
+
+
+def get_all_alleles(cur):
+    cur.execute("SELECT * FROM obo_name_variation WHERE joinkey != ''")
+    rows = cur.fetchall()
+    return [row[1] for row in rows]
+
+
 def get_all_strains(cur):
     """
     get the list of all strains from the DB
@@ -142,7 +169,11 @@ def get_paper_title(cur, paper_id):
         str: the title of the paper
     """
     cur.execute("SELECT * FROM pap_title WHERE joinkey = '{}'".format(paper_id))
-    return cur.fetchone()[1]
+    res = cur.fetchone()
+    if res:
+        return res[1]
+    else:
+        return ""
 
 
 def get_paper_journal(cur, paper_id):
@@ -156,7 +187,11 @@ def get_paper_journal(cur, paper_id):
         str: the journal of the paper
     """
     cur.execute("SELECT * FROM pap_journal WHERE joinkey = '{}'".format(paper_id))
-    return cur.fetchone()[1]
+    res = cur.fetchone()
+    if res:
+        return res[1]
+    else:
+        return ""
 
 
 def get_transgene_name_id_map(cur):

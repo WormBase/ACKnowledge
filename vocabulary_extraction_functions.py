@@ -1,4 +1,7 @@
+import logging
 import re
+
+from tqdm import tqdm
 
 SPECIES_REGEX_DICT = {"6277": ["Acanthocheilonema viteae", ""],
                       "470": ["Acinetobacter baumanii", ""],
@@ -26,7 +29,7 @@ SPECIES_REGEX_DICT = {"6277": ["Acanthocheilonema viteae", ""],
                       "6238": ["Caenorhabditis briggsae", ""],
                       "1094321": ["Caenorhabditis doughertyi", ""],
                       "96641": ["Caenorhabditis drosophilae", ""],
-                      "6239": ["Caenorhabditis elegans", "C. elegans (same abbreviated version for all other species)"],
+                      "6239": ["Caenorhabditis elegans", ""],
                       "281687": ["Caenorhabditis japonica", ""],
                       "1611254": ["Caenorhabditis nigoni", ""],
                       "31234": ["Caenorhabditis remanei", ""],
@@ -170,30 +173,37 @@ SPECIES_REGEX_DICT = {"6277": ["Acanthocheilonema viteae", ""],
                       "632": ["Yersinia pestis", ""]}
 
 
-def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id):
+class TqdmHandler(logging.StreamHandler):
+    def __init__(self):
+        logging.StreamHandler.__init__(self)
+
+    def emit(self, record):
+        msg = self.format(record)
+        tqdm.write(msg)
+
+
+def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences):
+    logger = logging.getLogger("AFP vocabulary extraction")
+    logger.addHandler(TqdmHandler)
     fulltext_copy = fulltext_str
-    for keyword in keywords:
-        str_to_search = " " + keyword + " "
-        if fulltext_copy.startswith(keyword + " "):
-            papers_map[paper_id].append(keyword)
-            fulltext_copy = fulltext_copy[len(keyword) + 1:]
-        elif fulltext_copy.endswith(" " + keyword):
-            papers_map[paper_id].append(keyword)
-            fulltext_copy = fulltext_copy[:-(len(keyword) + 1)]
-        elif str_to_search in fulltext_copy:
-            papers_map[paper_id].append(keyword)
-            fulltext_copy = fulltext_copy.replace(str_to_search, " ")
+    for keyword in tqdm(keywords):
+        try:
+            regx = re.compile("[\\.\\n\\t\\'\\/\\(\\[\\{:;\\,\\!\\?> ]" + keyword +
+                              "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ]")
+            matches = re.findall(regx, fulltext_copy)
+            if len(matches) >= min_num_occurrences:
+                papers_map[paper_id].append(keyword)
+        except:
+            pass
 
 
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id):
-    fulltext_copy = fulltext.lower()
     for species_id, regex_list in SPECIES_REGEX_DICT.items():
         regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
         if regex_list[1]:
             regex_list_mod.extend(regex_list[1].split(", "))
         for regex_text in regex_list_mod:
-            if re.match(re.compile(".*" + regex_text.lower() + ".*"), fulltext_copy):
+            if re.match(re.compile(".*[\\.\\n\\t\\'\\/\\(\\[\\{:;\\,\\!\\?> ]" + regex_text.lower() +
+                                   "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ].*"), fulltext.lower()):
                 papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1].replace("\\", ""))
-                fulltext_copy = re.sub(re.compile(regex_text), "", fulltext_copy)
-
 

@@ -11,10 +11,11 @@ RUN pip3 install -r requirements.txt
 ADD . /usr/src/app
 
 ENV TPC_API_TOKEN=""
+ENV EMAIL_PASSWD=""
 
 ADD crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
 RUN touch /var/log/cron.log
 
-CMD echo $TPC_API_TOKEN > /etc/tpc_api_token && cron /etc/cron.d/afp-cron && tail -f /var/log/cron.log
+CMD echo $TPC_API_TOKEN > /etc/tpc_api_token && echo $EMAIL_PASSWD > /etc/email_passwd /etc/cron.d/afp-cron && tail -f /var/log/cron.log
 #CMD ./afp_pipeline.py -t ${TPC_API_TOKEN} -L INFO -n1
