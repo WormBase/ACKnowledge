@@ -76,6 +76,7 @@ def main():
     #TODO remove this line
     curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
                                                   "00053739", "00054192"]
+    #curatable_papers_not_processed_svm_flagged = ["00053873"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext from Textpresso")
@@ -140,7 +141,7 @@ def main():
         logger.info("Getting list of strains through string matching")
         get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 2)
         logger.info("Getting list of transgenes through string matching")
-        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 2)
+        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
         logger.info("Getting list of species through string matching")
         get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id)
     logger.info("Transforming gene keywords into gene ids")

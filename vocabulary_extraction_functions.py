@@ -188,8 +188,8 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
     fulltext_copy = fulltext_str
     for keyword in tqdm(keywords):
         try:
-            regx = re.compile("[\\.\\n\\t\\'\\/\\(\\[\\{:;\\,\\!\\?> ]" + keyword +
-                              "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ]")
+            regx = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + keyword +
+                              "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
             matches = re.findall(regx, fulltext_copy)
             if len(matches) >= min_num_occurrences:
                 papers_map[paper_id].append(keyword)
