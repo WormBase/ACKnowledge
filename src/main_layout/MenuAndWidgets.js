@@ -209,6 +209,9 @@ class MenuAndWidgets extends React.Component {
             if (data.alleleseqchange.afp !== undefined && data.alleleseqchange.afp !== null &&
                 data.alleleseqchange.afp !== "no") {
                 alleleSeqChange = true;
+            } else if (data.seqchange.svm !== undefined && (data.seqchange.svm === "high" ||
+                data.seqchange.svm === "medium")) {
+                alleleSeqChange = true;
             }
             let selectedStrains = new Set();
             if (data.strain.afp !== undefined && data.strain.afp !== "" && data.strain.afp !== null) {
@@ -259,6 +262,9 @@ class MenuAndWidgets extends React.Component {
                 "no") {
                 anatomicExpr = true;
                 anatomicExprDetails = data.anatomicexpr.afp;
+            } else if (data.otherexpr.svm !== undefined && (data.otherexpr.svm === "high" ||
+                data.otherexpr.svm === "medium")) {
+                anatomicExpr = true;
             }
             let siteAction = false;
             let siteActionDetails = "";
@@ -359,9 +365,6 @@ class MenuAndWidgets extends React.Component {
             if (data.catalyticact !== undefined && data.catalyticact.afp !== undefined && data.catalyticact.afp !== "" && data.catalyticact.afp !== null) {
                 svmProtein = true;
                 svmProteinDetails = data.catalyticact.afp;
-            } else if (data.catalyticact !== undefined && data.catalyticact.svm !== undefined && (data.catalyticact.svm === "high" ||
-                data.catalyticact.svm === "medium")) {
-                svmProtein = true;
             }
             let chemical = false;
             if (data.chemicals.afp !== undefined && data.chemicals.afp !== "" && data.chemicals.afp !== null) {
@@ -553,7 +556,7 @@ class MenuAndWidgets extends React.Component {
 
     geneModCorrModifiedCallback(value) {
         this.setState({
-           geneModCorrection: value
+            geneModCorrection: value
         });
     }
 
@@ -655,13 +658,13 @@ class MenuAndWidgets extends React.Component {
 
     otherModifiedCallback(other) {
         this.setState({
-           other: other
+            other: other
         });
     }
 
     orthologsModifiedCallback(value) {
         this.setState({
-           orthologsDis: value
+            orthologsDis: value
         });
     }
 

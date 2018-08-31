@@ -20,6 +20,7 @@ class MultipleSelect extends Component {
             showMore: false,
             sampleQuery: props["sampleQuery"]
         };
+        // TODO sort main window!
 
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -170,7 +171,7 @@ class MultipleSelect extends Component {
                                      onChange={this.handleChangeIdentifiedListSelection}
                                      defaultValue=""
                                      style={{height: '200px'}}>
-                            {[...this.state.selectedItemsToDisplay].map(item => <option>{item}</option>)}
+                            {[...this.state.selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
                         </FormControl>
                     </div>
                     <div className="col-sm-5">
