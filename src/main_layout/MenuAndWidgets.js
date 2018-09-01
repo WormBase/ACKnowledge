@@ -367,7 +367,7 @@ class MenuAndWidgets extends React.Component {
                 svmProteinDetails = data.catalyticact.afp;
             }
             let chemical = false;
-            if (data.chemicals.afp !== undefined && data.chemicals.afp !== "" && data.chemicals.afp !== null) {
+            if (data.chemphen.afp !== undefined && data.chemphen.afp !== "" && data.chemphen.afp !== null) {
                 chemical = true;
             }
             let env = false;
