@@ -92,7 +92,6 @@ def main():
             papers_to_process = curatable_papers_not_processed_svm_flagged
             curatable_papers_not_processed_svm_flagged = []
         paper_ids = ["WBPaper" + paper_id for paper_id in papers_to_process]
-        # paper_ids = ["WBPaper00050052", "WBPaper00002892"]
         logger.info("Getting the fulltext of the processed papers from Textpresso API")
         fulltexts_dict.update(get_documents_fulltext(args.textpresso_token, paper_ids))
         logger.info("Extracting email addresses from papers")
@@ -123,6 +122,7 @@ def main():
     transgenes_in_papers_dict = defaultdict(list)
     species_in_papers_dict = defaultdict(list)
     papers_passwd = {}
+    taxon_species_map = get_taxonid_speciesnamearr_map(cur)
 
     gene_symbol_id_map = get_gene_name_id_map(cur)
     allele_symbol_id_map = get_allele_name_id_map(cur)
@@ -139,11 +139,11 @@ def main():
         logger.info("Getting list of alleles through string matching")
         get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
         logger.info("Getting list of strains through string matching")
-        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 2)
+        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 1)
         logger.info("Getting list of transgenes through string matching")
         get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
         logger.info("Getting list of species through string matching")
-        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id)
+        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 3)
     logger.info("Transforming gene keywords into gene ids")
     for paper_id, proteins_list in proteins_in_papers_dict.items():
         genes_in_papers_dict[paper_id].extend([protein_gene_map[protein] for protein in proteins_list])

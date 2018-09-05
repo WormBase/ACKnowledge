@@ -14,6 +14,15 @@ def get_documents_fulltext(api_token: str, paper_ids: List[str]):
     api_endpoint = "https://textpressocentral.org:18080/v1/textpresso/api/search_documents"
     data = json.dumps({"token": api_token, "query": {
         "accession": " ".join(paper_ids),
+        "keyword": "reviewer AND comment",
+        "type": "document", "corpora": ["C. elegans Supplementals"]}, "include_fulltext": True})
+    data = data.encode('utf-8')
+    req = urllib.request.Request(api_endpoint, data, headers={'Content-type': 'application/json',
+                                                              'Accept': 'application/json'})
+    res = urllib.request.urlopen(req)
+    doc_ids_to_exclude = [doc["identifier"] for doc in json.loads(res.read().decode('utf-8'))]
+    data = json.dumps({"token": api_token, "query": {
+        "accession": " ".join(paper_ids),
         "type": "document", "corpora": ["C. elegans", "C. elegans Supplementals"]}, "include_fulltext": True})
     data = data.encode('utf-8')
     req = urllib.request.Request(api_endpoint, data, headers={'Content-type': 'application/json',
@@ -21,7 +30,8 @@ def get_documents_fulltext(api_token: str, paper_ids: List[str]):
     res = urllib.request.urlopen(req)
     fulltexts = defaultdict(str)
     for doc in json.loads(res.read().decode('utf-8')):
-        fulltexts[doc["identifier"].split("/")[1][7:].split(".")[0]] += doc["abstract"] + doc["fulltext"]
+        if doc["identifier"] not in doc_ids_to_exclude:
+            fulltexts[doc["identifier"].split("/")[1][7:].split(".")[0]] += doc["abstract"] + doc["fulltext"]
     return fulltexts
 
 

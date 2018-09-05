@@ -65,10 +65,6 @@ def get_all_genes(cur):
     rows = cur.fetchall()
     for row in rows:
         genes_names.add(row[1])
-    cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
-    rows = cur.fetchall()
-    for row in rows:
-        genes_names.add(row[1])
     cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
     rows = cur.fetchall()
     for row in rows:
@@ -215,6 +211,12 @@ def get_transgene_name_id_map(cur):
     rows = cur.fetchall()
     transgene_name_id_map.update({row[1]: row[0] for row in rows})
     return transgene_name_id_map
+
+
+def get_taxonid_speciesnamearr_map(cur):
+    cur.execute("SELECT * FROM pap_species_index")
+    rows = cur.fetchall()
+    return {row[0]: [row[1]] for row in rows}
 
 
 def write_extracted_entities_in_paper(cur, publication_id, entities_ids: List[str], table_name):
