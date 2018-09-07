@@ -235,9 +235,6 @@ class MenuAndWidgets extends React.Component {
             if (data.antibody.afp !== undefined && data.antibody.afp !== "" && data.antibody.afp !== null) {
                 newAntib = true;
                 newAntibDetails = data.antibody.afp;
-            } else if (data.antibody.svm !== undefined && (data.antibody.svm === "high" ||
-                data.antibody.svm === "medium")) {
-                newAntib = true;
             }
             let otherAntibodies = [
                 {
