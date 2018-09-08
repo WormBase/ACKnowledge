@@ -20,23 +20,13 @@ class Genetics extends React.Component {
             otherStrains: props["otherStrains"],
         };
 
-        this.check_cb_allele = this.check_cb_allele.bind(this);
-        this.toggle_cb_allele = this.toggle_cb_allele.bind(this);
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
         this.searchWBAlleles = this.searchWBAlleles.bind(this);
         this.searchWBStrains = this.searchWBStrains.bind(this);
         this.setOtherAlleles = this.setOtherAlleles.bind(this);
         this.setOtherStrains = this.setOtherStrains.bind(this);
-    }
-
-    check_cb_allele() {
-        this.setState({cb_allele: true});
-        this.props.stateVarModifiedCallback(true, "alleleSeqChange");
-    }
-
-    toggle_cb_allele() {
-        let newVal = !this.state.cb_allele;
-        this.setState({cb_allele: newVal});
-        this.props.stateVarModifiedCallback(newVal, "alleleSeqChange");
+        this.setAlleleSeqChange = this.setAlleleSeqChange.bind(this);
     }
 
     setSelectedAlleles(allelelist) {
@@ -47,8 +37,6 @@ class Genetics extends React.Component {
         this.strainSelect.setSelectedItems(strains);
     }
 
-    setAlleleSeqChange(){}
-
     setOtherAlleles(value) {
         this.setState({
             otherAlleles: value
@@ -58,6 +46,12 @@ class Genetics extends React.Component {
     setOtherStrains(value) {
         this.setState({
             otherStrains: value
+        });
+    }
+
+    setAlleleSeqChange() {
+        this.setState({
+            cb_allele: true
         });
     }
 
@@ -154,12 +148,12 @@ class Genetics extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-7">
                                         <Checkbox checked={this.state.cb_allele}
-                                                  onClick={this.toggle_cb_allele}><strong>Allele sequence change</strong></Checkbox>
+                                                  onClick={() => this.toggle_cb("cb_allele", "alleleSeqChange")}><strong>Allele sequence change</strong></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
                                         <Button bsStyle="info"
                                                 href={"https://wormbase.org/submissions/allele_sequence.cgi"} target="_blank"
-                                                onClick={this.check_cb_allele}>
+                                                onClick={() => this.check_cb("cb_allele", "alleleSeqChange")}>
                                             Add details in online form
                                         </Button>
                                     </div>

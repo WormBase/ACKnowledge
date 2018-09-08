@@ -21,30 +21,11 @@ class Overview extends React.Component {
             speciesSelect: undefined
         };
 
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.check_genemodel_cb = this.check_genemodel_cb.bind(this);
-        this.toggle_cb_gmcorr = this.toggle_cb_gmcorr.bind(this);
         this.searchWBGenes = this.searchWBGenes.bind(this);
         this.searchWBSpecies = this.searchWBSpecies.bind(this);
-    }
-
-    getValidationState() {
-        const length = this.state.value.length;
-        if (length > 10) return 'success';
-        else if (length > 5) return 'warning';
-        else if (length > 0) return 'error';
-        return null;
-    }
-
-    check_genemodel_cb() {
-        this.setState({cb_gmcorr: true});
-        this.props.stateVarModifiedCallback(true, "geneModCorrection");
-    }
-
-    toggle_cb_gmcorr() {
-        let newval = !this.state.cb_gmcorr;
-        this.setState({cb_gmcorr: newval});
-        this.props.stateVarModifiedCallback(newval, "geneModCorrection");
     }
 
     handleChange(e) {
@@ -164,14 +145,14 @@ class Overview extends React.Component {
                             <div className="container-fluid">
                                 <div>
                                     <Checkbox checked={this.state.cb_gmcorr}
-                                              onClick={this.toggle_cb_gmcorr}>
+                                              onClick={() => this.toggle_cb("cb_gmcorr", "geneModCorrection")}>
                                         <strong>Gene model correction/update</strong></Checkbox>
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <FormControl type="text" placeholder="Add details here"
                                                      value={this.state.cb_gmcorr_details}
-                                                     onClick={this.check_genemodel_cb}
+                                                     onClick={() => this.check_cb("cb_gmcorr", "geneModCorrection")}
                                                      onChange={(event) => {
                                                          this.props.stateVarModifiedCallback(event.target.value, "geneModCorrectionDetails");
                                                          this.setGMCorrectionDetails(event.target.value)

@@ -18,40 +18,10 @@ class Disease extends React.Component {
             comments: props["comments"]
         };
 
-        this.toggle_cb_orthologs = this.toggle_cb_orthologs.bind(this);
-        this.toggle_cb_transgenic = this.toggle_cb_transgenic.bind(this);
-        this.toggle_cb_modifiers = this.toggle_cb_modifiers.bind(this);
-    }
-
-    toggle_cb_orthologs() {
-        let newVal = !this.state.cb_orthologs;
-        this.setState({cb_orthologs: newVal});
-        this.props.stateVarModifiedCallback(newVal, "orthologsDis");
-    }
-
-    toggle_cb_transgenic() {
-        let newVal = !this.state.cb_transgenic;
-        this.setState({cb_transgenic: newVal});
-        this.props.stateVarModifiedCallback(newVal, "transgenicDis");
-    }
-
-    toggle_cb_modifiers() {
-        let newVal = !this.state.cb_modifiers;
-        this.setState({cb_modifiers: newVal});
-        this.props.stateVarModifiedCallback(newVal, "modifiersDis");
+        this.toggle_cb = props["toggleCb"].bind(this);
     }
 
     render() {
-        const tooltip = (
-            <Tooltip id="tooltip">
-                go to interaction  section  to flag changes of expression level or localization in mutant background or
-                upon treatment.
-            </Tooltip>
-        );
-        const expressionTooltip = (
-            <Tooltip id="expressionTooltip"> More text
-            </Tooltip>
-        );
 
         return (
             <div>
@@ -66,13 +36,13 @@ class Disease extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.state.cb_orthologs} onClick={this.toggle_cb_orthologs}>
+                            <Checkbox checked={this.state.cb_orthologs} onClick={() => this.toggle_cb("cb_orthologs", "orthologsDis")}>
                                 <strong>Worm ortholog/s of human disease relevant gene</strong>
                             </Checkbox>
-                            <Checkbox checked={this.state.cb_transgenic} onClick={this.toggle_cb_transgenic}>
+                            <Checkbox checked={this.state.cb_transgenic} onClick={() => this.toggle_cb("cb_transgenic", "transgenicDis")}>
                                 <strong>Transgenic studies with either human (or worm) disease relevant gene</strong>
                             </Checkbox>
-                            <Checkbox checked={this.state.cb_modifiers} onClick={this.toggle_cb_modifiers}>
+                            <Checkbox checked={this.state.cb_modifiers} onClick={() => this.toggle_cb("cb_modifiers", "modifiersDis")}>
                                 <strong>Modifiers of a new or previously established disease model (eg., drugs, herbals, chemicals, etc)</strong>
                             </Checkbox>
                         </Form>

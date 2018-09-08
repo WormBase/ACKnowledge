@@ -26,20 +26,9 @@ class Reagent extends React.Component {
             otherTransgenes: props["otherTransgenes"]
         };
 
-        this.check_cb_newantib = this.check_cb_newantib.bind(this);
-        this.toggle_cb_newantib = this.toggle_cb_newantib.bind(this);
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
         this.searchWBTransgenes = this.searchWBTransgenes.bind(this);
-    }
-
-    check_cb_newantib() {
-        this.setState({cb_newantib: true});
-        this.props.stateVarModifiedCallback(true, "newAntib");
-    }
-
-    toggle_cb_newantib() {
-        let newVal = !this.state.cb_newantib;
-        this.setState({cb_newantib: newVal});
-        this.props.stateVarModifiedCallback(newVal, "newAntib");
     }
 
     setSelectedTransgenes(transgenes) {
@@ -161,11 +150,11 @@ class Reagent extends React.Component {
                         <Panel.Body>
                             <Form>
                                 <FormGroup>
-                                    <Checkbox checked={this.state.cb_newantib} onClick={this.toggle_cb_newantib}>
+                                    <Checkbox checked={this.state.cb_newantib} onClick={() => this.toggle_cb("cb_newantib", "newAntib")}>
                                         <strong>Newly generated antibodies</strong>
                                     </Checkbox>
                                     <FormControl type="text" placeholder="Enter antibody name and details here"
-                                                 onClick={this.check_cb_newantib}
+                                                 onClick={() => this.check_cb("cb_newantib", "newAntib")}
                                                  value={this.state.cb_newantib_details}
                                                  onChange={(event) => {this.setNewAntibDetails(event.target.value);
                                                  this.props.stateVarModifiedCallback(event.target.value, "newAntibDetails")}}/>

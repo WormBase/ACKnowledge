@@ -346,15 +346,15 @@ class MenuAndWidgets extends React.Component {
             }
             if (this.interactions !== undefined) {
                 if (svmGeneInt === true) {
-                    this.interactions.check_cb_genetic();
+                    this.interactions.check_cb("cb_genetic", "svmGeneInt");
                     this.interactions.set_cb_genetic_details(svmGeneIntDetails);
                 }
                 if (svmPhysInt === true) {
-                    this.interactions.check_cb_physical();
+                    this.interactions.check_cb("cb_physical", "scmPhysInt");
                     this.interactions.set_cb_physical_details(svmPhysIntDetails);
                 }
                 if (svmGeneReg === true) {
-                    this.interactions.check_cb_regulatory();
+                    this.interactions.check_cb("cb_regulatory", "svmGeneReg");
                     this.interactions.set_cb_regulatory_details(svmGeneRegDetails);
                 }
             }
@@ -394,23 +394,23 @@ class MenuAndWidgets extends React.Component {
             }
             if (this.phenotype !== undefined) {
                 if (svmAllele === true) {
-                    this.phenotype.check_cb_allele();
+                    this.phenotype.check_cb("cb_allele", "svmAllele");
                 }
                 if (svmRNAi === true) {
-                    this.phenotype.check_cb_rnai();
+                    this.phenotype.check_cb("cb_rnai", "svmRNAi");
                 }
                 if (svmTransgene === true) {
-                    this.phenotype.check_cb_transgene();
+                    this.phenotype.check_cb("cb_transgene", "svmTransgene");
                 }
                 if (svmProtein === true) {
-                    this.phenotype.check_cb_protein();
+                    this.phenotype.check_cb("cb_protein", "svmProtein");
                     this.phenotype.set_cb_protein_details(svmProteinDetails);
                 }
                 if (chemical === true) {
-                    this.phenotype.check_cb_chemical();
+                    this.phenotype.check_cb("cb_chemical", "chemical");
                 }
                 if (env === true) {
-                    this.phenotype.check_cb_env();
+                    this.phenotype.check_cb("cb_env", "env");
                 }
             }
             let other = "";
@@ -483,6 +483,21 @@ class MenuAndWidgets extends React.Component {
         let stateElem = {};
         stateElem[stateVarName] = value;
         this.setState(stateElem);
+    }
+
+    toggle_cb(cbName, mainCompVarName) {
+        let newVal = !this.state[cbName];
+        let newStateElem = {};
+        newStateElem[cbName] = newVal;
+        this.setState(newStateElem);
+        this.props.stateVarModifiedCallback(newVal, mainCompVarName);
+    }
+
+    check_cb(cbName, mainCompVarName) {
+        let newStateElem = {};
+        newStateElem[cbName] = true;
+        this.setState(newStateElem);
+        this.props.stateVarModifiedCallback(true, mainCompVarName);
     }
 
     render() {
@@ -587,6 +602,8 @@ class MenuAndWidgets extends React.Component {
                                                                    geneModCorrDetails={this.state.geneModCorrectionDetails}
                                                                    selectedSpecies={this.state.selectedSpecies}
                                                                    stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                   toggleCb={this.toggle_cb}
+                                                                   checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/genetics"
@@ -599,6 +616,8 @@ class MenuAndWidgets extends React.Component {
                                                                     alleleSeqChange={this.state.alleleSeqChange}
                                                                     otherAlleles={this.state.otherAlleles}
                                                                     otherStrains={this.state.otherStrains}
+                                                                    toggleCb={this.toggle_cb}
+                                                                    checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/reagent"
@@ -610,6 +629,8 @@ class MenuAndWidgets extends React.Component {
                                                                   newAntibDetails={this.state.newAntibDetails}
                                                                   otherAntibs={this.state.otherAntibs}
                                                                   otherTransgenes={this.state.otherTransgenes}
+                                                                  toggleCb={this.toggle_cb}
+                                                                  checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/expression"
@@ -625,6 +646,8 @@ class MenuAndWidgets extends React.Component {
                                                                      rnaSeqDetails={this.state.rnaSeqDetails}
                                                                      additionalExpr={this.state.additionalExpr}
                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                     toggleCb={this.toggle_cb}
+                                                                     checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/interactions"
@@ -639,6 +662,8 @@ class MenuAndWidgets extends React.Component {
                                                cb_physical_details={this.state.svmPhysIntDetails}
                                                cb_regulatory_details={this.state.svmGeneRegDetails}
                                                stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                               toggleCb={this.toggle_cb}
+                                               checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/phenotypes"
@@ -655,6 +680,8 @@ class MenuAndWidgets extends React.Component {
                                                cb_env={this.state.env}
                                                stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                ref={instance => { this.phenotype = instance; }}
+                                               toggleCb={this.toggle_cb}
+                                               checkCb={this.check_cb}
                                            />}
                                     />
                                     <Route path="/disease"
@@ -665,6 +692,7 @@ class MenuAndWidgets extends React.Component {
                                                                   modifiers={this.state.modifiersDis}
                                                                   comments={this.state.disComments}
                                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                  toggleCb={this.toggle_cb}
                                            />}
                                     />
                                     <Route path="/other"

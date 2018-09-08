@@ -17,54 +17,20 @@ class Interactions extends React.Component {
             cb_regulatory_details: props['cb_regulatory_details']
         };
 
-        this.check_cb_genetic = this.check_cb_genetic.bind(this);
-        this.toggle_cb_genetic = this.toggle_cb_genetic.bind(this);
-        this.check_cb_physical = this.check_cb_physical.bind(this);
-        this.toggle_cb_physical = this.toggle_cb_physical.bind(this);
-        this.check_cb_regulatory = this.check_cb_regulatory.bind(this);
-        this.toggle_cb_regulatory = this.toggle_cb_regulatory.bind(this);
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
     }
 
-    check_cb_genetic() {
-        this.setState({cb_genetic: true});
-        this.props.stateVarModifiedCallback(true, "svmGeneInt");
-    }
-
-    toggle_cb_genetic() {
-        this.setState({cb_genetic: !this.state.cb_genetic});
-        this.props.stateVarModifiedCallback(this.state.cb_genetic, "svmGeneInt");
+    set_cb_regulatory_details(value) {
+        this.setState({cb_regulatory_details: value});
     }
 
     set_cb_genetic_details(value) {
         this.setState({cb_genetic_details: value});
     }
 
-    check_cb_physical() {
-        this.setState({cb_physical: true});
-        this.props.stateVarModifiedCallback(true, "svmPhysInt");
-    }
-
-    toggle_cb_physical() {
-        this.setState({cb_physical: !this.state.cb_physical});
-        this.props.stateVarModifiedCallback(this.state.cb_physical, "svmPhysInt");
-    }
-
     set_cb_physical_details(value) {
         this.setState({cb_physical_details: value});
-    }
-
-    check_cb_regulatory() {
-        this.setState({cb_regulatory: true});
-        this.props.stateVarModifiedCallback(true, "svmGeneReg");
-    }
-
-    toggle_cb_regulatory() {
-        this.setState({cb_regulatory: !this.state.cb_regulatory});
-        this.props.stateVarModifiedCallback(this.state.cb_regulatory, "svmGeneReg");
-    }
-
-    set_cb_regulatory_details(value) {
-        this.setState({cb_regulatory_details: value});
     }
 
     render() {
@@ -83,34 +49,34 @@ class Interactions extends React.Component {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox checked={this.state.cb_genetic} onClick={this.toggle_cb_genetic}>
+                                <Checkbox checked={this.state.cb_genetic} onClick={() => this.toggle_cb("cb_genetic", "svmGeneInt")}>
                                     <strong>Genetic Interactions</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={this.check_cb_genetic}
+                                             onClick={() => this.check_cb("cb_genetic", "svmGeneInt")}
                                              value={this.state.cb_genetic_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmGeneIntDetails");
                                                  this.set_cb_genetic_details(event.target.value);
                                              }}/>
-                                <Checkbox checked={this.state.cb_physical} onClick={this.toggle_cb_physical}>
+                                <Checkbox checked={this.state.cb_physical} onClick={() => this.toggle_cb("cb_physical", "svmPhysInt")}>
                                     <strong>Physical Interactions</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={this.check_cb_physical}
+                                             onClick={() => this.check_cb("cb_physical", "svmPhysInt")}
                                              value={this.state.cb_physical_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmPhysIntDetails");
                                                  this.set_cb_physical_details(event.target.value);
                                              }}/>
-                                <Checkbox checked={this.state.cb_regulatory} onClick={this.toggle_cb_regulatory}>
+                                <Checkbox checked={this.state.cb_regulatory} onClick={() => this.toggle_cb("cb_regulatory", "svmGeneReg")}>
                                     <strong>Regulatory Interactions</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={this.check_cb_regulatory}
+                                             onClick={() => this.check_cb("cb_regulatory", "svmGeneReg")}
                                              value={this.state.cb_regulatory_details}
                                              onChange={(event) => {
-                                                 this.props.stateVarModifiedCallback(event.target.value, "svmGeneReg");
+                                                 this.props.stateVarModifiedCallback(event.target.value, "svmGeneRegDetails");
                                                  this.set_cb_regulatory_details(event.target.value);
                                              }}/>
                                 <FormControl.Feedback />

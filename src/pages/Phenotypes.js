@@ -16,84 +16,8 @@ class Phenotypes extends React.Component {
             cb_env: props["cb_env"]
         };
 
-        this.check_cb_allele = this.check_cb_allele.bind(this);
-        this.toggle_cb_allele = this.toggle_cb_allele.bind(this);
-        this.check_cb_rnai = this.check_cb_rnai.bind(this);
-        this.toggle_cb_rnai = this.toggle_cb_rnai.bind(this);
-        this.check_cb_transgene = this.check_cb_transgene.bind(this);
-        this.toggle_cb_transgene = this.toggle_cb_transgene.bind(this);
-        this.check_cb_protein = this.check_cb_protein.bind(this);
-        this.toggle_cb_protein = this.toggle_cb_protein.bind(this);
-        this.check_cb_chemical = this.check_cb_chemical.bind(this);
-        this.toggle_cb_chemical = this.toggle_cb_chemical.bind(this);
-        this.check_cb_env = this.check_cb_env.bind(this);
-        this.toggle_cb_env = this.toggle_cb_env.bind(this);
-    }
-
-    check_cb_allele() {
-        this.setState({cb_allele: true});
-        this.props.stateVarModifiedCallback(true, "svmAllele");
-    }
-
-    toggle_cb_allele() {
-        let newVal = !this.state.cb_allele;
-        this.setState({cb_allele: newVal});
-        this.props.stateVarModifiedCallback(newVal, "svmAllele");
-    }
-
-    check_cb_rnai() {
-        this.setState({cb_rnai: true});
-        this.props.stateVarModifiedCallback(true, "svmRNAi");
-    }
-
-    toggle_cb_rnai() {
-        let newVal = !this.state.cb_rnai;
-        this.setState({cb_rnai: newVal});
-        this.props.stateVarModifiedCallback(newVal, "svmRNAi");
-    }
-
-    check_cb_transgene() {
-        this.setState({cb_transgene: true});
-        this.props.stateVarModifiedCallback(true, "svmTransgene");
-    }
-
-    toggle_cb_transgene() {
-        let newVal = !this.state.cb_transgene;
-        this.setState({cb_transgene: newVal});
-        this.props.stateVarModifiedCallback(newVal, "svmTransgene");
-    }
-
-    check_cb_chemical() {
-        this.setState({cb_chemical: true});
-        this.props.stateVarModifiedCallback(true, "chemical");
-    }
-
-    toggle_cb_chemical() {
-        let newVal = !this.state.cb_chemical;
-        this.setState({cb_chemical: newVal});
-        this.props.stateVarModifiedCallback(newVal, "chemical");
-    }
-
-    check_cb_env() {
-        this.setState({cb_env: true});
-        this.props.stateVarModifiedCallback(true, "env");
-    }
-
-    toggle_cb_env() {
-        let newVal = !this.state.cb_env;
-        this.setState({cb_env: newVal});
-        this.props.stateVarModifiedCallback(newVal, "env");
-    }
-
-    check_cb_protein() {
-        this.setState({cb_protein: true});
-        this.props.stateVarModifiedCallback(true, "svmProtein");
-    }
-
-    toggle_cb_protein() {
-        let newVal = !this.state.cb_protein;
-        this.setState({cb_protein: newVal});
-        this.props.stateVarModifiedCallback(newVal, "svmProtein");
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
     }
 
     set_cb_protein_details(details) {
@@ -121,10 +45,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_allele}
-                                              onClick={this.toggle_cb_allele}><strong>Allele Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_allele", "svmAllele")}><strong>Allele Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_allele}
+                                    <Button bsStyle="info" onClick={() => this.check_cb("cb_allele", "svmAllele")}
                                             href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
@@ -133,10 +57,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_rnai}
-                                              onClick={this.toggle_cb_rnai}><strong>RNAi Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}><strong>RNAi Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_rnai}
+                                    <Button bsStyle="info" onClick={() => this.check_cb("cb_rnai", "svmRNAi")}
                                             href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
@@ -145,10 +69,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_transgene}
-                                              onClick={this.toggle_cb_transgene}><strong>Transgene Overexpression Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}><strong>Transgene Overexpression Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={this.check_cb_transgene}
+                                    <Button bsStyle="info" onClick={() => this.check_cb("cb_transgene", "svmTransgene")}
                                             href={"https://wormbase.org/submissions/phenotype.cgi"} target="_blank">
                                         Add details in online form
                                     </Button>
@@ -157,7 +81,7 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_chemical}
-                                              onClick={this.toggle_cb_chemical}><strong>Chemical Induced Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_chemical", "chemical")}><strong>Chemical Induced Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>
@@ -165,7 +89,7 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_env}
-                                              onClick={this.toggle_cb_env}><strong>Environmental Induced Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_env", "env")}><strong>Environmental Induced Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>
@@ -180,11 +104,11 @@ class Phenotypes extends React.Component {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox checked={this.state.cb_protein} onClick={this.toggle_cb_protein}>
+                                <Checkbox checked={this.state.cb_protein} onClick={() => this.toggle_cb("cb_protein", "svmProtein")}>
                                     <strong>Protein Activity (i.e., Enzymatic Activity)</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={this.check_cb_protein}
+                                             onClick={() => this.check_cb("cb_protein", "svmProtein")}
                                              value={this.state.cb_protein_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmProteinDetails");

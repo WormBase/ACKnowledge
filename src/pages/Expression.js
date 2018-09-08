@@ -23,60 +23,10 @@ class Expression extends React.Component {
             additionalExpr: props["additionalExpr"]
         };
 
-        this.check_cb_anatomic = this.check_cb_anatomic.bind(this);
-        this.toggle_cb_anatomic = this.toggle_cb_anatomic.bind(this);
-        this.check_cb_site = this.check_cb_site.bind(this);
-        this.toggle_cb_site = this.toggle_cb_site.bind(this);
-        this.check_cb_time = this.check_cb_time.bind(this);
-        this.toggle_cb_time = this.toggle_cb_time.bind(this);
-        this.check_cb_rna = this.check_cb_rna.bind(this);
-        this.toggle_cb_rna = this.toggle_cb_rna.bind(this);
+        this.check_cb = props["checkCb"].bind(this);
+        this.toggle_cb = props["toggleCb"].bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOtherCheckChange = this.handleOtherCheckChange.bind(this);
-    }
-
-    check_cb_anatomic() {
-        this.setState({cb_anatomic: true});
-        this.props.stateVarModifiedCallback(true, "anatomicExpr");
-    }
-
-    toggle_cb_anatomic() {
-        let newVal = !this.state.cb_anatomic;
-        this.setState({cb_anatomic: newVal});
-        this.props.stateVarModifiedCallback(newVal, "anatomicExpr");
-    }
-
-    check_cb_site() {
-        this.setState({cb_site: true});
-        this.props.stateVarModifiedCallback(true, "siteAction");
-    }
-
-    toggle_cb_site() {
-        let newVal = !this.state.cb_site;
-        this.setState({cb_site: newVal});
-        this.props.stateVarModifiedCallback(newVal, "siteAction");
-    }
-
-    check_cb_time() {
-        this.setState({cb_time: true});
-        this.props.stateVarModifiedCallback(true, "timeAction");
-    }
-
-    toggle_cb_time() {
-        let newVal = !this.state.cb_time;
-        this.setState({cb_time: newVal});
-        this.props.stateVarModifiedCallback(newVal, "timeAction");
-    }
-
-    check_cb_rna() {
-        this.setState({cb_rna: true});
-        this.props.stateVarModifiedCallback(true, "rnaSeq");
-    }
-
-    toggle_cb_rna() {
-        let newVal = !this.state.cb_rna;
-        this.setState({cb_rna: newVal});
-        this.props.stateVarModifiedCallback(newVal, "rnaSeq");
     }
 
     getValidationState() {
@@ -176,46 +126,46 @@ class Expression extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.state.cb_anatomic} onClick={this.toggle_cb_anatomic}>
+                            <Checkbox checked={this.state.cb_anatomic} onClick={() => this.toggle_cb("cb_anatomic", "anatomicExpr")}>
                                 <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={this.check_cb_anatomic}
+                                         onClick={() => this.check_cb("cb_anatomic", "anatomicExpr")}
                                          value={this.state.cb_anatomic_details}
                                          onChange={(event) => {
                                              this.setAnatomicExprDetails(event.target.value);
                                              this.props.stateVarModifiedCallback(event.target.value, "anatomicExprDetails");
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_site} onClick={this.toggle_cb_site}>
+                            <Checkbox checked={this.state.cb_site} onClick={() => this.toggle_cb("cb_site", "siteAction")}>
                                 <strong>Site of action data</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={this.check_cb_site}
+                                         onClick={() => this.check_cb("cb_site", "siteAction")}
                                          value={this.state.cb_site_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "siteActionDetails");
                                              this.setSiteActionDetails(event.target.value);
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_time} onClick={this.toggle_cb_time}>
+                            <Checkbox checked={this.state.cb_time} onClick={() => this.toggle_cb("cb_time", "timeAction")}>
                                 <strong>Time of action data</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={this.check_cb_time}
+                                         onClick={() => this.check_cb("cb_time", "timeAction")}
                                          value={this.state.cb_time_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "timeActionDetails");
                                              this.setTimeActionDetails(event.target.value);
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_rna} onClick={this.toggle_cb_rna}>
+                            <Checkbox checked={this.state.cb_rna} onClick={() => this.toggle_cb("cb_rna", "rnaSeq")}>
                                 <strong>RNAseq data</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={this.check_cb_rna}
+                                         onClick={() => this.check_cb("cb_rna", "rnaSeq")}
                                          value={this.state.cb_rna_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "rnaSeqDetails");
