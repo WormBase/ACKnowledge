@@ -16,7 +16,7 @@ class EditableTable extends Component {
         var index = this.state.products.indexOf(product);
         this.state.products.splice(index, 1);
         this.setState(this.state.products);
-        this.props.tableChangedCallback(this.state.products);
+        this.props.tableChangedCallback(this.state.products, this.props["stateVarName"]);
     };
 
     handleAddEvent(evt) {
@@ -28,7 +28,7 @@ class EditableTable extends Component {
         };
         this.state.products.push(product);
         this.setState(this.state.products);
-        this.props.tableChangedCallback(this.state.products);
+        this.props.tableChangedCallback(this.state.products, this.props["stateVarName"]);
     }
 
     handleProductTable(evt) {
@@ -47,7 +47,7 @@ class EditableTable extends Component {
             return product;
         });
         this.setState({products:newProducts});
-        this.props.tableChangedCallback(newProducts);
+        this.props.tableChangedCallback(newProducts, this.props["stateVarName"]);
         //  console.log(this.state.products);
     };
     render() {

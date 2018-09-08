@@ -30,13 +30,13 @@ class Genetics extends React.Component {
 
     check_cb_allele() {
         this.setState({cb_allele: true});
-        this.props.alleleSeqChangeCallback(true);
+        this.props.stateVarModifiedCallback(true, "alleleSeqChange");
     }
 
     toggle_cb_allele() {
         let newVal = !this.state.cb_allele;
         this.setState({cb_allele: newVal});
-        this.props.alleleSeqChangeCallback(newVal);
+        this.props.stateVarModifiedCallback(newVal, "alleleSeqChange");
     }
 
     setSelectedAlleles(allelelist) {
@@ -138,7 +138,8 @@ class Genetics extends React.Component {
                                 itemsNamePlural={"alleles"}
                                 selectedItems={this.state.selectedAlleles}
                                 ref={instance => { this.alleleSelect = instance; }}
-                                selectedItemsCallback={this.props.selectedAllelesCallback}
+                                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                                stateVarName={"selectedAlleles"}
                                 searchWBFunc={this.searchWBAlleles}
                                 sampleQuery={"e.g. e1000"}
                             />
@@ -175,7 +176,8 @@ class Genetics extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <EditableTable title={"New Alleles"}
-                                                       tableChangedCallback={this.props.otherAllelesCallback}
+                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
+                                                       stateVarName={"otherAlleles"}
                                                        products={this.state.otherAlleles}
                                         />
                                     </div>
@@ -195,7 +197,8 @@ class Genetics extends React.Component {
                                 itemsNamePlural={"strains"}
                                 selectedItems={this.state.selectedStrains}
                                 ref={instance => { this.strainSelect = instance; }}
-                                selectedItemsCallback={this.props.selectedStrainsCallback}
+                                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                                stateVarName={"selectedStrains"}
                                 searchWBFunc={this.searchWBStrains}
                                 sampleQuery={"e.g. CB4856"}
                             />
@@ -210,7 +213,8 @@ class Genetics extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <EditableTable title={"New Strains"}
-                                                       tableChangedCallback={this.props.otherStrainsCallback}
+                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
+                                                       stateVarName={"otherStrains"}
                                                        products={this.state.otherStrains}
                                         />
                                     </div>

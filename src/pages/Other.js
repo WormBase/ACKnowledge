@@ -44,7 +44,7 @@ class Other extends React.Component {
                                         <FormControl componentClass="textarea" multiple
                                                      value={this.state.other}
                                                      onChange={(event) => {
-                                                         this.props.otherCallback(event.target.value);
+                                                         this.props.stateVarModifiedCallback(event.target.value, "other");
                                                          this.setOther(event.target.value);
                                                      }}
                                         />

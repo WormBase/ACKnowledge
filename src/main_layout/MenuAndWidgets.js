@@ -64,6 +64,7 @@ class MenuAndWidgets extends React.Component {
             show_fetch_data_error: false,
             selecedGenes: new Set(),
             geneModCorrection: false,
+            geneModCorrectionDetails: "",
             selectedSpecies: new Set(),
             selectedAlleles: new Set(),
             alleleSeqChange: false,
@@ -125,7 +126,7 @@ class MenuAndWidgets extends React.Component {
             chemical:false,
             env: false,
             other: "",
-            orthologDis: false,
+            orthologsDis: false,
             transgenicDis: false,
             modifiersDis: false,
             disComments: ""
@@ -133,47 +134,7 @@ class MenuAndWidgets extends React.Component {
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
-        this.selectedGenesModifiedCallback = this.selectedGenesModifiedCallback.bind(this);
-        this.selectedSpeciesModifiedCallback = this.selectedSpeciesModifiedCallback.bind(this);
-        this.selectedAllelesModifiedCallback = this.selectedAllelesModifiedCallback.bind(this);
-        this.selectedStrainsModifiedCallback = this.selectedStrainsModifiedCallback.bind(this);
-        this.selectedTransgenesModifiedCallback = this.selectedTransgenesModifiedCallback.bind(this);
-        this.svmGeneIntChangedCallback = this.svmGeneIntChangedCallback.bind(this);
-        this.svmPhysIntChangedCallback = this.svmPhysIntChangedCallback.bind(this);
-        this.svmGeneRegChangedCallback = this.svmGeneRegChangedCallback.bind(this);
-        this.svmAlleleChangedCallback = this.svmAlleleChangedCallback.bind(this);
-        this.svmRNAiChangedCallback = this.svmRNAiChangedCallback.bind(this);
-        this.svmTransgeneChangedCallback = this.svmTransgeneChangedCallback.bind(this);
-        this.svmProteinChangedCallback = this.svmProteinChangedCallback.bind(this);
-        this.svmGeneIntDetailsChangedCallback = this.svmGeneIntDetailsChangedCallback.bind(this);
-        this.svmPhysIntDetailsChangedCallback = this.svmPhysIntDetailsChangedCallback.bind(this);
-        this.svmGeneRegDetailsChangedCallback = this.svmGeneRegDetailsChangedCallback.bind(this);
-        this.svmProteinDetailsChangedCallback = this.svmProteinDetailsChangedCallback.bind(this);
-        this.chemicalChangedCallback = this.chemicalChangedCallback.bind(this);
-        this.envChangedCallback = this.envChangedCallback.bind(this);
-        this.geneModCorrModifiedCallback = this.geneModCorrModifiedCallback.bind(this);
-        this.geneModCorrDetailsModifiedCallback = this.geneModCorrDetailsModifiedCallback.bind(this);
-        this.alleleSeqChangeModifiedCallback = this.alleleSeqChangeModifiedCallback.bind(this);
-        this.newAntibModifiedCallback = this.newAntibModifiedCallback.bind(this);
-        this.newAntibDetailsModifiedCallback = this.newAntibDetailsModifiedCallback.bind(this);
-        this.otherAntibsModifiedCallback = this.otherAntibsModifiedCallback.bind(this);
-        this.otherAllelesModifiedCallback = this.otherAllelesModifiedCallback.bind(this);
-        this.otherStrainsModifiedCallback = this.otherStrainsModifiedCallback.bind(this);
-        this.otherTransgenesModifiedCallback = this.otherTransgenesModifiedCallback.bind(this);
-        this.anatomicExprModifiedCallback = this.anatomicExprModifiedCallback.bind(this);
-        this.anatomicExprDetailsModifiedCallback = this.anatomicExprDetailsModifiedCallback.bind(this);
-        this.siteActionModifiedCallback = this.siteActionModifiedCallback.bind(this);
-        this.siteActionDetailsModifiedCallback = this.siteActionDetailsModifiedCallback.bind(this);
-        this.timeActionModifiedCallback = this.timeActionModifiedCallback.bind(this);
-        this.timeActionDetailsModifiedCallback = this.timeActionDetailsModifiedCallback.bind(this);
-        this.rnaSeqModifiedCallback = this.rnaSeqModifiedCallback.bind(this);
-        this.rnaSeqDetailsModifiedCallback= this.rnaSeqDetailsModifiedCallback.bind(this);
-        this.additionalExprModifiedCallback = this.additionalExprModifiedCallback.bind(this);
-        this.otherModifiedCallback = this.otherModifiedCallback.bind(this);
-        this.orthologsModifiedCallback = this.orthologsModifiedCallback.bind(this);
-        this.transgenicModifiedCallback = this.transgenicModifiedCallback.bind(this);
-        this.modifiersModifiedCallback = this.modifiersModifiedCallback.bind(this);
-        this.disCommentsModifiedCallback = this.disCommentsModifiedCallback.bind(this);
+        this.stateVarModifiedCallback = this.stateVarModifiedCallback.bind(this);
     }
 
     static split_tfp_entities(entities_string, prefix) {
@@ -518,252 +479,11 @@ class MenuAndWidgets extends React.Component {
         this.setState({showPopup: false})
     }
 
-    selectedGenesModifiedCallback(newGenesList) {
-        this.setState({
-            selectedGenes: newGenesList
-        });
+    stateVarModifiedCallback(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
-
-    selectedSpeciesModifiedCallback(newSpeciesList) {
-        this.setState({
-            selectedSpecies: newSpeciesList
-        });
-    }
-
-    selectedAllelesModifiedCallback(newAlleleList) {
-        this.setState({
-            selectedAlleles: newAlleleList
-        });
-    }
-
-    selectedStrainsModifiedCallback(newStrainsList) {
-        this.setState({
-            selectedStrains: newStrainsList
-        });
-    }
-
-    selectedTransgenesModifiedCallback(newTransgenesList) {
-        this.setState({
-            selectedTransgenes: newTransgenesList
-        });
-    }
-
-    svmGeneIntChangedCallback(value) {
-        this.setState({
-            svmGeneInt: value
-        });
-    }
-
-    svmPhysIntChangedCallback(value) {
-        this.setState({
-            svmPhysInt: value
-        });
-    }
-
-    svmGeneRegChangedCallback(value) {
-        this.setState({
-            svmGeneReg: value
-        });
-    }
-
-    svmAlleleChangedCallback(value) {
-        this.setState({
-            svmAllele: value
-        });
-    }
-
-    svmRNAiChangedCallback(value) {
-        this.setState({
-            svmRNAi: value
-        });
-    }
-
-    svmTransgeneChangedCallback(value) {
-        this.setState({
-            svmTransgene: value
-        });
-    }
-
-    svmProteinChangedCallback(value) {
-        this.setState({
-            svmProtein: value
-        });
-    }
-
-    svmGeneIntDetailsChangedCallback(value) {
-        this.setState({
-            svmGeneIntDetails: value
-        });
-    }
-
-    svmPhysIntDetailsChangedCallback(value) {
-        this.setState({
-            svmPhysIntDetails: value
-        });
-    }
-
-    svmGeneRegDetailsChangedCallback(value) {
-        this.setState({
-            svmGeneRegDetails: value
-        });
-    }
-
-    svmProteinDetailsChangedCallback(value) {
-        this.setState({
-            svmProteinDetails: value
-        });
-    }
-
-    geneModCorrModifiedCallback(value) {
-        this.setState({
-            geneModCorrection: value
-        });
-    }
-
-    geneModCorrDetailsModifiedCallback(value) {
-        this.setState({
-            geneModCorrectionDetails: value
-        });
-    }
-
-    alleleSeqChangeModifiedCallback(value) {
-        this.setState({
-            alleleSeqChange: value
-        });
-    }
-
-    newAntibModifiedCallback(value) {
-        this.setState({
-            newAntib: value
-        });
-    }
-
-    newAntibDetailsModifiedCallback(value) {
-        this.setState({
-            newAntibDetails: value
-        });
-    }
-
-    otherAntibsModifiedCallback(values) {
-        this.setState({
-            otherAntibs: values
-        });
-    }
-
-    otherAllelesModifiedCallback(values) {
-        this.setState({
-            otherAlleles: values
-        });
-    }
-
-    otherStrainsModifiedCallback(values) {
-        this.setState({
-            otherStrains: values
-        });
-    }
-
-    otherTransgenesModifiedCallback(values) {
-        this.setState({
-            otherTransgenes: values
-        });
-    }
-
-    anatomicExprModifiedCallback(value) {
-        this.setState({
-            anatomicExpr: value
-        });
-    }
-
-    anatomicExprDetailsModifiedCallback(value) {
-        this.setState({
-            anatomicExprDetails: value
-        });
-    }
-
-    siteActionModifiedCallback(value) {
-        this.setState({
-            siteAction: value
-        });
-    }
-
-    siteActionDetailsModifiedCallback(value) {
-        this.setState({
-            siteActionDetails: value
-        });
-    }
-
-    timeActionModifiedCallback(value) {
-        this.setState({
-            timeAction: value
-        });
-    }
-
-    timeActionDetailsModifiedCallback(value) {
-        this.setState({
-            timeActionDetails: value
-        });
-    }
-
-    rnaSeqModifiedCallback(value) {
-        this.setState({
-            rnaSeq: value
-        });
-    }
-
-    rnaSeqDetailsModifiedCallback(value) {
-        this.setState({
-            rnaSeqDetails: value
-        });
-    }
-
-    additionalExprModifiedCallback(value) {
-        this.setState({
-            additionalExpr: value
-        });
-    }
-
-    chemicalChangedCallback(value) {
-        this.setState({
-            chemical: value
-        });
-    }
-
-    envChangedCallback(value) {
-        this.setState({
-            env: value
-        });
-    }
-
-    otherModifiedCallback(other) {
-        this.setState({
-            other: other
-        });
-    }
-
-    orthologsModifiedCallback(value) {
-        this.setState({
-            orthologsDis: value
-        });
-    }
-
-    transgenicModifiedCallback(value) {
-        this.setState({
-            transgenicDis: value
-        });
-    }
-
-    modifiersModifiedCallback(value) {
-        this.setState({
-            modifiersDis: value
-        });
-    }
-
-    disCommentsModifiedCallback(value) {
-        this.setState({
-            disComments: value
-        });
-    }
-
 
     render() {
         let overviewOk = false;
@@ -864,12 +584,9 @@ class MenuAndWidgets extends React.Component {
                                                                    ref={instance => { this.overview = instance; }}
                                                                    selectedGenes={this.state.selectedGenes}
                                                                    geneModCorr={this.state.geneModCorrection}
-                                                                   geneModCorrCallback={this.geneModCorrModifiedCallback}
                                                                    geneModCorrDetails={this.state.geneModCorrectionDetails}
-                                                                   geneModCorrDetailsCallback={this.geneModCorrDetailsModifiedCallback}
                                                                    selectedSpecies={this.state.selectedSpecies}
-                                                                   selectedGenesCallback={this.selectedGenesModifiedCallback}
-                                                                   selectedSpeciesCallback={this.selectedSpeciesModifiedCallback}
+                                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/genetics"
@@ -878,52 +595,36 @@ class MenuAndWidgets extends React.Component {
                                                                     ref={instance => { this.genetics = instance; }}
                                                                     selectedAlleles={this.state.selectedAlleles}
                                                                     selectedStrains={this.state.selectedStrains}
-                                                                    selectedAllelesCallback={this.selectedAllelesModifiedCallback}
-                                                                    selectedStrainsCallback={this.selectedStrainsModifiedCallback}
+                                                                    stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                     alleleSeqChange={this.state.alleleSeqChange}
-                                                                    alleleSeqChangeCallback={this.alleleSeqChangeModifiedCallback}
                                                                     otherAlleles={this.state.otherAlleles}
-                                                                    otherAllelesCallback={this.otherAllelesModifiedCallback}
                                                                     otherStrains={this.state.otherStrains}
-                                                                    otherStrainsCallback={this.otherStrainsModifiedCallback}
                                            />}
                                     />
                                     <Route path="/reagent"
                                            render={() => <Reagent callback={this.handleFinishedSection}
                                                                   saved={this.state.completedSections["reagent"]}
                                                                   selectedTransgenes={this.state.selectedTransgenes}
-                                                                  selectedTransgenesCallback={this.selectedTransgenesModifiedCallback}
+                                                                  stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                   newAntib={this.state.newAntib}
-                                                                  newAntibCallback={this.newAntibModifiedCallback}
                                                                   newAntibDetails={this.state.newAntibDetails}
-                                                                  newAntibDetailsCallback={this.newAntibDetailsModifiedCallback}
                                                                   otherAntibs={this.state.otherAntibs}
-                                                                  otherAntibsCallback={this.otherAntibsModifiedCallback}
                                                                   otherTransgenes={this.state.otherTransgenes}
-                                                                  otherTransgenesCallback={this.otherTransgenesModifiedCallback}
                                            />}
                                     />
                                     <Route path="/expression"
                                            render={() => <Expression callback={this.handleFinishedSection}
                                                                      saved={this.state.completedSections["expression"]}
                                                                      anatomicExpr={this.state.anatomicExpr}
-                                                                     anatomicExprCallback={this.anatomicExprModifiedCallback}
                                                                      anatomicExprDetails={this.state.anatomicExprDetails}
-                                                                     anatomicExprDetailsCallback={this.anatomicExprDetailsModifiedCallback}
                                                                      siteAction={this.state.siteAction}
-                                                                     siteActionCallback={this.siteActionModifiedCallback}
                                                                      siteActionDetails={this.state.siteActionDetails}
-                                                                     siteActionDetailsCallback={this.siteActionDetailsModifiedCallback}
                                                                      timeAction={this.state.timeAction}
-                                                                     timeActionCallback={this.timeActionModifiedCallback}
                                                                      timeActionDetails={this.state.timeActionDetails}
-                                                                     timeActionDetailsCallback={this.timeActionDetailsModifiedCallback}
                                                                      rnaSeq={this.state.rnaSeq}
-                                                                     rnaSeqCallback={this.rnaSeqModifiedCallback}
                                                                      rnaSeqDetails={this.state.rnaSeqDetails}
-                                                                     rnaSeqDetailsCallback={this.rnaSeqDetailsModifiedCallback}
                                                                      additionalExpr={this.state.additionalExpr}
-                                                                     additionalExprCallback={this.additionalExprModifiedCallback}
+                                                                     stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/interactions"
@@ -931,39 +632,28 @@ class MenuAndWidgets extends React.Component {
                                                callback={this.handleFinishedSection}
                                                saved={this.state.completedSections["interactions"]}
                                                ref={instance => { this.interactions = instance; }}
-                                               svmGeneIntChanged={this.svmGeneIntChangedCallback}
-                                               svmPhysIntChanged={this.svmPhysIntChangedCallback}
-                                               svmGeneRegChanged={this.svmGeneRegChangedCallback}
                                                cb_genetic={this.state.svmGeneInt}
                                                cb_physical={this.state.svmPhysInt}
                                                cb_regulatory={this.state.svmGeneReg}
                                                cb_genetic_details={this.state.svmGeneIntDetails}
                                                cb_physical_details={this.state.svmPhysIntDetails}
                                                cb_regulatory_details={this.state.svmGeneRegDetails}
-                                               svmGeneIntDetailsChanged={this.svmGeneIntDetailsChangedCallback}
-                                               svmPhysIntDetailsChanged={this.svmPhysIntDetailsChangedCallback}
-                                               svmGeneRegDetailsChanged={this.svmGeneRegDetailsChangedCallback}
+                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/phenotypes"
                                            render={() => <Phenotypes
                                                callback={this.handleFinishedSection}
                                                saved={this.state.completedSections["phenotypes"]}
-                                               svmAlleleChanged={this.svmAlleleChangedCallback}
-                                               svmRNAiChanged={this.svmRNAiChangedCallback}
-                                               svmTransgeneChanged={this.svmTransgeneChangedCallback}
-                                               svmProteinChanged={this.svmProteinChangedCallback}
                                                cb_allele={this.state.svmAllele}
                                                cb_rnai={this.state.svmRNAi}
                                                cb_transgene={this.state.svmTransgene}
                                                cb_protein={this.state.svmProtein}
                                                cb_transgene_details={this.state.svmTransgeneDetails}
                                                cb_protein_details={this.state.svmProteinDetails}
-                                               svmProteinDetailsChanged={this.svmProteinDetailsChangedCallback}
                                                cb_chemical={this.state.chemical}
-                                               chemicalChanged={this.chemicalChangedCallback}
                                                cb_env={this.state.env}
-                                               envChanged={this.envChangedCallback}
+                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                ref={instance => { this.phenotype = instance; }}
                                            />}
                                     />
@@ -971,13 +661,10 @@ class MenuAndWidgets extends React.Component {
                                            render={() => <Disease callback={this.handleFinishedSection}
                                                                   saved={this.state.completedSections["disease"]}
                                                                   orthologs={this.state.orthologsDis}
-                                                                  orthologsCallback={this.orthologsModifiedCallback}
                                                                   transgenic={this.state.transgenicDis}
-                                                                  transgenicCallback={this.transgenicModifiedCallback}
                                                                   modifiers={this.state.modifiersDis}
-                                                                  modifiersCallback={this.modifiersModifiedCallback}
                                                                   comments={this.state.disComments}
-                                                                  commentsCallback={this.disCommentsModifiedCallback}
+                                                                  stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/other"
@@ -985,7 +672,7 @@ class MenuAndWidgets extends React.Component {
                                                callback={this.handleFinishedSection}
                                                saved={this.state.completedSections["other"]}
                                                other={this.state.other}
-                                               otherCallback={this.otherModifiedCallback}
+                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/contact_info" render={() => <ContactInfo

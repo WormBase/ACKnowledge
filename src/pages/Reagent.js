@@ -33,13 +33,13 @@ class Reagent extends React.Component {
 
     check_cb_newantib() {
         this.setState({cb_newantib: true});
-        this.props.newAntibCallback(true);
+        this.props.stateVarModifiedCallback(true, "newAntib");
     }
 
     toggle_cb_newantib() {
         let newVal = !this.state.cb_newantib;
         this.setState({cb_newantib: newVal});
-        this.props.newAntibCallback(newVal);
+        this.props.stateVarModifiedCallback(newVal, "newAntib");
     }
 
     setSelectedTransgenes(transgenes) {
@@ -127,7 +127,8 @@ class Reagent extends React.Component {
                                 itemsNamePlural={"transgenes"}
                                 selectedItems={this.state.selectedTransgenes}
                                 ref={instance => { this.transgeneSelect = instance; }}
-                                selectedItemsCallback={this.props.selectedTransgenesCallback}
+                                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                                stateVarName={"selectedTransgenes"}
                                 searchWBFunc={this.searchWBTransgenes}
                                 sampleQuery={"e.g. ctIs40"}
                             />
@@ -142,7 +143,8 @@ class Reagent extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <EditableTable title={"New Transgenes"}
-                                                       tableChangedCallback={this.props.otherTransgenesCallback}
+                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
+                                                       stateVarName={"otherTransgenes"}
                                                        products={this.state.otherTransgenes}
                                         />
                                     </div>
@@ -166,10 +168,11 @@ class Reagent extends React.Component {
                                                  onClick={this.check_cb_newantib}
                                                  value={this.state.cb_newantib_details}
                                                  onChange={(event) => {this.setNewAntibDetails(event.target.value);
-                                                 this.props.newAntibDetailsCallback(event.target.value)}}/>
+                                                 this.props.stateVarModifiedCallback(event.target.value, "newAntibDetails")}}/>
                                     <br/>
                                     <EditableTable title={"Other Antibodies used"}
-                                                   tableChangedCallback={this.props.otherAntibsCallback}
+                                                   tableChangedCallback={this.props.stateVarModifiedCallback}
+                                                   stateVarName={"otherAntibs"}
                                                    products={this.state.other_antib}
                                     />
                                     <FormControl.Feedback />

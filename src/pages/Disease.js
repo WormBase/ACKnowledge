@@ -26,19 +26,19 @@ class Disease extends React.Component {
     toggle_cb_orthologs() {
         let newVal = !this.state.cb_orthologs;
         this.setState({cb_orthologs: newVal});
-        this.props.orthologsCallback(newVal);
+        this.props.stateVarModifiedCallback(newVal, "orthologsDis");
     }
 
     toggle_cb_transgenic() {
         let newVal = !this.state.cb_transgenic;
         this.setState({cb_transgenic: newVal});
-        this.props.transgenicCallback(newVal);
+        this.props.stateVarModifiedCallback(newVal, "transgenicDis");
     }
 
     toggle_cb_modifiers() {
         let newVal = !this.state.cb_modifiers;
         this.setState({cb_modifiers: newVal});
-        this.props.modifiersCallback(newVal);
+        this.props.stateVarModifiedCallback(newVal, "modifiersDis");
     }
 
     render() {
@@ -96,7 +96,7 @@ class Disease extends React.Component {
                                     <FormControl componentClass="textarea" multiple
                                                  value={this.state.comments}
                                                  onChange={(event) => {
-                                                     this.props.commentsCallback(event.target.value);
+                                                     this.props.stateVarModifiedCallback(event.target.value, "disComments");
                                                      this.setOther(event.target.value);
                                                  }}
                                     />

@@ -32,68 +32,68 @@ class Phenotypes extends React.Component {
 
     check_cb_allele() {
         this.setState({cb_allele: true});
-        this.props.svmAlleleChanged(true);
+        this.props.stateVarModifiedCallback(true, "svmAllele");
     }
 
     toggle_cb_allele() {
         let newVal = !this.state.cb_allele;
         this.setState({cb_allele: newVal});
-        this.props.svmAlleleChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "svmAllele");
     }
 
     check_cb_rnai() {
         this.setState({cb_rnai: true});
-        this.props.svmRNAiChanged(true);
+        this.props.stateVarModifiedCallback(true, "svmRNAi");
     }
 
     toggle_cb_rnai() {
         let newVal = !this.state.cb_rnai;
         this.setState({cb_rnai: newVal});
-        this.props.svmRNAiChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "svmRNAi");
     }
 
     check_cb_transgene() {
         this.setState({cb_transgene: true});
-        this.props.svmTransgeneChanged(true);
+        this.props.stateVarModifiedCallback(true, "svmTransgene");
     }
 
     toggle_cb_transgene() {
         let newVal = !this.state.cb_transgene;
         this.setState({cb_transgene: newVal});
-        this.props.svmTransgeneChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "svmTransgene");
     }
 
     check_cb_chemical() {
         this.setState({cb_chemical: true});
-        this.props.chemicalChanged(true);
+        this.props.stateVarModifiedCallback(true, "chemical");
     }
 
     toggle_cb_chemical() {
         let newVal = !this.state.cb_chemical;
         this.setState({cb_chemical: newVal});
-        this.props.chemicalChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "chemical");
     }
 
     check_cb_env() {
         this.setState({cb_env: true});
-        this.props.envChanged(true);
+        this.props.stateVarModifiedCallback(true, "env");
     }
 
     toggle_cb_env() {
         let newVal = !this.state.cb_env;
         this.setState({cb_env: newVal});
-        this.props.envChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "env");
     }
 
     check_cb_protein() {
         this.setState({cb_protein: true});
-        this.props.svmProteinChanged(true);
+        this.props.stateVarModifiedCallback(true, "svmProtein");
     }
 
     toggle_cb_protein() {
         let newVal = !this.state.cb_protein;
         this.setState({cb_protein: newVal});
-        this.props.svmProteinChanged(newVal);
+        this.props.stateVarModifiedCallback(newVal, "svmProtein");
     }
 
     set_cb_protein_details(details) {
@@ -187,7 +187,7 @@ class Phenotypes extends React.Component {
                                              onClick={this.check_cb_protein}
                                              value={this.state.cb_protein_details}
                                              onChange={(event) => {
-                                                 this.props.svmProteinDetailsChanged(event.target.value);
+                                                 this.props.stateVarModifiedCallback(event.target.value, "svmProteinDetails");
                                                  this.set_cb_protein_details(event.target.value);
                                              }}
                                 />

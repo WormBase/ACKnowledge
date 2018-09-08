@@ -38,13 +38,13 @@ class Overview extends React.Component {
 
     check_genemodel_cb() {
         this.setState({cb_gmcorr: true});
-        this.props.geneModCorrCallback(true);
+        this.props.stateVarModifiedCallback(true, "geneModCorrection");
     }
 
     toggle_cb_gmcorr() {
         let newval = !this.state.cb_gmcorr;
         this.setState({cb_gmcorr: newval});
-        this.props.geneModCorrCallback(newval);
+        this.props.stateVarModifiedCallback(newval, "geneModCorrection");
     }
 
     handleChange(e) {
@@ -149,7 +149,8 @@ class Overview extends React.Component {
                                 itemsNamePlural={"genes"}
                                 selectedItems={this.state.selectedGenes}
                                 ref={instance => { this.geneSelect = instance; }}
-                                selectedItemsCallback={this.props.selectedGenesCallback}
+                                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                                stateVarName={"selectedGenes"}
                                 searchWBFunc={this.searchWBGenes}
                                 sampleQuery={"e.g. dbl-1"}
                             />
@@ -172,7 +173,7 @@ class Overview extends React.Component {
                                                      value={this.state.cb_gmcorr_details}
                                                      onClick={this.check_genemodel_cb}
                                                      onChange={(event) => {
-                                                         this.props.geneModCorrDetailsCallback(event.target.value);
+                                                         this.props.stateVarModifiedCallback(event.target.value, "geneModCorrectionDetails");
                                                          this.setGMCorrectionDetails(event.target.value)
                                                      }}
                                         />
@@ -205,7 +206,8 @@ class Overview extends React.Component {
                                 itemsNamePlural={"species"}
                                 selectedItems={this.state.selectedSpecies}
                                 ref={instance => { this.speciesSelect = instance; }}
-                                selectedItemsCallback={this.props.selectedSpeciesCallback}
+                                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                                stateVarName={"selectedSpecies"}
                                 searchWBFunc={this.searchWBSpecies}
                                 sampleQuery={"e.g. "}
                             />

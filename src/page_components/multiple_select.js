@@ -42,7 +42,7 @@ class MultipleSelect extends Component {
                 selectedItemsAll: selectedMerged,
                 tmpSelectedItems: new Set()
             });
-            this.props.selectedItemsCallback(selectedMerged);
+            this.props.selectedItemsCallback(selectedMerged, this.props["stateVarName"]);
         }
         else {
             this.setState({show: false});
@@ -67,7 +67,7 @@ class MultipleSelect extends Component {
                 selectedItemsAll: selectedNew,
                 tmpDeselectedItems: new Set()
             });
-            this.props.selectedItemsCallback(selectedNew);
+            this.props.selectedItemsCallback(selectedNew, this.props["stateVarName"]);
         }
     }
 
