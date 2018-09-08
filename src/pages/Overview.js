@@ -1,7 +1,6 @@
 import React from 'react';
 import {
-    Alert,
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Modal, OverlayTrigger,
+    Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from '../main_layout/AlertDismissable'
@@ -23,6 +22,7 @@ class Overview extends React.Component {
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.searchWBGenes = this.searchWBGenes.bind(this);
         this.searchWBSpecies = this.searchWBSpecies.bind(this);
@@ -40,16 +40,10 @@ class Overview extends React.Component {
         this.speciesSelect.setSelectedItems(species);
     }
 
-    setGMCorrection(value) {
-        this.setState({
-            cb_gmcorr: value
-        });
-    }
-
-    setGMCorrectionDetails(value) {
-        this.setState({
-            cb_gmcorr_details: value
-        });
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     searchWBGenes(searchString) {
@@ -155,7 +149,7 @@ class Overview extends React.Component {
                                                      onClick={() => this.check_cb("cb_gmcorr", "geneModCorrection")}
                                                      onChange={(event) => {
                                                          this.props.stateVarModifiedCallback(event.target.value, "geneModCorrectionDetails");
-                                                         this.setGMCorrectionDetails(event.target.value)
+                                                         this.selfStateVarModifiedFunction(event.target.value, "cb_gmcorr_details")
                                                      }}
                                         />
                                     </div>

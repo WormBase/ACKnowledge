@@ -20,7 +20,6 @@ class MultipleSelect extends Component {
             showMore: false,
             sampleQuery: props["sampleQuery"]
         };
-        // TODO sort main window!
 
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);

@@ -29,34 +29,17 @@ class Reagent extends React.Component {
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
         this.searchWBTransgenes = this.searchWBTransgenes.bind(this);
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
     setSelectedTransgenes(transgenes) {
         this.transgeneSelect.setSelectedItems(transgenes);
     }
 
-    setNewAntib(value) {
-        this.setState({
-            cb_newantib: value
-        });
-    }
-
-    setNewAntibDetails(value) {
-        this.setState({
-            cb_newantib_details: value
-        });
-    }
-
-    setOtherAntib(value) {
-        this.setState({
-            otherAntib: value
-        });
-    }
-
-    setOtherTransgenes(value) {
-        this.setState({
-            otherTransgenes: value
-        });
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     searchWBTransgenes(searchString) {
@@ -156,7 +139,7 @@ class Reagent extends React.Component {
                                     <FormControl type="text" placeholder="Enter antibody name and details here"
                                                  onClick={() => this.check_cb("cb_newantib", "newAntib")}
                                                  value={this.state.cb_newantib_details}
-                                                 onChange={(event) => {this.setNewAntibDetails(event.target.value);
+                                                 onChange={(event) => {this.selfStateVarModifiedFunction(event.target.value, "cb_newantib_details");
                                                  this.props.stateVarModifiedCallback(event.target.value, "newAntibDetails")}}/>
                                     <br/>
                                     <EditableTable title={"Other Antibodies used"}

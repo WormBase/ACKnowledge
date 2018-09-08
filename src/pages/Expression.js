@@ -25,8 +25,15 @@ class Expression extends React.Component {
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleOtherCheckChange = this.handleOtherCheckChange.bind(this);
+    }
+
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     getValidationState() {
@@ -48,60 +55,6 @@ class Expression extends React.Component {
 
     handleChange(e) {
         this.setState({ value: e.target.value });
-    }
-
-    setAnatomicExpr(anatomicExpr) {
-        this.setState({
-            cb_anatomic: anatomicExpr
-        });
-    }
-
-    setAnatomicExprDetails(anatomicExprDetails) {
-        this.setState({
-            cb_anatomic_details: anatomicExprDetails
-        });
-    }
-
-    setSiteAction(siteAction) {
-        this.setState({
-            cb_site: siteAction
-        });
-    }
-
-    setSiteActionDetails(siteActionDetails) {
-        this.setState({
-            cb_site_details: siteActionDetails
-        });
-    }
-
-    setTimeAction(timeAction) {
-        this.setState({
-            cb_time: timeAction
-        });
-    }
-
-    setTimeActionDetails(timeActionDetails) {
-        this.setState({
-            cb_time_details: timeActionDetails
-        });
-    }
-
-    setRnaSeq(rnaSeq) {
-        this.setState({
-            cb_rna: rnaSeq
-        });
-    }
-
-    setRnaSeqDetails(rnaSeqDetails) {
-        this.setState({
-            cb_rna_details: rnaSeqDetails
-        });
-    }
-
-    setAdditionalExpr(additionalExpr) {
-        this.setState({
-            additionalExpr: additionalExpr
-        });
     }
 
     render() {
@@ -135,7 +88,7 @@ class Expression extends React.Component {
                                          onClick={() => this.check_cb("cb_anatomic", "anatomicExpr")}
                                          value={this.state.cb_anatomic_details}
                                          onChange={(event) => {
-                                             this.setAnatomicExprDetails(event.target.value);
+                                             this.selfStateVarModifiedFunction(event.target.value, "cb_anatomic_details");
                                              this.props.stateVarModifiedCallback(event.target.value, "anatomicExprDetails");
                                          }}
                             />
@@ -147,7 +100,7 @@ class Expression extends React.Component {
                                          value={this.state.cb_site_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "siteActionDetails");
-                                             this.setSiteActionDetails(event.target.value);
+                                             this.selfStateVarModifiedFunction(event.target.value, "cb_site_details");
                                          }}
                             />
                             <Checkbox checked={this.state.cb_time} onClick={() => this.toggle_cb("cb_time", "timeAction")}>
@@ -158,7 +111,7 @@ class Expression extends React.Component {
                                          value={this.state.cb_time_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "timeActionDetails");
-                                             this.setTimeActionDetails(event.target.value);
+                                             this.selfStateVarModifiedFunction(event.target.value, "cb_time_details");
                                          }}
                             />
                             <Checkbox checked={this.state.cb_rna} onClick={() => this.toggle_cb("cb_rna", "rnaSeq")}>
@@ -169,7 +122,7 @@ class Expression extends React.Component {
                                          value={this.state.cb_rna_details}
                                          onChange={(event) => {
                                              this.props.stateVarModifiedCallback(event.target.value, "rnaSeqDetails");
-                                             this.setRnaSeqDetails(event.target.value);
+                                             this.selfStateVarModifiedFunction(event.target.value, "cb_rna_details");
                                          }}
                             />
                         </Form>
@@ -204,7 +157,7 @@ class Expression extends React.Component {
                                         placeholder="Add details here (e.g., qPCR, Proteomics)"
                                         onChange={(event) => {
                                             this.props.stateVarModifiedCallback(event.target.value, "additionalExpr");
-                                            this.setAdditionalExpr(event.target.value);
+                                            this.selfStateVarModifiedFunction(event.target.value, "additionalExpr");
                                         }}
                                     />
                                     <FormControl.Feedback />

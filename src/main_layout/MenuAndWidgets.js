@@ -71,34 +71,10 @@ class MenuAndWidgets extends React.Component {
             selectedStrains: new Set(),
             selectedTransgenes: new Set(),
             newAntib: false,
-            otherAntibs: [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ],
-            otherAlleles: [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ],
-            otherStrains: [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ],
-            otherTransgenes: [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ],
+            otherAntibs: [ { id: 1, name: "", publicationId: "" } ],
+            otherAlleles: [ { id: 1, name: "", publicationId: "" } ],
+            otherStrains: [ { id: 1, name: "", publicationId: "" } ],
+            otherTransgenes: [ { id: 1, name: "", publicationId: "" } ],
             newAntibDetails: "",
             anatomicExpr: false,
             anatomicExprDetails: "",
@@ -147,6 +123,8 @@ class MenuAndWidgets extends React.Component {
         return final_entities_list;
     }
 
+
+
     componentDidMount() {
         fetch('http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper&paper=' +
             this.state.paper_id + '&passwd=' + this.state.passwd)
@@ -181,8 +159,8 @@ class MenuAndWidgets extends React.Component {
             if (this.overview !== undefined) {
                 this.overview.setSelectedGenes(selectedGenes);
                 this.overview.setSelecedSpecies(selectedSpecies);
-                this.overview.setGMCorrection(genemodCorrection);
-                this.overview.setGMCorrectionDetails(genemodCorrectionDetails);
+                this.overview.selfStateVarModifiedFunction(genemodCorrection, "cb_gmcorr");
+                this.overview.selfStateVarModifiedFunction(genemodCorrectionDetails, "cb_gmcorr_details");
             }
             let selectedAlleles = new Set();
             if (data.variation.afp !== undefined && data.variation.afp !== "" && data.variation.afp !== null) {
@@ -204,24 +182,12 @@ class MenuAndWidgets extends React.Component {
             } else if (data.strain.tfp !== undefined && data.strain.tfp !== "") {
                 selectedStrains = data.strain.tfp.split(" | ").map((value) => value + " ( " + value + " )");
             }
-            let otherAlleles = [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ];
+            let otherAlleles = [ { id: 1, name: "", publicationId: "" } ];
             if (data.otheralleles.afp !== undefined && data.otheralleles.afp !== null &&
                 data.otheralleles.afp !== "") {
                 otherAlleles = data.otheralleles.afp;
             }
-            let otherStrains = [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ];
+            let otherStrains = [ { id: 1, name: "", publicationId: "" } ];
             if (data.otherstrains.afp !== undefined && data.otherstrains.afp !== null &&
                 data.otherstrains.afp !== "") {
                 otherStrains = data.otherstrains.afp;
@@ -229,9 +195,9 @@ class MenuAndWidgets extends React.Component {
             if (this.genetics !== undefined) {
                 this.genetics.setSelectedAlleles(selectedAlleles);
                 this.genetics.setSelecedStrains(selectedStrains);
-                this.genetics.setAlleleSeqChange(alleleSeqChange);
-                this.genetics.setOtherAlleles(otherAlleles);
-                this.genetics.setOtherStrains(otherStrains);
+                this.genetics.selfStateVarModifiedFunction(alleleSeqChange, "cb_allele");
+                this.genetics.selfStateVarModifiedFunction(otherAlleles, "otherAlleles");
+                this.genetics.selfStateVarModifiedFunction(otherStrains, "otherStrains");
             }
             let selectedTransgenes = new Set();
             if (data.transgene.afp !== undefined && data.transgene.afp !== "" && data.transgene.afp !== null) {
@@ -245,34 +211,22 @@ class MenuAndWidgets extends React.Component {
                 newAntib = true;
                 newAntibDetails = data.antibody.afp;
             }
-            let otherTransgenes = [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ];
+            let otherTransgenes = [ { id: 1, name: "", publicationId: "" } ];
             if (data.othertransgenes.afp !== undefined && data.othertransgenes.afp !== null &&
                 data.othertransgenes.afp !== "") {
                 otherTransgenes = data.othertransgenes.afp;
             }
-            let otherAntibodies = [
-                {
-                    id: 1,
-                    name: "",
-                    publicationId: ""
-                }
-            ];
+            let otherAntibodies = [ { id: 1, name: "", publicationId: "" } ];
             if (data.otherantibodies.afp !== undefined && data.otherantibodies.afp !== null &&
                 data.otherantibodies.afp !== "") {
                 otherAntibodies = data.otherantibodies.afp;
             }
             if (this.reagent !== undefined) {
                 this.reagent.setSelectedTransgenes(selectedTransgenes);
-                this.reagent.setNewAntib(newAntib);
-                this.reagent.setNewAntibDetails(newAntibDetails);
-                this.reagent.setOtherAntib(otherAntibodies);
-                this.reagent.setOtherTransgenes(otherTransgenes);
+                this.reagent.selfStateVarModifiedFunction(newAntib, "cb_newantib");
+                this.reagent.selfStateVarModifiedFunction(newAntibDetails, "cb_newantib_details");
+                this.reagent.selfStateVarModifiedFunction(otherAntibodies, "other_antib");
+                this.reagent.selfStateVarModifiedFunction(otherTransgenes, "otherTransgenes");
             }
             let anatomicExpr = false;
             let anatomicExprDetails = "";
@@ -307,15 +261,15 @@ class MenuAndWidgets extends React.Component {
                 additionalExpr = data.additionalexpr.afp;
             }
             if (this.expression !== undefined) {
-                this.expression.setAnatomicExpr(anatomicExpr);
-                this.expression.setAnatomicExprDetails(anatomicExprDetails);
-                this.expression.setSiteAction(siteAction);
-                this.expression.setSiteActionDetails(siteActionDetails);
-                this.expression.setTimeAction(timeAction);
-                this.expression.setTimeActionDetails(timeActionDetails);
-                this.expression.setRnaSeq(rnaSeq);
-                this.expression.setRnaSeqDetails(rnaSeqDetails);
-                this.expression.setAdditionalExpr(additionalExpr);
+                this.expression.selfStateVarModifiedFunction(anatomicExpr, "cb_anatomic");
+                this.expression.selfStateVarModifiedFunction(anatomicExprDetails, "cb_anatomic_details");
+                this.expression.selfStateVarModifiedFunction(siteAction, "cb_site");
+                this.expression.selfStateVarModifiedFunction(siteActionDetails, "cb_site_details");
+                this.expression.selfStateVarModifiedFunction(timeAction, "cb_time");
+                this.expression.selfStateVarModifiedFunction(timeActionDetails, "cb_time_details");
+                this.expression.selfStateVarModifiedFunction(rnaSeq, "cb_rna");
+                this.expression.selfStateVarModifiedFunction(rnaSeqDetails, "cb_rna_details");
+                this.expression.selfStateVarModifiedFunction(additionalExpr, "additionalExpr");
             }
             let svmGeneInt = false;
             let svmGeneIntDetails = "";
@@ -347,15 +301,15 @@ class MenuAndWidgets extends React.Component {
             if (this.interactions !== undefined) {
                 if (svmGeneInt === true) {
                     this.interactions.check_cb("cb_genetic", "svmGeneInt");
-                    this.interactions.set_cb_genetic_details(svmGeneIntDetails);
+                    this.interactions.selfStateVarModifiedFunction(svmGeneIntDetails, "cb_genetic_details");
                 }
                 if (svmPhysInt === true) {
                     this.interactions.check_cb("cb_physical", "scmPhysInt");
-                    this.interactions.set_cb_physical_details(svmPhysIntDetails);
+                    this.interactions.selfStateVarModifiedFunction(svmPhysIntDetails, "cb_physical_details");
                 }
                 if (svmGeneReg === true) {
                     this.interactions.check_cb("cb_regulatory", "svmGeneReg");
-                    this.interactions.set_cb_regulatory_details(svmGeneRegDetails);
+                    this.interactions.selfStateVarModifiedFunction(svmGeneRegDetails, "cb_regulatory_details");
                 }
             }
             let svmAllele = false;
@@ -404,7 +358,7 @@ class MenuAndWidgets extends React.Component {
                 }
                 if (svmProtein === true) {
                     this.phenotype.check_cb("cb_protein", "svmProtein");
-                    this.phenotype.set_cb_protein_details(svmProteinDetails);
+                    this.phenotype.selfStateVarModifiedFunction(svmProteinDetails, "cb_protein_details");
                 }
                 if (chemical === true) {
                     this.phenotype.check_cb("cb_chemical", "chemical");
@@ -418,7 +372,7 @@ class MenuAndWidgets extends React.Component {
                 other = data.comment.afp;
             }
             if (this.other !== undefined) {
-                this.other.setOther(other);
+                this.other.selfStateVarModifiedFunction(other, "other");
             }
             this.setState({
                 selectedGenes: selectedGenes,
@@ -646,6 +600,7 @@ class MenuAndWidgets extends React.Component {
                                                                      rnaSeqDetails={this.state.rnaSeqDetails}
                                                                      additionalExpr={this.state.additionalExpr}
                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                     selfStateVarModifiedFunction={this.stateVarModifiedCallback}
                                                                      toggleCb={this.toggle_cb}
                                                                      checkCb={this.check_cb}
                                            />}

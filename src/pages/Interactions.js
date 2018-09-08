@@ -21,16 +21,10 @@ class Interactions extends React.Component {
         this.toggle_cb = props["toggleCb"].bind(this);
     }
 
-    set_cb_regulatory_details(value) {
-        this.setState({cb_regulatory_details: value});
-    }
-
-    set_cb_genetic_details(value) {
-        this.setState({cb_genetic_details: value});
-    }
-
-    set_cb_physical_details(value) {
-        this.setState({cb_physical_details: value});
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     render() {
@@ -57,7 +51,7 @@ class Interactions extends React.Component {
                                              value={this.state.cb_genetic_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmGeneIntDetails");
-                                                 this.set_cb_genetic_details(event.target.value);
+                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_genetic_details");
                                              }}/>
                                 <Checkbox checked={this.state.cb_physical} onClick={() => this.toggle_cb("cb_physical", "svmPhysInt")}>
                                     <strong>Physical Interactions</strong>
@@ -67,7 +61,7 @@ class Interactions extends React.Component {
                                              value={this.state.cb_physical_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmPhysIntDetails");
-                                                 this.set_cb_physical_details(event.target.value);
+                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_physical_details");
                                              }}/>
                                 <Checkbox checked={this.state.cb_regulatory} onClick={() => this.toggle_cb("cb_regulatory", "svmGeneReg")}>
                                     <strong>Regulatory Interactions</strong>
@@ -77,7 +71,7 @@ class Interactions extends React.Component {
                                              value={this.state.cb_regulatory_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmGeneRegDetails");
-                                                 this.set_cb_regulatory_details(event.target.value);
+                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_regulatory_details");
                                              }}/>
                                 <FormControl.Feedback />
                             </FormGroup>

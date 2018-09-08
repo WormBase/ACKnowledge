@@ -18,12 +18,13 @@ class Phenotypes extends React.Component {
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
-    set_cb_protein_details(details) {
-        this.setState({
-            cb_protein_details: details
-        });
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     render() {
@@ -112,7 +113,7 @@ class Phenotypes extends React.Component {
                                              value={this.state.cb_protein_details}
                                              onChange={(event) => {
                                                  this.props.stateVarModifiedCallback(event.target.value, "svmProteinDetails");
-                                                 this.set_cb_protein_details(event.target.value);
+                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_protein_details");
                                              }}
                                 />
                                 <FormControl.Feedback />

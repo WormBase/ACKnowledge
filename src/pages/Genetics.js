@@ -24,9 +24,7 @@ class Genetics extends React.Component {
         this.toggle_cb = props["toggleCb"].bind(this);
         this.searchWBAlleles = this.searchWBAlleles.bind(this);
         this.searchWBStrains = this.searchWBStrains.bind(this);
-        this.setOtherAlleles = this.setOtherAlleles.bind(this);
-        this.setOtherStrains = this.setOtherStrains.bind(this);
-        this.setAlleleSeqChange = this.setAlleleSeqChange.bind(this);
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
     setSelectedAlleles(allelelist) {
@@ -37,22 +35,10 @@ class Genetics extends React.Component {
         this.strainSelect.setSelectedItems(strains);
     }
 
-    setOtherAlleles(value) {
-        this.setState({
-            otherAlleles: value
-        });
-    }
-
-    setOtherStrains(value) {
-        this.setState({
-            otherStrains: value
-        });
-    }
-
-    setAlleleSeqChange() {
-        this.setState({
-            cb_allele: true
-        });
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     searchWBAlleles(searchString) {

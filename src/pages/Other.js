@@ -8,12 +8,14 @@ class Other extends React.Component {
         this.state = {
             other: props["other"]
         };
+
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
-    setOther(other) {
-        this.setState({
-            other: other
-        });
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     render() {
@@ -45,7 +47,7 @@ class Other extends React.Component {
                                                      value={this.state.other}
                                                      onChange={(event) => {
                                                          this.props.stateVarModifiedCallback(event.target.value, "other");
-                                                         this.setOther(event.target.value);
+                                                         this.selfStateVarModifiedFunction(event.target.value, "other");
                                                      }}
                                         />
                                     </div>
