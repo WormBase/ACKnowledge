@@ -24,8 +24,6 @@ class Overview extends React.Component {
         this.toggle_cb = props["toggleCb"].bind(this);
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        this.searchWBGenes = this.searchWBGenes.bind(this);
-        this.searchWBSpecies = this.searchWBSpecies.bind(this);
     }
 
     handleChange(e) {
@@ -44,50 +42,6 @@ class Overview extends React.Component {
         let stateElem = {};
         stateElem[stateVarName] = value;
         this.setState(stateElem);
-    }
-
-    searchWBGenes(searchString) {
-        if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=gene&userValue=' +
-                searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        this.setState({show_fetch_data_error: true})
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
-                } else {
-                    this.geneSelect.setAvailableItems(data);
-                }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
-        } else {
-            this.geneSelect.setAvailableItems("");
-        }
-    }
-
-    searchWBSpecies(searchString) {
-        if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=species&userValue=' +
-                searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        this.setState({show_fetch_data_error: true})
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
-                } else {
-                    this.speciesSelect.setAvailableItems(data);
-                }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
-        } else {
-            this.speciesSelect.setAvailableItems("");
-        }
     }
 
     render() {
@@ -126,7 +80,7 @@ class Overview extends React.Component {
                                 ref={instance => { this.geneSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedGenes"}
-                                searchWBFunc={this.searchWBGenes}
+                                searchType={"gene"}
                                 sampleQuery={"e.g. dbl-1"}
                             />
                         </Panel.Body>
@@ -159,7 +113,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info" onClick={this.check_genemodel_cb}
+                                        <Button bsStyle="info" onClick={() => this.check_cb("cb_gmcorr", "geneModCorrection")}
                                                 href={"http://www.wormbase.org/submissions/gene_name.cgi"}
                                                 target="_blank">
                                             Request New Gene Name/Report Gene-Sequence
@@ -183,7 +137,7 @@ class Overview extends React.Component {
                                 ref={instance => { this.speciesSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedSpecies"}
-                                searchWBFunc={this.searchWBSpecies}
+                                searchType={"species"}
                                 sampleQuery={"e.g. "}
                             />
                         </Panel.Body>

@@ -28,7 +28,6 @@ class Reagent extends React.Component {
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
-        this.searchWBTransgenes = this.searchWBTransgenes.bind(this);
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
@@ -40,28 +39,6 @@ class Reagent extends React.Component {
         let stateElem = {};
         stateElem[stateVarName] = value;
         this.setState(stateElem);
-    }
-
-    searchWBTransgenes(searchString) {
-        if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=transgene&userValue=' +
-                searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        this.setState({show_fetch_data_error: true})
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
-                } else {
-                    this.transgeneSelect.setAvailableItems(data);
-                }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
-        } else {
-            this.transgeneSelect.setAvailableItems("");
-        }
     }
 
     render() {
@@ -101,7 +78,7 @@ class Reagent extends React.Component {
                                 ref={instance => { this.transgeneSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedTransgenes"}
-                                searchWBFunc={this.searchWBTransgenes}
+                                searchType={"transgene"}
                                 sampleQuery={"e.g. ctIs40"}
                             />
                         </Panel.Body>

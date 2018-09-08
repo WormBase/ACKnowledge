@@ -29,6 +29,7 @@ class MultipleSelect extends Component {
         this.handleRemSelectedFromList = this.handleRemSelectedFromList.bind(this);
         this.handleFilterIdChange = this.handleFilterIdChange.bind(this);
         this.setAvailableItems = this.setAvailableItems.bind(this);
+        this.searchWB = this.searchWB.bind(this);
     }
 
     handleAddSelectedToList() {
@@ -132,6 +133,28 @@ class MultipleSelect extends Component {
         }
     }
 
+    searchWB(searchString, searchType) {
+        if (searchString !== "") {
+            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=' +
+                searchType + '&userValue=' + searchString)
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.text();
+                    } else {
+                        this.setState({show_fetch_data_error: true})
+                    }
+                }).then(data => {
+                if (data === undefined) {
+                    this.setState({show_fetch_data_error: true})
+                } else {
+                    this.setAvailableItems(data);
+                }
+            }).catch(() => this.setState({show_fetch_data_error: true}));
+        } else {
+            this.setAvailableItems("");
+        }
+    }
+
     render(){
         let data_fetch_err_alert = false;
         if (this.state.show_fetch_data_error) {
@@ -227,7 +250,7 @@ class MultipleSelect extends Component {
                                     <input className="form-control"
                                            placeholder={this.state.sampleQuery}
                                            ref={instance => { this.searchInput = instance; }}
-                                           onChange={(e) => {this.props.searchWBFunc(e.target.value)}}
+                                           onChange={(e) => {this.searchWB(e.target.value, this.props["searchType"])}}
                                     />
                                 </div>
                             </div>

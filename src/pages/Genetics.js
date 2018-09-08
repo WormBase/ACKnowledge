@@ -22,8 +22,6 @@ class Genetics extends React.Component {
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
-        this.searchWBAlleles = this.searchWBAlleles.bind(this);
-        this.searchWBStrains = this.searchWBStrains.bind(this);
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
@@ -39,50 +37,6 @@ class Genetics extends React.Component {
         let stateElem = {};
         stateElem[stateVarName] = value;
         this.setState(stateElem);
-    }
-
-    searchWBAlleles(searchString) {
-        if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=variation&userValue=' +
-                searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        this.setState({show_fetch_data_error: true})
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
-                } else {
-                    this.alleleSelect.setAvailableItems(data);
-                }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
-        } else {
-            this.alleleSelect.setAvailableItems("");
-        }
-    }
-
-    searchWBStrains(searchString) {
-        if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=strain&userValue=' +
-                searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        this.setState({show_fetch_data_error: true})
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
-                } else {
-                    this.strainSelect.setAvailableItems(data);
-                }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
-        } else {
-            this.strainSelect.setAvailableItems("");
-        }
     }
 
     render() {
@@ -120,7 +74,7 @@ class Genetics extends React.Component {
                                 ref={instance => { this.alleleSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedAlleles"}
-                                searchWBFunc={this.searchWBAlleles}
+                                searchType={"variation"}
                                 sampleQuery={"e.g. e1000"}
                             />
                         </Panel.Body>
@@ -179,7 +133,7 @@ class Genetics extends React.Component {
                                 ref={instance => { this.strainSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedStrains"}
-                                searchWBFunc={this.searchWBStrains}
+                                searchType={"strain"}
                                 sampleQuery={"e.g. CB4856"}
                             />
                         </Panel.Body>
