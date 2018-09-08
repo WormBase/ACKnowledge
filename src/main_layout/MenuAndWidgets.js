@@ -73,7 +73,28 @@ class MenuAndWidgets extends React.Component {
             otherAntibs: [
                 {
                     id: 1,
-                    antibody: "",
+                    name: "",
+                    publicationId: ""
+                }
+            ],
+            otherAlleles: [
+                {
+                    id: 1,
+                    name: "",
+                    publicationId: ""
+                }
+            ],
+            otherStrains: [
+                {
+                    id: 1,
+                    name: "",
+                    publicationId: ""
+                }
+            ],
+            otherTransgenes: [
+                {
+                    id: 1,
+                    name: "",
                     publicationId: ""
                 }
             ],
@@ -136,6 +157,9 @@ class MenuAndWidgets extends React.Component {
         this.newAntibModifiedCallback = this.newAntibModifiedCallback.bind(this);
         this.newAntibDetailsModifiedCallback = this.newAntibDetailsModifiedCallback.bind(this);
         this.otherAntibsModifiedCallback = this.otherAntibsModifiedCallback.bind(this);
+        this.otherAllelesModifiedCallback = this.otherAllelesModifiedCallback.bind(this);
+        this.otherStrainsModifiedCallback = this.otherStrainsModifiedCallback.bind(this);
+        this.otherTransgenesModifiedCallback = this.otherTransgenesModifiedCallback.bind(this);
         this.anatomicExprModifiedCallback = this.anatomicExprModifiedCallback.bind(this);
         this.anatomicExprDetailsModifiedCallback = this.anatomicExprDetailsModifiedCallback.bind(this);
         this.siteActionModifiedCallback = this.siteActionModifiedCallback.bind(this);
@@ -219,10 +243,34 @@ class MenuAndWidgets extends React.Component {
             } else if (data.strain.tfp !== undefined && data.strain.tfp !== "") {
                 selectedStrains = data.strain.tfp.split(" | ").map((value) => value + " ( " + value + " )");
             }
+            let otherAlleles = [
+                {
+                    id: 1,
+                    name: "",
+                    publicationId: ""
+                }
+            ];
+            if (data.otheralleles.afp !== undefined && data.otheralleles.afp !== null &&
+                data.otheralleles.afp !== "") {
+                otherAlleles = data.otheralleles.afp;
+            }
+            let otherStrains = [
+                {
+                    id: 1,
+                    name: "",
+                    publicationId: ""
+                }
+            ];
+            if (data.otherstrains.afp !== undefined && data.otherstrains.afp !== null &&
+                data.otherstrains.afp !== "") {
+                otherStrains = data.otherstrains.afp;
+            }
             if (this.genetics !== undefined) {
                 this.genetics.setSelectedAlleles(selectedAlleles);
                 this.genetics.setSelecedStrains(selectedStrains);
                 this.genetics.setAlleleSeqChange(alleleSeqChange);
+                this.genetics.setOtherAlleles(otherAlleles);
+                this.genetics.setOtherStrains(otherStrains);
             }
             let selectedTransgenes = new Set();
             if (data.transgene.afp !== undefined && data.transgene.afp !== "" && data.transgene.afp !== null) {
@@ -236,10 +284,21 @@ class MenuAndWidgets extends React.Component {
                 newAntib = true;
                 newAntibDetails = data.antibody.afp;
             }
+            let otherTransgenes = [
+                {
+                    id: 1,
+                    name: "",
+                    publicationId: ""
+                }
+            ];
+            if (data.othertransgenes.afp !== undefined && data.othertransgenes.afp !== null &&
+                data.othertransgenes.afp !== "") {
+                otherTransgenes = data.othertransgenes.afp;
+            }
             let otherAntibodies = [
                 {
                     id: 1,
-                    antibody: "",
+                    name: "",
                     publicationId: ""
                 }
             ];
@@ -252,6 +311,7 @@ class MenuAndWidgets extends React.Component {
                 this.reagent.setNewAntib(newAntib);
                 this.reagent.setNewAntibDetails(newAntibDetails);
                 this.reagent.setOtherAntib(otherAntibodies);
+                this.reagent.setOtherTransgenes(otherTransgenes);
             }
             let anatomicExpr = false;
             let anatomicExprDetails = "";
@@ -410,6 +470,9 @@ class MenuAndWidgets extends React.Component {
                 selectedTransgenes: selectedTransgenes,
                 newAntib: newAntib,
                 otherAntibs: otherAntibodies,
+                otherAlleles: otherAlleles,
+                otherStrains: otherStrains,
+                otherTransgenes: otherTransgenes,
                 anatomicExpr: anatomicExpr,
                 anatomicExprDetails: anatomicExprDetails,
                 siteAction: siteAction,
@@ -584,6 +647,24 @@ class MenuAndWidgets extends React.Component {
     otherAntibsModifiedCallback(values) {
         this.setState({
             otherAntibs: values
+        });
+    }
+
+    otherAllelesModifiedCallback(values) {
+        this.setState({
+            otherAlleles: values
+        });
+    }
+
+    otherStrainsModifiedCallback(values) {
+        this.setState({
+            otherStrains: values
+        });
+    }
+
+    otherTransgenesModifiedCallback(values) {
+        this.setState({
+            otherTransgenes: values
         });
     }
 
@@ -801,6 +882,10 @@ class MenuAndWidgets extends React.Component {
                                                                     selectedStrainsCallback={this.selectedStrainsModifiedCallback}
                                                                     alleleSeqChange={this.state.alleleSeqChange}
                                                                     alleleSeqChangeCallback={this.alleleSeqChangeModifiedCallback}
+                                                                    otherAlleles={this.state.otherAlleles}
+                                                                    otherAllelesCallback={this.otherAllelesModifiedCallback}
+                                                                    otherStrains={this.state.otherStrains}
+                                                                    otherStrainsCallback={this.otherStrainsModifiedCallback}
                                            />}
                                     />
                                     <Route path="/reagent"
@@ -814,6 +899,8 @@ class MenuAndWidgets extends React.Component {
                                                                   newAntibDetailsCallback={this.newAntibDetailsModifiedCallback}
                                                                   otherAntibs={this.state.otherAntibs}
                                                                   otherAntibsCallback={this.otherAntibsModifiedCallback}
+                                                                  otherTransgenes={this.state.otherTransgenes}
+                                                                  otherTransgenesCallback={this.otherTransgenesModifiedCallback}
                                            />}
                                     />
                                     <Route path="/expression"

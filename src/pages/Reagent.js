@@ -22,7 +22,8 @@ class Reagent extends React.Component {
             cb_newantib: props["newAntib"],
             cb_newantib_details: props["newAntibDetails"],
             other_antib: props["otherAntibs"],
-            transgeneSelect: undefined
+            transgeneSelect: undefined,
+            otherTransgenes: props["otherTransgenes"]
         };
 
         this.check_cb_newantib = this.check_cb_newantib.bind(this);
@@ -60,6 +61,12 @@ class Reagent extends React.Component {
     setOtherAntib(value) {
         this.setState({
             otherAntib: value
+        });
+    }
+
+    setOtherTransgenes(value) {
+        this.setState({
+            otherTransgenes: value
         });
     }
 
@@ -124,6 +131,23 @@ class Reagent extends React.Component {
                                 searchWBFunc={this.searchWBTransgenes}
                                 sampleQuery={"e.g. ctIs40"}
                             />
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">New Transgenes</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <EditableTable title={"New Transgenes"}
+                                                       tableChangedCallback={this.props.otherTransgenesCallback}
+                                                       products={this.state.otherTransgenes}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </Panel.Body>
                     </Panel>
                     <Panel>

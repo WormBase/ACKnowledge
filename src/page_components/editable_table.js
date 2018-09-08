@@ -23,7 +23,7 @@ class EditableTable extends Component {
         var id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
         var product = {
             id: id,
-            antibody: "",
+            name: "",
             publicationId: "",
         };
         this.state.products.push(product);
@@ -54,7 +54,7 @@ class EditableTable extends Component {
 
         return (
             <div>
-                <label>Other Antibodies</label>
+                <label>{this.props["title"]}</label>
                 <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)}
                               onRowAdd={this.handleAddEvent.bind(this)}
                               onRowDel={this.handleRowDel.bind(this)}
@@ -76,7 +76,7 @@ class ProductTable extends React.Component {
                 <Table striped bordered condensed hover>
                     <thead>
                     <tr>
-                        <th>Antibody</th>
+                        <th>Name</th>
                         <th>Publication ID - PMID</th>
                         <th>&nbsp;</th>
                     </tr>
@@ -107,8 +107,8 @@ class ProductRow extends React.Component {
         return (
             <tr>
                 <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{
-                    type: "antibody",
-                    value: this.props.product.antibody,
+                    type: "name",
+                    value: this.props.product.name,
                     id: this.props.product.id
                 }}/>
                 <EditableCell onProductTableUpdate={this.props.onProductTableUpdate} cellData={{

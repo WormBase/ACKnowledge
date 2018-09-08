@@ -5,6 +5,7 @@ import {
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
+import EditableTable from "../page_components/editable_table";
 
 class Genetics extends React.Component {
     constructor(props, context) {
@@ -14,13 +15,17 @@ class Genetics extends React.Component {
             selectedStrains: props["selectedStrains"],
             cb_allele: props["alleleSeqChange"],
             alleleSelect: undefined,
-            strainSelect: undefined
+            strainSelect: undefined,
+            otherAlleles: props["otherAlleles"],
+            otherStrains: props["otherStrains"],
         };
 
         this.check_cb_allele = this.check_cb_allele.bind(this);
         this.toggle_cb_allele = this.toggle_cb_allele.bind(this);
         this.searchWBAlleles = this.searchWBAlleles.bind(this);
         this.searchWBStrains = this.searchWBStrains.bind(this);
+        this.setOtherAlleles = this.setOtherAlleles.bind(this);
+        this.setOtherStrains = this.setOtherStrains.bind(this);
     }
 
     check_cb_allele() {
@@ -43,6 +48,18 @@ class Genetics extends React.Component {
     }
 
     setAlleleSeqChange(){}
+
+    setOtherAlleles(value) {
+        this.setState({
+            otherAlleles: value
+        });
+    }
+
+    setOtherStrains(value) {
+        this.setState({
+            otherStrains: value
+        });
+    }
 
     searchWBAlleles(searchString) {
         if (searchString !== "") {
@@ -151,6 +168,23 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
+                            <Panel.Title componentClass="h3">New alleles</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <EditableTable title={"New Alleles"}
+                                                       tableChangedCallback={this.props.otherAllelesCallback}
+                                                       products={this.state.otherAlleles}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
                             <Panel.Title componentClass="h3">Strains in the paper <OverlayTrigger placement="top" overlay={strainsTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger></Panel.Title>
@@ -165,6 +199,23 @@ class Genetics extends React.Component {
                                 searchWBFunc={this.searchWBStrains}
                                 sampleQuery={"e.g. CB4856"}
                             />
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">New Strains</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <EditableTable title={"New Strains"}
+                                                       tableChangedCallback={this.props.otherStrainsCallback}
+                                                       products={this.state.otherStrains}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </Panel.Body>
                     </Panel>
                 </form>
