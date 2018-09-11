@@ -190,6 +190,24 @@ def get_paper_journal(cur, paper_id):
         return ""
 
 
+def get_paper_antibody(cur, paper_id):
+    """
+    get paper antibody value
+
+    Args:
+        cur: a DB cursor
+        paper_id: the id of the paper
+    Returns:
+        bool: whether the antibody value has been set for this paper
+    """
+    cur.execute("SELECT * FROM cur_strdata WHERE cur_paper = '{}'".format(paper_id))
+    res = cur.fetchone()
+    if res:
+        if res[1] == "antibody" and res[3] != "":
+            return True
+    return False
+
+
 def get_transgene_name_id_map(cur):
     """
     get a map that returns the id of a transgene given its symbol
@@ -222,6 +240,10 @@ def get_taxonid_speciesnamearr_map(cur):
 def write_extracted_entities_in_paper(cur, publication_id, entities_ids: List[str], table_name):
     cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
         table_name, table_name, publication_id, " | ".join(entities_ids)))
+
+
+def write_antibody(cur, paper_id):
+    cur.execute("INSERT INTO afp_antibody (joinkey, afp_antibody) VALUES('{}', 'Positive')".format(paper_id))
 
 
 def write_passwd(cur, publication_id, passwd):

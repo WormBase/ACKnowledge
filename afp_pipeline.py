@@ -110,13 +110,10 @@ def main():
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
     genes_vocabulary = set(get_all_genes(cur))
-    proteins_vocabulary = set([gene.upper() for gene in genes_vocabulary])
-    protein_gene_map = {gene.upper(): gene for gene in genes_vocabulary}
     alleles_vocabulary = set(get_all_alleles(cur))
     strains_vocabulary = set(get_all_strains(cur))
     transgene_vocabulary = set(get_all_transgenes(cur))
     genes_in_papers_dict = defaultdict(list)
-    proteins_in_papers_dict = defaultdict(list)
     alleles_in_papers_dict = defaultdict(list)
     strains_in_papers_dict = defaultdict(list)
     transgenes_in_papers_dict = defaultdict(list)
@@ -133,9 +130,7 @@ def main():
     for paper_id, fulltext in fulltexts_dict.items():
         logger.info("Processing paper " + paper_id)
         logger.info("Getting list of genes through string matching")
-        get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2)
-        logger.info("Getting list of proteins to genes through string matching")
-        get_matches_in_fulltext(fulltext, proteins_vocabulary, proteins_in_papers_dict, paper_id, 2)
+        get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2, match_uppercase=True)
         logger.info("Getting list of alleles through string matching")
         get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
         logger.info("Getting list of strains through string matching")
@@ -145,8 +140,6 @@ def main():
         logger.info("Getting list of species through string matching")
         get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 3)
     logger.info("Transforming gene keywords into gene ids")
-    for paper_id, proteins_list in proteins_in_papers_dict.items():
-        genes_in_papers_dict[paper_id].extend([protein_gene_map[protein] for protein in proteins_list])
     gene_ids_in_documents = {paper_id: set([gene_symbol_id_map[gene_word] + ";%;" + gene_word for gene_word in
                                             genes_list if gene_word in gene_symbol_id_map]) for
                              paper_id, genes_list in genes_in_papers_dict.items()}
@@ -164,6 +157,8 @@ def main():
     conn = psycopg2.connect("dbname='testdb' user='valerio' password='asdf1234' host='131.215.52.92'")
     cur = conn.cursor()
     for paper_id in list(fulltexts_dict.keys()):
+        if get_paper_antibody(cur, paper_id):
+            write_antibody(cur, paper_id)
         write_extracted_entities_in_paper(cur, paper_id, list(gene_ids_in_documents[paper_id])
                                           if paper_id in gene_ids_in_documents else [], "tfp_genestudied")
         write_extracted_entities_in_paper(cur, paper_id, list(allele_ids_in_documents[paper_id])

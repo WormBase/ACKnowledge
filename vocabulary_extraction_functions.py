@@ -22,19 +22,24 @@ class TqdmHandler(logging.StreamHandler):
         tqdm.write(msg)
 
 
-def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences):
+def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences,
+                            match_uppercase: bool = False):
     logger = logging.getLogger("AFP vocabulary extraction")
     logger.addHandler(TqdmHandler)
-    fulltext_copy = fulltext_str
     for keyword in tqdm(keywords):
+        match_counter = 0
+        reg = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + re.escape(keyword) +
+                         "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
+        reg_upper = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + re.escape(keyword.upper()) +
+                               "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
         try:
-            regx = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + keyword +
-                              "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
-            matches = re.findall(regx, fulltext_copy)
-            if len(matches) >= min_num_occurrences:
-                papers_map[paper_id].append(keyword)
+            match_counter += len(re.findall(reg, fulltext_str))
+            if match_uppercase:
+                match_counter += len(re.findall(reg_upper, fulltext_str))
         except:
             pass
+        if match_counter >= min_num_occurrences:
+            papers_map[paper_id].append(keyword)
 
 
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_name_map, min_occurrences: int = 1):
