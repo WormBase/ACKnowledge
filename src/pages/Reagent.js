@@ -13,6 +13,7 @@ import {
 import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
 import EditableTable from "../page_components/editable_table";
+import OneColumnEditableTable from "../page_components/onecol_table";
 
 class Reagent extends React.Component {
     constructor(props, context) {
@@ -91,10 +92,12 @@ class Reagent extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <EditableTable title={"New Transgenes"}
-                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
-                                                       stateVarName={"otherTransgenes"}
-                                                       products={this.state.otherTransgenes}
+                                        <OneColumnEditableTable
+                                            title={""}
+                                            tableChangedCallback={this.props.stateVarModifiedCallback}
+                                            stateVarName={"otherTransgenes"}
+                                            products={this.state.otherTransgenes}
+                                            sampleText={"e.g. ctIs40"}
                                         />
                                     </div>
                                 </div>

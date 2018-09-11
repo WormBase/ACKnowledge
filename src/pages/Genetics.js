@@ -6,6 +6,7 @@ import {
 import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
 import EditableTable from "../page_components/editable_table";
+import OneColumnEditableTable from "../page_components/onecol_table";
 
 class Genetics extends React.Component {
     constructor(props, context) {
@@ -81,6 +82,26 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
+                            <Panel.Title componentClass="h3">New alleles</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <OneColumnEditableTable
+                                            title={""}
+                                            tableChangedCallback={this.props.stateVarModifiedCallback}
+                                            stateVarName={"otherAlleles"}
+                                            products={this.state.otherAlleles}
+                                            sampleText={"e.g. e1000"}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
                             <Panel.Title componentClass="h3">Allele sequence change</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
@@ -96,24 +117,6 @@ class Genetics extends React.Component {
                                                 onClick={() => this.check_cb("cb_allele", "alleleSeqChange")}>
                                             Add details in online form
                                         </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Panel.Body>
-                    </Panel>
-                    <Panel>
-                        <Panel.Heading>
-                            <Panel.Title componentClass="h3">New alleles</Panel.Title>
-                        </Panel.Heading>
-                        <Panel.Body>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <EditableTable title={"New Alleles"}
-                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
-                                                       stateVarName={"otherAlleles"}
-                                                       products={this.state.otherAlleles}
-                                        />
                                     </div>
                                 </div>
                             </div>
@@ -146,10 +149,12 @@ class Genetics extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <EditableTable title={"New Strains"}
-                                                       tableChangedCallback={this.props.stateVarModifiedCallback}
-                                                       stateVarName={"otherStrains"}
-                                                       products={this.state.otherStrains}
+                                        <OneColumnEditableTable
+                                            title={""}
+                                            tableChangedCallback={this.props.stateVarModifiedCallback}
+                                            stateVarName={"otherStrains"}
+                                            products={this.state.otherStrains}
+                                            sampleText={"e.g. CB1001"}
                                         />
                                     </div>
                                 </div>

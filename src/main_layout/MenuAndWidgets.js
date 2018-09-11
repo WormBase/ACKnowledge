@@ -72,9 +72,9 @@ class MenuAndWidgets extends React.Component {
             selectedTransgenes: new Set(),
             newAntib: false,
             otherAntibs: [ { id: 1, name: "", publicationId: "" } ],
-            otherAlleles: [ { id: 1, name: "", publicationId: "" } ],
-            otherStrains: [ { id: 1, name: "", publicationId: "" } ],
-            otherTransgenes: [ { id: 1, name: "", publicationId: "" } ],
+            otherAlleles: [ { id: 1, name: "" } ],
+            otherStrains: [ { id: 1, name: "" } ],
+            otherTransgenes: [ { id: 1, name: "" } ],
             newAntibDetails: "",
             anatomicExpr: false,
             anatomicExprDetails: "",
@@ -182,12 +182,12 @@ class MenuAndWidgets extends React.Component {
             } else if (data.strain.tfp !== undefined && data.strain.tfp !== "") {
                 selectedStrains = data.strain.tfp.split(" | ").map((value) => value + " ( " + value + " )");
             }
-            let otherAlleles = [ { id: 1, name: "", publicationId: "" } ];
+            let otherAlleles = [ { id: 1, name: "" } ];
             if (data.otheralleles.afp !== undefined && data.otheralleles.afp !== null &&
                 data.otheralleles.afp !== "") {
                 otherAlleles = data.otheralleles.afp;
             }
-            let otherStrains = [ { id: 1, name: "", publicationId: "" } ];
+            let otherStrains = [ { id: 1, name: "" } ];
             if (data.otherstrains.afp !== undefined && data.otherstrains.afp !== null &&
                 data.otherstrains.afp !== "") {
                 otherStrains = data.otherstrains.afp;
@@ -211,7 +211,7 @@ class MenuAndWidgets extends React.Component {
                 newAntib = true;
                 newAntibDetails = data.antibody.afp;
             }
-            let otherTransgenes = [ { id: 1, name: "", publicationId: "" } ];
+            let otherTransgenes = [ { id: 1, name: "" } ];
             if (data.othertransgenes.afp !== undefined && data.othertransgenes.afp !== null &&
                 data.othertransgenes.afp !== "") {
                 otherTransgenes = data.othertransgenes.afp;
