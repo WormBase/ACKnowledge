@@ -109,11 +109,13 @@ class Genetics extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-7">
                                         <Checkbox checked={this.state.cb_allele}
-                                                  onClick={() => this.toggle_cb("cb_allele", "alleleSeqChange")}><strong>Allele sequence change</strong></Checkbox>
+                                                  onClick={() => {
+                                                      this.toggle_cb("cb_allele", "alleleSeqChange");
+                                                      window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
+                                                  }}><strong>Allele sequence change</strong></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
                                         <Button bsStyle="info"
-                                                href={"https://wormbase.org/submissions/allele_sequence.cgi"} target="_blank"
                                                 onClick={() => this.check_cb("cb_allele", "alleleSeqChange")}>
                                             Add details in online form
                                         </Button>

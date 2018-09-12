@@ -113,9 +113,10 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info" onClick={() => this.check_cb("cb_gmcorr", "geneModCorrection")}
-                                                href={"http://www.wormbase.org/submissions/gene_name.cgi"}
-                                                target="_blank">
+                                        <Button bsStyle="info" onClick={() => {
+                                            this.check_cb("cb_gmcorr", "geneModCorrection");
+                                            window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
+                                        }}>
                                             Request New Gene Name/Report Gene-Sequence
                                         </Button>
                                     </div>

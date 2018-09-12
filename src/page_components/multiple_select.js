@@ -200,7 +200,9 @@ class MultipleSelect extends Component {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsStyle="info" onClick={this.handleRemSelectedFromList}>
+                                    <Button
+                                        bsStyle="info"
+                                        onClick={this.handleRemSelectedFromList}>
                                         <Glyphicon glyph="minus-sign"/>
                                         &nbsp; Remove selected
                                     </Button>
