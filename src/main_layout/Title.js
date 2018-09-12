@@ -23,6 +23,11 @@ class Title extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
+                        &nbsp;
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-12">
                         <h4 className="text-left">{Title.removePdfTags(this.state.title)}</h4>
                     </div>
                 </div>
