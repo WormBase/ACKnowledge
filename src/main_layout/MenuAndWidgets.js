@@ -230,10 +230,10 @@ class MenuAndWidgets extends React.Component {
             }
             let anatomicExpr = false;
             let anatomicExprDetails = "";
-            if (data.anatomicexpr.afp !== undefined && data.anatomicexpr.afp !== null && data.anatomicexpr.afp !==
+            if (data.otherexpr.afp !== undefined && data.otherexpr.afp !== null && data.otherexpr.afp !==
                 "no") {
                 anatomicExpr = true;
-                anatomicExprDetails = data.anatomicexpr.afp;
+                anatomicExprDetails = data.otherexpr.afp;
             } else if (data.otherexpr.svm !== undefined && (data.otherexpr.svm === "high" ||
                 data.otherexpr.svm === "medium")) {
                 anatomicExpr = true;
@@ -334,9 +334,9 @@ class MenuAndWidgets extends React.Component {
             }
             let svmProtein = false;
             let svmProteinDetails = "";
-            if (data.catalyticact !== undefined && data.catalyticact.afp !== undefined && data.catalyticact.afp !== "" && data.catalyticact.afp !== null) {
+            if (data.invitro !== undefined && data.invitro.afp !== undefined && data.invitro.afp !== "" && data.invitro.afp !== null) {
                 svmProtein = true;
-                svmProteinDetails = data.catalyticact.afp;
+                svmProteinDetails = data.invitro.afp;
             }
             let chemical = false;
             if (data.chemphen.afp !== undefined && data.chemphen.afp !== "" && data.chemphen.afp !== null) {
