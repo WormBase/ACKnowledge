@@ -113,7 +113,7 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Button bsStyle="info" onClick={() => {
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
                                             this.check_cb("cb_gmcorr", "geneModCorrection");
                                             window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                         }}>

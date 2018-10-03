@@ -2,6 +2,10 @@
     background-color: #ffffff;
 }
 
+.wrap-button {
+    white-space: normal;
+}
+
 body {
     margin: 0;
     padding: 0;
