@@ -188,7 +188,7 @@ class MultipleSelect extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-7">
+                    <div className="col-sm-6">
                         <FormControl componentClass="select" multiple
                                      onChange={this.handleChangeIdentifiedListSelection}
                                      defaultValue=""
@@ -196,10 +196,10 @@ class MultipleSelect extends Component {
                             {[...this.state.selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
                         </FormControl>
                     </div>
-                    <div className="col-sm-5">
+                    <div className="col-sm-6">
                         <div className="container-fluid">
                             <div className="row">
-                                <div className="col-sm-12">
+                                <div className="col-md-12">
                                     <Button
                                         bsStyle="info"
                                         onClick={this.handleRemSelectedFromList}>
@@ -235,7 +235,7 @@ class MultipleSelect extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-7">
+                    <div className="col-sm-6">
                         <input className="form-control" onChange={this.handleFilterIdChange}
                                placeholder={"Start typing to filter " + this.state.itemsNamePlural + " list"}/>
                     </div>
