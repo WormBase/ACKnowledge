@@ -14,6 +14,7 @@ import ContactInfo from "../pages/ContactInfo";
 import queryString from 'query-string';
 import Title from "./Title";
 import Disease from "../pages/Disease";
+import Header from "./Header";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -502,10 +503,18 @@ class MenuAndWidgets extends React.Component {
             </Alert>;
         }
         let parameters = queryString.parse(this.props.location.search);
+        let title = parameters.title;
+        if (title === undefined) {
+            title = "";
+        } else {
+            title = "\"" + title + "\"";
+        }
         return (
-            <div>
+            <div className="container">
+                <div className="row">
                 {data_fetch_err_alert}
-                <Title title={"\"" + parameters.title + "\"; " + parameters.journal}/><br/>
+                <Header />
+                <Title title={title} journal={parameters.journal} pmid={parameters.pmid}/><br/>
                 <div>
                     <div>
                         <div className="col-sm-4">
@@ -535,9 +544,9 @@ class MenuAndWidgets extends React.Component {
                                             <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
                                         </IndexLinkContainer>
                                         <IndexLinkContainer to={"other" + this.props.location.search} active={this.state.selectedMenu === 8}>
-                                            <NavItem eventKey={8}>Anything else?&nbsp;{otherOk}</NavItem></IndexLinkContainer>
+                                            <NavItem eventKey={8}>Additional data&nbsp;{otherOk}</NavItem></IndexLinkContainer>
                                         <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 9}>
-                                            <NavItem eventKey={9}>Update contact info&nbsp;{contact_infoOk}</NavItem>
+                                            <NavItem eventKey={9}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
                                     </Nav>
                                 </div>
@@ -654,19 +663,21 @@ class MenuAndWidgets extends React.Component {
                                            render={() => <Other
                                                callback={this.handleFinishedSection}
                                                saved={this.state.completedSections["other"]}
-                                               other={this.state.other}
-                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
                                            />}
                                     />
                                     <Route path="/contact_info" render={() => <ContactInfo
                                         callback={this.handleFinishedSection}
-                                        saved={this.state.completedSections["contact_info"]}/>}/>
+                                        saved={this.state.completedSections["contact_info"]}
+                                        other={this.state.other}
+                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                    />}/>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <MyLargeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
+            </div>
             </div>
         );
     }

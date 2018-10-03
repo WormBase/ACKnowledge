@@ -4,7 +4,8 @@ class Title extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: props.title
+            title: props.title,
+            journal: props.journal
         };
     }
 
@@ -14,6 +15,18 @@ class Title extends React.Component {
     }
 
     render() {
+
+        let title = "";
+        if (this.state.title !== "") {
+            if (this.props["pmid"] !== "" && this.props["pmid"] !== undefined) {
+                title = <h4 className="text-left"><a
+                    href={"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props["pmid"]}>{Title.removePdfTags(this.state.title)}</a>; {this.state.journal}
+                </h4>;
+            } else {
+                title = <h4 className="text-left">{Title.removePdfTags(this.state.title)}; {this.state.journal}</h4>;
+            }
+        }
+
         return (
             <div className="container">
                 <div className="row">
@@ -23,12 +36,7 @@ class Title extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h4 className="text-left">{Title.removePdfTags(this.state.title)}</h4>
+                        {title}
                     </div>
                 </div>
             </div>

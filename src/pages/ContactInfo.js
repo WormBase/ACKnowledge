@@ -3,10 +3,25 @@ import {Button, FormControl, Panel} from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 
 class Other extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            other: props["other"]
+        };
+
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
+    }
+
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
+    }
+
     render() {
         return (
             <div>
-                <AlertDismissable title="" text="In this page you can update your contact information."
+                <AlertDismissable title="" text="In this page you can send comments to the WormBase team and finalize the data submission process."
                                   bsStyle="info"
                                   show={!this.props.saved}/>
                 <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
@@ -15,24 +30,25 @@ class Other extends React.Component {
                     <Panel>
                         <Panel.Heading>
                             <Panel.Title componentClass="h3">
-                                Update contact info and lineage
+                                Have we missed anything? Do you have any comments?
                             </Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        Thank you for filling out the form, as a last step please check that your
-                                        contact info and lineage are up to date by clicking on the button below
+                                        Write comments here
                                     </div>
                                 </div>
-                                <br/>
                                 <div className="row">
-                                    <div className="col-sm-5">
-                                        <Button bsStyle="info"
-                                                href={"http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/person_lineage.cgi?action=Display&number"}
-                                                target={"_blank"}>
-                                            Update contact info and lineage</Button>
+                                    <div className="col-sm-12">
+                                        <FormControl componentClass="textarea" multiple
+                                                     value={this.state.other}
+                                                     onChange={(event) => {
+                                                         this.props.stateVarModifiedCallback(event.target.value, "other");
+                                                         this.selfStateVarModifiedFunction(event.target.value, "other");
+                                                     }}
+                                        />
                                     </div>
                                 </div>
                             </div>

@@ -4,3 +4,13 @@
     left: 50%;
     transform: translate(-50%, -50%) !important;
 }
+
+.header-row {
+    background-color: #ffffff;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}

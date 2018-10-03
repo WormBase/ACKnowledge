@@ -65,6 +65,27 @@ class Expression extends React.Component {
             </Tooltip>
         );
 
+        const siteTooltip = (
+            <Tooltip id="tooltip">
+                In what tissue is a specific gene to carry out its
+                function? This can be demonstrated by phenotype rescue using a
+                tissue-specific exogenous promoter, a tissue-specific knock down of gene
+                function or other similar experiments. We encourage authors to refer to
+                a specific piece of text from their publication in the text box provided.
+            </Tooltip>
+        );
+
+        const timeTooltip = (
+            <Tooltip id="tooltip">
+                At what time is a specific gene to carry out its
+                function? This can be demonstrated by phenotype rescue using a
+                lifestage-specific exogenous promoter, a temperature-shift experiment
+                with a temperature-sensitive allele or other similar experiments. We
+                encourage authors to refer to a specific piece of text from their
+                publication in the text box provided.
+            </Tooltip>
+        );
+
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find expression data that have
@@ -93,7 +114,9 @@ class Expression extends React.Component {
                                          }}
                             />
                             <Checkbox checked={this.state.cb_site} onClick={() => this.toggle_cb("cb_site", "siteAction")}>
-                                <strong>Site of action data</strong>
+                                <strong>Site of action data</strong> <OverlayTrigger placement="top"
+                                                                                     overlay={siteTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => this.check_cb("cb_site", "siteAction")}
@@ -104,7 +127,9 @@ class Expression extends React.Component {
                                          }}
                             />
                             <Checkbox checked={this.state.cb_time} onClick={() => this.toggle_cb("cb_time", "timeAction")}>
-                                <strong>Time of action data</strong>
+                                <strong>Time of action data</strong> <OverlayTrigger placement="top"
+                                                                                     overlay={timeTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => this.check_cb("cb_time", "timeAction")}
