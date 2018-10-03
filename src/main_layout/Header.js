@@ -11,7 +11,7 @@ class Title extends React.Component {
                         <a href="https://wormbase.org"><Image src="logo_wormbase_gradient.svg" width="100%" /></a>
                     </div>
                     <div className="col-sm-5">
-                        <a href="https://wormbase.org"><Image src="logo_afp.svg" width="100%" /></a>
+                        <Image src="logo_afp.svg" width="100%" />
                     </div>
                 </div>
             </div>
