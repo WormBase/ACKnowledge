@@ -188,7 +188,7 @@ class MultipleSelect extends Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-6">
+                    <div className="col-sm-7">
                         <FormControl componentClass="select" multiple
                                      onChange={this.handleChangeIdentifiedListSelection}
                                      defaultValue=""
@@ -196,12 +196,13 @@ class MultipleSelect extends Component {
                             {[...this.state.selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
                         </FormControl>
                     </div>
-                    <div className="col-sm-6">
+                    <div className="col-sm-5">
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-md-12">
                                     <Button
                                         bsStyle="info"
+                                        bsClass="btn btn-info wrap-button"
                                         onClick={this.handleRemSelectedFromList}>
                                         <Glyphicon glyph="minus-sign"/>
                                         &nbsp; Remove selected
@@ -215,7 +216,7 @@ class MultipleSelect extends Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsStyle="info" onClick={this.handleShow}>
+                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={this.handleShow}>
                                         <Glyphicon glyph="plus-sign"/>
                                         &nbsp; Add from WB {this.state.itemsNameSingular} list
                                     </Button>

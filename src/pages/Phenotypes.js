@@ -49,7 +49,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_allele", "svmAllele")}><strong>Allele Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={() => {
+                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
                                         this.check_cb("cb_allele", "svmAllele");
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>
@@ -63,7 +63,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}><strong>RNAi Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={() => {
+                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
                                         this.check_cb("cb_rnai", "svmRNAi");
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>
@@ -77,7 +77,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}><strong>Transgene Overexpression Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsStyle="info" onClick={() => {
+                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
                                         this.check_cb("cb_transgene", "svmTransgene");
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>

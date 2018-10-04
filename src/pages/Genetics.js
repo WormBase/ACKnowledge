@@ -115,7 +115,7 @@ class Genetics extends React.Component {
                                                   }}><strong>Allele sequence change</strong></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
-                                        <Button bsStyle="info"
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info"
                                                 onClick={() => this.check_cb("cb_allele", "alleleSeqChange")}>
                                             Add details in online form
                                         </Button>
