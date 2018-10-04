@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Checkbox, Form, FormGroup, Panel} from "react-bootstrap";
+import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
 import AlertDismissable from "../main_layout/AlertDismissable";
 
@@ -28,6 +28,11 @@ class Phenotypes extends React.Component {
     }
 
     render() {
+        const svmTooltip = (
+            <Tooltip id="tooltip">
+                This checkbox has been pre-populated based on our SVM classification system.
+            </Tooltip>
+        );
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find phenotype and functional data that have
@@ -46,7 +51,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_allele}
-                                              onClick={() => this.toggle_cb("cb_allele", "svmAllele")}><strong>Allele Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_allele", "svmAllele")}>
+                                        <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
+                                                                                          overlay={svmTooltip}>
+                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
@@ -60,7 +68,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_rnai}
-                                              onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}><strong>RNAi Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}>
+                                        <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
+                                                                                        overlay={svmTooltip}>
+                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
@@ -74,7 +85,10 @@ class Phenotypes extends React.Component {
                             <div className="row">
                                 <div className="col-sm-7">
                                     <Checkbox checked={this.state.cb_transgene}
-                                              onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}><strong>Transgene Overexpression Phenotype</strong></Checkbox>
+                                              onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}>
+                                        <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
+                                                                                                            overlay={svmTooltip}>
+                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {

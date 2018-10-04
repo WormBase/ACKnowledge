@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from "react-bootstrap/es/Button";
 import {
-    Checkbox, Col, ControlLabel, Form, FormControl, FormGroup, Glyphicon, HelpBlock, OverlayTrigger,
+    Checkbox, Col, ControlLabel, Form, FormControl, FormGroup, Glyphicon, HelpBlock, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
@@ -85,7 +85,11 @@ class Expression extends React.Component {
                 publication in the text box provided.
             </Tooltip>
         );
-
+        const svmTooltip = (
+            <Tooltip id="tooltip">
+                This checkbox has been pre-populated based on our SVM classification system.
+            </Tooltip>
+        );
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find expression data that have
@@ -103,7 +107,9 @@ class Expression extends React.Component {
                             <Checkbox checked={this.state.cb_anatomic} onClick={() => this.toggle_cb("cb_anatomic", "anatomicExpr")}>
                                 <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                          overlay={tooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top"
+                                                                                                    overlay={svmTooltip}>
+                                <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => this.check_cb("cb_anatomic", "anatomicExpr")}

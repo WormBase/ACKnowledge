@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Form,
-    Panel, Col
+    Panel, Col, Tooltip, Image, OverlayTrigger
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
 
@@ -28,6 +28,11 @@ class Interactions extends React.Component {
     }
 
     render() {
+        const svmTooltip = (
+            <Tooltip id="tooltip">
+                This checkbox has been pre-populated based on our SVM classification system.
+            </Tooltip>
+        );
         return (
             <div>
                 <AlertDismissable title="" text="Here you can find interaction data that have
@@ -44,7 +49,9 @@ class Interactions extends React.Component {
                         <Form>
                             <FormGroup>
                                 <Checkbox checked={this.state.cb_genetic} onClick={() => this.toggle_cb("cb_genetic", "svmGeneInt")}>
-                                    <strong>Genetic Interactions</strong>
+                                    <strong>Genetic Interactions</strong> <OverlayTrigger placement="top"
+                                                                                          overlay={svmTooltip}>
+                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_genetic", "svmGeneInt")}
@@ -54,7 +61,9 @@ class Interactions extends React.Component {
                                                  this.selfStateVarModifiedFunction(event.target.value, "cb_genetic_details");
                                              }}/>
                                 <Checkbox checked={this.state.cb_physical} onClick={() => this.toggle_cb("cb_physical", "svmPhysInt")}>
-                                    <strong>Physical Interactions</strong>
+                                    <strong>Physical Interactions</strong> <OverlayTrigger placement="top"
+                                                                                           overlay={svmTooltip}>
+                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_physical", "svmPhysInt")}
@@ -64,7 +73,9 @@ class Interactions extends React.Component {
                                                  this.selfStateVarModifiedFunction(event.target.value, "cb_physical_details");
                                              }}/>
                                 <Checkbox checked={this.state.cb_regulatory} onClick={() => this.toggle_cb("cb_regulatory", "svmGeneReg")}>
-                                    <strong>Regulatory Interactions</strong>
+                                    <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top"
+                                                                                             overlay={svmTooltip}>
+                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_regulatory", "svmGeneReg")}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, OverlayTrigger,
+    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from "../main_layout/AlertDismissable";
@@ -50,6 +50,11 @@ class Genetics extends React.Component {
         const strainsTooltip = (
             <Tooltip id="tooltip">
                 Please validate the list of strains in your paper in the box below by adding or removing strains if required.
+            </Tooltip>
+        );
+        const svmTooltip = (
+            <Tooltip id="tooltip">
+                This checkbox has been pre-populated based on our SVM classification system.
             </Tooltip>
         );
         return (
@@ -112,7 +117,9 @@ class Genetics extends React.Component {
                                                   onClick={() => {
                                                       this.toggle_cb("cb_allele", "alleleSeqChange");
                                                       window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
-                                                  }}><strong>Allele sequence change</strong></Checkbox>
+                                                  }}><strong>Allele sequence change</strong> <OverlayTrigger placement="top"
+                                                                                                             overlay={svmTooltip}>
+                                            <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
+    Button, Checkbox, FormControl, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import AlertDismissable from '../main_layout/AlertDismissable'
@@ -91,10 +91,12 @@ class Overview extends React.Component {
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
-                                <div>
-                                    <Checkbox checked={this.state.cb_gmcorr}
-                                              onClick={() => this.toggle_cb("cb_gmcorr", "geneModCorrection")}>
-                                        <strong>Gene model correction/update</strong></Checkbox>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Checkbox checked={this.state.cb_gmcorr}
+                                                  onClick={() => this.toggle_cb("cb_gmcorr", "geneModCorrection")}>
+                                            <strong>Gene model correction/update</strong></Checkbox>
+                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
