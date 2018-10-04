@@ -1,6 +1,17 @@
 import {Component} from "react";
 import React from "react";
-import {Alert, Button, ButtonGroup, FormControl, Glyphicon, Label, Modal} from "react-bootstrap";
+import {
+    Alert,
+    Button,
+    ButtonGroup,
+    FormControl,
+    Glyphicon,
+    Image,
+    Label,
+    Modal,
+    OverlayTrigger,
+    Tooltip
+} from "react-bootstrap";
 
 class MultipleSelect extends Component {
     constructor(props, context) {
@@ -156,6 +167,11 @@ class MultipleSelect extends Component {
     }
 
     render(){
+        const tpcTooltip = (
+            <Tooltip id="tooltip">
+                Entities in this list have been extracted by Textpresso Central.
+            </Tooltip>
+        );
         let data_fetch_err_alert = false;
         if (this.state.show_fetch_data_error) {
             data_fetch_err_alert = <Alert bsStyle="danger">
@@ -184,7 +200,9 @@ class MultipleSelect extends Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <label>List of {this.state.itemsNamePlural} identified in the paper</label>
+                        <label>List of {this.state.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
+                                                                                                                    overlay={tpcTooltip}>
+                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                     </div>
                 </div>
                 <div className="row">
