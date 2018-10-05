@@ -27,31 +27,32 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
     logger = logging.getLogger("AFP vocabulary extraction")
     logger.addHandler(TqdmHandler)
     for keyword in tqdm(keywords):
-        match_counter = 0
-        reg = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + re.escape(keyword) +
-                         "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
-        reg_upper = re.compile("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + re.escape(keyword.upper()) +
-                               "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]")
-        try:
-            match_counter += len(re.findall(reg, fulltext_str))
-            if match_uppercase:
-                match_counter += len(re.findall(reg_upper, fulltext_str))
-        except:
-            pass
-        if match_counter >= min_num_occurrences:
-            papers_map[paper_id].append(keyword)
+        if keyword in fulltext_str or match_uppercase and keyword.upper() in fulltext_str:
+            try:
+                match_counter = len(re.findall("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" + re.escape(keyword) +
+                                               "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]", fulltext_str))
+                if match_uppercase:
+                    match_counter += len(re.findall("[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]" +
+                                                    re.escape(keyword.upper()) +
+                                                    "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]", fulltext_str))
+                if match_counter >= min_num_occurrences:
+                    papers_map[paper_id].append(keyword)
+            except:
+                pass
 
 
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_name_map, min_occurrences: int = 1):
     for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
         taxon_name_map[taxon_id].extend(species_alias_arr)
     for species_id, regex_list in tqdm(taxon_name_map.items()):
+        num_occurrences = 0
         regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
         if len(regex_list) > 1:
             regex_list_mod.extend(regex_list[1:])
         for regex_text in regex_list_mod:
-            if len(re.findall(re.compile("[\\.\\n\\t\\'\\/\\(\\[\\{:;\\,\\!\\?> ]" + regex_text.lower() +
-                                         "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ]"), fulltext.lower())) >= \
-                    min_occurrences:
-                papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1].replace("\\", ""))
+            num_occurrences += len(re.findall(re.compile("[\\.\\n\\t\\'\\/\\(\\[\\{:;\\,\\!\\?> ]" +
+                                                         regex_text.lower() + "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ]"),
+                                              fulltext.lower()))
+        if num_occurrences > min_occurrences:
+            papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1].replace("\\", ""))
 

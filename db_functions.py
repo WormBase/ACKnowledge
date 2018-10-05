@@ -140,6 +140,12 @@ def get_gene_name_id_map(cur):
     return gene_name_id_map
 
 
+def get_gene_cgc_name_from_id_map(cur):
+    cur.execute("SELECT * FROM gin_locus WHERE joinkey != ''")
+    rows = cur.fetchall()
+    return {row[0]: row[1] for row in rows}
+
+
 def get_allele_name_id_map(cur):
     """
     get a map that returns the id of an allele given its symbol
@@ -186,6 +192,15 @@ def get_paper_journal(cur, paper_id):
     res = cur.fetchone()
     if res:
         return res[1]
+    else:
+        return ""
+
+
+def get_pmid(cur, paper_id):
+    cur.execute("SELECT * FROM pap_identifier WHERE joinkey = '{}'".format(paper_id))
+    res = cur.fetchone()
+    if res and res[1].startswith("pmid"):
+        return res[1].replace("pmid", "")
     else:
         return ""
 

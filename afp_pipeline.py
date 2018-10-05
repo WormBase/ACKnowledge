@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import argparse
-import logging
 import os
 import ssl
+from urllib.request import urlopen
+
 import psycopg2
 import time
 import urllib.parse
@@ -75,8 +76,8 @@ def main():
 
     #TODO remove this line
     curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
-                                                  "00053739", "00054192"]
-    #curatable_papers_not_processed_svm_flagged = ["00053873"]
+                                                  "00053739", "00054192", "00049183"]
+    #curatable_papers_not_processed_svm_flagged = ["00054192"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext from Textpresso")
@@ -110,6 +111,7 @@ def main():
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
     genes_vocabulary = set(get_all_genes(cur))
+    gene_ids_cgc_name = get_gene_cgc_name_from_id_map(cur)
     alleles_vocabulary = set(get_all_alleles(cur))
     strains_vocabulary = set(get_all_strains(cur))
     transgene_vocabulary = set(get_all_transgenes(cur))
@@ -140,7 +142,14 @@ def main():
         logger.info("Getting list of species through string matching")
         get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 3)
     logger.info("Transforming gene keywords into gene ids")
-    gene_ids_in_documents = {paper_id: set([gene_symbol_id_map[gene_word] + ";%;" + gene_word for gene_word in
+    gene_ids_counters = defaultdict(int)
+    for paper_id, genes_list in genes_in_papers_dict.items():
+        for gene_word in genes_list:
+            gene_ids_counters[gene_symbol_id_map[gene_word]] += 1
+    gene_ids_in_documents = {paper_id: set([gene_symbol_id_map[gene_word] + ";%;" + gene_word if
+                                            gene_ids_counters[gene_symbol_id_map[gene_word]] < 2 else
+                                            gene_symbol_id_map[gene_word] + ";%;" +
+                                            gene_ids_cgc_name[gene_symbol_id_map[gene_word]] for gene_word in
                                             genes_list if gene_word in gene_symbol_id_map]) for
                              paper_id, genes_list in genes_in_papers_dict.items()}
     logger.info("Transforming allele keywords into allele ids")
@@ -173,14 +182,18 @@ def main():
         write_passwd(cur, paper_id, papers_passwd[paper_id])
         paper_title = get_paper_title(cur, paper_id)
         paper_journal = get_paper_journal(cur, paper_id)
+        pmid = get_pmid(cur, paper_id)
 
         # notify author(s) via email
         if len(email_addr_in_papers_dict[paper_id]) > 0:
 
             url = "http://textpressocentral.org:5000?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
-                  urllib.parse.quote(paper_journal)
-            send_email(paper_id, paper_title, paper_journal, url, ["valerio.arnaboldi@gmail.com"], args.email_passwd)
+                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid
+            data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
+            tiny_url = data.read().decode('utf-8')
+            send_email(paper_id, paper_title, paper_journal, tiny_url, ["valerio.arnaboldi@gmail.com"],
+                       args.email_passwd)
             write_email(cur, paper_id, ["valerio.arnaboldi@gmail.com"])
             #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])
             #write_email(cur, paper_id, email_addr_in_papers_dict[paper_id])
