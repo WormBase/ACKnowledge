@@ -30,7 +30,7 @@ class Phenotypes extends React.Component {
     render() {
         const svmTooltip = (
             <Tooltip id="tooltip">
-                This checkbox has been pre-populated based on our SVM classification system.
+                This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
         return (
@@ -54,7 +54,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_allele", "svmAllele")}>
                                         <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
                                                                                           overlay={svmTooltip}>
-                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
@@ -71,7 +71,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}>
                                         <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
                                                                                         overlay={svmTooltip}>
-                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
@@ -88,7 +88,7 @@ class Phenotypes extends React.Component {
                                               onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}>
                                         <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
                                                                                                             overlay={svmTooltip}>
-                                        <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {

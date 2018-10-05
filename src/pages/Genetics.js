@@ -54,7 +54,7 @@ class Genetics extends React.Component {
         );
         const svmTooltip = (
             <Tooltip id="tooltip">
-                This checkbox has been pre-populated based on our SVM classification system.
+                This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
         return (
@@ -119,7 +119,7 @@ class Genetics extends React.Component {
                                                       window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
                                                   }}><strong>Allele sequence change</strong> <OverlayTrigger placement="top"
                                                                                                              overlay={svmTooltip}>
-                                            <Image src="svm_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                            <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"

@@ -169,7 +169,7 @@ class MultipleSelect extends Component {
     render(){
         const tpcTooltip = (
             <Tooltip id="tooltip">
-                Entities in this list have been extracted by Textpresso Central.
+                This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
         let data_fetch_err_alert = false;

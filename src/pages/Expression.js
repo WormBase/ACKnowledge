@@ -87,7 +87,7 @@ class Expression extends React.Component {
         );
         const svmTooltip = (
             <Tooltip id="tooltip">
-                This checkbox has been pre-populated based on our SVM classification system.
+                This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
         return (
@@ -109,7 +109,7 @@ class Expression extends React.Component {
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top"
                                                                                                     overlay={svmTooltip}>
-                                <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
+                                <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => this.check_cb("cb_anatomic", "anatomicExpr")}

@@ -30,7 +30,7 @@ class Interactions extends React.Component {
     render() {
         const svmTooltip = (
             <Tooltip id="tooltip">
-                This checkbox has been pre-populated based on our SVM classification system.
+                This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
         return (
@@ -51,7 +51,7 @@ class Interactions extends React.Component {
                                 <Checkbox checked={this.state.cb_genetic} onClick={() => this.toggle_cb("cb_genetic", "svmGeneInt")}>
                                     <strong>Genetic Interactions</strong> <OverlayTrigger placement="top"
                                                                                           overlay={svmTooltip}>
-                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
+                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_genetic", "svmGeneInt")}
@@ -63,7 +63,7 @@ class Interactions extends React.Component {
                                 <Checkbox checked={this.state.cb_physical} onClick={() => this.toggle_cb("cb_physical", "svmPhysInt")}>
                                     <strong>Physical Interactions</strong> <OverlayTrigger placement="top"
                                                                                            overlay={svmTooltip}>
-                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
+                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_physical", "svmPhysInt")}
@@ -75,7 +75,7 @@ class Interactions extends React.Component {
                                 <Checkbox checked={this.state.cb_regulatory} onClick={() => this.toggle_cb("cb_regulatory", "svmGeneReg")}>
                                     <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top"
                                                                                              overlay={svmTooltip}>
-                                    <Image src="svm_powered.svg" width="80px"/></OverlayTrigger>
+                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_regulatory", "svmGeneReg")}
