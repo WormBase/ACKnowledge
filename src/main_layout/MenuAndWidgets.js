@@ -544,7 +544,7 @@ class MenuAndWidgets extends React.Component {
                                             <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
                                         </IndexLinkContainer>
                                         <IndexLinkContainer to={"other" + this.props.location.search} active={this.state.selectedMenu === 8}>
-                                            <NavItem eventKey={8}>Additional data&nbsp;{otherOk}</NavItem></IndexLinkContainer>
+                                            <NavItem eventKey={8}>Update contact info and microPublication&nbsp;{otherOk}</NavItem></IndexLinkContainer>
                                         <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 9}>
                                             <NavItem eventKey={9}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
