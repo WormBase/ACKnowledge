@@ -9,15 +9,45 @@ import MultipleSelect from "../page_components/multiple_select";
 class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
+        let alertTitleNotSaved = "";
+        let alertTitleSaved = "Well done!";
+        let alertTitle = alertTitleNotSaved;
+        if (props["saved"]) {
+            alertTitle = alertTitleSaved;
+        }
+        let alertTextNotSaved = "In this page you will see genes and species that have been identified in your paper. " +
+            "Please validate the list by adding/removing entries in the identified lists. You can also notify us for " +
+            "gene model updates.";
+        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
+        let alertText = alertTextNotSaved;
+        if (props["saved"]) {
+            alertText = alertTextSaved;
+        }
+        let alertBsStyleNotSaved = "info";
+        let alertBsStyleSaved = "success";
+        let alertBsStyle = alertBsStyleNotSaved;
+        if (props["saved"]) {
+            alertBsStyle = alertBsStyleSaved;
+        }
         this.state = {
             value: '',
+            saved: props["saved"],
             selectedGenes: props["selectedGenes"],
             selectedSpecies: props["selectedSpecies"],
             cb_gmcorr: props["geneModCorr"],
             cb_gmcorr_details: props["geneModCorrDetails"],
             show_fetch_data_error: false,
             geneSelect: undefined,
-            speciesSelect: undefined
+            speciesSelect: undefined,
+            alertText: alertText,
+            alertTitle: alertTitle,
+            alertBsStyle: alertBsStyle,
+            alertTextNotSaved: alertTextNotSaved,
+            alertTextSaved: alertTextSaved,
+            alertTitleNotSaved: alertTitleNotSaved,
+            alertTitleSaved: alertTitleSaved,
+            alertBsStyleNotSaved: alertBsStyleNotSaved,
+            alertBsStyleSaved: alertBsStyleSaved
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -44,6 +74,12 @@ class Overview extends React.Component {
         this.setState(stateElem);
     }
 
+    setSuccessAlertMessage() {
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+    }
+
     render() {
         const geneTooltip = (
             <Tooltip id="tooltip">
@@ -59,12 +95,12 @@ class Overview extends React.Component {
 
         return (
             <div>
-                <AlertDismissable title="Let's get started!" text="In this page you will see genes and species that have
-                been identified in your paper. Please validate the list by adding/removing entries in the identified
-                lists. You can also notify us for gene model updates." bsStyle="info"
-                                  show={!this.props.saved}/>
-                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
-                time." bsStyle="success" show={this.props.saved}/>
+                <AlertDismissable
+                    title={this.state.alertTitle}
+                    text={this.state.alertText}
+                    bsStyle={this.state.alertBsStyle}
+                    ref={instance => { this.alertDismissable = instance; }}
+                />
                 <form>
                     <Panel>
                         <Panel.Heading>

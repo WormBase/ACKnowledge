@@ -30,6 +30,8 @@ class AlertDismissable extends React.Component {
             text: text,
             title: title
         };
+
+        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
     }
 
     handleDismiss() {
@@ -38,6 +40,12 @@ class AlertDismissable extends React.Component {
 
     handleShow() {
         this.setState({ show: true });
+    }
+
+    selfStateVarModifiedFunction(value, stateVarName) {
+        let stateElem = {};
+        stateElem[stateVarName] = value;
+        this.setState(stateElem);
     }
 
     render() {

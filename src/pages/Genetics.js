@@ -11,6 +11,26 @@ import OneColumnEditableTable from "../page_components/onecol_table";
 class Genetics extends React.Component {
     constructor(props, context) {
         super(props, context);
+        let alertTitleNotSaved = "";
+        let alertTitleSaved = "Well done!";
+        let alertTitle = alertTitleNotSaved;
+        if (props["saved"]) {
+            alertTitle = alertTitleSaved;
+        }
+        let alertTextNotSaved = "Here you can find alleles and strains that have been identified in your paper. Please " +
+            "validate the list as for the previous section. You can also indicate an allele sequence change and submit " +
+            "a new allele name.";
+        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
+        let alertText = alertTextNotSaved;
+        if (props["saved"]) {
+            alertText = alertTextSaved;
+        }
+        let alertBsStyleNotSaved = "info";
+        let alertBsStyleSaved = "success";
+        let alertBsStyle = alertBsStyleNotSaved;
+        if (props["saved"]) {
+            alertBsStyle = alertBsStyleSaved;
+        }
         this.state = {
             selectedAlleles: props["selectedAlleles"],
             selectedStrains: props["selectedStrains"],
@@ -19,6 +39,15 @@ class Genetics extends React.Component {
             strainSelect: undefined,
             otherAlleles: props["otherAlleles"],
             otherStrains: props["otherStrains"],
+            alertText: alertText,
+            alertTitle: alertTitle,
+            alertBsStyle: alertBsStyle,
+            alertTextNotSaved: alertTextNotSaved,
+            alertTextSaved: alertTextSaved,
+            alertTitleNotSaved: alertTitleNotSaved,
+            alertTitleSaved: alertTitleSaved,
+            alertBsStyleNotSaved: alertBsStyleNotSaved,
+            alertBsStyleSaved: alertBsStyleSaved
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -40,6 +69,20 @@ class Genetics extends React.Component {
         this.setState(stateElem);
     }
 
+    setOtherAlleles(otherAlleles) {
+        this.otherAllelesTable.updateProducts(otherAlleles);
+    }
+
+    setOtherStrains(otherStrains) {
+        this.otherStrainsTable.updateProducts(otherStrains);
+    }
+
+    setSuccessAlertMessage() {
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+    }
+
     render() {
         const allelesTooltip = (
             <Tooltip id="tooltip">
@@ -59,12 +102,12 @@ class Genetics extends React.Component {
         );
         return (
             <div>
-                <AlertDismissable title="" text="Here you can find alleles and strains that have
-                been identified in your paper. Please validate the list as for the previous section. You can also
-                indicate an allele sequence change and submit a new allele name." bsStyle="info"
-                                  show={!this.props.saved}/>
-                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
-                time." bsStyle="success" show={this.props.saved}/>
+                <AlertDismissable
+                    title={this.state.alertTitle}
+                    text={this.state.alertText}
+                    bsStyle={this.state.alertBsStyle}
+                    ref={instance => { this.alertDismissable = instance; }}
+                />
                 <form>
                     <Panel>
                         <Panel.Heading>
@@ -99,6 +142,7 @@ class Genetics extends React.Component {
                                             stateVarName={"otherAlleles"}
                                             products={this.state.otherAlleles}
                                             sampleText={"e.g. e1000"}
+                                            ref={instance => { this.otherAllelesTable = instance; }}
                                         />
                                     </div>
                                 </div>
@@ -164,6 +208,7 @@ class Genetics extends React.Component {
                                             stateVarName={"otherStrains"}
                                             products={this.state.otherStrains}
                                             sampleText={"e.g. CB1001"}
+                                            ref={instance => { this.otherStrainsTable = instance; }}
                                         />
                                     </div>
                                 </div>

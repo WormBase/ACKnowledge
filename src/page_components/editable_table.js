@@ -50,6 +50,10 @@ class EditableTable extends Component {
         this.props.tableChangedCallback(newProducts, this.props["stateVarName"]);
         //  console.log(this.state.products);
     };
+
+    updateProducts(newProducts) {
+        this.setState({products: newProducts});
+    }
     render() {
 
         return (

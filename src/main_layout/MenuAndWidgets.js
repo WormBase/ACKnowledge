@@ -4,7 +4,6 @@ import Overview from "../pages/Overview";
 import Expression from "../pages/Expression";
 import {Alert, Button, Modal, Nav, NavItem} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
-import Other from "../pages/Other";
 import Reagent from "../pages/Reagent";
 import Phenotypes from "../pages/Phenotypes";
 import Interactions from "../pages/Interactions";
@@ -43,9 +42,6 @@ class MenuAndWidgets extends React.Component {
             case "/disease":
                 currSelectedMenu = 7;
                 break;
-            case "/other":
-                currSelectedMenu = 8;
-                break;
             case "/contact_info":
                 currSelectedMenu = 9;
                 break;
@@ -54,11 +50,11 @@ class MenuAndWidgets extends React.Component {
         }
         let parameters = queryString.parse(this.props.location.search);
         this.state = {
-            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "disease", "other",
+            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "disease",
                 "contact_info"],
             selectedMenu: currSelectedMenu,
             completedSections: {"overview": false, "expression": false, "genetics": false, "interactions": false,
-                "phenotypes": false, "reagent": false, "disease": false, "other": false, "contact_info": false},
+                "phenotypes": false, "reagent": false, "disease": false, "contact_info": false},
             showPopup: true,
             paper_id: parameters.paper,
             passwd: parameters.passwd,
@@ -140,21 +136,25 @@ class MenuAndWidgets extends React.Component {
                 this.setState({show_fetch_data_error: true})
             }
             let selectedGenes = new Set();
+            let overviewAlreadySaved = false;
             if (data.genestudied.afp !== undefined && data.genestudied.afp !== "" && data.genestudied.afp !== null) {
                 selectedGenes = MenuAndWidgets.split_tfp_entities(data.genestudied.afp, "WBGene");
-            } else if (data.genestudied.tfp !== undefined && data.genestudied.tfp !== "") {
+                overviewAlreadySaved = true;
+            } else if (data.genestudied.tfp !== undefined && data.genestudied.tfp !== "" && data.genestudied.tfp !== null) {
                 selectedGenes = MenuAndWidgets.split_tfp_entities(data.genestudied.tfp, "WBGene");
             }
             let genemodCorrection = false;
             let genemodCorrectionDetails = "";
-            if (data.genemodcorr.afp !== undefined && data.genemodcorr.afp !== null && data.genemodcorr.afp !== "no") {
+            if (data.structcorr.afp !== undefined && data.structcorr.afp !== null && data.structcorr.afp !== "no") {
                 genemodCorrection = true;
-                genemodCorrectionDetails = data.genemodcorr.afp;
+                genemodCorrectionDetails = data.structcorr.afp;
+                overviewAlreadySaved = true;
             }
             let selectedSpecies = new Set();
             if (data.species.afp !== undefined && data.species.afp !== "" && data.species.afp !== null) {
                 selectedSpecies = MenuAndWidgets.split_tfp_entities(data.species.afp, "Taxon ID ");
-            } else if (data.species.tfp !== undefined && data.species.tfp !== "") {
+                overviewAlreadySaved = true;
+            } else if (data.species.tfp !== undefined && data.species.tfp !== "" && data.species.tfp !== null) {
                 selectedSpecies = MenuAndWidgets.split_tfp_entities(data.species.tfp, "Taxon ID ");
             }
             if (this.overview !== undefined) {
@@ -162,17 +162,24 @@ class MenuAndWidgets extends React.Component {
                 this.overview.setSelecedSpecies(selectedSpecies);
                 this.overview.selfStateVarModifiedFunction(genemodCorrection, "cb_gmcorr");
                 this.overview.selfStateVarModifiedFunction(genemodCorrectionDetails, "cb_gmcorr_details");
+                this.overview.selfStateVarModifiedFunction(overviewAlreadySaved, "saved");
+                if (overviewAlreadySaved) {
+                    this.overview.setSuccessAlertMessage();
+                }
             }
+            let geneticsAlreadySaved = false;
             let selectedAlleles = new Set();
             if (data.variation.afp !== undefined && data.variation.afp !== "" && data.variation.afp !== null) {
                 selectedAlleles = MenuAndWidgets.split_tfp_entities(data.variation.afp, "");
-            } else if (data.variation.tfp !== undefined && data.variation.tfp !== "") {
+                geneticsAlreadySaved = true;
+            } else if (data.variation.tfp !== undefined && data.variation.tfp !== "" && data.variation.tfp !== null) {
                 selectedAlleles = MenuAndWidgets.split_tfp_entities(data.variation.tfp, "");
             }
             let alleleSeqChange = false;
             if (data.alleleseqchange.afp !== undefined && data.alleleseqchange.afp !== null &&
                 data.alleleseqchange.afp !== "no") {
                 alleleSeqChange = true;
+                geneticsAlreadySaved = true;
             } else if (data.seqchange.svm !== undefined && (data.seqchange.svm === "high" ||
                 data.seqchange.svm === "medium")) {
                 alleleSeqChange = true;
@@ -180,61 +187,81 @@ class MenuAndWidgets extends React.Component {
             let selectedStrains = new Set();
             if (data.strain.afp !== undefined && data.strain.afp !== "" && data.strain.afp !== null) {
                 selectedStrains = data.strain.afp.split(" | ").map((value) => value + " ( " + value + " )");
-            } else if (data.strain.tfp !== undefined && data.strain.tfp !== "") {
+                geneticsAlreadySaved = true;
+            } else if (data.strain.tfp !== undefined && data.strain.tfp !== "" && data.strain.tfp !== null) {
                 selectedStrains = data.strain.tfp.split(" | ").map((value) => value + " ( " + value + " )");
             }
             let otherAlleles = [ { id: 1, name: "" } ];
-            if (data.otheralleles.afp !== undefined && data.otheralleles.afp !== null &&
-                data.otheralleles.afp !== "") {
-                otherAlleles = data.otheralleles.afp;
+            if (data.othervariation.afp !== undefined && data.othervariation.afp !== null &&
+                data.othervariation.afp !== "") {
+                otherAlleles = JSON.parse(data.othervariation.afp);
+                geneticsAlreadySaved = true;
             }
             let otherStrains = [ { id: 1, name: "" } ];
-            if (data.otherstrains.afp !== undefined && data.otherstrains.afp !== null &&
-                data.otherstrains.afp !== "") {
-                otherStrains = data.otherstrains.afp;
+            if (data.otherstrain.afp !== undefined && data.otherstrain.afp !== null &&
+                data.otherstrain.afp !== "") {
+                otherStrains = JSON.parse(data.otherstrain.afp);
+                geneticsAlreadySaved = true;
             }
             if (this.genetics !== undefined) {
                 this.genetics.setSelectedAlleles(selectedAlleles);
                 this.genetics.setSelecedStrains(selectedStrains);
                 this.genetics.selfStateVarModifiedFunction(alleleSeqChange, "cb_allele");
-                this.genetics.selfStateVarModifiedFunction(otherAlleles, "otherAlleles");
-                this.genetics.selfStateVarModifiedFunction(otherStrains, "otherStrains");
+                this.genetics.setOtherAlleles(otherAlleles);
+                this.genetics.setOtherStrains(otherStrains);
+                if (geneticsAlreadySaved) {
+                    this.genetics.setSuccessAlertMessage();
+                }
             }
+            let reagentAlreadySaved = false;
             let selectedTransgenes = new Set();
             if (data.transgene.afp !== undefined && data.transgene.afp !== "" && data.transgene.afp !== null) {
                 selectedTransgenes = MenuAndWidgets.split_tfp_entities(data.transgene.afp, "");
-            } else if (data.transgene.tfp !== undefined && data.transgene.tfp !== "") {
+                reagentAlreadySaved = true;
+            } else if (data.transgene.tfp !== undefined && data.transgene.tfp !== "" && data.transgene.tfp !== null) {
                 selectedTransgenes = MenuAndWidgets.split_tfp_entities(data.transgene.tfp, "");
             }
             let newAntib = false;
             let newAntibDetails = "";
             if (data.antibody.afp !== undefined && data.antibody.afp !== "" && data.antibody.afp !== null) {
                 newAntib = true;
-                newAntibDetails = data.antibody.afp;
+                if (data.antibody.afp !== "yes") {
+                    newAntibDetails = data.antibody.afp;
+                }
+                reagentAlreadySaved = true;
             }
             let otherTransgenes = [ { id: 1, name: "" } ];
-            if (data.othertransgenes.afp !== undefined && data.othertransgenes.afp !== null &&
-                data.othertransgenes.afp !== "") {
-                otherTransgenes = data.othertransgenes.afp;
+            if (data.othertransgene.afp !== undefined && data.othertransgene.afp !== null &&
+                data.othertransgene.afp !== "") {
+                otherTransgenes = JSON.parse(data.othertransgene.afp);
+                reagentAlreadySaved = true;
             }
             let otherAntibodies = [ { id: 1, name: "", publicationId: "" } ];
-            if (data.otherantibodies.afp !== undefined && data.otherantibodies.afp !== null &&
-                data.otherantibodies.afp !== "") {
-                otherAntibodies = data.otherantibodies.afp;
+            if (data.otherantibody.afp !== undefined && data.otherantibody.afp !== null &&
+                data.otherantibody.afp !== "") {
+                otherAntibodies = JSON.parse(data.otherantibody.afp);
+                reagentAlreadySaved = true;
             }
             if (this.reagent !== undefined) {
                 this.reagent.setSelectedTransgenes(selectedTransgenes);
                 this.reagent.selfStateVarModifiedFunction(newAntib, "cb_newantib");
                 this.reagent.selfStateVarModifiedFunction(newAntibDetails, "cb_newantib_details");
-                this.reagent.selfStateVarModifiedFunction(otherAntibodies, "other_antib");
-                this.reagent.selfStateVarModifiedFunction(otherTransgenes, "otherTransgenes");
+                this.reagent.setOtherAntibodies(otherAntibodies);
+                this.reagent.setOtherTransgenes(otherTransgenes);
+                if (reagentAlreadySaved) {
+                    this.reagent.setSuccessAlertMessage();
+                }
             }
+            let expressionAlreadySaved = false;
             let anatomicExpr = false;
             let anatomicExprDetails = "";
             if (data.otherexpr.afp !== undefined && data.otherexpr.afp !== null && data.otherexpr.afp !==
                 "no") {
                 anatomicExpr = true;
-                anatomicExprDetails = data.otherexpr.afp;
+                expressionAlreadySaved = true;
+                if (data.otherexpr.afp !== "yes") {
+                    anatomicExprDetails = data.otherexpr.afp;
+                }
             } else if (data.otherexpr.svm !== undefined && (data.otherexpr.svm === "high" ||
                 data.otherexpr.svm === "medium")) {
                 anatomicExpr = true;
@@ -243,23 +270,33 @@ class MenuAndWidgets extends React.Component {
             let siteActionDetails = "";
             if (data.siteaction.afp !== undefined && data.siteaction.afp !== null && data.siteaction.afp !== "no") {
                 siteAction = true;
-                siteActionDetails = data.siteaction.afp;
+                expressionAlreadySaved = true;
+                if (data.siteaction.afp !== "yes") {
+                    siteActionDetails = data.siteaction.afp;
+                }
             }
             let timeAction = false;
             let timeActionDetails = "";
             if (data.timeaction.afp !== undefined && data.timeaction.afp !== null && data.timeaction.afp !== "no") {
                 timeAction = true;
-                timeActionDetails = data.timeaction.afp;
+                expressionAlreadySaved = true;
+                if (data.timeaction.afp !== "yes") {
+                    timeActionDetails = data.timeaction.afp;
+                }
             }
             let rnaSeq = false;
             let rnaSeqDetails = "";
             if (data.rnaseq.afp !== undefined && data.rnaseq.afp !== null && data.rnaseq.afp !== "no") {
                 rnaSeq = true;
-                rnaSeqDetails = data.rnaseq.afp;
+                expressionAlreadySaved = true;
+                if (data.rnaseq.afp !== "yes") {
+                    rnaSeqDetails = data.rnaseq.afp;
+                }
             }
             let additionalExpr = "";
             if (data.additionalexpr.afp !== undefined && data.additionalexpr.afp !== null && data.additionalexpr.afp !== "") {
                 additionalExpr = data.additionalexpr.afp;
+                expressionAlreadySaved = true;
             }
             if (this.expression !== undefined) {
                 this.expression.selfStateVarModifiedFunction(anatomicExpr, "cb_anatomic");
@@ -271,12 +308,19 @@ class MenuAndWidgets extends React.Component {
                 this.expression.selfStateVarModifiedFunction(rnaSeq, "cb_rna");
                 this.expression.selfStateVarModifiedFunction(rnaSeqDetails, "cb_rna_details");
                 this.expression.selfStateVarModifiedFunction(additionalExpr, "additionalExpr");
+                if (expressionAlreadySaved) {
+                    this.expression.setSuccessAlertMessage();
+                }
             }
+            let interactionsAlreadySaved = false;
             let svmGeneInt = false;
             let svmGeneIntDetails = "";
             if (data.geneint.afp !== undefined && data.geneint.afp !== "" && data.geneint.afp !== null) {
                 svmGeneInt = true;
-                svmGeneIntDetails = data.geneint.afp;
+                interactionsAlreadySaved = true;
+                if (data.geneint.afp !== "yes") {
+                    svmGeneIntDetails = data.geneint.afp;
+                }
             } else if (data.geneint.svm !== undefined && (data.geneint.svm === "high" ||
                 data.geneint.svm === "medium")) {
                 svmGeneInt = true;
@@ -285,7 +329,10 @@ class MenuAndWidgets extends React.Component {
             let svmPhysIntDetails = "";
             if (data.geneprod.afp !== undefined && data.geneprod.afp !== "" && data.geneprod.afp !== null) {
                 svmPhysInt = true;
-                svmPhysIntDetails = data.geneprod.afp;
+                interactionsAlreadySaved = true;
+                if (data.geneprod.afp !== "yes") {
+                    svmPhysIntDetails = data.geneprod.afp;
+                }
             } else if (data.geneprod.svm !== undefined && (data.geneprod.svm === "high" ||
                 data.geneprod.svm === "medium")) {
                 svmPhysInt = true;
@@ -294,28 +341,30 @@ class MenuAndWidgets extends React.Component {
             let svmGeneRegDetails = "";
             if (data.genereg.afp !== undefined && data.genereg.afp !== "" && data.genereg.afp !== null) {
                 svmGeneReg = true;
-                svmGeneRegDetails = data.genereg.afp;
+                interactionsAlreadySaved = true;
+                if (data.genereg.afp !== "yes") {
+                    svmGeneRegDetails = data.genereg.afp;
+                }
             } else if (data.genereg.svm !== undefined && (data.genereg.svm === "high" ||
                 data.genereg.svm === "medium")) {
                 svmGeneReg = true;
             }
             if (this.interactions !== undefined) {
-                if (svmGeneInt === true) {
-                    this.interactions.check_cb("cb_genetic", "svmGeneInt");
-                    this.interactions.selfStateVarModifiedFunction(svmGeneIntDetails, "cb_genetic_details");
-                }
-                if (svmPhysInt === true) {
-                    this.interactions.check_cb("cb_physical", "scmPhysInt");
-                    this.interactions.selfStateVarModifiedFunction(svmPhysIntDetails, "cb_physical_details");
-                }
-                if (svmGeneReg === true) {
-                    this.interactions.check_cb("cb_regulatory", "svmGeneReg");
-                    this.interactions.selfStateVarModifiedFunction(svmGeneRegDetails, "cb_regulatory_details");
+                this.interactions.selfStateVarModifiedFunction(svmGeneInt, "cb_genetic");
+                this.interactions.selfStateVarModifiedFunction(svmGeneIntDetails, "cb_genetic_details");
+                this.interactions.selfStateVarModifiedFunction(svmPhysInt, "cb_physical");
+                this.interactions.selfStateVarModifiedFunction(svmPhysIntDetails, "cb_physical_details");
+                this.interactions.selfStateVarModifiedFunction(svmGeneReg, "cb_regulatory");
+                this.interactions.selfStateVarModifiedFunction(svmGeneRegDetails, "cb_regulatory_details");
+                if (interactionsAlreadySaved) {
+                    this.interactions.setSuccessAlertMessage();
                 }
             }
+            let phenotypeAlreadySaved = false;
             let svmAllele = false;
             if (data.newmutant.afp !== undefined && data.newmutant.afp !== "" && data.newmutant.afp !== null) {
                 svmAllele = true;
+                phenotypeAlreadySaved = true;
             } else if (data.newmutant.svm !== undefined && (data.newmutant.svm === "high" ||
                 data.newmutant.svm === "medium")) {
                 svmAllele = true;
@@ -323,12 +372,14 @@ class MenuAndWidgets extends React.Component {
             let svmRNAi = false;
             if (data.rnai.afp !== undefined && data.rnai.afp !== "" && data.rnai.afp !== null) {
                 svmRNAi = true;
+                phenotypeAlreadySaved = true;
             } else if (data.rnai.svm !== undefined && (data.rnai.svm === "high" || data.rnai.svm === "medium")) {
                 svmRNAi = true;
             }
             let svmTransgene = false;
             if (data.overexpr.afp !== undefined && data.overexpr.afp !== "" && data.overexpr.afp !== null) {
                 svmTransgene = true;
+                phenotypeAlreadySaved = true;
             } else if (data.overexpr.svm !== undefined && (data.overexpr.svm === "high" ||
                 data.overexpr.svm === "medium")) {
                 svmTransgene = true;
@@ -337,43 +388,68 @@ class MenuAndWidgets extends React.Component {
             let svmProteinDetails = "";
             if (data.invitro !== undefined && data.invitro.afp !== undefined && data.invitro.afp !== "" && data.invitro.afp !== null) {
                 svmProtein = true;
-                svmProteinDetails = data.invitro.afp;
+                phenotypeAlreadySaved = true;
+                if (data.invitro !== "yes") {
+                    svmProteinDetails = data.invitro.afp;
+                }
             }
             let chemical = false;
             if (data.chemphen.afp !== undefined && data.chemphen.afp !== "" && data.chemphen.afp !== null) {
                 chemical = true;
+                phenotypeAlreadySaved = true;
             }
             let env = false;
             if (data.envpheno.afp !== undefined && data.envpheno.afp !== "" && data.envpheno.afp !== null) {
                 env = true;
+                phenotypeAlreadySaved = true;
             }
             if (this.phenotype !== undefined) {
-                if (svmAllele === true) {
-                    this.phenotype.check_cb("cb_allele", "svmAllele");
-                }
-                if (svmRNAi === true) {
-                    this.phenotype.check_cb("cb_rnai", "svmRNAi");
-                }
-                if (svmTransgene === true) {
-                    this.phenotype.check_cb("cb_transgene", "svmTransgene");
-                }
-                if (svmProtein === true) {
-                    this.phenotype.check_cb("cb_protein", "svmProtein");
-                    this.phenotype.selfStateVarModifiedFunction(svmProteinDetails, "cb_protein_details");
-                }
-                if (chemical === true) {
-                    this.phenotype.check_cb("cb_chemical", "chemical");
-                }
-                if (env === true) {
-                    this.phenotype.check_cb("cb_env", "env");
+                this.phenotype.selfStateVarModifiedFunction(svmAllele, "cb_allele");
+                this.phenotype.selfStateVarModifiedFunction(svmRNAi, "cb_rnai");
+                this.phenotype.selfStateVarModifiedFunction(svmTransgene, "cb_transgene");
+                this.phenotype.selfStateVarModifiedFunction(svmProtein, "cb_protein");
+                this.phenotype.selfStateVarModifiedFunction(svmProteinDetails, "cb_protein_details");
+                this.phenotype.selfStateVarModifiedFunction(chemical, "cb_chemical");
+                this.phenotype.selfStateVarModifiedFunction(env, "cb_env");
+                if (phenotypeAlreadySaved) {
+                    this.phenotype.setSuccessAlertMessage();
                 }
             }
+            let diseaseAlreadySaved = false;
+            let cb_orthologs = false;
+            let cb_transgenic = false;
+            let cb_modifiers = false;
+            let disease_comments = "";
+            if (data.humdis.afp !== undefined && data.humdis.afp !== "" && data.humdis.afp !== null) {
+                let diseaseArr = data.humdis.afp.split(" | ");
+                if (diseaseArr.length === 4) {
+                    cb_orthologs = diseaseArr[0] === "yes";
+                    cb_transgenic = diseaseArr[1] === "yes";
+                    cb_modifiers = diseaseArr[2] === "yes";
+                    disease_comments = diseaseArr[3];
+                }
+                diseaseAlreadySaved = true;
+            }
+            if (this.disease !== undefined) {
+                this.disease.selfStateVarModifiedFunction(cb_orthologs, "cb_orthologs");
+                this.disease.selfStateVarModifiedFunction(cb_transgenic, "cb_transgenic");
+                this.disease.selfStateVarModifiedFunction(cb_modifiers, "cb_modifiers");
+                this.disease.selfStateVarModifiedFunction(disease_comments, "comments");
+                if (diseaseAlreadySaved) {
+                    this.disease.setSuccessAlertMessage();
+                }
+            }
+            let otherAlreadySaved = false;
             let other = "";
             if (data.comment.afp !== undefined && data.comment.afp !== "" && data.comment.afp !== null) {
                 other = data.comment.afp;
+                otherAlreadySaved = true;
             }
             if (this.other !== undefined) {
                 this.other.selfStateVarModifiedFunction(other, "other");
+                if (otherAlreadySaved) {
+                    this.other.setSuccessAlertMessage();
+                }
             }
             this.setState({
                 selectedGenes: selectedGenes,
@@ -411,7 +487,15 @@ class MenuAndWidgets extends React.Component {
                 svmProteinDetails: svmProteinDetails,
                 chemical: chemical,
                 env: env,
-                other: other
+                other: other,
+                orthologsDis: cb_orthologs,
+                transgenicDis: cb_transgenic,
+                modifiersDis: cb_modifiers,
+                disComments: disease_comments,
+                completedSections: {"overview": overviewAlreadySaved, "expression": expressionAlreadySaved,
+                    "genetics": geneticsAlreadySaved, "interactions": interactionsAlreadySaved,
+                    "phenotypes": phenotypeAlreadySaved, "reagent": reagentAlreadySaved,
+                    "disease": diseaseAlreadySaved, "contact_info": otherAlreadySaved},
             });
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
@@ -484,10 +568,6 @@ class MenuAndWidgets extends React.Component {
         if (this.state.completedSections["disease"]) {
             diseaseOk = <Glyphicon glyph="ok"/>;
         }
-        let otherOk = false;
-        if (this.state.completedSections["other"]) {
-            otherOk = <Glyphicon glyph="ok"/>;
-        }
         let contact_infoOk = false;
         if (this.state.completedSections["contact_info"]) {
             contact_infoOk = <Glyphicon glyph="ok"/>;
@@ -543,8 +623,6 @@ class MenuAndWidgets extends React.Component {
                                         <IndexLinkContainer to={"disease" + this.props.location.search} active={this.state.selectedMenu === 7}>
                                             <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"other" + this.props.location.search} active={this.state.selectedMenu === 8}>
-                                            <NavItem eventKey={8}>Update contact info and microPublication&nbsp;{otherOk}</NavItem></IndexLinkContainer>
                                         <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 9}>
                                             <NavItem eventKey={9}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
@@ -594,6 +672,7 @@ class MenuAndWidgets extends React.Component {
                                                                   otherTransgenes={this.state.otherTransgenes}
                                                                   toggleCb={this.toggle_cb}
                                                                   checkCb={this.check_cb}
+                                                                  ref={instance => { this.reagent = instance; }}
                                            />}
                                     />
                                     <Route path="/expression"
@@ -612,6 +691,7 @@ class MenuAndWidgets extends React.Component {
                                                                      selfStateVarModifiedFunction={this.stateVarModifiedCallback}
                                                                      toggleCb={this.toggle_cb}
                                                                      checkCb={this.check_cb}
+                                                                     ref={instance => { this.expression = instance; }}
                                            />}
                                     />
                                     <Route path="/interactions"
@@ -657,12 +737,7 @@ class MenuAndWidgets extends React.Component {
                                                                   comments={this.state.disComments}
                                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                   toggleCb={this.toggle_cb}
-                                           />}
-                                    />
-                                    <Route path="/other"
-                                           render={() => <Other
-                                               callback={this.handleFinishedSection}
-                                               saved={this.state.completedSections["other"]}
+                                                                  ref={instance => { this.disease = instance; }}
                                            />}
                                     />
                                     <Route path="/contact_info" render={() => <ContactInfo
@@ -670,6 +745,7 @@ class MenuAndWidgets extends React.Component {
                                         saved={this.state.completedSections["contact_info"]}
                                         other={this.state.other}
                                         stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                        ref={instance => { this.other = instance; }}
                                     />}/>
                                 </div>
                             </div>

@@ -9,6 +9,25 @@ import AlertDismissable from "../main_layout/AlertDismissable";
 class Expression extends React.Component {
     constructor(props, context) {
         super(props, context);
+        let alertTitleNotSaved = "";
+        let alertTitleSaved = "Well done!";
+        let alertTitle = alertTitleNotSaved;
+        if (props["saved"]) {
+            alertTitle = alertTitleSaved;
+        }
+        let alertTextNotSaved = "Here you can find expression data that have been identified in your paper. Please " +
+            "select/deselect the appropriate checkboxes and add any additional information.";
+        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
+        let alertText = alertTextNotSaved;
+        if (props["saved"]) {
+            alertText = alertTextSaved;
+        }
+        let alertBsStyleNotSaved = "info";
+        let alertBsStyleSaved = "success";
+        let alertBsStyle = alertBsStyleNotSaved;
+        if (props["saved"]) {
+            alertBsStyle = alertBsStyleSaved;
+        }
         this.state = {
             value: '',
             active: false,
@@ -20,7 +39,16 @@ class Expression extends React.Component {
             cb_time_details: props["timeActionDetails"],
             cb_rna: props["rnaSeq"],
             cb_rna_details: props["rnaSeqDetails"],
-            additionalExpr: props["additionalExpr"]
+            additionalExpr: props["additionalExpr"],
+            alertText: alertText,
+            alertTitle: alertTitle,
+            alertBsStyle: alertBsStyle,
+            alertTextNotSaved: alertTextNotSaved,
+            alertTextSaved: alertTextSaved,
+            alertTitleNotSaved: alertTitleNotSaved,
+            alertTitleSaved: alertTitleSaved,
+            alertBsStyleNotSaved: alertBsStyleNotSaved,
+            alertBsStyleSaved: alertBsStyleSaved
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -55,6 +83,12 @@ class Expression extends React.Component {
 
     handleChange(e) {
         this.setState({ value: e.target.value });
+    }
+
+    setSuccessAlertMessage() {
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
+        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
     }
 
     render() {
@@ -92,12 +126,12 @@ class Expression extends React.Component {
         );
         return (
             <div>
-                <AlertDismissable title="" text="Here you can find expression data that have
-                been identified in your paper. Please select/deselect the appropriate checkboxes and add any additional
-                information." bsStyle="info"
-                                  show={!this.props.saved}/>
-                <AlertDismissable title="well done!" text="The data for this page has been saved, you can modify it any
-                time." bsStyle="success" show={this.props.saved}/>
+                <AlertDismissable
+                    title={this.state.alertTitle}
+                    text={this.state.alertText}
+                    bsStyle={this.state.alertBsStyle}
+                    ref={instance => { this.alertDismissable = instance; }}
+                />
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">Expression data in the paper</Panel.Title>

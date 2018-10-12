@@ -11,6 +11,7 @@ class OneColumnEditableTable extends Component {
         this.state.products = props["products"];
 
         this.handleProductTable = this.handleProductTable.bind(this);
+        this.updateProducts = this.updateProducts.bind(this);
     }
     handleRowDel(product) {
         var index = this.state.products.indexOf(product);
@@ -49,6 +50,10 @@ class OneColumnEditableTable extends Component {
         this.props.tableChangedCallback(newProducts, this.props["stateVarName"]);
         //  console.log(this.state.products);
     };
+
+    updateProducts(newProducts) {
+        this.setState({products: newProducts});
+    }
     render() {
 
         return (
