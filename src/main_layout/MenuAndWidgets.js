@@ -348,7 +348,7 @@ class MenuAndWidgets extends React.Component {
         newCompletedSections[section] = true;
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
         this.setState({completedSections: newCompletedSections, selectedMenu: newSelectedMenu});
-        this.props.history.push(this.state.pages[newSelectedMenu - 1]);
+        this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
     }
 
     handleClosePopup() {
