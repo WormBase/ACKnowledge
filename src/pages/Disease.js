@@ -30,9 +30,7 @@ class Disease extends React.Component {
         this.state = {
             value: '',
             active: false,
-            cb_orthologs: props["orthologs"],
-            cb_transgenic: props["transgenic"],
-            cb_modifiers: props["modifiers"],
+            humDis: props["humDis"],
             comments: props["comments"],
             alertText: alertText,
             alertTitle: alertTitle,
@@ -45,6 +43,7 @@ class Disease extends React.Component {
             alertBsStyleSaved: alertBsStyleSaved
         };
 
+        this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
     }
 
@@ -76,22 +75,21 @@ class Disease extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.state.cb_orthologs} onClick={() => this.toggle_cb("cb_orthologs", "orthologsDis")}>
-                                <strong>Worm ortholog/s of human disease relevant gene</strong>
+                            <Checkbox checked={this.state.humDis} onClick={() => this.toggle_cb("humDis", "humDis")}>
+                                <strong>The paper contains one of the following:</strong>
                             </Checkbox>
-                            <Checkbox checked={this.state.cb_transgenic} onClick={() => this.toggle_cb("cb_transgenic", "transgenicDis")}>
-                                <strong>Transgenic studies with either human (or worm) disease relevant gene</strong>
-                            </Checkbox>
-                            <Checkbox checked={this.state.cb_modifiers} onClick={() => this.toggle_cb("cb_modifiers", "modifiersDis")}>
-                                <strong>Modifiers of a new or previously established disease model (eg., drugs, herbals, chemicals, etc)</strong>
-                            </Checkbox>
+                            <ul>
+                                <li><strong>Worm ortholog/s of human disease relevant gene</strong></li>
+                                <li><strong>Transgenic studies with either human (or worm) disease relevant gene</strong></li>
+                                <li><strong>Modifiers of a new or previously established disease model (eg., drugs, herbals, chemicals, etc)</strong></li>
+                            </ul>
                         </Form>
                     </Panel.Body>
                 </Panel>
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">
-                            Additional comments on disease models
+                            Additional comments on disease models in the paper
                         </Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
@@ -105,9 +103,10 @@ class Disease extends React.Component {
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
                                                  value={this.state.comments}
+                                                 onClick={() => this.check_cb("humDis", "humDis")}
                                                  onChange={(event) => {
                                                      this.props.stateVarModifiedCallback(event.target.value, "disComments");
-                                                     this.setOther(event.target.value);
+                                                     this.selfStateVarModifiedFunction(event.target.value, "comments");
                                                  }}
                                     />
                                 </div>
