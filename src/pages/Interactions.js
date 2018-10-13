@@ -1,48 +1,21 @@
 import React from 'react';
 import {
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Form,
-    Panel, Col, Tooltip, Image, OverlayTrigger
+    Button, Checkbox, FormControl, FormGroup, Form,
+    Panel, Tooltip, Image, OverlayTrigger
 } from "react-bootstrap";
-import AlertDismissable from "../main_layout/AlertDismissable";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Interactions extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "Here you can find interaction data that have been identified in your paper. Please " +
-            "select/deselect the appropriate checkboxes and add any additional information.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
+            saved: props["saved"],
             cb_genetic: props["cb_genetic"],
             cb_genetic_details: props['cb_genetic_details'],
             cb_physical: props["cb_physical"],
             cb_physical_details: props['cb_physical_details'],
             cb_regulatory: props["cb_regulatory"],
-            cb_regulatory_details: props['cb_regulatory_details'],
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            cb_regulatory_details: props['cb_regulatory_details']
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -56,9 +29,7 @@ class Interactions extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
@@ -69,10 +40,13 @@ class Interactions extends React.Component {
         );
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="Here you can find interaction data that have been identified in your paper.
+                    Please select/deselect the appropriate checkboxes and add any additional information."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>

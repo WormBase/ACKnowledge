@@ -1,36 +1,15 @@
 import React from 'react';
 import {
-    Button, Checkbox, FormControl, Glyphicon, Image, OverlayTrigger,
+    Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import AlertDismissable from '../main_layout/AlertDismissable'
 import MultipleSelect from "../page_components/multiple_select";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "In this page you will see genes and species that have been identified in your paper. " +
-            "Please validate the list by adding/removing entries in the identified lists. You can also notify us for " +
-            "gene model updates.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
-            value: '',
             saved: props["saved"],
             selectedGenes: props["selectedGenes"],
             selectedSpecies: props["selectedSpecies"],
@@ -38,26 +17,12 @@ class Overview extends React.Component {
             cb_gmcorr_details: props["geneModCorrDetails"],
             show_fetch_data_error: false,
             geneSelect: undefined,
-            speciesSelect: undefined,
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            speciesSelect: undefined
         };
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(e) {
-        this.setState({ value: e.target.value });
     }
 
     setSelectedGenes(genelist) {
@@ -75,9 +40,7 @@ class Overview extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
@@ -95,10 +58,14 @@ class Overview extends React.Component {
 
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="In this page you will see genes and species that have been identified in your
+                    paper. Please validate the list by adding/removing entries in the identified lists. You can also
+                    notify us for gene model updates."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>

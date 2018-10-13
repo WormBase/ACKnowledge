@@ -1,46 +1,18 @@
 import React from 'react';
 import Button from "react-bootstrap/es/Button";
 import {
-    Checkbox, Col, ControlLabel, Form, FormControl, FormGroup, Glyphicon, HelpBlock, OverlayTrigger,
-    Panel, Tooltip
+    Checkbox, Form, FormControl, Panel
 } from "react-bootstrap";
-import AlertDismissable from "../main_layout/AlertDismissable";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Disease extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "If this paper reports a disease model, please choose one or more that it describes.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
-            value: '',
+            saved: props["saved"],
             active: false,
             humDis: props["humDis"],
-            comments: props["comments"],
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            comments: props["comments"]
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -54,19 +26,19 @@ class Disease extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
 
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="If this paper reports a disease model, please choose one or more that it describes."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>

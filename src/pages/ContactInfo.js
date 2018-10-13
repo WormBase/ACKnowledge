@@ -1,40 +1,13 @@
 import React from 'react';
 import {Button, FormControl, Image, Panel} from "react-bootstrap";
-import AlertDismissable from "../main_layout/AlertDismissable";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Other extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "In this page you can update your contact info, submit your unpublished data to " +
-            "microPublicationsend, send comments to the WormBase team and finalize the data submission process.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
-            other: props["other"],
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            saved: props["saved"],
+            other: props["other"]
         };
 
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
@@ -47,18 +20,19 @@ class Other extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="In this page you can update your contact info, submit your unpublished data to
+                    microPublicationsend, send comments to the WormBase team and finalize the data submission process."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
@@ -138,7 +112,9 @@ class Other extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "contact_info")}>Finish and submit
+                    <Button bsStyle="success" onClick={() => {
+                        this.props.callback.bind(this, "contact_info");
+                        this.alertDismissable.setSaved(true);}}>Finish and submit
                     </Button>
                 </div>
             </div>

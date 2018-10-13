@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Button,
-    ButtonGroup,
     Checkbox,
     Form,
     FormControl,
@@ -10,50 +9,22 @@ import {
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
 import EditableTable from "../page_components/editable_table";
 import OneColumnEditableTable from "../page_components/onecol_table";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Reagent extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "Here you can find transgenes that have been identified in your paper. Please validate " +
-            "the list as for the previous section. You can also submit information about antibodies mentioned or " +
-            "generated in the study.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
+            saved: props["saved"],
             selectedTransgenes: props["selectedTransgenes"],
             cb_newantib: props["newAntib"],
             cb_newantib_details: props["newAntibDetails"],
             other_antib: props["otherAntibs"],
             transgeneSelect: undefined,
-            otherTransgenes: props["otherTransgenes"],
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            otherTransgenes: props["otherTransgenes"]
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -80,9 +51,7 @@ class Reagent extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
@@ -101,10 +70,14 @@ class Reagent extends React.Component {
 
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="Here you can find transgenes that have been identified in your paper. Please
+                    validate the list as for the previous section. You can also submit information about antibodies
+                    mentioned or generated in the study."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>

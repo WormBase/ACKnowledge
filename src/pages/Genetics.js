@@ -1,53 +1,24 @@
 import React from 'react';
 import {
-    Button, ButtonGroup, Checkbox, ControlLabel, FormControl, FormGroup, Glyphicon, HelpBlock, Image, OverlayTrigger,
+    Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import AlertDismissable from "../main_layout/AlertDismissable";
 import MultipleSelect from "../page_components/multiple_select";
-import EditableTable from "../page_components/editable_table";
 import OneColumnEditableTable from "../page_components/onecol_table";
+import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Genetics extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let alertTitleNotSaved = "";
-        let alertTitleSaved = "Well done!";
-        let alertTitle = alertTitleNotSaved;
-        if (props["saved"]) {
-            alertTitle = alertTitleSaved;
-        }
-        let alertTextNotSaved = "Here you can find alleles and strains that have been identified in your paper. Please " +
-            "validate the list as for the previous section. You can also indicate an allele sequence change and submit " +
-            "a new allele name.";
-        let alertTextSaved = "The data for this page has been saved, you can modify it any time.";
-        let alertText = alertTextNotSaved;
-        if (props["saved"]) {
-            alertText = alertTextSaved;
-        }
-        let alertBsStyleNotSaved = "info";
-        let alertBsStyleSaved = "success";
-        let alertBsStyle = alertBsStyleNotSaved;
-        if (props["saved"]) {
-            alertBsStyle = alertBsStyleSaved;
-        }
         this.state = {
+            saved: props["saved"],
             selectedAlleles: props["selectedAlleles"],
             selectedStrains: props["selectedStrains"],
             cb_allele: props["alleleSeqChange"],
             alleleSelect: undefined,
             strainSelect: undefined,
             otherAlleles: props["otherAlleles"],
-            otherStrains: props["otherStrains"],
-            alertText: alertText,
-            alertTitle: alertTitle,
-            alertBsStyle: alertBsStyle,
-            alertTextNotSaved: alertTextNotSaved,
-            alertTextSaved: alertTextSaved,
-            alertTitleNotSaved: alertTitleNotSaved,
-            alertTitleSaved: alertTitleSaved,
-            alertBsStyleNotSaved: alertBsStyleNotSaved,
-            alertBsStyleSaved: alertBsStyleSaved
+            otherStrains: props["otherStrains"]
         };
 
         this.check_cb = props["checkCb"].bind(this);
@@ -78,9 +49,7 @@ class Genetics extends React.Component {
     }
 
     setSuccessAlertMessage() {
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTitleSaved, "title");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertTextSaved, "text");
-        this.alertDismissable.selfStateVarModifiedFunction(this.state.alertBsStyleSaved, "bsStyle");
+        this.alertDismissable.setSaved(true);
     }
 
     render() {
@@ -102,10 +71,14 @@ class Genetics extends React.Component {
         );
         return (
             <div>
-                <AlertDismissable
-                    title={this.state.alertTitle}
-                    text={this.state.alertText}
-                    bsStyle={this.state.alertBsStyle}
+                <InstructionsAlert
+                    alertTitleNotSaved=""
+                    alertTitleSaved="Well done!"
+                    alertTextNotSaved="Here you can find alleles and strains that have been identified in your paper.
+                    Please validate the list as for the previous section. You can also indicate an allele sequence
+                    change and submit a new allele name."
+                    alertTextSaved="The data for this page has been saved, you can modify it any time."
+                    saved={this.state.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
