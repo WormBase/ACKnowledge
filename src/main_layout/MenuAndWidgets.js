@@ -118,52 +118,52 @@ class MenuAndWidgets extends React.Component {
         return final_entities_list;
     }
 
-    static getSetOfEntitiesForDatatype(datatype, entityPrefix) {
-        if (datatype !== undefined && datatype.afp !== undefined && datatype.afp !== null) {
-            if (datatype.afp !== "") {
+    static getSetOfEntitiesForDatatype(afpDatatype, tfpDatatype, entityPrefix) {
+        if (afpDatatype !== undefined && afpDatatype.afp !== undefined && afpDatatype.afp !== null) {
+            if (afpDatatype.afp !== "") {
                 if (entityPrefix !== null) {
-                    return [MenuAndWidgets.split_tfp_entities(datatype.afp, entityPrefix), true];
+                    return [MenuAndWidgets.split_tfp_entities(afpDatatype.afp, entityPrefix), true];
                 } else {
-                    return [datatype.afp.split(" | "), true];
+                    return [afpDatatype.afp.split(" | "), true];
                 }
             } else {
                 return [new Set(), true];
             }
-        } else if (datatype !== undefined && datatype.tfp !== undefined && datatype.tfp !== "" &&
-            datatype.tfp !== null) {
+        } else if (tfpDatatype !== undefined && tfpDatatype.tfp !== undefined && tfpDatatype.tfp !== "" &&
+            tfpDatatype.tfp !== null) {
             if (entityPrefix !== null) {
-                return [MenuAndWidgets.split_tfp_entities(datatype.tfp, entityPrefix), false];
+                return [MenuAndWidgets.split_tfp_entities(tfpDatatype.tfp, entityPrefix), false];
             } else {
-                return [datatype.tfp.split(" | "), false];
+                return [tfpDatatype.tfp.split(" | "), false];
             }
         } else {
             return [new Set(), false]
         }
     }
 
-    static getCheckboxValueForDatatype(datatype, reagSvm) {
-        if (datatype !== undefined && datatype.afp !== undefined && datatype.afp !== null) {
-            if (datatype.afp !== "") {
-                return [true, datatype.afp, true]
+    static getCheckboxValueForDatatype(afpDatatype, svmDatatype) {
+        if (afpDatatype !== undefined && afpDatatype.afp !== undefined && afpDatatype.afp !== null) {
+            if (afpDatatype.afp !== "") {
+                return [true, afpDatatype.afp, true]
             } else {
                 return [false, "", true]
             }
-        } else if (datatype !== undefined && reagSvm && datatype.svm !== null && datatype.svm !== undefined &&
-            (datatype.svm === "high" || datatype.svm === "medium")) {
+        } else if (svmDatatype !== undefined && svmDatatype !== null && svmDatatype.svm !== null &&
+            svmDatatype.svm !== undefined && (svmDatatype.svm === "high" || svmDatatype.svm === "medium")) {
             return [true, "", false]
         } else {
             return [false, "", false]
         }
     }
 
-    static getTableValuesForDataType(datatype, multicolumn) {
+    static getTableValuesForDataType(afpDatatype, multicolumn) {
         let emptyVal = [ { id: 1, name: "" } ];
         if (multicolumn) {
             emptyVal = [ { id: 1, name: "", publicationId: "" } ];
         }
-        if (datatype !== undefined && datatype.afp !== null) {
-            if (datatype.afp !== "") {
-                return [JSON.parse(datatype.afp), true];
+        if (afpDatatype !== undefined && afpDatatype.afp !== null) {
+            if (afpDatatype.afp !== "") {
+                return [JSON.parse(afpDatatype.afp), true];
             } else {
                 return [emptyVal, true];
             }
@@ -185,10 +185,10 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            let genes_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.genestudied, "WBGene");
-            let genemod_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.structcorr, false);
-            let species_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.species, "Taxon ID ");
-            let overviewAlreadySaved = genes_stored[1] || genemod_details_stored[2] || species_stored[1];
+            let genes_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.genestudied, data.genestudied, "WBGene");
+            let genemod_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.structcorr, null);
+            let species_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.species, data.species, "Taxon ID ");
+            let overviewAlreadySaved = genes_stored[1] && genemod_details_stored[2] && species_stored[1];
             if (this.overview !== undefined) {
                 this.overview.setSelectedGenes(genes_stored[0]);
                 this.overview.setSelecedSpecies(species_stored[0]);
@@ -199,13 +199,14 @@ class MenuAndWidgets extends React.Component {
                     this.overview.setSuccessAlertMessage();
                 }
             }
-            let variation_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.variation, "");
-            let alleleseqchanged_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.alleleseqchange, true);
-            let strain_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.strain, null);
+            let variation_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.variation, data.variation, "");
+            let alleleseqchanged_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.alleleseqchange,
+                data.seqchange);
+            let strain_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.strain, data.strain, null);
             let otheralleles_store = MenuAndWidgets.getTableValuesForDataType(data.othervariation, false);
-            let otherstrain_store = MenuAndWidgets.getTableValuesForDataType(data.otherstrain, false);
-            let geneticsAlreadySaved = variation_stored[1] || alleleseqchanged_details_stored[2] || strain_stored[1] ||
-                otheralleles_store[1] || otherstrain_store[1];
+            let otherstrain_store = MenuAndWidgets.getTableValuesForDataType(data.otherstrain, data.otherstrain, false);
+            let geneticsAlreadySaved = variation_stored[1] && alleleseqchanged_details_stored[2] && strain_stored[1] &&
+                otheralleles_store[1] && otherstrain_store[1];
             if (this.genetics !== undefined) {
                 this.genetics.setSelectedAlleles(variation_stored[0]);
                 this.genetics.setSelecedStrains(strain_stored[0]);
@@ -216,12 +217,12 @@ class MenuAndWidgets extends React.Component {
                     this.genetics.setSuccessAlertMessage();
                 }
             }
-            let transgene_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.transgene, "");
-            let newantib_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.antibody, false);
+            let transgene_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.transgene, data.transgene, "");
+            let newantib_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.antibody, null);
             let othertransgene_store = MenuAndWidgets.getTableValuesForDataType(data.othertransgene, false);
-            let otherantibody_store = MenuAndWidgets.getTableValuesForDataType(data.otherantibody, true);
+            let otherantibody_store = MenuAndWidgets.getTableValuesForDataType(data.othertransgene, true);
 
-            let reagentAlreadySaved = transgene_stored[1] || newantib_details_stored[2] || othertransgene_store [1] ||
+            let reagentAlreadySaved = transgene_stored[1] && newantib_details_stored[2] && othertransgene_store [1] &&
                 otherantibody_store[1];
             if (this.reagent !== undefined) {
                 this.reagent.setSelectedTransgenes(transgene_stored[0]);
@@ -233,13 +234,13 @@ class MenuAndWidgets extends React.Component {
                     this.reagent.setSuccessAlertMessage();
                 }
             }
-            let anatomicexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.otherexpr, true);
-            let siteaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.siteaction, false);
-            let timeaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.timeaction, false);
-            let rnaseq_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnaseq, false);
-            let additionalexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.additionalexpr, false);
-            let expressionAlreadySaved = anatomicexpr_details_stored[2] || siteaction_details_stored[2] ||
-                timeaction_details_stored[2] || rnaseq_details_stored[2] || additionalexpr_details_stored[2];
+            let anatomicexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.otherexpr, data.otherexpr);
+            let siteaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.siteaction, null);
+            let timeaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.timeaction, null);
+            let rnaseq_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnaseq, null);
+            let additionalexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.additionalexpr, null);
+            let expressionAlreadySaved = anatomicexpr_details_stored[2] && siteaction_details_stored[2] &&
+                timeaction_details_stored[2] && rnaseq_details_stored[2] && additionalexpr_details_stored[2];
             if (this.expression !== undefined) {
                 this.expression.selfStateVarModifiedFunction(anatomicexpr_details_stored[0], "cb_anatomic");
                 this.expression.selfStateVarModifiedFunction(anatomicexpr_details_stored[1], "cb_anatomic_details");
@@ -254,10 +255,10 @@ class MenuAndWidgets extends React.Component {
                     this.expression.setSuccessAlertMessage();
                 }
             }
-            let geneint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneint, true);
-            let physint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneprod, true);
-            let genereg_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.genereg, true);
-            let interactionsAlreadySaved = geneint_details_stored[2] || physint_details_stored[2] ||
+            let geneint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneint, data.geneint);
+            let physint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneprod, data.geneprod);
+            let genereg_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.genereg, data.genereg);
+            let interactionsAlreadySaved = geneint_details_stored[2] && physint_details_stored[2] &&
                 genereg_details_stored[2];
             if (this.interactions !== undefined) {
                 this.interactions.selfStateVarModifiedFunction(geneint_details_stored[0], "cb_genetic");
@@ -270,14 +271,14 @@ class MenuAndWidgets extends React.Component {
                     this.interactions.setSuccessAlertMessage();
                 }
             }
-            let allele_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.newmutant, true);
-            let rnai_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnai, true);
-            let transgene_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.overexpr, true);
-            let protein_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.invitro, false);
-            let chemical_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.chemphen, false);
-            let env_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.envpheno, false);
-            let phenotypeAlreadySaved = allele_details_stored[2] || rnai_details_stored [2] ||
-                transgene_details_stored[2] || protein_details_stored[2] || chemical_details_stored[2] ||
+            let allele_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.newmutant, data.newmutant);
+            let rnai_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnai, data.rnai);
+            let transgene_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.overexpr, data.overexpr);
+            let protein_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.invitro, null);
+            let chemical_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.chemphen, null);
+            let env_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.envpheno, null);
+            let phenotypeAlreadySaved = allele_details_stored[2] && rnai_details_stored [2] &&
+                transgene_details_stored[2] && protein_details_stored[2] && chemical_details_stored[2] &&
                 env_details_stored[2];
             if (this.phenotype !== undefined) {
                 this.phenotype.selfStateVarModifiedFunction(allele_details_stored[0], "cb_allele");
@@ -291,16 +292,16 @@ class MenuAndWidgets extends React.Component {
                     this.phenotype.setSuccessAlertMessage();
                 }
             }
-            let humdis_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.humdis, false);
+            let humdis_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.humdis, null);
             let diseaseAlreadySaved = humdis_details_stored[2];
             if (this.disease !== undefined) {
-                this.disease.selfStateVarModifiedFunction(humdis_details_stored[0], "humDis");
+                this.disease.selfStateVarModifiedFunction(humdis_details_stored[0], "cb_humdis");
                 this.disease.selfStateVarModifiedFunction(humdis_details_stored[1], "comments");
                 if (diseaseAlreadySaved) {
                     this.disease.setSuccessAlertMessage();
                 }
             }
-            let comments_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.comment, false);
+            let comments_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.comment, null);
             let otherAlreadySaved = comments_details_stored[2];
             if (this.other !== undefined) {
                 this.other.selfStateVarModifiedFunction(comments_details_stored[1], "other");
