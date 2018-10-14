@@ -15,6 +15,44 @@ import Title from "./Title";
 import Disease from "../pages/Disease";
 import Header from "./Header";
 
+class AFPValue {
+    constructor(prevSaved) {
+        if (new.target === AFPValue) {
+            throw new TypeError("Cannot construct Abstract instances directly");
+        } else {
+            this._prevSaved = prevSaved;
+        }
+    }
+
+    prevSaved() {
+        return this._prevSaved;
+    }
+}
+
+class EntityList extends AFPValue{
+    constructor(entities, prevSaved) {
+        super(prevSaved);
+        this._entities = entities;
+    }
+    entities() {
+        return this._entities;
+    }
+}
+
+class CheckboxWithDetails extends AFPValue{
+    constructor(isCheched, details, prevSaved) {
+        super(prevSaved);
+        this._isChecked = isCheched;
+        this._details = details;
+    }
+    isChecked() {
+        return this._isChecked;
+    }
+    details() {
+        return this._details;
+    }
+}
+
 class MenuAndWidgets extends React.Component {
     constructor(props) {
         super(props);
@@ -43,7 +81,7 @@ class MenuAndWidgets extends React.Component {
                 currSelectedMenu = 7;
                 break;
             case "/contact_info":
-                currSelectedMenu = 9;
+                currSelectedMenu = 8;
                 break;
             default:
                 currSelectedMenu = 1;
@@ -106,10 +144,32 @@ class MenuAndWidgets extends React.Component {
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
         this.stateVarModifiedCallback = this.stateVarModifiedCallback.bind(this);
+        this.setOverviewData = this.setOverviewData.bind(this);
+        this.setGeneticsData = this.setGeneticsData.bind(this);
+        this.setReagentData = this.setReagentData.bind(this);
+        this.setExpressionData = this.setExpressionData.bind(this);
+        this.setInteractionsData = this.setInteractionsData.bind(this);
+        this.setPhenotypeData = this.setPhenotypeData.bind(this);
+        this.setDiseaseData = this.setDiseaseData.bind(this);
+        this.setCommentsData = this.setCommentsData.bind(this);
+        this.setWidgetSaved = this.setWidgetSaved.bind(this);
     }
 
-    static split_tfp_entities(entities_string, prefix) {
-        let entities_split = entities_string.split(" | ");
+    /**
+     * extract an array of entities from a string read from TFP tables in WB data base.
+     *
+     * list of entities in TFP tables in WB DB  in string format, separated by pipes with whitespaces (" | "). Each
+     * entity can also have an ID or other additional information within it. The special character separator ;%; is used
+     * to separate entities from their respective additional data.
+     *
+     * @param {string} entitiesString a string containing a list of entities, in WB data base format
+     * @param {string} prefix an optional prefix to be added to the additional information in the entities (e.g., WBGene for gene
+     * ids, which are usually stored in the DB without prefix)
+     * @returns {string[]} an array of entities, in the form "entity_name ( entity_extra_info )", where the round
+     * brackets and the extra_info field are returned only if additional information is present for the entities
+     */
+    static extractEntitiesFromTfpString(entitiesString, prefix) {
+        let entities_split = entitiesString.split(" | ");
         let final_entities_list = Array();
         for (let i in entities_split) {
             let entity_split = entities_split[i].split(";%;");
@@ -118,58 +178,322 @@ class MenuAndWidgets extends React.Component {
         return final_entities_list;
     }
 
-    static getSetOfEntitiesForDatatype(afpDatatype, tfpDatatype, entityPrefix) {
-        if (afpDatatype !== undefined && afpDatatype.afp !== undefined && afpDatatype.afp !== null) {
-            if (afpDatatype.afp !== "") {
+    /**
+     * get a set of entities for a specific data type from a data object returned by WB API
+     *
+     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
+     * function extracts a set of entities for a data type if the latter has values in afp_ or tfp_ tables. Afp tables
+     * are searched first; if their values are undefined or null, tfp tables are searched next.
+     *
+     * @param {string} afpString string containing data for a data type coming from afp tables
+     * @param {string} tfpString string containing data for a data type coming from tfp tables
+     * @param {string} entityPrefix optional prefix to be attached to additional information for each entity
+     * @returns {EntityList} an object containing the set of entities in first position and a boolean indicating
+     * whether the data came from afp tables
+     */
+    static getSetOfEntitiesFromWBAPIData(afpString, tfpString, entityPrefix) {
+        if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
+            if (afpString.afp !== "") {
                 if (entityPrefix !== null) {
-                    return [MenuAndWidgets.split_tfp_entities(afpDatatype.afp, entityPrefix), true];
+                    return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(afpString.afp, entityPrefix),
+                        true);
                 } else {
-                    return [afpDatatype.afp.split(" | "), true];
+                    return new EntityList(afpString.afp.split(" | "), true);
                 }
             } else {
-                return [new Set(), true];
+                return new EntityList(new Set(), true);
             }
-        } else if (tfpDatatype !== undefined && tfpDatatype.tfp !== undefined && tfpDatatype.tfp !== "" &&
-            tfpDatatype.tfp !== null) {
+        } else if (tfpString !== undefined && tfpString.tfp !== undefined && tfpString.tfp !== "" &&
+            tfpString.tfp !== null) {
             if (entityPrefix !== null) {
-                return [MenuAndWidgets.split_tfp_entities(tfpDatatype.tfp, entityPrefix), false];
+                return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(tfpString.tfp, entityPrefix), false);
             } else {
-                return [tfpDatatype.tfp.split(" | "), false];
+                return new EntityList(tfpString.tfp.split(" | "), false);
             }
         } else {
-            return [new Set(), false]
+            return new EntityList(new Set(), false)
         }
     }
 
-    static getCheckboxValueForDatatype(afpDatatype, svmDatatype) {
-        if (afpDatatype !== undefined && afpDatatype.afp !== undefined && afpDatatype.afp !== null) {
-            if (afpDatatype.afp !== "") {
-                return [true, afpDatatype.afp, true]
+    /**
+     * get a checkbox value with its associated text for a specific data type from a data object returned by WB API
+     *
+     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
+     * function extracts a checkbox value with its optional text for a data type if the latter has values in afp_ or
+     * svm_ tables. Afp tables are searched first; if their values are undefined or null, svm tables are searched next.
+     *
+     * This function can be used also to retrieve the value of a textual field. In this case the checkbox value is
+     * set to true if the text is not empty.
+     *
+     * @param {string} afpString string containing data for a data type coming from afp tables
+     * @param {string} svmString string containing data for a data type coming from svm tables
+     * @returns {CheckboxWithDetails} an object containing the checkbox value, the text associated with the checkbox
+     * or the value of a textual field in second position, and whether the values come from afp tables
+     */
+    static getCheckbxOrSingleFieldFromWBAPIData(afpString, svmString) {
+        if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
+            if (afpString.afp !== "") {
+                return new CheckboxWithDetails(true, afpString.afp, true);
             } else {
-                return [false, "", true]
+                return new CheckboxWithDetails(false, "", true);
             }
-        } else if (svmDatatype !== undefined && svmDatatype !== null && svmDatatype.svm !== null &&
-            svmDatatype.svm !== undefined && (svmDatatype.svm === "high" || svmDatatype.svm === "medium")) {
-            return [true, "", false]
+        } else if (svmString !== undefined && svmString !== null && svmString.svm !== null &&
+            svmString.svm !== undefined && (svmString.svm === "high" || svmString.svm === "medium")) {
+            return new CheckboxWithDetails(true, "", false);
         } else {
-            return [false, "", false]
+            return new CheckboxWithDetails(false, "", false);
         }
     }
 
-    static getTableValuesForDataType(afpDatatype, multicolumn) {
+    /**
+     * get table records for a specific data type from a data object returned by WB API
+     *
+     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
+     * function extracts an array of table records for a data type if the latter has values in afp_.
+     *
+     * @param {string} afpString string containing data for a data type coming from afp tables
+     * @param {boolean} multicolumn whether the table contains two columns
+     * @returns {EntityList}
+     */
+    static getTableValuesFromWBAPIData(afpString, multicolumn) {
         let emptyVal = [ { id: 1, name: "" } ];
         if (multicolumn) {
             emptyVal = [ { id: 1, name: "", publicationId: "" } ];
         }
-        if (afpDatatype !== undefined && afpDatatype.afp !== null) {
-            if (afpDatatype.afp !== "") {
-                return [JSON.parse(afpDatatype.afp), true];
+        if (afpString !== undefined && afpString.afp !== null) {
+            if (afpString.afp !== "") {
+                return new EntityList(JSON.parse(afpString.afp), true);
             } else {
-                return [emptyVal, true];
+                return new EntityList(emptyVal, true);
             }
         } else {
-            return [emptyVal, false];
+            return new EntityList(emptyVal, false);
         }
+    }
+
+    /**
+     * change a widget state to saved and modify its alert message depending on the status of the passed arguments
+     * @param widget the widget to modify
+     * @param {string} sectionName
+     * @param {AFPValue} params a list of arguments
+     */
+    setWidgetSaved(widget, sectionName, ...params) {
+        let saved = params[0].prevSaved();
+        for (let i = 1; i < params.length; i++) {
+            saved = saved && params[i].prevSaved();
+        }
+        if (widget !== undefined) {
+            widget.selfStateVarModifiedFunction(saved, "saved");
+            if (saved) {
+                widget.setSuccessAlertMessage();
+            }
+        }
+        const newCompletedSections = this.state.completedSections;
+        newCompletedSections[sectionName] = saved;
+        this.setState({
+            completedSections: newCompletedSections
+        });
+    }
+
+    /**
+     * set the data in the overview widget
+     *
+     * @param {EntityList} genesList list of genes
+     * @param {EntityList} speciesList list of species
+     * @param {CheckboxWithDetails} genemodCb genemod correction update checkbox
+     */
+    setOverviewData(genesList, speciesList, genemodCb) {
+        if (this.overview !== undefined) {
+            this.overview.setSelectedGenes(genesList.entities());
+            this.overview.setSelecedSpecies(speciesList.entities());
+            this.overview.selfStateVarModifiedFunction(genemodCb.isChecked(), "cb_gmcorr");
+            this.overview.selfStateVarModifiedFunction(genemodCb.details(), "cb_gmcorr_details");
+        }
+        this.setWidgetSaved(this.overview, "overview", ...arguments);
+        this.setState({
+            selectedGenes: genesList.entities(),
+            selectedSpecies: speciesList.entities(),
+            geneModCorrection: genemodCb.isChecked(),
+            geneModCorrectionDetails: genemodCb.details()});
+    }
+
+    /**
+     * set the data in the genetics widget
+     *
+     * @param {EntityList} variationList list of alleles
+     * @param {EntityList} strainsList list of strains
+     * @param {CheckboxWithDetails} alleleseqchangeCb checkbox for alleleseqchange
+     * @param {EntityList} otherallelesTabRecords table records for other alleles
+     * @param {EntityList} otherstrainTabRecords table records for other strains
+     */
+    setGeneticsData(variationList, strainsList, alleleseqchangeCb, otherallelesTabRecords, otherstrainTabRecords) {
+        if (this.genetics !== undefined) {
+            this.genetics.setSelectedAlleles(variationList.entities());
+            this.genetics.setSelecedStrains(strainsList.entities());
+            this.genetics.selfStateVarModifiedFunction(alleleseqchangeCb.isChecked(), "cb_allele");
+            this.genetics.setOtherAlleles(otherallelesTabRecords.entities());
+            this.genetics.setOtherStrains(otherstrainTabRecords.entities());
+        }
+        this.setWidgetSaved(this.genetics, "genetics", ...arguments);
+        this.setState({
+            selectedAlleles: variationList.entities(),
+            alleleSeqChange: alleleseqchangeCb.isChecked(),
+            selectedStrains: strainsList.entities(),
+            otherAlleles: otherallelesTabRecords.entities(),
+            otherStrains: otherstrainTabRecords.entities()
+        });
+    }
+
+    /**
+     * set data for the reagent widget
+     *
+     * @param {EntityList} transgenesList list of transgenes
+     * @param {CheckboxWithDetails} newantibCb newantib checkbox
+     * @param {EntityList} otherantibodiesList other antibodies table records
+     * @param {EntityList} othertransgenesList other transgenes table records
+     */
+    setReagentData(transgenesList, newantibCb, otherantibodiesList, othertransgenesList) {
+        if (this.reagent !== undefined) {
+            this.reagent.setSelectedTransgenes(transgenesList.entities());
+            this.reagent.selfStateVarModifiedFunction(newantibCb.isChecked(), "cb_newantib");
+            this.reagent.selfStateVarModifiedFunction(newantibCb.details(), "cb_newantib_details");
+            this.reagent.setOtherAntibodies(otherantibodiesList.entities());
+            this.reagent.setOtherTransgenes(othertransgenesList.entities());
+        }
+        this.setWidgetSaved(this.reagent, "reagent", ...arguments);
+        this.setState({
+            selectedTransgenes: transgenesList.entities(),
+            newAntib: newantibCb.isChecked(),
+            otherAntibs: otherantibodiesList.entities(),
+            otherTransgenes: othertransgenesList.entities()
+        })
+    }
+
+    /**
+     * set data for the expression widget
+     *
+     * @param {CheckboxWithDetails} anatomicexprCb
+     * @param {CheckboxWithDetails} siteactionCb
+     * @param {CheckboxWithDetails} timeactionCb
+     * @param {CheckboxWithDetails} rnaseqCb
+     * @param {CheckboxWithDetails} additionalexprVal
+     */
+    setExpressionData(anatomicexprCb, siteactionCb, timeactionCb, rnaseqCb, additionalexprVal) {
+        if (this.expression !== undefined) {
+            this.expression.selfStateVarModifiedFunction(anatomicexprCb.isChecked(), "cb_anatomic");
+            this.expression.selfStateVarModifiedFunction(anatomicexprCb.details(), "cb_anatomic_details");
+            this.expression.selfStateVarModifiedFunction(siteactionCb.isChecked(), "cb_site");
+            this.expression.selfStateVarModifiedFunction(siteactionCb.details(), "cb_site_details");
+            this.expression.selfStateVarModifiedFunction(timeactionCb.isChecked(), "cb_time");
+            this.expression.selfStateVarModifiedFunction(timeactionCb.details(), "cb_time_details");
+            this.expression.selfStateVarModifiedFunction(rnaseqCb.isChecked(), "cb_rna");
+            this.expression.selfStateVarModifiedFunction(rnaseqCb.details(), "cb_rna_details");
+            this.expression.selfStateVarModifiedFunction(additionalexprVal.details(), "additionalExpr");
+        }
+        this.setWidgetSaved(this.expression, "expression", ...arguments);
+        this.setState({
+            anatomicExpr: anatomicexprCb.isChecked(),
+            anatomicExprDetails: anatomicexprCb.details(),
+            siteAction: siteactionCb.isChecked(),
+            siteActionDetails: siteactionCb.details(),
+            timeAction: timeactionCb.isChecked(),
+            timeActionDetails: timeactionCb.details(),
+            rnaSeq: rnaseqCb.isChecked(),
+            rnaSeqDetails: rnaseqCb.details(),
+            additionalExpr: additionalexprVal.details()
+        });
+    }
+
+    /**
+     * set data for the interactions widget
+     *
+     * @param {CheckboxWithDetails} geneintCb
+     * @param {CheckboxWithDetails} physintCb
+     * @param {CheckboxWithDetails} generegCb
+     */
+    setInteractionsData(geneintCb, physintCb, generegCb) {
+        if (this.interactions !== undefined) {
+            this.interactions.selfStateVarModifiedFunction(geneintCb.isChecked(), "cb_genetic");
+            this.interactions.selfStateVarModifiedFunction(geneintCb.details(), "cb_genetic_details");
+            this.interactions.selfStateVarModifiedFunction(physintCb.isChecked(), "cb_physical");
+            this.interactions.selfStateVarModifiedFunction(physintCb.details(), "cb_physical_details");
+            this.interactions.selfStateVarModifiedFunction(generegCb.isChecked(), "cb_regulatory");
+            this.interactions.selfStateVarModifiedFunction(generegCb.details(), "cb_regulatory_details");
+        }
+        this.setWidgetSaved(this.interactions, "interactions", ...arguments);
+        this.setState({
+            svmGeneInt: geneintCb.isChecked(),
+            svmGeneIntDetails: geneintCb.details(),
+            svmPhysInt: physintCb.isChecked(),
+            svmPhysIntDetails: physintCb.details(),
+            svmGeneReg: generegCb.isChecked(),
+            svmGeneRegDetails: generegCb.details(),
+
+        });
+    }
+
+    /**
+     * set data for the phenotype widget
+     *
+     * @param {CheckboxWithDetails} alleleCb
+     * @param {CheckboxWithDetails} rnaiCb
+     * @param {CheckboxWithDetails} transgeneCb
+     * @param {CheckboxWithDetails} proteinCb
+     * @param {CheckboxWithDetails} chemicalCb
+     * @param {CheckboxWithDetails} envCb
+     */
+    setPhenotypeData(alleleCb, rnaiCb, transgeneCb, proteinCb, chemicalCb, envCb) {
+        if (this.phenotype !== undefined) {
+            this.phenotype.selfStateVarModifiedFunction(alleleCb.isChecked(), "cb_allele");
+            this.phenotype.selfStateVarModifiedFunction(rnaiCb.isChecked(), "cb_rnai");
+            this.phenotype.selfStateVarModifiedFunction(transgeneCb.isChecked(), "cb_transgene");
+            this.phenotype.selfStateVarModifiedFunction(proteinCb.isChecked(), "cb_protein");
+            this.phenotype.selfStateVarModifiedFunction(proteinCb.details(), "cb_protein_details");
+            this.phenotype.selfStateVarModifiedFunction(chemicalCb.isChecked(), "cb_chemical");
+            this.phenotype.selfStateVarModifiedFunction(envCb.isChecked(), "cb_env");
+        }
+        this.setWidgetSaved(this.phenotype, "phenotypes", ...arguments);
+        this.setState({
+            svmAllele: alleleCb.isChecked(),
+            svmRNAi: rnaiCb.isChecked(),
+            svmTransgene: transgeneCb.isChecked(),
+            svmProtein: proteinCb.isChecked(),
+            svmProteinDetails: proteinCb.details(),
+            chemical: chemicalCb.isChecked(),
+            env: envCb.isChecked()
+        })
+    }
+
+    /**
+     * set data for the disease widget
+     *
+     * @param {CheckboxWithDetails} diseaseCb
+     */
+    setDiseaseData(diseaseCb) {
+        if (this.disease !== undefined) {
+            this.disease.selfStateVarModifiedFunction(diseaseCb.isChecked(), "cb_humdis");
+            this.disease.selfStateVarModifiedFunction(diseaseCb.details(), "comments");
+        }
+        this.setWidgetSaved(this.disease, "disease", ...arguments);
+        this.setState({
+            humDis: diseaseCb.isChecked(),
+            disComments: diseaseCb.details()
+        });
+    }
+
+    /**
+     * set data for the comments widget
+     *
+     * @param {CheckboxWithDetails} commentsCb
+     */
+    setCommentsData(commentsCb) {
+        if (this.other !== undefined) {
+            this.other.selfStateVarModifiedFunction(commentsCb.details(), "other");
+        }
+        this.setWidgetSaved(this.other, "contact_info", ...arguments);
+        this.setState({
+            other: commentsCb.details()
+        });
     }
 
     componentDidMount() {
@@ -185,155 +509,40 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            let genes_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.genestudied, data.genestudied, "WBGene");
-            let genemod_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.structcorr, null);
-            let species_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.species, data.species, "Taxon ID ");
-            let overviewAlreadySaved = genes_stored[1] && genemod_details_stored[2] && species_stored[1];
-            if (this.overview !== undefined) {
-                this.overview.setSelectedGenes(genes_stored[0]);
-                this.overview.setSelecedSpecies(species_stored[0]);
-                this.overview.selfStateVarModifiedFunction(genemod_details_stored[0], "cb_gmcorr");
-                this.overview.selfStateVarModifiedFunction(genemod_details_stored[1], "cb_gmcorr_details");
-                this.overview.selfStateVarModifiedFunction(overviewAlreadySaved, "saved");
-                if (overviewAlreadySaved) {
-                    this.overview.setSuccessAlertMessage();
-                }
-            }
-            let variation_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.variation, data.variation, "");
-            let alleleseqchanged_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.alleleseqchange,
-                data.seqchange);
-            let strain_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.strain, data.strain, null);
-            let otheralleles_store = MenuAndWidgets.getTableValuesForDataType(data.othervariation, false);
-            let otherstrain_store = MenuAndWidgets.getTableValuesForDataType(data.otherstrain, data.otherstrain, false);
-            let geneticsAlreadySaved = variation_stored[1] && alleleseqchanged_details_stored[2] && strain_stored[1] &&
-                otheralleles_store[1] && otherstrain_store[1];
-            if (this.genetics !== undefined) {
-                this.genetics.setSelectedAlleles(variation_stored[0]);
-                this.genetics.setSelecedStrains(strain_stored[0]);
-                this.genetics.selfStateVarModifiedFunction(alleleseqchanged_details_stored[0], "cb_allele");
-                this.genetics.setOtherAlleles(otheralleles_store[0]);
-                this.genetics.setOtherStrains(otherstrain_store[0]);
-                if (geneticsAlreadySaved) {
-                    this.genetics.setSuccessAlertMessage();
-                }
-            }
-            let transgene_stored = MenuAndWidgets.getSetOfEntitiesForDatatype(data.transgene, data.transgene, "");
-            let newantib_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.antibody, null);
-            let othertransgene_store = MenuAndWidgets.getTableValuesForDataType(data.othertransgene, false);
-            let otherantibody_store = MenuAndWidgets.getTableValuesForDataType(data.othertransgene, true);
-
-            let reagentAlreadySaved = transgene_stored[1] && newantib_details_stored[2] && othertransgene_store [1] &&
-                otherantibody_store[1];
-            if (this.reagent !== undefined) {
-                this.reagent.setSelectedTransgenes(transgene_stored[0]);
-                this.reagent.selfStateVarModifiedFunction(newantib_details_stored[0], "cb_newantib");
-                this.reagent.selfStateVarModifiedFunction(newantib_details_stored[1], "cb_newantib_details");
-                this.reagent.setOtherAntibodies(otherantibody_store[0]);
-                this.reagent.setOtherTransgenes(othertransgene_store[0]);
-                if (reagentAlreadySaved) {
-                    this.reagent.setSuccessAlertMessage();
-                }
-            }
-            let anatomicexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.otherexpr, data.otherexpr);
-            let siteaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.siteaction, null);
-            let timeaction_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.timeaction, null);
-            let rnaseq_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnaseq, null);
-            let additionalexpr_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.additionalexpr, null);
-            let expressionAlreadySaved = anatomicexpr_details_stored[2] && siteaction_details_stored[2] &&
-                timeaction_details_stored[2] && rnaseq_details_stored[2] && additionalexpr_details_stored[2];
-            if (this.expression !== undefined) {
-                this.expression.selfStateVarModifiedFunction(anatomicexpr_details_stored[0], "cb_anatomic");
-                this.expression.selfStateVarModifiedFunction(anatomicexpr_details_stored[1], "cb_anatomic_details");
-                this.expression.selfStateVarModifiedFunction(siteaction_details_stored[0], "cb_site");
-                this.expression.selfStateVarModifiedFunction(siteaction_details_stored[1], "cb_site_details");
-                this.expression.selfStateVarModifiedFunction(timeaction_details_stored[0], "cb_time");
-                this.expression.selfStateVarModifiedFunction(timeaction_details_stored[1], "cb_time_details");
-                this.expression.selfStateVarModifiedFunction(rnaseq_details_stored[0], "cb_rna");
-                this.expression.selfStateVarModifiedFunction(rnaseq_details_stored[1], "cb_rna_details");
-                this.expression.selfStateVarModifiedFunction(additionalexpr_details_stored[1], "additionalExpr");
-                if (expressionAlreadySaved) {
-                    this.expression.setSuccessAlertMessage();
-                }
-            }
-            let geneint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneint, data.geneint);
-            let physint_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.geneprod, data.geneprod);
-            let genereg_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.genereg, data.genereg);
-            let interactionsAlreadySaved = geneint_details_stored[2] && physint_details_stored[2] &&
-                genereg_details_stored[2];
-            if (this.interactions !== undefined) {
-                this.interactions.selfStateVarModifiedFunction(geneint_details_stored[0], "cb_genetic");
-                this.interactions.selfStateVarModifiedFunction(geneint_details_stored[1], "cb_genetic_details");
-                this.interactions.selfStateVarModifiedFunction(physint_details_stored[0], "cb_physical");
-                this.interactions.selfStateVarModifiedFunction(physint_details_stored[1], "cb_physical_details");
-                this.interactions.selfStateVarModifiedFunction(genereg_details_stored[0], "cb_regulatory");
-                this.interactions.selfStateVarModifiedFunction(genereg_details_stored[1], "cb_regulatory_details");
-                if (interactionsAlreadySaved) {
-                    this.interactions.setSuccessAlertMessage();
-                }
-            }
-            let allele_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.newmutant, data.newmutant);
-            let rnai_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.rnai, data.rnai);
-            let transgene_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.overexpr, data.overexpr);
-            let protein_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.invitro, null);
-            let chemical_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.chemphen, null);
-            let env_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.envpheno, null);
-            let phenotypeAlreadySaved = allele_details_stored[2] && rnai_details_stored [2] &&
-                transgene_details_stored[2] && protein_details_stored[2] && chemical_details_stored[2] &&
-                env_details_stored[2];
-            if (this.phenotype !== undefined) {
-                this.phenotype.selfStateVarModifiedFunction(allele_details_stored[0], "cb_allele");
-                this.phenotype.selfStateVarModifiedFunction(rnai_details_stored[0], "cb_rnai");
-                this.phenotype.selfStateVarModifiedFunction(transgene_details_stored[0], "cb_transgene");
-                this.phenotype.selfStateVarModifiedFunction(protein_details_stored[0], "cb_protein");
-                this.phenotype.selfStateVarModifiedFunction(protein_details_stored[1], "cb_protein_details");
-                this.phenotype.selfStateVarModifiedFunction(chemical_details_stored[0], "cb_chemical");
-                this.phenotype.selfStateVarModifiedFunction(env_details_stored[0], "cb_env");
-                if (phenotypeAlreadySaved) {
-                    this.phenotype.setSuccessAlertMessage();
-                }
-            }
-            let humdis_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.humdis, null);
-            let diseaseAlreadySaved = humdis_details_stored[2];
-            if (this.disease !== undefined) {
-                this.disease.selfStateVarModifiedFunction(humdis_details_stored[0], "cb_humdis");
-                this.disease.selfStateVarModifiedFunction(humdis_details_stored[1], "comments");
-                if (diseaseAlreadySaved) {
-                    this.disease.setSuccessAlertMessage();
-                }
-            }
-            let comments_details_stored = MenuAndWidgets.getCheckboxValueForDatatype(data.comment, null);
-            let otherAlreadySaved = comments_details_stored[2];
-            if (this.other !== undefined) {
-                this.other.selfStateVarModifiedFunction(comments_details_stored[1], "other");
-                if (otherAlreadySaved) {
-                    this.other.setSuccessAlertMessage();
-                }
-            }
-            this.setState({
-                selectedGenes: genes_stored[0], selectedSpecies: species_stored[0],
-                geneModCorrection: genemod_details_stored[0], geneModCorrectionDetails: genemod_details_stored[1],
-                selectedAlleles: variation_stored[0], alleleSeqChange: alleleseqchanged_details_stored[0],
-                selectedStrains: strain_stored[0], selectedTransgenes: transgene_stored[0],
-                newAntib: newantib_details_stored[0], otherAntibs: otherantibody_store[0],
-                otherAlleles: otheralleles_store[0], otherStrains: otherstrain_store[0],
-                otherTransgenes: othertransgene_store[0], anatomicExpr: anatomicexpr_details_stored[0],
-                anatomicExprDetails: anatomicexpr_details_stored[1], siteAction: siteaction_details_stored[0],
-                siteActionDetails: siteaction_details_stored[1], timeAction: timeaction_details_stored[0],
-                timeActionDetails: timeaction_details_stored[1], rnaSeq: rnaseq_details_stored[0],
-                rnaSeqDetails: rnaseq_details_stored[1], additionalExpr: additionalexpr_details_stored[1],
-                svmGeneInt: geneint_details_stored[0], svmGeneIntDetails: geneint_details_stored[1],
-                svmPhysInt: physint_details_stored[0], svmPhysIntDetails: physint_details_stored[1],
-                svmGeneReg: genereg_details_stored[0], svmGeneRegDetails: genereg_details_stored[1],
-                svmAllele: allele_details_stored[0], svmRNAi: rnai_details_stored[0],
-                svmTransgene: transgene_details_stored[0], svmProtein: protein_details_stored[0],
-                svmProteinDetails: protein_details_stored[1], chemical: chemical_details_stored[0],
-                env: env_details_stored[0], other: comments_details_stored[1], humDis: humdis_details_stored[0],
-                disComments: humdis_details_stored[1],
-                completedSections: {"overview": overviewAlreadySaved, "expression": expressionAlreadySaved,
-                    "genetics": geneticsAlreadySaved, "interactions": interactionsAlreadySaved,
-                    "phenotypes": phenotypeAlreadySaved, "reagent": reagentAlreadySaved,
-                    "disease": diseaseAlreadySaved, "contact_info": otherAlreadySaved},
-            });
+            this.setOverviewData(
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene"),
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.species, data.species, "Taxon ID "),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
+            this.setGeneticsData(
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.alleleseqchange, data.seqchange),
+                MenuAndWidgets.getTableValuesFromWBAPIData(data.othervariation, false),
+                MenuAndWidgets.getTableValuesFromWBAPIData(data.otherstrain, false));
+            this.setReagentData(
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.transgene, data.transgene, ""),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.antibody, undefined),
+                MenuAndWidgets.getTableValuesFromWBAPIData(data.otherantibody, true),
+                MenuAndWidgets.getTableValuesFromWBAPIData(data.othertransgene, false));
+            this.setExpressionData(
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.otherexpr, data.otherexpr),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.siteaction, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.timeaction, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.rnaseq, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.additionalexpr, undefined));
+            this.setInteractionsData(
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.geneint, data.geneint),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.geneprod, data.geneprod),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.genereg, data.genereg));
+            this.setPhenotypeData(
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.newmutant, data.newmutant),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.rnai, data.rnai),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.overexpr, data.overexpr),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.invitro, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.chemphen, undefined),
+                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.envpheno, undefined));
+            this.setDiseaseData(MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
+            this.setCommentsData(MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.comment, undefined));
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
 
@@ -348,7 +557,7 @@ class MenuAndWidgets extends React.Component {
         newCompletedSections[section] = true;
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
         this.setState({completedSections: newCompletedSections, selectedMenu: newSelectedMenu});
-        this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
+            this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
     }
 
     handleClosePopup() {
@@ -377,55 +586,25 @@ class MenuAndWidgets extends React.Component {
     }
 
     render() {
-        let overviewOk = false;
-        if (this.state.completedSections["overview"]) {
-            overviewOk = <Glyphicon glyph="ok"/>;
-        }
-        let expressionOk = false;
-        if (this.state.completedSections["expression"]) {
-            expressionOk = <Glyphicon glyph="ok"/>;
-        }
-        let geneticsOk = false;
-        if (this.state.completedSections["genetics"]) {
-            geneticsOk = <Glyphicon glyph="ok"/>;
-        }
-        let interactionsOk = false;
-        if (this.state.completedSections["interactions"]) {
-            interactionsOk = <Glyphicon glyph="ok"/>;
-        }
-        let phenotypesOk = false;
-        if (this.state.completedSections["phenotypes"]) {
-            phenotypesOk = <Glyphicon glyph="ok"/>;
-        }
-        let reagentOk = false;
-        if (this.state.completedSections["reagent"]) {
-            reagentOk = <Glyphicon glyph="ok"/>;
-        }
-        let diseaseOk = false;
-        if (this.state.completedSections["disease"]) {
-            diseaseOk = <Glyphicon glyph="ok"/>;
-        }
-        let contact_infoOk = false;
-        if (this.state.completedSections["contact_info"]) {
-            contact_infoOk = <Glyphicon glyph="ok"/>;
-        }
-        let data_fetch_err_alert = false;
-        if (this.state.show_fetch_data_error) {
-            data_fetch_err_alert = <Alert bsStyle="danger">
-                <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
+        let overviewOk = this.state.completedSections["overview"] ? <Glyphicon glyph="ok"/> : false;
+        let expressionOk = this.state.completedSections["expression"] ? <Glyphicon glyph="ok"/> : false;
+        let geneticsOk = this.state.completedSections["genetics"] ? <Glyphicon glyph="ok"/>: false;
+        let interactionsOk = this.state.completedSections["interactions"] ? <Glyphicon glyph="ok"/> : false;
+        let phenotypesOk = this.state.completedSections["phenotypes"] ? <Glyphicon glyph="ok"/> : false;
+        let reagentOk = this.state.completedSections["reagent"] ? <Glyphicon glyph="ok"/> : false;
+        let diseaseOk = this.state.completedSections["disease"] ? <Glyphicon glyph="ok"/> : false;
+        let contact_infoOk = this.state.completedSections["contact_info"] ? <Glyphicon glyph="ok"/> : false;
+        let data_fetch_err_alert = this.state.show_fetch_data_error ?
+            <Alert bsStyle="danger">
+                <Glyphicon glyph="warning-sign"/>
+                <strong>Error</strong><br/>
                 We are having problems retrieving your data from the server and some components may
                 behave incorrectly. This could be caused by wrong credentials or by a network issue.
                 Please try again later or contact <a href="mailto:help@wormbase.org">
                 Wormbase Helpdesk</a>.
-            </Alert>;
-        }
+            </Alert> : false;
         let parameters = queryString.parse(this.props.location.search);
-        let title = parameters.title;
-        if (title === undefined) {
-            title = "";
-        } else {
-            title = "\"" + title + "\"";
-        }
+        let title = parameters.title !== undefined ? "\"" + parameters.title + "\"" : "";
         return (
             <div className="container">
                 <div className="row">
@@ -460,8 +639,8 @@ class MenuAndWidgets extends React.Component {
                                         <IndexLinkContainer to={"disease" + this.props.location.search} active={this.state.selectedMenu === 7}>
                                             <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 9}>
-                                            <NavItem eventKey={9}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
+                                        <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 8}>
+                                            <NavItem eventKey={8}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
                                     </Nav>
                                 </div>

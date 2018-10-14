@@ -9,9 +9,9 @@ import {
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../page_components/multiple_select";
-import EditableTable from "../page_components/editable_table";
-import OneColumnEditableTable from "../page_components/onecol_table";
+import MultipleSelect from "../page_components/MultiSelect";
+import EditableTable from "../page_components/EditableTwoColsTable";
+import OneColumnEditableTable from "../page_components/EditableOneColsTable";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Reagent extends React.Component {

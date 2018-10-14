@@ -3,7 +3,7 @@ import {
     Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../page_components/multiple_select";
+import MultipleSelect from "../page_components/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Overview extends React.Component {
