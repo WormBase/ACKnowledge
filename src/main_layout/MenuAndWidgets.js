@@ -17,11 +17,7 @@ import Header from "./Header";
 
 class AFPValue {
     constructor(prevSaved) {
-        if (new.target === AFPValue) {
-            throw new TypeError("Cannot construct Abstract instances directly");
-        } else {
-            this._prevSaved = prevSaved;
-        }
+        this._prevSaved = prevSaved;
     }
 
     prevSaved() {
@@ -53,38 +49,49 @@ class CheckboxWithDetails extends AFPValue{
     }
 }
 
+const MENU_INDEX = Object.freeze({
+    OVERVIEW: 1,
+    GENETICS: 2,
+    REAGENT: 3,
+    EXPRESSION: 4,
+    INTERACTIONS: 5,
+    PHENOTYPES: 6,
+    DISEASE: 7,
+    COMMENTS: 8
+});
+
 class MenuAndWidgets extends React.Component {
     constructor(props) {
         super(props);
-        let currSelectedMenu = 1;
+        let currSelectedMenu = MENU_INDEX.OVERVIEW;
         const currentLocation = props.location.pathname;
         switch (currentLocation) {
             case "/overview":
-                currSelectedMenu = 1;
+                currSelectedMenu = MENU_INDEX.OVERVIEW;
                 break;
             case "/expression":
-                currSelectedMenu = 4;
+                currSelectedMenu = MENU_INDEX.EXPRESSION;
                 break;
             case "/genetics":
-                currSelectedMenu = 2;
+                currSelectedMenu = MENU_INDEX.GENETICS;
                 break;
             case "/interactions":
-                currSelectedMenu = 5;
+                currSelectedMenu = MENU_INDEX.INTERACTIONS;
                 break;
             case "/phenotypes":
-                currSelectedMenu = 6;
+                currSelectedMenu = MENU_INDEX.PHENOTYPES;
                 break;
             case "/reagent":
-                currSelectedMenu = 3;
+                currSelectedMenu = MENU_INDEX.REAGENT;
                 break;
             case "/disease":
-                currSelectedMenu = 7;
+                currSelectedMenu = MENU_INDEX.DISEASE;
                 break;
             case "/contact_info":
-                currSelectedMenu = 8;
+                currSelectedMenu = MENU_INDEX.COMMENTS;
                 break;
             default:
-                currSelectedMenu = 1;
+                currSelectedMenu = MENU_INDEX.OVERVIEW;
         }
         let parameters = queryString.parse(this.props.location.search);
         this.state = {
@@ -618,29 +625,37 @@ class MenuAndWidgets extends React.Component {
                                 <div className="panel-body">
                                     <Nav bsStyle="pills" stacked onSelect={this.handleSelectMenu}>
                                         <IndexLinkContainer to={"overview" + this.props.location.search}
-                                                            active={this.state.selectedMenu === 1}>
-                                            <NavItem eventKey={1}>Overview (Genes and Species)
+                                                            active={this.state.selectedMenu === MENU_INDEX.OVERVIEW}>
+                                            <NavItem eventKey={MENU_INDEX.OVERVIEW}>Overview (Genes and Species)
                                                 &nbsp;{overviewOk}
                                             </NavItem></IndexLinkContainer>
                                         <IndexLinkContainer to={"genetics" + this.props.location.search}
-                                                            active={this.state.selectedMenu === 2}>
-                                            <NavItem eventKey={2}>Genetics&nbsp;{geneticsOk}</NavItem></IndexLinkContainer>
-                                        <IndexLinkContainer to={"reagent" + this.props.location.search} active={this.state.selectedMenu === 3}>
-                                            <NavItem eventKey={3}>Reagent&nbsp;{reagentOk}</NavItem></IndexLinkContainer>
-                                        <IndexLinkContainer to={"expression" + this.props.location.search} active={this.state.selectedMenu === 4}>
-                                            <NavItem eventKey={4}>Expression&nbsp;{expressionOk}</NavItem>
+                                                            active={this.state.selectedMenu === MENU_INDEX.GENETICS}>
+                                            <NavItem eventKey={MENU_INDEX.GENETICS}>Genetics&nbsp;{geneticsOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"interactions" + this.props.location.search} active={this.state.selectedMenu === 5}>
-                                            <NavItem eventKey={5}>Interactions&nbsp;{interactionsOk}</NavItem>
+                                        <IndexLinkContainer to={"reagent" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.REAGENT}>
+                                            <NavItem eventKey={MENU_INDEX.REAGENT}>Reagent&nbsp;{reagentOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"phenotypes" + this.props.location.search} active={this.state.selectedMenu === 6}>
-                                            <NavItem eventKey={6}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
+                                        <IndexLinkContainer to={"expression" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.EXPRESSION}>
+                                            <NavItem eventKey={MENU_INDEX.EXPRESSION}>Expression&nbsp;{expressionOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"disease" + this.props.location.search} active={this.state.selectedMenu === 7}>
-                                            <NavItem eventKey={7}>Disease&nbsp;{diseaseOk}</NavItem>
+                                        <IndexLinkContainer to={"interactions" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.INTERACTIONS}>
+                                            <NavItem eventKey={MENU_INDEX.INTERACTIONS}>Interactions&nbsp;{interactionsOk}</NavItem>
                                         </IndexLinkContainer>
-                                        <IndexLinkContainer to={"contact_info" + this.props.location.search} active={this.state.selectedMenu === 8}>
-                                            <NavItem eventKey={8}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
+                                        <IndexLinkContainer to={"phenotypes" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.PHENOTYPES}>
+                                            <NavItem eventKey={MENU_INDEX.PHENOTYPES}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
+                                        </IndexLinkContainer>
+                                        <IndexLinkContainer to={"disease" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.DISEASE}>
+                                            <NavItem eventKey={MENU_INDEX.DISEASE}>Disease&nbsp;{diseaseOk}</NavItem>
+                                        </IndexLinkContainer>
+                                        <IndexLinkContainer to={"contact_info" + this.props.location.search}
+                                                            active={this.state.selectedMenu === MENU_INDEX.COMMENTS}>
+                                            <NavItem eventKey={MENU_INDEX.COMMENTS}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
                                         </IndexLinkContainer>
                                     </Nav>
                                 </div>
