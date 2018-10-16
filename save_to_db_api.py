@@ -249,8 +249,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# TODO: add these tables to sandbox: afp_variation, afp_strain, afp_othertransgene, afp_updateinfo, afp_version
-
-# modify afp_otheralleles to afp_othervariation afp_otherstrains -> afp_otherstrain afp_othertransgenes -> afp_othertransgene afp_otherantibodies -> afp_otherantibody
