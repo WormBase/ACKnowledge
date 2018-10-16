@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {WIDGET} from "../main_layout/MenuAndWidgets";
 
 class Other extends React.Component {
     constructor(props, context) {
@@ -113,7 +114,7 @@ class Other extends React.Component {
                 </form>
                 <div align="right">
                     <Button bsStyle="success" onClick={() => {
-                        this.props.callback.bind(this, "contact_info");
+                        this.props.callback(WIDGET.COMMENTS);
                         this.alertDismissable.setSaved(true);}}>Finish and submit
                     </Button>
                 </div>

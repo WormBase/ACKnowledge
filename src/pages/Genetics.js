@@ -30,7 +30,7 @@ class Genetics extends React.Component {
         this.alleleSelect.setSelectedItems(allelelist);
     }
 
-    setSelecedStrains(strains) {
+    setSelectedStrains(strains) {
         this.strainSelect.setSelectedItems(strains);
     }
 

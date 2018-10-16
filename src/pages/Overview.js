@@ -5,6 +5,7 @@ import {
 } from "react-bootstrap";
 import MultipleSelect from "../page_components/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {WIDGET} from "../main_layout/MenuAndWidgets"
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -29,8 +30,8 @@ class Overview extends React.Component {
         this.geneSelect.setSelectedItems(genelist);
     }
 
-    setSelecedSpecies(species) {
-        this.speciesSelect.setSelectedItems(species);
+    setSelectedSpecies(species) {
+        this.speciesSelect.setSelectedItems(species, true);
     }
 
     selfStateVarModifiedFunction(value, stateVarName) {
@@ -150,7 +151,7 @@ class Overview extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "overview")}>Save and continue
+                    <Button bsStyle="success" onClick={this.props.callback.bind(this, WIDGET.OVERVIEW)}>Save and continue
                     </Button>
                 </div>
             </div>

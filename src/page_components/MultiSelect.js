@@ -120,9 +120,13 @@ class MultipleSelect extends Component {
         this.setState({ show: true });
     }
 
-    setAvailableItems(wbItems) {
+    setAvailableItems(wbItems, removeAddInfo = false) {
+        const addInfoRegex = / \( ([^ ]+) \)[ ]+$/;
         if (wbItems !== undefined && wbItems !== "\n") {
             let newAvailItems = new Set(wbItems.split("\n").filter((item) => item !== ''));
+            if (removeAddInfo) {
+                newAvailItems = new Set([...newAvailItems].map((elem) => elem.replace(addInfoRegex, "")));
+            }
             if (newAvailItems.has("more ...")) {
                 newAvailItems.delete("more ...");
                 this.setState({
@@ -158,7 +162,8 @@ class MultipleSelect extends Component {
                 if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
                 } else {
-                    this.setAvailableItems(data);
+                    let remAddInfo = searchType === "species" || searchType === "strain";
+                    this.setAvailableItems(data, remAddInfo);
                 }
             }).catch(() => this.setState({show_fetch_data_error: true}));
         } else {

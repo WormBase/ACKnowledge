@@ -60,6 +60,22 @@ const MENU_INDEX = Object.freeze({
     COMMENTS: 8
 });
 
+export const WIDGET = Object.freeze({
+    OVERVIEW: "overview",
+    GENETICS: "genetics",
+    REAGENT: "reagent",
+    EXPRESSION: "expression",
+    INTERACTIONS: "interactions",
+    PHENOTYPES: "phenotypes",
+    DISEASE: "disease",
+    COMMENTS: "contact_info"
+});
+
+const apiEndpoints = {
+    apiWrite: "http://localhost:8000/api/write",
+    apiRead: "http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi"
+};
+
 class MenuAndWidgets extends React.Component {
     constructor(props) {
         super(props);
@@ -95,8 +111,8 @@ class MenuAndWidgets extends React.Component {
         }
         let parameters = queryString.parse(this.props.location.search);
         this.state = {
-            pages: ["overview", "genetics", "reagent", "expression", "interactions", "phenotypes", "disease",
-                "contact_info"],
+            pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
+                WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
             completedSections: {"overview": false, "expression": false, "genetics": false, "interactions": false,
                 "phenotypes": false, "reagent": false, "disease": false, "contact_info": false},
@@ -104,7 +120,10 @@ class MenuAndWidgets extends React.Component {
             paper_id: parameters.paper,
             passwd: parameters.passwd,
             show_fetch_data_error: false,
-            selecedGenes: new Set(),
+            show_data_saved: false,
+            data_saved_success: true,
+            data_saved_last_widget: false,
+            selectedGenes: new Set(),
             geneModCorrection: false,
             geneModCorrectionDetails: "",
             selectedSpecies: new Set(),
@@ -134,11 +153,8 @@ class MenuAndWidgets extends React.Component {
             svmGeneReg: false,
             svmGeneRegDetails: "",
             svmAllele: false,
-            svmAlleleDetails: "",
             svmTransgene: false,
-            svmTransgeneDetails: "",
             svmRNAi: false,
-            svmRNAiDetails: "",
             svmProtein: false,
             svmProteinDetails: "",
             chemical:false,
@@ -160,6 +176,7 @@ class MenuAndWidgets extends React.Component {
         this.setDiseaseData = this.setDiseaseData.bind(this);
         this.setCommentsData = this.setCommentsData.bind(this);
         this.setWidgetSaved = this.setWidgetSaved.bind(this);
+        this.goToNextSection = this.goToNextSection.bind(this);
     }
 
     /**
@@ -186,6 +203,32 @@ class MenuAndWidgets extends React.Component {
     }
 
     /**
+     * create a string in AFP format from an array of entities.
+     *
+     * @param {string[]} entitiesList a list of entities
+     * @param {string} prefix an optional prefix to be removed from the additional information in the entities (e.g.,
+     * WBGene for gene ids, which are usually stored in the DB without prefix)
+     * @returns {string} a string containing the list of entities in AFP format, ready to be stored in the DB
+     */
+    static transformEntitiesIntoAfpString(entitiesList, prefix) {
+        const addInfoRegex = / \( ([^ ]+) \)$/;
+        let entity;
+        let addInfo = "";
+        let results = [];
+        for (entity of entitiesList) {
+            if (addInfoRegex.test(entity)) {
+                addInfo = addInfoRegex.exec(entity)[1];
+                entity = entity.replace(addInfoRegex, "");
+                addInfo = addInfo.replace(prefix, "");
+                results.push(addInfo + ";%;" + entity);
+            } else {
+                results.push(entity);
+            }
+        }
+        return results.join(" | ");
+    }
+
+    /**
      * get a set of entities for a specific data type from a data object returned by WB API
      *
      * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
@@ -201,7 +244,7 @@ class MenuAndWidgets extends React.Component {
     static getSetOfEntitiesFromWBAPIData(afpString, tfpString, entityPrefix) {
         if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
             if (afpString.afp !== "") {
-                if (entityPrefix !== null) {
+                if (entityPrefix !== undefined) {
                     return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(afpString.afp, entityPrefix),
                         true);
                 } else {
@@ -212,7 +255,7 @@ class MenuAndWidgets extends React.Component {
             }
         } else if (tfpString !== undefined && tfpString.tfp !== undefined && tfpString.tfp !== "" &&
             tfpString.tfp !== null) {
-            if (entityPrefix !== null) {
+            if (entityPrefix !== undefined) {
                 return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(tfpString.tfp, entityPrefix), false);
             } else {
                 return new EntityList(tfpString.tfp.split(" | "), false);
@@ -312,7 +355,7 @@ class MenuAndWidgets extends React.Component {
     setOverviewData(genesList, speciesList, genemodCb) {
         if (this.overview !== undefined) {
             this.overview.setSelectedGenes(genesList.entities());
-            this.overview.setSelecedSpecies(speciesList.entities());
+            this.overview.setSelectedSpecies(speciesList.entities());
             this.overview.selfStateVarModifiedFunction(genemodCb.isChecked(), "cb_gmcorr");
             this.overview.selfStateVarModifiedFunction(genemodCb.details(), "cb_gmcorr_details");
         }
@@ -336,7 +379,7 @@ class MenuAndWidgets extends React.Component {
     setGeneticsData(variationList, strainsList, alleleseqchangeCb, otherallelesTabRecords, otherstrainTabRecords) {
         if (this.genetics !== undefined) {
             this.genetics.setSelectedAlleles(variationList.entities());
-            this.genetics.setSelecedStrains(strainsList.entities());
+            this.genetics.setSelectedStrains(strainsList.entities());
             this.genetics.selfStateVarModifiedFunction(alleleseqchangeCb.isChecked(), "cb_allele");
             this.genetics.setOtherAlleles(otherallelesTabRecords.entities());
             this.genetics.setOtherStrains(otherstrainTabRecords.entities());
@@ -518,7 +561,7 @@ class MenuAndWidgets extends React.Component {
             }
             this.setOverviewData(
                 MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene"),
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.species, data.species, "Taxon ID "),
+                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined),
                 MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
             this.setGeneticsData(
                 MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
@@ -559,12 +602,127 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
-    handleFinishedSection(section) {
-        const newCompletedSections = this.state.completedSections;
-        newCompletedSections[section] = true;
+    /**
+     * get the value to be stored in the data base from a checkbox and its details field
+     *
+     * @param {boolean} checkbox
+     * @param {string} details
+     */
+    static getCheckboxDBVal(checkbox, details = "") {
+        if (details !== "") {
+            return details;
+        } else {
+            return checkbox ? "checked" : "";
+        }
+    }
+
+    handleFinishedSection(widget) {
+        let payload = {};
+        switch (widget) {
+            case WIDGET.OVERVIEW:
+                payload = {
+                    gene_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
+                    gene_model_update: MenuAndWidgets.getCheckboxDBVal(this.state.geneModCorrectionDetails,
+                        this.state.geneModCorrectionDetails),
+                    species_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
+                };
+                break;
+            case WIDGET.GENETICS:
+                payload = {
+                    alleles_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
+                    allele_seq_change: MenuAndWidgets.getCheckboxDBVal(this.state.alleleSeqChange),
+                    other_alleles: JSON.stringify(this.state.otherAlleles),
+                    strains_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
+                    other_strains: JSON.stringify(this.state.otherStrains)
+                };
+                break;
+            case WIDGET.REAGENT:
+                payload = {
+                    transgenes_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedTransgenes,
+                        "WBTransgene"),
+                    new_transgenes: JSON.stringify(this.state.otherTransgenes),
+                    new_antibody: MenuAndWidgets.getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
+                    other_antibodies: JSON.stringify(this.state.otherAntibs)
+                };
+                break;
+            case WIDGET.EXPRESSION:
+                payload = {
+                    anatomic_expr: MenuAndWidgets.getCheckboxDBVal(this.state.anatomicExpr,
+                        this.state.anatomicExprDetails),
+                    site_action: MenuAndWidgets.getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
+                    time_action: MenuAndWidgets.getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
+                    rnaseq: MenuAndWidgets.getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
+                    additional_expr: this.state.additionalExpr
+                };
+                break;
+            case WIDGET.INTERACTIONS:
+                payload = {
+                    gene_int: MenuAndWidgets.getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
+                    phys_int: MenuAndWidgets.getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
+                    gene_reg: MenuAndWidgets.getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
+                };
+                break;
+            case WIDGET.PHENOTYPES:
+                payload = {
+                    allele_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmAllele),
+                    rnai_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmRNAi),
+                    transover_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmTransgene),
+                    chemical: MenuAndWidgets.getCheckboxDBVal(this.state.chemical),
+                    env: MenuAndWidgets.getCheckboxDBVal(this.state.env),
+                    protein: MenuAndWidgets.getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
+                };
+                break;
+            case WIDGET.DISEASE:
+                payload = {
+                    disease: MenuAndWidgets.getCheckboxDBVal(this.state.humDis, this.state.disComments),
+                };
+                break;
+            case WIDGET.COMMENTS:
+                payload = {
+                    comments: this.state.other,
+                };
+                break;
+        }
+        payload.passwd = this.state.passwd;
+        fetch(apiEndpoints.apiWrite, {
+            method: 'POST',
+            headers: {
+                'Accept': 'text/html',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        }).then(res => {
+            if (res.status === 200) {
+                return res.text();
+            } else {
+                this.setState({
+                    show_data_saved: true,
+                    data_saved_success: false
+                });
+            }
+        }).then(data => {
+            if (data === undefined) {
+                this.setState({
+                    show_data_saved: true,
+                    data_saved_success: false
+                });
+            }
+            this.setState({
+                show_data_saved: true,
+                data_saved_success: true,
+                data_saved_last_widget: widget === WIDGET.COMMENTS
+            });
+            const newCompletedSections = this.state.completedSections;
+            newCompletedSections[widget] = true;
+            this.setState({completedSections: newCompletedSections});
+        }).catch((err) => {});
+    }
+
+    goToNextSection() {
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
-        this.setState({completedSections: newCompletedSections, selectedMenu: newSelectedMenu});
-            this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
+        this.setState({selectedMenu: newSelectedMenu, show_data_saved: false});
+        this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
+        window.scrollTo(0, 0)
     }
 
     handleClosePopup() {
@@ -615,175 +773,177 @@ class MenuAndWidgets extends React.Component {
         return (
             <div className="container">
                 <div className="row">
-                {data_fetch_err_alert}
-                <Header />
-                <Title title={title} journal={parameters.journal} pmid={parameters.pmid}/><br/>
-                <div>
+                    {data_fetch_err_alert}
+                    <Header />
+                    <Title title={title} journal={parameters.journal} pmid={parameters.pmid}/><br/>
                     <div>
-                        <div className="col-sm-4">
-                            <div className="panel panel-default">
-                                <div className="panel-body">
-                                    <Nav bsStyle="pills" stacked onSelect={this.handleSelectMenu}>
-                                        <IndexLinkContainer to={"overview" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.OVERVIEW}>
-                                            <NavItem eventKey={MENU_INDEX.OVERVIEW}>Overview (Genes and Species)
-                                                &nbsp;{overviewOk}
-                                            </NavItem></IndexLinkContainer>
-                                        <IndexLinkContainer to={"genetics" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.GENETICS}>
-                                            <NavItem eventKey={MENU_INDEX.GENETICS}>Genetics&nbsp;{geneticsOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"reagent" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.REAGENT}>
-                                            <NavItem eventKey={MENU_INDEX.REAGENT}>Reagent&nbsp;{reagentOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"expression" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.EXPRESSION}>
-                                            <NavItem eventKey={MENU_INDEX.EXPRESSION}>Expression&nbsp;{expressionOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"interactions" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.INTERACTIONS}>
-                                            <NavItem eventKey={MENU_INDEX.INTERACTIONS}>Interactions&nbsp;{interactionsOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"phenotypes" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.PHENOTYPES}>
-                                            <NavItem eventKey={MENU_INDEX.PHENOTYPES}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"disease" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.DISEASE}>
-                                            <NavItem eventKey={MENU_INDEX.DISEASE}>Disease&nbsp;{diseaseOk}</NavItem>
-                                        </IndexLinkContainer>
-                                        <IndexLinkContainer to={"contact_info" + this.props.location.search}
-                                                            active={this.state.selectedMenu === MENU_INDEX.COMMENTS}>
-                                            <NavItem eventKey={MENU_INDEX.COMMENTS}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
-                                        </IndexLinkContainer>
-                                    </Nav>
+                        <div>
+                            <div className="col-sm-4">
+                                <div className="panel panel-default">
+                                    <div className="panel-body">
+                                        <Nav bsStyle="pills" stacked onSelect={this.handleSelectMenu}>
+                                            <IndexLinkContainer to={"overview" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.OVERVIEW}>
+                                                <NavItem eventKey={MENU_INDEX.OVERVIEW}>Overview (Genes and Species)
+                                                    &nbsp;{overviewOk}
+                                                </NavItem></IndexLinkContainer>
+                                            <IndexLinkContainer to={"genetics" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.GENETICS}>
+                                                <NavItem eventKey={MENU_INDEX.GENETICS}>Genetics&nbsp;{geneticsOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"reagent" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.REAGENT}>
+                                                <NavItem eventKey={MENU_INDEX.REAGENT}>Reagent&nbsp;{reagentOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"expression" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.EXPRESSION}>
+                                                <NavItem eventKey={MENU_INDEX.EXPRESSION}>Expression&nbsp;{expressionOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"interactions" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.INTERACTIONS}>
+                                                <NavItem eventKey={MENU_INDEX.INTERACTIONS}>Interactions&nbsp;{interactionsOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"phenotypes" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.PHENOTYPES}>
+                                                <NavItem eventKey={MENU_INDEX.PHENOTYPES}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"disease" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.DISEASE}>
+                                                <NavItem eventKey={MENU_INDEX.DISEASE}>Disease&nbsp;{diseaseOk}</NavItem>
+                                            </IndexLinkContainer>
+                                            <IndexLinkContainer to={"contact_info" + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX.COMMENTS}>
+                                                <NavItem eventKey={MENU_INDEX.COMMENTS}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
+                                            </IndexLinkContainer>
+                                        </Nav>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-sm-8">
-                            <div className="panel panel-default">
-                                <div className="panel-body">
-                                    <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
-                                    <Route path="/overview"
-                                           render={() => <Overview callback={this.handleFinishedSection}
-                                                                   saved={this.state.completedSections["overview"]}
-                                                                   ref={instance => { this.overview = instance; }}
-                                                                   selectedGenes={this.state.selectedGenes}
-                                                                   geneModCorr={this.state.geneModCorrection}
-                                                                   geneModCorrDetails={this.state.geneModCorrectionDetails}
-                                                                   selectedSpecies={this.state.selectedSpecies}
-                                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                   toggleCb={this.toggle_cb}
-                                                                   checkCb={this.check_cb}
-                                           />}
-                                    />
-                                    <Route path="/genetics"
-                                           render={() => <Genetics  callback={this.handleFinishedSection}
-                                                                    saved={this.state.completedSections["genetics"]}
-                                                                    ref={instance => { this.genetics = instance; }}
-                                                                    selectedAlleles={this.state.selectedAlleles}
-                                                                    selectedStrains={this.state.selectedStrains}
-                                                                    stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                    alleleSeqChange={this.state.alleleSeqChange}
-                                                                    otherAlleles={this.state.otherAlleles}
-                                                                    otherStrains={this.state.otherStrains}
-                                                                    toggleCb={this.toggle_cb}
-                                                                    checkCb={this.check_cb}
-                                           />}
-                                    />
-                                    <Route path="/reagent"
-                                           render={() => <Reagent callback={this.handleFinishedSection}
-                                                                  saved={this.state.completedSections["reagent"]}
-                                                                  selectedTransgenes={this.state.selectedTransgenes}
-                                                                  stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                  newAntib={this.state.newAntib}
-                                                                  newAntibDetails={this.state.newAntibDetails}
-                                                                  otherAntibs={this.state.otherAntibs}
-                                                                  otherTransgenes={this.state.otherTransgenes}
-                                                                  toggleCb={this.toggle_cb}
-                                                                  checkCb={this.check_cb}
-                                                                  ref={instance => { this.reagent = instance; }}
-                                           />}
-                                    />
-                                    <Route path="/expression"
-                                           render={() => <Expression callback={this.handleFinishedSection}
-                                                                     saved={this.state.completedSections["expression"]}
-                                                                     anatomicExpr={this.state.anatomicExpr}
-                                                                     anatomicExprDetails={this.state.anatomicExprDetails}
-                                                                     siteAction={this.state.siteAction}
-                                                                     siteActionDetails={this.state.siteActionDetails}
-                                                                     timeAction={this.state.timeAction}
-                                                                     timeActionDetails={this.state.timeActionDetails}
-                                                                     rnaSeq={this.state.rnaSeq}
-                                                                     rnaSeqDetails={this.state.rnaSeqDetails}
-                                                                     additionalExpr={this.state.additionalExpr}
-                                                                     stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                     selfStateVarModifiedFunction={this.stateVarModifiedCallback}
-                                                                     toggleCb={this.toggle_cb}
-                                                                     checkCb={this.check_cb}
-                                                                     ref={instance => { this.expression = instance; }}
-                                           />}
-                                    />
-                                    <Route path="/interactions"
-                                           render={() => <Interactions
-                                               callback={this.handleFinishedSection}
-                                               saved={this.state.completedSections["interactions"]}
-                                               ref={instance => { this.interactions = instance; }}
-                                               cb_genetic={this.state.svmGeneInt}
-                                               cb_physical={this.state.svmPhysInt}
-                                               cb_regulatory={this.state.svmGeneReg}
-                                               cb_genetic_details={this.state.svmGeneIntDetails}
-                                               cb_physical_details={this.state.svmPhysIntDetails}
-                                               cb_regulatory_details={this.state.svmGeneRegDetails}
-                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                               toggleCb={this.toggle_cb}
-                                               checkCb={this.check_cb}
-                                           />}
-                                    />
-                                    <Route path="/phenotypes"
-                                           render={() => <Phenotypes
-                                               callback={this.handleFinishedSection}
-                                               saved={this.state.completedSections["phenotypes"]}
-                                               cb_allele={this.state.svmAllele}
-                                               cb_rnai={this.state.svmRNAi}
-                                               cb_transgene={this.state.svmTransgene}
-                                               cb_protein={this.state.svmProtein}
-                                               cb_transgene_details={this.state.svmTransgeneDetails}
-                                               cb_protein_details={this.state.svmProteinDetails}
-                                               cb_chemical={this.state.chemical}
-                                               cb_env={this.state.env}
-                                               stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                               ref={instance => { this.phenotype = instance; }}
-                                               toggleCb={this.toggle_cb}
-                                               checkCb={this.check_cb}
-                                           />}
-                                    />
-                                    <Route path="/disease"
-                                           render={() => <Disease callback={this.handleFinishedSection}
-                                                                  saved={this.state.completedSections["disease"]}
-                                                                  humDis={this.state.humDis}
-                                                                  comments={this.state.disComments}
-                                                                  stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                  toggleCb={this.toggle_cb}
-                                                                  checkCb={this.check_cb}
-                                                                  ref={instance => { this.disease = instance; }}
-                                           />}
-                                    />
-                                    <Route path="/contact_info" render={() => <ContactInfo
-                                        callback={this.handleFinishedSection}
-                                        saved={this.state.completedSections["contact_info"]}
-                                        other={this.state.other}
-                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                        ref={instance => { this.other = instance; }}
-                                    />}/>
+                            <div className="col-sm-8">
+                                <div className="panel panel-default">
+                                    <div className="panel-body">
+                                        <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
+                                        <Route path="/overview"
+                                               render={() => <Overview callback={this.handleFinishedSection}
+                                                                       saved={this.state.completedSections["overview"]}
+                                                                       ref={instance => { this.overview = instance; }}
+                                                                       selectedGenes={this.state.selectedGenes}
+                                                                       geneModCorr={this.state.geneModCorrection}
+                                                                       geneModCorrDetails={this.state.geneModCorrectionDetails}
+                                                                       selectedSpecies={this.state.selectedSpecies}
+                                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                       toggleCb={this.toggle_cb}
+                                                                       checkCb={this.check_cb}
+                                               />}
+                                        />
+                                        <Route path="/genetics"
+                                               render={() => <Genetics  callback={this.handleFinishedSection}
+                                                                        saved={this.state.completedSections["genetics"]}
+                                                                        ref={instance => { this.genetics = instance; }}
+                                                                        selectedAlleles={this.state.selectedAlleles}
+                                                                        selectedStrains={this.state.selectedStrains}
+                                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                        alleleSeqChange={this.state.alleleSeqChange}
+                                                                        otherAlleles={this.state.otherAlleles}
+                                                                        otherStrains={this.state.otherStrains}
+                                                                        toggleCb={this.toggle_cb}
+                                                                        checkCb={this.check_cb}
+                                               />}
+                                        />
+                                        <Route path="/reagent"
+                                               render={() => <Reagent callback={this.handleFinishedSection}
+                                                                      saved={this.state.completedSections["reagent"]}
+                                                                      selectedTransgenes={this.state.selectedTransgenes}
+                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                      newAntib={this.state.newAntib}
+                                                                      newAntibDetails={this.state.newAntibDetails}
+                                                                      otherAntibs={this.state.otherAntibs}
+                                                                      otherTransgenes={this.state.otherTransgenes}
+                                                                      toggleCb={this.toggle_cb}
+                                                                      checkCb={this.check_cb}
+                                                                      ref={instance => { this.reagent = instance; }}
+                                               />}
+                                        />
+                                        <Route path="/expression"
+                                               render={() => <Expression callback={this.handleFinishedSection}
+                                                                         saved={this.state.completedSections["expression"]}
+                                                                         anatomicExpr={this.state.anatomicExpr}
+                                                                         anatomicExprDetails={this.state.anatomicExprDetails}
+                                                                         siteAction={this.state.siteAction}
+                                                                         siteActionDetails={this.state.siteActionDetails}
+                                                                         timeAction={this.state.timeAction}
+                                                                         timeActionDetails={this.state.timeActionDetails}
+                                                                         rnaSeq={this.state.rnaSeq}
+                                                                         rnaSeqDetails={this.state.rnaSeqDetails}
+                                                                         additionalExpr={this.state.additionalExpr}
+                                                                         stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                         selfStateVarModifiedFunction={this.stateVarModifiedCallback}
+                                                                         toggleCb={this.toggle_cb}
+                                                                         checkCb={this.check_cb}
+                                                                         ref={instance => { this.expression = instance; }}
+                                               />}
+                                        />
+                                        <Route path="/interactions"
+                                               render={() => <Interactions
+                                                   callback={this.handleFinishedSection}
+                                                   saved={this.state.completedSections["interactions"]}
+                                                   ref={instance => { this.interactions = instance; }}
+                                                   cb_genetic={this.state.svmGeneInt}
+                                                   cb_physical={this.state.svmPhysInt}
+                                                   cb_regulatory={this.state.svmGeneReg}
+                                                   cb_genetic_details={this.state.svmGeneIntDetails}
+                                                   cb_physical_details={this.state.svmPhysIntDetails}
+                                                   cb_regulatory_details={this.state.svmGeneRegDetails}
+                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                   toggleCb={this.toggle_cb}
+                                                   checkCb={this.check_cb}
+                                               />}
+                                        />
+                                        <Route path="/phenotypes"
+                                               render={() => <Phenotypes
+                                                   callback={this.handleFinishedSection}
+                                                   saved={this.state.completedSections["phenotypes"]}
+                                                   cb_allele={this.state.svmAllele}
+                                                   cb_rnai={this.state.svmRNAi}
+                                                   cb_transgene={this.state.svmTransgene}
+                                                   cb_protein={this.state.svmProtein}
+                                                   cb_transgene_details={this.state.svmTransgeneDetails}
+                                                   cb_protein_details={this.state.svmProteinDetails}
+                                                   cb_chemical={this.state.chemical}
+                                                   cb_env={this.state.env}
+                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                   ref={instance => { this.phenotype = instance; }}
+                                                   toggleCb={this.toggle_cb}
+                                                   checkCb={this.check_cb}
+                                               />}
+                                        />
+                                        <Route path="/disease"
+                                               render={() => <Disease callback={this.handleFinishedSection}
+                                                                      saved={this.state.completedSections["disease"]}
+                                                                      humDis={this.state.humDis}
+                                                                      comments={this.state.disComments}
+                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                      toggleCb={this.toggle_cb}
+                                                                      checkCb={this.check_cb}
+                                                                      ref={instance => { this.disease = instance; }}
+                                               />}
+                                        />
+                                        <Route path="/contact_info" render={() => <ContactInfo
+                                            callback={this.handleFinishedSection}
+                                            saved={this.state.completedSections["contact_info"]}
+                                            other={this.state.other}
+                                            stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                            ref={instance => { this.other = instance; }}
+                                        />}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <MyLargeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
+                    <DataSavedModal show={this.state.show_data_saved} onHide={this.goToNextSection}
+                                    success={this.state.data_saved_success} last_widget={this.state.data_saved_last_widget}/>
                 </div>
-                <MyLargeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
-            </div>
             </div>
         );
     }
@@ -827,6 +987,42 @@ class MyLargeModal extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={this.props.onHide}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            );
+        } else {
+            return ("");
+        }
+    }
+}
+
+class DataSavedModal extends React.Component {
+    render() {
+        let btn = <Button bsStyle="danger" onClick={this.props.onHide}>Close</Button>;
+        let title = "Error!";
+        let body = <div><span>Try again later or contact </span><a href="mailto:help@wormbase.org">Wormbase Helpdesk</a></div>;
+        if (this.props.success) {
+            if (this.props.last_widget) {
+                btn = <Button bsStyle="success" onClick={this.props.onHide}>Close</Button>;
+            } else {
+                btn = <Button bsStyle="success" onClick={this.props.onHide}>Go to next section</Button>;
+            }
+            title =  "Success!";
+            body = "Data for this section have been saved.";
+        }
+        if (this.props.show) {
+            return (
+                <Modal
+                    {...this.props}
+                    bsSize="small">
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-lg">{title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {body}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        {btn}
                     </Modal.Footer>
                 </Modal>
             );
