@@ -9,7 +9,7 @@ import psycopg2
 import time
 import urllib.parse
 
-from db_functions import *
+from db_manager import *
 from email_functions import send_email
 from tpc_api_functions import *
 from vocabulary_extraction_functions import *
@@ -18,10 +18,16 @@ from collections import defaultdict
 
 TPC_PAPERS_PER_QUERY = 10
 
+# TODO: pass db strings as paramaters and remove config file
+
 
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
+    parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
+    parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
+    parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
+    parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     parser.add_argument("-t", "--textpresso-token", metavar="Textpresso API token", dest="textpresso_token", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
@@ -40,17 +46,16 @@ def main():
 
     logger = logging.getLogger("AFP Pipeline")
 
-    conn = psycopg2.connect("dbname='testdb' user='valerio' password='asdf1234' host='131.215.52.92'")
-    cur = conn.cursor()
+    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
 
     # 1. Get list of curatable papers
     logger.info("Getting the list of curatable papers from WormBase DB")
-    curatable_papers = get_set_of_curatable_papers(cur)
+    curatable_papers = db_manager.get_set_of_curatable_papers()
     logger.debug("Number of curatable papers: " + str(len(curatable_papers)))
 
     # 2. Get list of papers that have been already processed by AFP
     logger.info("Getting the list of papers that have already been processed by AFP - either emailed or not")
-    processed_papers = get_set_of_afp_processed_papers(cur)
+    processed_papers = db_manager.get_set_of_afp_processed_papers()
     logger.debug("Number of papers that have already been processed by AFP: " + str(len(processed_papers)))
 
     # 3. Calculate difference between 1. and 2.
@@ -60,7 +65,7 @@ def main():
 
     # 4. Get list of SVM flagged papers
     logger.info("Getting the list of papers that are flagged by an SVM")
-    papers_svm_flags = get_svm_flagged_papers(cur)
+    papers_svm_flags = db_manager.get_svm_flagged_papers()
     logger.debug("Number of SVM flagged papers: " + str(len(papers_svm_flags)))
 
     # 5. Calculate intersection between 3. and 4. and sort by paper id (i.e., by timestamp - new papers first)
@@ -110,24 +115,23 @@ def main():
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
-    genes_vocabulary = set(get_all_genes(cur))
-    gene_ids_cgc_name = get_gene_cgc_name_from_id_map(cur)
-    alleles_vocabulary = set(get_all_alleles(cur))
-    strains_vocabulary = set(get_all_strains(cur))
-    transgene_vocabulary = set(get_all_transgenes(cur))
+    genes_vocabulary = set(db_manager.get_all_genes())
+    gene_ids_cgc_name = db_manager.get_gene_cgc_name_from_id_map()
+    alleles_vocabulary = set(db_manager.get_all_alleles())
+    strains_vocabulary = set(db_manager.get_all_strains())
+    transgene_vocabulary = set(db_manager.get_all_transgenes())
     genes_in_papers_dict = defaultdict(list)
     alleles_in_papers_dict = defaultdict(list)
     strains_in_papers_dict = defaultdict(list)
     transgenes_in_papers_dict = defaultdict(list)
     species_in_papers_dict = defaultdict(list)
     papers_passwd = {}
-    taxon_species_map = get_taxonid_speciesnamearr_map(cur)
+    taxon_species_map = db_manager.get_taxonid_speciesnamearr_map()
 
-    gene_symbol_id_map = get_gene_name_id_map(cur)
-    allele_symbol_id_map = get_allele_name_id_map(cur)
-    transgene_symbol_id_map = get_transgene_name_id_map(cur)
-    cur.close()
-    conn.close()
+    gene_symbol_id_map = db_manager.get_gene_name_id_map()
+    allele_symbol_id_map = db_manager.get_allele_name_id_map()
+    transgene_symbol_id_map = db_manager.get_transgene_name_id_map()
+    db_manager.close()
 
     for paper_id, fulltext in fulltexts_dict.items():
         logger.info("Processing paper " + paper_id)
@@ -163,26 +167,26 @@ def main():
                                   list(fulltexts_dict.keys())}
 
     # 8. Write values extracted through tpc to DB and notify
-    conn = psycopg2.connect("dbname='testdb' user='valerio' password='asdf1234' host='131.215.52.92'")
-    cur = conn.cursor()
+    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     for paper_id in list(fulltexts_dict.keys()):
-        if get_paper_antibody(cur, paper_id):
-            write_antibody(cur, paper_id)
-        write_extracted_entities_in_paper(cur, paper_id, list(gene_ids_in_documents[paper_id])
-                                          if paper_id in gene_ids_in_documents else [], "tfp_genestudied")
-        write_extracted_entities_in_paper(cur, paper_id, list(allele_ids_in_documents[paper_id])
-                                          if paper_id in allele_ids_in_documents else [], "tfp_variation")
-        write_extracted_entities_in_paper(cur, paper_id, list(set(species_in_papers_dict[paper_id]))
-                                          if paper_id in species_in_papers_dict else [], "tfp_species")
-        write_extracted_entities_in_paper(cur, paper_id, list(set(strains_in_papers_dict[paper_id]))
-                                          if paper_id in strains_in_papers_dict else [], "tfp_strain")
-        write_extracted_entities_in_paper(cur, paper_id, list(transgene_ids_in_documents[paper_id])
-                                          if paper_id in transgene_ids_in_documents else [], "tfp_transgene")
+        if db_manager.get_paper_antibody(paper_id):
+            db_manager.set_antibody(paper_id)
+        db_manager.set_extracted_entities_in_paper(paper_id, list(gene_ids_in_documents[paper_id])
+                                                   if paper_id in gene_ids_in_documents else [], "tfp_genestudied")
+        db_manager.set_extracted_entities_in_paper(paper_id, list(allele_ids_in_documents[paper_id])
+                                                   if paper_id in allele_ids_in_documents else [], "tfp_variation")
+        db_manager.set_extracted_entities_in_paper(paper_id, list(set(species_in_papers_dict[paper_id]))
+                                                   if paper_id in species_in_papers_dict else [], "tfp_species")
+        db_manager.set_extracted_entities_in_paper(paper_id, list(set(strains_in_papers_dict[paper_id]))
+                                                   if paper_id in strains_in_papers_dict else [], "tfp_strain")
+        db_manager.set_extracted_entities_in_paper(paper_id, list(transgene_ids_in_documents[paper_id])
+                                                   if paper_id in transgene_ids_in_documents else [], "tfp_transgene")
         papers_passwd[paper_id] = time.time()
-        write_passwd(cur, paper_id, papers_passwd[paper_id])
-        paper_title = get_paper_title(cur, paper_id)
-        paper_journal = get_paper_journal(cur, paper_id)
-        pmid = get_pmid(cur, paper_id)
+        db_manager.set_passwd(paper_id, papers_passwd[paper_id])
+        db_manager.set_version(paper_id)
+        paper_title = db_manager.get_paper_title(paper_id)
+        paper_journal = db_manager.get_paper_journal(paper_id)
+        pmid = db_manager.get_pmid(paper_id)
 
         # notify author(s) via email
         if len(email_addr_in_papers_dict[paper_id]) > 0:
@@ -194,15 +198,13 @@ def main():
             tiny_url = data.read().decode('utf-8')
             send_email(paper_id, paper_title, paper_journal, tiny_url, ["valerio.arnaboldi@gmail.com"],
                        args.email_passwd)
-            write_email(cur, paper_id, ["valerio.arnaboldi@gmail.com"])
+            db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
             #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])
             #write_email(cur, paper_id, email_addr_in_papers_dict[paper_id])
 
     # commit and close connection to DB
     logger.info("Committing changes to DB")
-    conn.commit()
-    cur.close()
-    conn.close()
+    db_manager.close()
     logger.info("Finished")
 
 

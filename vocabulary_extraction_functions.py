@@ -54,5 +54,5 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
                                                          regex_text.lower() + "[\\.\\n\\t\\'\\/\\)\\]\\}:;\\,\\!\\?< ]"),
                                               fulltext.lower()))
         if num_occurrences > min_occurrences:
-            papers_map[paper_id].append(species_id + ";%;" + regex_list_mod[1].replace("\\", ""))
+            papers_map[paper_id].append(regex_list_mod[0].replace("\\", ""))
 
