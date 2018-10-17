@@ -72,7 +72,7 @@ export const WIDGET = Object.freeze({
 });
 
 const apiEndpoints = {
-    apiWrite: "http://localhost:8000/api/write",
+    apiWrite: "http://textpressocentral.org:8000/api/write",
     apiRead: "http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi"
 };
 
