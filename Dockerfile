@@ -8,7 +8,7 @@ ADD requirements.txt .
 
 RUN pip3 install -r requirements.txt
 
-ADD . /usr/src/app
+COPY . /usr/src/app
 
 ENV TPC_API_TOKEN=""
 ENV EMAIL_PASSWD=""
