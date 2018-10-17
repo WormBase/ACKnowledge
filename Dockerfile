@@ -26,4 +26,4 @@ RUN touch /var/log/cron.log
 #    crontab /etc/cron.d/afp-cron && \
 #    tail -f /var/log/cron.log
 
-CMD save_to_db_api.py -N ${DB_NAME} -U ${DB_USER} -P ${DB_PASSWD} -H ${DB_HOST}
+CMD ["save_to_db_api.py", "-N", "${DB_NAME}", "-U", "${DB_USER}", "-P", "${DB_PASSWD}", "-H", "${DB_HOST}"]
