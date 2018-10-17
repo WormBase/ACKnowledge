@@ -16,7 +16,6 @@ from collections import defaultdict
 
 TPC_PAPERS_PER_QUERY = 10
 
-#test
 
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
