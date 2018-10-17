@@ -3,12 +3,10 @@
 import argparse
 import os
 import ssl
-from urllib.request import urlopen
-
-import psycopg2
 import time
 import urllib.parse
 
+from urllib.request import urlopen
 from db_manager import *
 from email_functions import send_email
 from tpc_api_functions import *
@@ -17,8 +15,6 @@ from collections import defaultdict
 
 
 TPC_PAPERS_PER_QUERY = 10
-
-# TODO: pass db strings as paramaters and remove config file
 
 
 def main():

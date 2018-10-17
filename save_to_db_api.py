@@ -5,6 +5,7 @@ from wsgiref import simple_server
 from db_manager import DBManager
 from falcon import HTTPStatus
 
+
 class StorageEngine(object):
 
     def __init__(self, dbname, user, password, host):
