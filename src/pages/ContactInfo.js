@@ -27,6 +27,7 @@ class Other extends React.Component {
     render() {
         return (
             <div>
+                
                 <InstructionsAlert
                     alertTitleNotSaved=""
                     alertTitleSaved="Well done!"
