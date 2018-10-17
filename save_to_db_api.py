@@ -15,7 +15,7 @@ class StorageEngine(object):
         self.user = user
         self.password = password
         self.host = host
-        self.db_manager: DBManager = None
+        self.db_manager = None
 
     def __enter__(self):
         self.db_manager = DBManager(self.dbname, self.user, self.password, self.host)
@@ -246,7 +246,7 @@ def main():
     writer = AFPWriter(storage_engine=db)
     app.add_route('/api/write', writer)
 
-    httpd = simple_server.make_server('127.0.0.1', 8000, app)
+    httpd = simple_server.make_server('0.0.0.0', 8000, app)
     httpd.serve_forever()
 
 
