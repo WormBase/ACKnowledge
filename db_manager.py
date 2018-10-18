@@ -18,7 +18,8 @@ class DBManager(object):
 
     def get_set_of_curatable_papers(self):
         """
-        get the set of curatable papers (i.e., papers that can be processed by AFP)
+        get the set of curatable papers (i.e., papers that can be processed by AFP - type must be 'primary' or pap_type
+        equal to 1).
 
         Returns:
             Set[str]: the set of curatable papers
@@ -242,22 +243,34 @@ class DBManager(object):
         transgene_name_id_map.update({row[1]: row[0] for row in rows})
         return transgene_name_id_map
 
+    def get_passwd(self, paper_id):
+        self.cur.execute("SELECT * FROM afp_passwd WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[1]
+        else:
+            return None
+
     def get_taxonid_speciesnamearr_map(self):
         self.cur.execute("SELECT * FROM pap_species_index")
         rows = self.cur.fetchall()
         return {row[0]: [row[1]] for row in rows}
 
     def set_extracted_entities_in_paper(self, publication_id, entities_ids: List[str], table_name):
+        self.cur.execute("DELETE FROM {} WHERE joinkey = '{}'".format(table_name, publication_id))
         self.cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
             table_name, table_name, publication_id, " | ".join(entities_ids)))
 
     def set_antibody(self, paper_id):
-        self.cur.execute("INSERT INTO afp_antibody (joinkey, afp_antibody) VALUES('{}', 'Positive')".format(paper_id))
+        self.cur.execute("DELETE FROM afp_antibody WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO afp_antibody (joinkey, afp_antibody) VALUES('{}', 'checked')".format(paper_id))
 
     def set_passwd(self, publication_id, passwd):
+        self.cur.execute("DELETE FROM afp_passwd WHERE joinkey = '{}'".format(publication_id))
         self.cur.execute("INSERT INTO afp_passwd (joinkey, afp_passwd) VALUES('{}', '{}')".format(publication_id, passwd))
 
     def set_email(self, publication_id, email_addr_list: List[str]):
+        self.cur.execute("DELETE FROM afp_email WHERE joinkey = '{}'".format(publication_id))
         for email_addr in email_addr_list:
             self.cur.execute("INSERT INTO afp_email (joinkey, afp_email) VALUES('{}', '{}')".format(publication_id, email_addr))
 
@@ -402,4 +415,5 @@ class DBManager(object):
                          .format(paper_id, comments))
 
     def set_version(self, paper_id):
-        self.cur.execute("INSERT INTO afp_version (joinkey) VALUES('{}', '2')".format(paper_id))
+        self.cur.execute("DELETE FROM afp_version WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO afp_version (joinkey, afp_version) VALUES('{}', '2')".format(paper_id))

@@ -105,7 +105,7 @@ def main():
         logger.info("Removing papers with no email address")
         fulltexts_dict = {paper_id: fulltext for paper_id, fulltext in fulltexts_dict.items() if
                           len(email_addr_in_papers_dict[paper_id]) > 0}
-    # cap the number of papers to 10
+    # cap the number of papers
     if len(fulltexts_dict) > args.num_papers:
         fulltexts_dict = {key: fulltexts_dict[key] for key in list(fulltexts_dict)[0:args.num_papers]}
 
@@ -177,8 +177,10 @@ def main():
                                                    if paper_id in strains_in_papers_dict else [], "tfp_strain")
         db_manager.set_extracted_entities_in_paper(paper_id, list(transgene_ids_in_documents[paper_id])
                                                    if paper_id in transgene_ids_in_documents else [], "tfp_transgene")
-        papers_passwd[paper_id] = time.time()
-        db_manager.set_passwd(paper_id, papers_passwd[paper_id])
+        papers_passwd[paper_id] = db_manager.get_passwd(paper_id=paper_id)
+        if not papers_passwd[paper_id]:
+            papers_passwd[paper_id] = time.time()
+            db_manager.set_passwd(paper_id, papers_passwd[paper_id])
         db_manager.set_version(paper_id)
         paper_title = db_manager.get_paper_title(paper_id)
         paper_journal = db_manager.get_paper_journal(paper_id)
