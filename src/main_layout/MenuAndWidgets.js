@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect, Route, withRouter} from "react-router-dom";
 import Overview from "../pages/Overview";
 import Expression from "../pages/Expression";
-import {Alert, Button, Modal, Nav, NavItem} from "react-bootstrap";
+import {Alert, Nav, NavItem} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
 import Reagent from "../pages/Reagent";
 import Phenotypes from "../pages/Phenotypes";
@@ -14,40 +14,13 @@ import queryString from 'query-string';
 import Title from "./Title";
 import Disease from "../pages/Disease";
 import Header from "./Header";
-
-class AFPValue {
-    constructor(prevSaved) {
-        this._prevSaved = prevSaved;
-    }
-
-    prevSaved() {
-        return this._prevSaved;
-    }
-}
-
-class EntityList extends AFPValue{
-    constructor(entities, prevSaved) {
-        super(prevSaved);
-        this._entities = entities;
-    }
-    entities() {
-        return this._entities;
-    }
-}
-
-class CheckboxWithDetails extends AFPValue{
-    constructor(isCheched, details, prevSaved) {
-        super(prevSaved);
-        this._isChecked = isCheched;
-        this._details = details;
-    }
-    isChecked() {
-        return this._isChecked;
-    }
-    details() {
-        return this._details;
-    }
-}
+import {
+    AFPValues,
+    apiEndpoints, getCheckboxDBVal,
+    getCheckbxOrSingleFieldFromWBAPIData,
+    getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
+} from "../AFPValues";
+import {DataSavedModal, WelcomeModal} from "./MainModals";
 
 const MENU_INDEX = Object.freeze({
     OVERVIEW: 1,
@@ -70,11 +43,6 @@ export const WIDGET = Object.freeze({
     DISEASE: "disease",
     COMMENTS: "contact_info"
 });
-
-const apiEndpoints = {
-    apiWrite: "http://textpressocentral.org:8000/api/write",
-    apiRead: "http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi"
-};
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -180,152 +148,10 @@ class MenuAndWidgets extends React.Component {
     }
 
     /**
-     * extract an array of entities from a string read from TFP tables in WB data base.
-     *
-     * list of entities in TFP tables in WB DB  in string format, separated by pipes with whitespaces (" | "). Each
-     * entity can also have an ID or other additional information within it. The special character separator ;%; is used
-     * to separate entities from their respective additional data.
-     *
-     * @param {string} entitiesString a string containing a list of entities, in WB data base format
-     * @param {string} prefix an optional prefix to be added to the additional information in the entities (e.g., WBGene for gene
-     * ids, which are usually stored in the DB without prefix)
-     * @returns {string[]} an array of entities, in the form "entity_name ( entity_extra_info )", where the round
-     * brackets and the extra_info field are returned only if additional information is present for the entities
-     */
-    static extractEntitiesFromTfpString(entitiesString, prefix) {
-        let entities_split = entitiesString.split(" | ");
-        let final_entities_list = Array();
-        for (let i in entities_split) {
-            let entity_split = entities_split[i].split(";%;");
-            final_entities_list.push(entity_split[1] + " ( " + prefix + entity_split[0] + " )");
-        }
-        return final_entities_list;
-    }
-
-    /**
-     * create a string in AFP format from an array of entities.
-     *
-     * @param {string[]} entitiesList a list of entities
-     * @param {string} prefix an optional prefix to be removed from the additional information in the entities (e.g.,
-     * WBGene for gene ids, which are usually stored in the DB without prefix)
-     * @returns {string} a string containing the list of entities in AFP format, ready to be stored in the DB
-     */
-    static transformEntitiesIntoAfpString(entitiesList, prefix) {
-        const addInfoRegex = / \( ([^ ]+) \)$/;
-        let entity;
-        let addInfo = "";
-        let results = [];
-        for (entity of entitiesList) {
-            if (addInfoRegex.test(entity)) {
-                addInfo = addInfoRegex.exec(entity)[1];
-                entity = entity.replace(addInfoRegex, "");
-                addInfo = addInfo.replace(prefix, "");
-                results.push(addInfo + ";%;" + entity);
-            } else {
-                results.push(entity);
-            }
-        }
-        return results.join(" | ");
-    }
-
-    /**
-     * get a set of entities for a specific data type from a data object returned by WB API
-     *
-     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
-     * function extracts a set of entities for a data type if the latter has values in afp_ or tfp_ tables. Afp tables
-     * are searched first; if their values are undefined or null, tfp tables are searched next.
-     *
-     * @param {string} afpString string containing data for a data type coming from afp tables
-     * @param {string} tfpString string containing data for a data type coming from tfp tables
-     * @param {string} entityPrefix optional prefix to be attached to additional information for each entity
-     * @returns {EntityList} an object containing the set of entities in first position and a boolean indicating
-     * whether the data came from afp tables
-     */
-    static getSetOfEntitiesFromWBAPIData(afpString, tfpString, entityPrefix) {
-        if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
-            if (afpString.afp !== "") {
-                if (entityPrefix !== undefined) {
-                    return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(afpString.afp, entityPrefix),
-                        true);
-                } else {
-                    return new EntityList(afpString.afp.split(" | "), true);
-                }
-            } else {
-                return new EntityList(new Set(), true);
-            }
-        } else if (tfpString !== undefined && tfpString.tfp !== undefined && tfpString.tfp !== "" &&
-            tfpString.tfp !== null) {
-            if (entityPrefix !== undefined) {
-                return new EntityList(MenuAndWidgets.extractEntitiesFromTfpString(tfpString.tfp, entityPrefix), false);
-            } else {
-                return new EntityList(tfpString.tfp.split(" | "), false);
-            }
-        } else {
-            return new EntityList(new Set(), false)
-        }
-    }
-
-    /**
-     * get a checkbox value with its associated text for a specific data type from a data object returned by WB API
-     *
-     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
-     * function extracts a checkbox value with its optional text for a data type if the latter has values in afp_ or
-     * svm_ tables. Afp tables are searched first; if their values are undefined or null, svm tables are searched next.
-     *
-     * This function can be used also to retrieve the value of a textual field. In this case the checkbox value is
-     * set to true if the text is not empty.
-     *
-     * @param {string} afpString string containing data for a data type coming from afp tables
-     * @param {string} svmString string containing data for a data type coming from svm tables
-     * @returns {CheckboxWithDetails} an object containing the checkbox value, the text associated with the checkbox
-     * or the value of a textual field in second position, and whether the values come from afp tables
-     */
-    static getCheckbxOrSingleFieldFromWBAPIData(afpString, svmString) {
-        if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
-            if (afpString.afp !== "") {
-                return new CheckboxWithDetails(true, afpString.afp, true);
-            } else {
-                return new CheckboxWithDetails(false, "", true);
-            }
-        } else if (svmString !== undefined && svmString !== null && svmString.svm !== null &&
-            svmString.svm !== undefined && (svmString.svm === "high" || svmString.svm === "medium")) {
-            return new CheckboxWithDetails(true, "", false);
-        } else {
-            return new CheckboxWithDetails(false, "", false);
-        }
-    }
-
-    /**
-     * get table records for a specific data type from a data object returned by WB API
-     *
-     * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This
-     * function extracts an array of table records for a data type if the latter has values in afp_.
-     *
-     * @param {string} afpString string containing data for a data type coming from afp tables
-     * @param {boolean} multicolumn whether the table contains two columns
-     * @returns {EntityList}
-     */
-    static getTableValuesFromWBAPIData(afpString, multicolumn) {
-        let emptyVal = [ { id: 1, name: "" } ];
-        if (multicolumn) {
-            emptyVal = [ { id: 1, name: "", publicationId: "" } ];
-        }
-        if (afpString !== undefined && afpString.afp !== null) {
-            if (afpString.afp !== "") {
-                return new EntityList(JSON.parse(afpString.afp), true);
-            } else {
-                return new EntityList(emptyVal, true);
-            }
-        } else {
-            return new EntityList(emptyVal, false);
-        }
-    }
-
-    /**
      * change a widget state to saved and modify its alert message depending on the status of the passed arguments
      * @param widget the widget to modify
      * @param {string} sectionName
-     * @param {AFPValue} params a list of arguments
+     * @param {AFPValues} params a list of arguments
      */
     setWidgetSaved(widget, sectionName, ...params) {
         let saved = params[0].prevSaved();
@@ -547,8 +373,7 @@ class MenuAndWidgets extends React.Component {
     }
 
     componentDidMount() {
-        fetch('http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper&paper=' +
-            this.state.paper_id + '&passwd=' + this.state.passwd)
+        fetch(apiEndpoints.apiRead + '&paper=' + this.state.paper_id + '&passwd=' + this.state.passwd)
             .then(res => {
                 if (res.status === 200) {
                     return res.json()
@@ -559,40 +384,34 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            this.setOverviewData(
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene"),
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
-            this.setGeneticsData(
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.alleleseqchange, data.seqchange),
-                MenuAndWidgets.getTableValuesFromWBAPIData(data.othervariation, false),
-                MenuAndWidgets.getTableValuesFromWBAPIData(data.otherstrain, false));
-            this.setReagentData(
-                MenuAndWidgets.getSetOfEntitiesFromWBAPIData(data.transgene, data.transgene, ""),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.antibody, undefined),
-                MenuAndWidgets.getTableValuesFromWBAPIData(data.otherantibody, true),
-                MenuAndWidgets.getTableValuesFromWBAPIData(data.othertransgene, false));
-            this.setExpressionData(
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.otherexpr, data.otherexpr),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.siteaction, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.timeaction, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.rnaseq, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.additionalexpr, undefined));
-            this.setInteractionsData(
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.geneint, data.geneint),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.geneprod, data.geneprod),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.genereg, data.genereg));
-            this.setPhenotypeData(
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.newmutant, data.newmutant),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.rnai, data.rnai),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.overexpr, data.overexpr),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.invitro, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.chemphen, undefined),
-                MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.envpheno, undefined));
-            this.setDiseaseData(MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
-            this.setCommentsData(MenuAndWidgets.getCheckbxOrSingleFieldFromWBAPIData(data.comment, undefined));
+            this.setOverviewData(getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene"),
+                getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
+            this.setGeneticsData(getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
+                getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.alleleseqchange, data.seqchange),
+                getTableValuesFromWBAPIData(data.othervariation, false),
+                getTableValuesFromWBAPIData(data.otherstrain, false));
+            this.setReagentData(getSetOfEntitiesFromWBAPIData(data.transgene, data.transgene, ""),
+                getCheckbxOrSingleFieldFromWBAPIData(data.antibody, undefined),
+                getTableValuesFromWBAPIData(data.otherantibody, true),
+                getTableValuesFromWBAPIData(data.othertransgene, false));
+            this.setExpressionData(getCheckbxOrSingleFieldFromWBAPIData(data.otherexpr, data.otherexpr),
+                getCheckbxOrSingleFieldFromWBAPIData(data.siteaction, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.timeaction, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.rnaseq, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.additionalexpr, undefined));
+            this.setInteractionsData(getCheckbxOrSingleFieldFromWBAPIData(data.geneint, data.geneint),
+                getCheckbxOrSingleFieldFromWBAPIData(data.geneprod, data.geneprod),
+                getCheckbxOrSingleFieldFromWBAPIData(data.genereg, data.genereg));
+            this.setPhenotypeData(getCheckbxOrSingleFieldFromWBAPIData(data.newmutant, data.newmutant),
+                getCheckbxOrSingleFieldFromWBAPIData(data.rnai, data.rnai),
+                getCheckbxOrSingleFieldFromWBAPIData(data.overexpr, data.overexpr),
+                getCheckbxOrSingleFieldFromWBAPIData(data.invitro, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.chemphen, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.envpheno, undefined));
+            this.setDiseaseData(getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
+            this.setCommentsData(getCheckbxOrSingleFieldFromWBAPIData(data.comment, undefined));
         }).catch(() => this.setState({show_fetch_data_error: true}));
     }
 
@@ -602,79 +421,65 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
-    /**
-     * get the value to be stored in the data base from a checkbox and its details field
-     *
-     * @param {boolean} checkbox
-     * @param {string} details
-     */
-    static getCheckboxDBVal(checkbox, details = "") {
-        if (details !== "") {
-            return details;
-        } else {
-            return checkbox ? "checked" : "";
-        }
-    }
-
     handleFinishedSection(widget) {
         let payload = {};
         switch (widget) {
             case WIDGET.OVERVIEW:
                 payload = {
-                    gene_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
-                    gene_model_update: MenuAndWidgets.getCheckboxDBVal(this.state.geneModCorrectionDetails,
+                    gene_list: transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
+                    gene_model_update: getCheckboxDBVal(this.state.geneModCorrectionDetails,
                         this.state.geneModCorrectionDetails),
-                    species_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
+                    species_list: transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
                 };
                 break;
             case WIDGET.GENETICS:
                 payload = {
-                    alleles_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
-                    allele_seq_change: MenuAndWidgets.getCheckboxDBVal(this.state.alleleSeqChange),
+                    alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
+                    allele_seq_change: getCheckboxDBVal(this.state.alleleSeqChange),
                     other_alleles: JSON.stringify(this.state.otherAlleles),
-                    strains_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
+                    strains_list: transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
                     other_strains: JSON.stringify(this.state.otherStrains)
                 };
                 break;
             case WIDGET.REAGENT:
                 payload = {
-                    transgenes_list: MenuAndWidgets.transformEntitiesIntoAfpString(this.state.selectedTransgenes,
+                    transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes,
                         "WBTransgene"),
                     new_transgenes: JSON.stringify(this.state.otherTransgenes),
-                    new_antibody: MenuAndWidgets.getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
+                    new_antibody: getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
                     other_antibodies: JSON.stringify(this.state.otherAntibs)
                 };
                 break;
             case WIDGET.EXPRESSION:
                 payload = {
-                    anatomic_expr: MenuAndWidgets.getCheckboxDBVal(this.state.anatomicExpr,
+                    anatomic_expr: getCheckboxDBVal(this.state.anatomicExpr,
                         this.state.anatomicExprDetails),
-                    site_action: MenuAndWidgets.getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
-                    time_action: MenuAndWidgets.getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
-                    rnaseq: MenuAndWidgets.getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
+                    site_action: getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
+                    time_action: getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
+                    rnaseq: getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
                     additional_expr: this.state.additionalExpr
                 };
                 break;
             case WIDGET.INTERACTIONS:
                 payload = {
-                    gene_int: MenuAndWidgets.getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
-                    phys_int: MenuAndWidgets.getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
-                    gene_reg: MenuAndWidgets.getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
+                    gene_int: getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
+                    phys_int: getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
+                    gene_reg: getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
                 };
                 break;
             case WIDGET.PHENOTYPES:
                 payload = {
-                    allele_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmAllele),
-                    rnai_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmRNAi),
-                    transover_pheno: MenuAndWidgets.getCheckboxDBVal(this.state.svmTransgene),
-                    chemical: MenuAndWidgets.getCheckboxDBVal(this.state.chemical),
-                    env: MenuAndWidgets.getCheckboxDBVal(this.state.env),
-                    protein: MenuAndWidgets.getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
+                    allele_pheno: getCheckboxDBVal(this.state.svmAllele),
+                    rnai_pheno: getCheckboxDBVal(this.state.svmRNAi),
+                    transover_pheno: getCheckboxDBVal(this.state.svmTransgene),
+                    chemical: getCheckboxDBVal(this.state.chemical),
+                    env: getCheckboxDBVal(this.state.env),
+                    protein: getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
                 };
                 break;
             case WIDGET.DISEASE:
                 payload = {
-                    disease: MenuAndWidgets.getCheckboxDBVal(this.state.humDis, this.state.disComments),
+                    disease: getCheckboxDBVal(this.state.humDis, this.state.disComments),
                 };
                 break;
             case WIDGET.COMMENTS:
@@ -940,95 +745,12 @@ class MenuAndWidgets extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <MyLargeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
+                    <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
                     <DataSavedModal show={this.state.show_data_saved} onHide={this.goToNextSection}
                                     success={this.state.data_saved_success} last_widget={this.state.data_saved_last_widget}/>
                 </div>
             </div>
         );
-    }
-}
-
-class MyLargeModal extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-
-        let show = "";
-        if (props["show"] !== undefined) {
-            show = props["show"];
-        }
-        this.state = {
-            show: show
-        };
-    }
-
-
-    render() {
-        if (this.state.show) {
-            return (
-                <Modal
-                    {...this.props}
-                    bsSize="large"
-                    aria-labelledby="contained-modal-title-sm">
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-lg">Welcome</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <p>
-                            Thank you for filling out this form. By doing so, you are helping us incorporate your data into WormBase in a timely fashion.
-                        </p>
-                        <p>
-                            Please review the information presented in each page of the form. If needed, you may revise what is there or add more information.
-                        </p>
-                        <p>
-                            To save the data entered in each page and move to the next, click 'Save and continue'. You can return to each page any time. When you are finished, please click on 'Finish and Submit' on the last page.
-                        </p>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={this.props.onHide}>Close</Button>
-                    </Modal.Footer>
-                </Modal>
-            );
-        } else {
-            return ("");
-        }
-    }
-}
-
-class DataSavedModal extends React.Component {
-    render() {
-        let btn = <Button bsStyle="danger" onClick={this.props.onHide}>Close</Button>;
-        let title = "Error!";
-        let body = <div><span>Try again later or contact </span><a href="mailto:help@wormbase.org">Wormbase Helpdesk</a></div>;
-        if (this.props.success) {
-            if (this.props.last_widget) {
-                btn = <Button bsStyle="success" onClick={this.props.onHide}>Close</Button>;
-            } else {
-                btn = <Button bsStyle="success" onClick={this.props.onHide}>Go to next section</Button>;
-            }
-            title =  "Success!";
-            body = "Data for this section have been saved.";
-        }
-        if (this.props.show) {
-            return (
-                <Modal
-                    {...this.props}
-                    bsSize="small">
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-lg">{title}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {body}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        {btn}
-                    </Modal.Footer>
-                </Modal>
-            );
-        } else {
-            return ("");
-        }
     }
 }
 
