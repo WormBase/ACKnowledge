@@ -159,7 +159,8 @@ export function getSetOfEntitiesFromWBAPIData(afpString, tfpString, entityPrefix
 export function getCheckbxOrSingleFieldFromWBAPIData(afpString, svmString) {
     if (afpString !== undefined && afpString.afp !== undefined && afpString.afp !== null) {
         if (afpString.afp !== "") {
-            return new CheckboxWithDetails(true, afpString.afp, true);
+            let details = afpString.afp === "checked" ? "" : afpString.afp;
+            return new CheckboxWithDetails(true, details, true);
         } else {
             return new CheckboxWithDetails(false, "", true);
         }

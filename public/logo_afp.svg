@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="-349.80849"
+     inkscape:cx="-460.30548"
      inkscape:cy="-423.24503"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -53,70 +53,85 @@
      id="layer1"
      transform="translate(-9.5877219,-8.3288127)">
     <g
-       aria-label="Author First Pass "
-       transform="matrix(0.34842691,0,0,0.34842691,1.9477552,31.01914)"
+       aria-label="Author First Pass"
+       transform="matrix(0.35189316,0,0,0.31484613,9.7382937,8.9586172)"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#85a6ba;fill-opacity:1;stroke:none"
-       id="flowRoot4644">
+       id="flowRoot831">
       <path
-         d="m 36.355828,-39.394201 q 1.088,4.736 1.216,7.04 -0.128,1.216 -1.216,1.344 -0.448,0 -0.896,-0.32 -0.384,-0.256 -0.512,-1.408 -0.256,-2.752 -0.96,-5.696 -3.456,0.192 -4.608,0.704 0.128,0.704 -0.512,1.088 -0.64,0.384 -1.472,0.064 l -0.32,-0.32 q -0.704,1.28 -1.344,2.56 -0.64,1.216 -1.088,1.984 -0.384,0.768 -0.384,0.832 l -0.064,-0.064 q -0.768,0.896 -1.344,0.576 -1.088,-0.576 -0.896,-1.664 1.664,-3.712 3.456,-7.296 1.856,-3.648 2.88,-6.016 1.088,-2.432 1.536,-3.52 0.512,-1.152 1.28,-2.048 -0.256,-0.512 0.128,-1.088 0.384,-0.576 1.216,-0.704 1.6,0.32 1.472,1.728 1.088,1.92 1.28,3.84 0.192,1.92 0.256,3.136 0.128,1.216 0.256,1.984 0.128,0.96 0.32,1.92 0.64,0.576 0.32,1.344 z m -7.616,-0.896 q 1.216,-0.448 4.672,-0.64 -0.064,-0.192 -0.064,-0.384 0,-0.256 -0.192,-1.152 -0.192,-0.896 -0.32,-2.496 -0.128,-1.6 -0.448,-3.2 -0.192,0.32 -0.384,0.64 -0.256,0.256 -0.64,1.216 -1.792,4.288 -2.624,6.016 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5324" />
+         d="M 29.16,35.829766 16.44,6.2697656 H 13.12 L 0.44,35.829766 h 3.12 l 4.32,-9.96 h 13.76 l 4.28,9.96 z m -8.68,-12.64 H 9 L 14.8,9.6297656 Z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path839"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 45.321828,-44.002201 q 0.576,-1.152 1.728,-0.64 0.384,0.192 0.576,0.704 0.256,0.448 -0.128,1.216 -0.384,0.704 -1.152,2.112 -0.704,1.408 -1.344,2.944 -1.472,3.776 -0.704,5.504 2.944,0.896 5.696,-4.16 2.112,-3.84 2.944,-4.928 0.896,-1.152 1.856,-1.536 0.768,-0.128 1.408,0.64 0.32,0.768 -0.32,2.88 -0.576,2.048 -0.896,3.264 -0.32,1.216 -0.448,2.112 -0.064,0.896 0.256,1.344 0.384,0.384 1.344,0.064 0.96,-0.384 1.856,-0.832 0.96,-0.384 1.856,-0.768 2.56,-1.152 3.392,-1.6 0.896,-0.512 1.28,-0.384 0.384,0.064 0.704,0.448 0.512,0.832 -0.192,1.792 -4.032,2.304 -6.016,3.136 -4.736,1.984 -6.08,0 -1.088,-1.536 -0.768,-4.288 -3.584,5.376 -6.784,5.632 -2.816,0.256 -3.712,-2.432 -0.448,-1.28 -0.128,-2.56 0.32,-1.344 0.448,-1.792 0.128,-0.512 0.192,-0.896 0.128,-0.384 0.32,-0.896 1.472,-3.712 2.816,-6.08 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5326" />
+         d="m 50.784375,35.829766 v -21.88 h -2.96 v 11.24 c 0,5.96 -2.8,8.44 -6.8,8.44 -4.24,0 -6.56,-2.32 -6.56,-7.88 v -11.8 h -2.96 v 11.8 c 0,7.64 3.72,10.6 9.28,10.6 3.4,0 5.56,-1.2 7.04,-3.92 v 3.4 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path841"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 68.461828,-43.554201 q -1.152,0.32 -2.752,0.768 -1.28,0.256 -1.6,-0.832 -0.32,-1.088 0.768,-1.536 1.216,-0.448 4.096,-1.152 0.32,-2.304 1.088,-4.864 0.832,-2.56 1.216,-4.416 -0.128,-0.256 0.064,-0.96 0.192,-0.704 0.32,-1.088 0.192,-0.384 0.576,-0.512 0.384,-0.192 0.832,-0.128 0.96,0.256 0.96,1.344 h 0.064 l -0.128,0.256 q -0.384,2.304 -1.024,4.544 -0.576,2.24 -1.088,4.48 l -0.192,0.768 4.032,-0.768 q 0.64,-0.064 1.024,0.256 0.384,0.32 0.448,0.768 0.064,0.448 -0.256,0.896 -0.256,0.448 -1.28,0.64 -3.328,0.64 -4.48,0.896 -0.704,3.904 -1.6,7.68 -0.832,3.712 -2.56,7.36 -0.768,1.024 -1.664,0.512 -0.896,-0.512 -0.64,-1.6 1.536,-3.264 2.304,-6.528 0.832,-3.328 1.472,-6.784 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5328" />
+         d="m 66.36125,16.629766 v -2.68 h -4.92 V 6.2697656 h -2.96 v 7.6800004 h -4.72 v 2.68 h 4.72 v 19.2 h 2.96 v -19.2 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path843"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 88.639828,-63.970201 q 0.256,-1.152 1.216,-1.152 0.96,0 1.344,1.088 0,2.304 -0.896,4.8 -0.896,2.432 -1.664,5.248 -0.704,2.816 -1.408,6.208 -0.704,3.328 -1.6,6.72 1.664,-2.688 3.712,-3.904 1.216,-0.704 1.92,-0.704 0.768,0 1.984,0.384 3.328,0.896 2.56,6.016 -0.256,2.048 -1.088,4.032 -0.832,1.984 -1.6,2.944 -1.024,0.512 -1.728,-0.128 -0.64,-0.704 -0.128,-1.728 1.472,-1.728 1.856,-6.08 0.192,-2.56 -0.832,-2.944 -0.576,-0.256 -1.92,0.64 -1.344,0.896 -2.368,2.56 -1.024,1.6 -1.92,3.392 -0.896,1.792 -1.856,3.456 -0.896,1.6 -2.24,2.688 -0.896,0.512 -1.6,0 -0.64,-0.448 -0.448,-1.472 0.448,-1.472 1.024,-2.816 0.64,-1.344 1.216,-3.2 0.576,-1.856 1.088,-4.16 0.576,-2.304 1.216,-4.864 0.64,-2.624 1.28,-5.504 0.64,-2.88 1.216,-4.992 0.576,-2.176 1.088,-3.584 0.576,-1.472 0.576,-2.944 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5330" />
+         d="m 88.755,35.829766 v -11.76 c 0,-7.32 -3.76,-10.64 -9.44,-10.64 -3,0 -5.48,1.2 -6.96,3.36 V 6.2697656 h -2.96 V 35.829766 h 2.96 v -12 c 0,-5.36 2.88,-7.68 6.68,-7.68 4,0 6.76,2.48 6.76,7.92 v 11.76 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path845"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 98.432828,-37.794201 q 0.384,-1.024 0.896,-2.304 0.384,-1.344 1.024002,-2.432 1.472,-2.88 3.072,-4.096 l 0.192,-0.384 q 3.392,-2.944 6.72,-2.176 1.536,0.384 2.688,1.472 1.152,1.024 1.664,2.496 1.28,3.456 -0.896,7.36 -1.408,2.624 -4.736,4.224 -2.432,1.216 -6.208,1.664 -2.112,0.32 -3.648002,-1.728 -1.536,-2.048 -0.768,-4.096 z m 10.752002,1.088 q 1.472,-1.024 2.432,-2.368 0.96,-1.408 0.96,-3.584 0,-2.176 -1.152,-3.264 -1.152,-1.088 -2.816,-0.832 -0.256,0.768 -1.088,0.96 -2.432,0.32 -4.416,3.392 -1.728,2.688 -2.176,5.184 -0.128,0.512 0.064,1.024 0.256,0.448 0.384,0.96 0.384,0.128 0.768,0.384 0.384,0.192 1.28,0.256 0.96,0.064 2.624,-0.512 1.728,-0.576 3.136,-1.6 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5332" />
+         d="m 115.77,24.949766 c 0,-6.68 -4.8,-11.52 -11.36,-11.52 -6.48,0 -11.48,4.92 -11.48,11.32 0,6.72 4.92,11.6 11.72,11.6 6.4,0 11.12,-4.84 11.12,-11.4 z m -3,0.04 c 0,5 -3.44,8.64 -8.2,8.64 -5.04,0 -8.64,-3.68 -8.64,-8.8 0,-4.96 3.64,-8.68 8.48,-8.68 4.8,0 8.36,3.76 8.36,8.84 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path847"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 117.86583,-44.322201 q -0.384,-1.088 0.128,-1.536 0.512,-0.512 0.896,-0.512 0.448,0 0.96,0.384 1.344,1.664 1.28,3.712 -0.064,2.048 -0.192,3.264 -0.064,1.216 -0.128,1.664 0,0.384 -0.064,0.704 l -0.192,2.112 q 2.56,-3.712 6.464,-5.952 3.904,-2.24 8.768,-4.096 1.152,-0.128 1.472,0.896 0.32,0.96 -0.768,1.536 -6.72,2.56 -9.536,4.672 -2.752,2.112 -4.352,4.416 -1.6,2.24 -2.56,5.376 -0.32,0.768 -1.216,1.024 h -0.128 q -1.152,-0.192 -1.344,-1.344 0.064,-1.6 0.384,-4.096 0.32,-2.496 0.576,-4.928 0.64,-6.016 -0.448,-7.296 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5334" />
+         d="m 129.10187,16.349766 v -2.92 c -3.16,0.16 -5.03999,1.24 -6.19999,3.64 v -3.12 h -2.96001 v 21.88 h 2.96001 v -12.76 c 0,-4.08 2.08,-6.32 6.19999,-6.72 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path849"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 172.00183,-40.482201 q 1.088,0.384 1.088,1.28 0,1.024 -1.152,1.28 -4.928,0.128 -10.368,1.792 -0.512,0.128 -0.96,0.32 -0.384,0.192 -0.832,0.384 -1.728,5.696 -3.2,7.552 -1.024,0.512 -1.728,-0.192 -0.64,-0.64 -0.128,-1.664 0.768,-0.832 1.92,-4.096 h -0.192 q -1.024,-0.512 -0.832,-1.728 0.384,-0.96 2.112,-1.792 1.92,-7.104 2.176,-11.584 -0.448,-0.384 -0.448,-0.96 0,-0.576 0.448,-0.896 v -0.256 q 0.256,-1.024 1.152,-1.088 0.96,-0.128 1.344,0.896 3.264,-0.32 6.336,-0.896 3.072,-0.64 6.336,-0.768 1.088,0.384 1.088,1.28 0,1.024 -1.152,1.28 -3.2,0.128 -6.336,0.704 -3.072,0.576 -6.208,0.896 -0.256,3.776 -1.856,10.24 3.84,-1.152 7.296,-1.536 3.456,-0.448 4.096,-0.448 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5336" />
+         d="m 158.58687,8.9497656 v -2.68 h -15 V 35.829766 h 2.96 v -13.52 h 11.6 v -2.68 h -11.6 V 8.9497656 Z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path851"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 182.06283,-45.538201 q 0.576,-1.088 1.536,-0.768 1.024,0.32 0.896,1.472 -0.96,3.456 -1.664,6.912 -0.64,3.392 -1.6,6.848 -0.512,1.216 -1.6,0.896 -1.088,-0.32 -0.768,-1.664 0.32,-1.28 0.64,-2.56 0.384,-1.344 0.704,-2.624 v -0.064 q 0.512,-2.112 0.832,-4.224 0.384,-2.176 1.024,-4.224 z m 3.328,-9.152 q 1.088,0.384 1.088,1.344 0,0.96 -1.152,1.216 h -0.256 q -0.704,-0.064 -1.024,-0.448 -0.256,-0.384 -0.256,-0.896 0.064,-1.088 1.344,-1.216 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5338" />
+         d="m 165.40187,35.829766 v -21.88 h -2.96 v 21.88 z m 0,-24.28 V 6.5097656 h -2.96 v 5.0400004 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path853"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 187.74083,-44.322201 q -0.384,-1.088 0.128,-1.536 0.512,-0.512 0.896,-0.512 0.448,0 0.96,0.384 1.344,1.664 1.28,3.712 -0.064,2.048 -0.192,3.264 -0.064,1.216 -0.128,1.664 0,0.384 -0.064,0.704 l -0.192,2.112 q 2.56,-3.712 6.464,-5.952 3.904,-2.24 8.768,-4.096 1.152,-0.128 1.472,0.896 0.32,0.96 -0.768,1.536 -6.72,2.56 -9.536,4.672 -2.752,2.112 -4.352,4.416 -1.6,2.24 -2.56,5.376 -0.32,0.768 -1.216,1.024 h -0.128 q -1.152,-0.192 -1.344,-1.344 0.064,-1.6 0.384,-4.096 0.32,-2.496 0.576,-4.928 0.64,-6.016 -0.448,-7.296 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5340" />
+         d="m 179.57062,16.349766 v -2.92 c -3.16,0.16 -5.04,1.24 -6.2,3.64 v -3.12 h -2.96 v 21.88 h 2.96 v -12.76 c 0,-4.08 2.08,-6.32 6.2,-6.72 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path855"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 217.08383,-44.258201 q 0.896,0.768 0.64,1.408 -0.512,1.216 -1.6,0.96 -1.28,-0.512 -2.816,0 -2.56,0.832 -4.288,1.856 1.216,0.768 2.56,1.216 1.408,0.448 2.56,1.152 2.688,1.408 3.328,3.84 -0.128,0.768 -0.448,1.152 -2.752,1.92 -7.04,2.816 -4.16,0.896 -7.616,0.192 -1.088,-0.512 -0.832,-1.472 0.256,-0.896 1.344,-1.024 4.096,0.704 9.344,-0.896 1.536,-0.448 2.432,-1.088 -1.088,-0.768 -2.432,-1.28 -1.344,-0.512 -2.624,-1.088 -1.216,-0.64 -2.176,-1.472 -0.896,-0.832 -1.152,-2.304 -0.064,-0.896 0.576,-1.408 6.4,-3.968 10.24,-2.56 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5342" />
+         d="m 194.7525,29.549766 c 0,-2.68 -1.24,-4.52 -3.8,-5.6 -3.32,-1.36 -3.48,-1.44 -4.12,-1.76 -1.36,-0.68 -2,-1.6 -2,-2.88 0,-1.76 1.4,-3.16 3.16,-3.16 1.92,0 3.2,1.12 3.2,3.2 h 3 c 0,-3.52 -2.64,-5.92 -6.16,-5.92 -3.56,0 -6.2,2.6 -6.2,6.16 0,1.56 0.56,2.92 1.64,3.92 0.88,0.84 0.96,0.88 4.04,2.12 3.16,1.28 4.24,2 4.24,4.2 0,2.2 -1.56,3.8 -3.68,3.8 -2.44,0 -4.12,-1.56 -4.12,-4.24 h -2.92 c 0,4.24 2.84,6.96 7.04,6.96 3.92,0 6.68,-2.8 6.68,-6.8 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path857"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 224.58683,-43.554201 q -1.152,0.32 -2.752,0.768 -1.28,0.256 -1.6,-0.832 -0.32,-1.088 0.768,-1.536 1.216,-0.448 4.096,-1.152 0.32,-2.304 1.088,-4.864 0.832,-2.56 1.216,-4.416 -0.128,-0.256 0.064,-0.96 0.192,-0.704 0.32,-1.088 0.192,-0.384 0.576,-0.512 0.384,-0.192 0.832,-0.128 0.96,0.256 0.96,1.344 h 0.064 l -0.128,0.256 q -0.384,2.304 -1.024,4.544 -0.576,2.24 -1.088,4.48 l -0.192,0.768 4.032,-0.768 q 0.64,-0.064 1.024,0.256 0.384,0.32 0.448,0.768 0.064,0.448 -0.256,0.896 -0.256,0.448 -1.28,0.64 -3.328,0.64 -4.48,0.896 -0.704,3.904 -1.6,7.68 -0.832,3.712 -2.56,7.36 -0.768,1.024 -1.664,0.512 -0.896,-0.512 -0.64,-1.6 1.536,-3.264 2.304,-6.528 0.832,-3.328 1.472,-6.784 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5344" />
+         d="m 209.33,16.629766 v -2.68 h -4.92 V 6.2697656 h -2.96 v 7.6800004 h -4.72 v 2.68 h 4.72 v 19.2 h 2.96 v -19.2 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path859"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 259.50983,-47.330201 q 0.64,-2.176 0.704,-2.752 0.128,-0.64 0,-1.216 -0.064,-0.576 0.064,-0.704 0.064,-0.832 0.64,-1.216 0.64,-0.384 1.472,0.256 0.256,0.384 0.32,0.576 3.008,-0.704 5.76,-0.704 2.752,-0.064 5.824,1.152 0.512,0.384 0.64,0.96 0.256,1.408 0,2.496 -0.256,1.088 -1.856,2.496 -1.6,1.408 -3.648,2.56 -4.416,2.432 -7.296,2.56 -0.704,0 -1.344,-0.192 -0.512,2.944 -1.216,5.888 -0.64,2.88 -2.048,5.376 -0.704,1.088 -1.792,0.384 -0.96,-0.64 -0.32,-1.856 1.344,-2.432 1.92,-5.248 0.64,-2.88 1.152,-5.76 -0.192,-0.512 0.128,-0.96 0.256,-1.984 0.896,-4.096 z m 3.328,-2.496 q -0.192,1.024 -0.512,1.984 -0.32,0.896 -0.512,1.664 -0.128,0.704 -0.32,1.344 -0.128,0.576 -0.256,1.28 1.024,0.256 3.072,-0.512 2.112,-0.832 3.84,-1.664 4.352,-2.368 4.352,-4.16 -2.368,-0.896 -4.8,-0.704 -2.432,0.192 -4.864,0.768 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5346" />
+         d="m 243.5375,15.229766 c 0,-6.2000004 -3.28,-8.9600004 -11.4,-8.9600004 h -8.16 V 35.829766 h 2.96 v -11.96 h 5.68 c 8.04,0 10.92,-3.04 10.92,-8.64 z m -3,0 c 0,4.28 -2.24,5.96 -8.12,5.96 h -5.48 V 8.9497656 h 4.2 c 5.64,0 9.4,0.28 9.4,6.2800004 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path861"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 277.99683,-37.730201 q 0.512,-1.024 1.216,-1.92 0.768,-0.896 2.624,-2.688 1.92,-1.792 3.456,-2.752 1.6,-0.96 2.368,-1.024 0.768,-0.064 1.28,0.256 1.088,0.704 0.64,2.112 0.448,-0.32 0.832,-0.576 0.384,-0.32 0.96,-0.384 0.64,-0.128 1.088,0.32 0.448,0.384 0.32,1.152 -0.64,2.368 -1.344,4.288 -0.64,1.92 -0.384,3.136 0.256,1.216 1.856,1.536 1.6,0.256 5.568,-0.64 0.64,-0.064 1.024,0.256 0.384,0.32 0.448,0.768 0.064,0.448 -0.256,0.896 -0.256,0.448 -1.152,0.704 -2.304,0.576 -4.608,0.576 -2.24,0.064 -3.456,-0.64 -1.152,-0.64 -1.664,-1.728 -0.768,-1.728 0.192,-5.312 -0.96,0.96 -2.304,2.432 -1.344,1.472 -1.92,2.048 -0.576,0.512 -1.088,0.96 -0.448,0.384 -1.6,0.704 -1.088,0.32 -2.176,0.256 -1.024,-0.064 -1.792,-0.704 -0.768,-0.64 -0.704,-1.792 0.064,-1.216 0.576,-2.24 z m 8.768,-3.904 q -0.704,-0.064 -1.088,-0.576 -1.6,1.28 -3.328,2.944 -1.728,1.6 -2.304,3.584 2.56,0.704 5.888,-3.904 0.896,-1.28 1.856,-2.304 -0.384,0.128 -1.024,0.256 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5348" />
+         d="m 268.78437,35.829766 v -21.88 h -2.95999 v 3.88 c -2.16001,-3.04 -4.84001,-4.4 -8.64001,-4.4 -6.56,0 -11.52,4.96 -11.52,11.52 0,6.52 5,11.4 11.72,11.4 3.72,0 6.12,-1.24 8.44001,-4.36 v 3.84 z m -2.95999,-11.04 c 0,4.96 -3.68,8.84 -8.40001,8.84 -4.96,0 -8.76,-3.88 -8.76,-8.88 0,-4.76 3.84,-8.6 8.6,-8.6 4.8,0 8.56001,3.76 8.56001,8.64 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path863"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 308.45883,-44.258201 q 0.896,0.768 0.64,1.408 -0.512,1.216 -1.6,0.96 -1.28,-0.512 -2.816,0 -2.56,0.832 -4.288,1.856 1.216,0.768 2.56,1.216 1.408,0.448 2.56,1.152 2.688,1.408 3.328,3.84 -0.128,0.768 -0.448,1.152 -2.752,1.92 -7.04,2.816 -4.16,0.896 -7.616,0.192 -1.088,-0.512 -0.832,-1.472 0.256,-0.896 1.344,-1.024 4.096,0.704 9.344,-0.896 1.536,-0.448 2.432,-1.088 -1.088,-0.768 -2.432,-1.28 -1.344,-0.512 -2.624,-1.088 -1.216,-0.64 -2.176,-1.472 -0.896,-0.832 -1.152,-2.304 -0.064,-0.896 0.576,-1.408 6.4,-3.968 10.24,-2.56 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5350" />
+         d="m 285.76812,29.549766 c 0,-2.68 -1.24,-4.52 -3.8,-5.6 -3.32,-1.36 -3.47999,-1.44 -4.12,-1.76 -1.35999,-0.68 -2,-1.6 -2,-2.88 0,-1.76 1.40001,-3.16 3.16,-3.16 1.92001,0 3.2,1.12 3.2,3.2 h 3 c 0,-3.52 -2.64,-5.92 -6.15999,-5.92 -3.56,0 -6.20001,2.6 -6.20001,6.16 0,1.56 0.56,2.92 1.64001,3.92 0.88,0.84 0.95999,0.88 4.03999,2.12 3.16001,1.28 4.24,2 4.24,4.2 0,2.2 -1.56,3.8 -3.68,3.8 -2.44,0 -4.12,-1.56 -4.12,-4.24 h -2.91999 c 0,4.24 2.83999,6.96 7.03999,6.96 3.92,0 6.68,-2.8 6.68,-6.8 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path865"
+         inkscape:connector-curvature="0" />
       <path
-         d="m 323.83383,-44.258201 q 0.896,0.768 0.64,1.408 -0.512,1.216 -1.6,0.96 -1.28,-0.512 -2.816,0 -2.56,0.832 -4.288,1.856 1.216,0.768 2.56,1.216 1.408,0.448 2.56,1.152 2.688,1.408 3.328,3.84 -0.128,0.768 -0.448,1.152 -2.752,1.92 -7.04,2.816 -4.16,0.896 -7.616,0.192 -1.088,-0.512 -0.832,-1.472 0.256,-0.896 1.344,-1.024 4.096,0.704 9.344,-0.896 1.536,-0.448 2.432,-1.088 -1.088,-0.768 -2.432,-1.28 -1.344,-0.512 -2.624,-1.088 -1.216,-0.64 -2.176,-1.472 -0.896,-0.832 -1.152,-2.304 -0.064,-0.896 0.576,-1.408 6.4,-3.968 10.24,-2.56 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;font-family:Karumbi;-inkscape-font-specification:'Karumbi, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
-         id="path5352" />
+         d="m 301.315,29.549766 c 0,-2.68 -1.24,-4.52 -3.8,-5.6 -3.32,-1.36 -3.48,-1.44 -4.12,-1.76 -1.36,-0.68 -2,-1.6 -2,-2.88 0,-1.76 1.4,-3.16 3.16,-3.16 1.92,0 3.2,1.12 3.2,3.2 h 3 c 0,-3.52 -2.64,-5.92 -6.16,-5.92 -3.56,0 -6.2,2.6 -6.2,6.16 0,1.56 0.56,2.92 1.64,3.92 0.88,0.84 0.96,0.88 4.04,2.12 3.16,1.28 4.24,2 4.24,4.2 0,2.2 -1.56,3.8 -3.68,3.8 -2.44,0 -4.12,-1.56 -4.12,-4.24 h -2.92 c 0,4.24 2.84,6.96 7.04,6.96 3.92,0 6.68,-2.8 6.68,-6.8 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:40px;font-family:'TeX Gyre Adventor';-inkscape-font-specification:'TeX Gyre Adventor, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#85a6ba;fill-opacity:1"
+         id="path867"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>

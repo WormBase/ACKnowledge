@@ -50,17 +50,20 @@ export class DataSavedModal extends React.Component {
         if (this.props.success) {
             if (this.props.last_widget) {
                 btn = <Button bsStyle="success" onClick={this.props.onHide}>Close</Button>;
+                title =  "Congratulations!";
+                body = "You have successfully submitted all your data to Wormbase. Thank you for your participation.";
             } else {
                 btn = <Button bsStyle="success" onClick={this.props.onHide}>Go to next section</Button>;
+                title =  "Success!";
+                body = "Data for this section have been successfully saved.";
             }
-            title =  "Success!";
-            body = "Data for this section have been saved.";
+
         }
         if (this.props.show) {
             return (
                 <Modal
                     {...this.props}
-                    bsSize="small">
+                    bsSize="medium">
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-lg">{title}</Modal.Title>
                     </Modal.Header>
@@ -69,6 +72,33 @@ export class DataSavedModal extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         {btn}
+                    </Modal.Footer>
+                </Modal>
+            );
+        } else {
+            return ("");
+        }
+    }
+}
+
+export class SectionsNotCompletedModal extends React.Component {
+    render() {
+        if (this.props.show) {
+            return (
+                <Modal
+                    {...this.props}
+                    bsSize="medium">
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-lg">Incomplete Sections</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        You need to complete the following sections before ckicking the "finish and Submit" button:
+                        <ul>
+                            {[...this.props.sections].map(item => <li>{item}</li>)}
+                        </ul>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button bsStyle="danger" onClick={this.props.onHide}>Close</Button>
                     </Modal.Footer>
                 </Modal>
             );

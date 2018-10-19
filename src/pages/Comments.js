@@ -113,9 +113,7 @@ class Other extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={() => {
-                        this.props.callback(WIDGET.COMMENTS);
-                        this.alertDismissable.setSaved(true);}}>Finish and submit
+                    <Button bsStyle="success" onClick={() => {this.props.callback(WIDGET.COMMENTS)}}>Finish and submit
                     </Button>
                 </div>
             </div>

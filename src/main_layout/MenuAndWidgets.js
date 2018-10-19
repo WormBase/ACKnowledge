@@ -9,7 +9,7 @@ import Phenotypes from "../pages/Phenotypes";
 import Interactions from "../pages/Interactions";
 import Genetics from "../pages/Genetics";
 import Glyphicon from "react-bootstrap/es/Glyphicon";
-import ContactInfo from "../pages/ContactInfo";
+import ContactInfo from "../pages/Comments";
 import queryString from 'query-string';
 import Title from "./Title";
 import Disease from "../pages/Disease";
@@ -20,18 +20,7 @@ import {
     getCheckbxOrSingleFieldFromWBAPIData,
     getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
 } from "../AFPValues";
-import {DataSavedModal, WelcomeModal} from "./MainModals";
-
-const MENU_INDEX = Object.freeze({
-    OVERVIEW: 1,
-    GENETICS: 2,
-    REAGENT: 3,
-    EXPRESSION: 4,
-    INTERACTIONS: 5,
-    PHENOTYPES: 6,
-    DISEASE: 7,
-    COMMENTS: 8
-});
+import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "./MainModals";
 
 export const WIDGET = Object.freeze({
     OVERVIEW: "overview",
@@ -41,49 +30,45 @@ export const WIDGET = Object.freeze({
     INTERACTIONS: "interactions",
     PHENOTYPES: "phenotypes",
     DISEASE: "disease",
-    COMMENTS: "contact_info"
+    COMMENTS: "comments"
 });
+
+let MENU_INDEX = {};
+MENU_INDEX[WIDGET.OVERVIEW] = 1;
+MENU_INDEX[WIDGET.GENETICS] = 2;
+MENU_INDEX[WIDGET.REAGENT] = 3;
+MENU_INDEX[WIDGET.EXPRESSION] = 4;
+MENU_INDEX[WIDGET.INTERACTIONS] = 5;
+MENU_INDEX[WIDGET.PHENOTYPES] = 6;
+MENU_INDEX[WIDGET.DISEASE] = 7;
+MENU_INDEX[WIDGET.COMMENTS] = 8;
+
+let WIDGET_TITLE = {};
+WIDGET_TITLE[WIDGET.OVERVIEW] = "Overview (genes and species)";
+WIDGET_TITLE[WIDGET.GENETICS] = "Genetics";
+WIDGET_TITLE[WIDGET.REAGENT] = "Reagent";
+WIDGET_TITLE[WIDGET.EXPRESSION] = "Expression";
+WIDGET_TITLE[WIDGET.INTERACTIONS] = "Interactions";
+WIDGET_TITLE[WIDGET.PHENOTYPES] = "Phenotypes and function";
+WIDGET_TITLE[WIDGET.DISEASE] = "Disease";
+WIDGET_TITLE[WIDGET.COMMENTS] = "Comments and submit";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
         super(props);
         let currSelectedMenu = MENU_INDEX.OVERVIEW;
         const currentLocation = props.location.pathname;
-        switch (currentLocation) {
-            case "/overview":
-                currSelectedMenu = MENU_INDEX.OVERVIEW;
-                break;
-            case "/expression":
-                currSelectedMenu = MENU_INDEX.EXPRESSION;
-                break;
-            case "/genetics":
-                currSelectedMenu = MENU_INDEX.GENETICS;
-                break;
-            case "/interactions":
-                currSelectedMenu = MENU_INDEX.INTERACTIONS;
-                break;
-            case "/phenotypes":
-                currSelectedMenu = MENU_INDEX.PHENOTYPES;
-                break;
-            case "/reagent":
-                currSelectedMenu = MENU_INDEX.REAGENT;
-                break;
-            case "/disease":
-                currSelectedMenu = MENU_INDEX.DISEASE;
-                break;
-            case "/contact_info":
-                currSelectedMenu = MENU_INDEX.COMMENTS;
-                break;
-            default:
-                currSelectedMenu = MENU_INDEX.OVERVIEW;
+        if (currentLocation !== "" && currentLocation !== "/") {
+            currSelectedMenu = MENU_INDEX[currentLocation.substring(1)];
         }
         let parameters = queryString.parse(this.props.location.search);
+        let completedSections = {};
+        Object.values(WIDGET).forEach((key) => {completedSections[key] = false;});
         this.state = {
             pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
                 WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
-            completedSections: {"overview": false, "expression": false, "genetics": false, "interactions": false,
-                "phenotypes": false, "reagent": false, "disease": false, "contact_info": false},
+            completedSections: completedSections,
             showPopup: true,
             paper_id: parameters.paper,
             passwd: parameters.passwd,
@@ -129,7 +114,8 @@ class MenuAndWidgets extends React.Component {
             env: false,
             other: "",
             humDis: false,
-            disComments: ""
+            disComments: "",
+            show_sections_not_completed: false
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
@@ -366,7 +352,7 @@ class MenuAndWidgets extends React.Component {
         if (this.other !== undefined) {
             this.other.selfStateVarModifiedFunction(commentsCb.details(), "other");
         }
-        this.setWidgetSaved(this.other, "contact_info", ...arguments);
+        this.setWidgetSaved(this.other, "comments", ...arguments);
         this.setState({
             other: commentsCb.details()
         });
@@ -421,106 +407,120 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
+    allSectionsFinished() {
+        return Object.keys(this.state.completedSections).filter((item) => item !== WIDGET.COMMENTS).every(item => this.state.completedSections[item]);
+    }
+
     handleFinishedSection(widget) {
-        let payload = {};
-        switch (widget) {
-            case WIDGET.OVERVIEW:
-                payload = {
-                    gene_list: transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
-                    gene_model_update: getCheckboxDBVal(this.state.geneModCorrectionDetails,
-                        this.state.geneModCorrectionDetails),
-                    species_list: transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
-                };
-                break;
-            case WIDGET.GENETICS:
-                payload = {
-                    alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
-                    allele_seq_change: getCheckboxDBVal(this.state.alleleSeqChange),
-                    other_alleles: JSON.stringify(this.state.otherAlleles),
-                    strains_list: transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
-                    other_strains: JSON.stringify(this.state.otherStrains)
-                };
-                break;
-            case WIDGET.REAGENT:
-                payload = {
-                    transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes,
-                        "WBTransgene"),
-                    new_transgenes: JSON.stringify(this.state.otherTransgenes),
-                    new_antibody: getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
-                    other_antibodies: JSON.stringify(this.state.otherAntibs)
-                };
-                break;
-            case WIDGET.EXPRESSION:
-                payload = {
-                    anatomic_expr: getCheckboxDBVal(this.state.anatomicExpr,
-                        this.state.anatomicExprDetails),
-                    site_action: getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
-                    time_action: getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
-                    rnaseq: getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
-                    additional_expr: this.state.additionalExpr
-                };
-                break;
-            case WIDGET.INTERACTIONS:
-                payload = {
-                    gene_int: getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
-                    phys_int: getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
-                    gene_reg: getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
-                };
-                break;
-            case WIDGET.PHENOTYPES:
-                payload = {
-                    allele_pheno: getCheckboxDBVal(this.state.svmAllele),
-                    rnai_pheno: getCheckboxDBVal(this.state.svmRNAi),
-                    transover_pheno: getCheckboxDBVal(this.state.svmTransgene),
-                    chemical: getCheckboxDBVal(this.state.chemical),
-                    env: getCheckboxDBVal(this.state.env),
-                    protein: getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
-                };
-                break;
-            case WIDGET.DISEASE:
-                payload = {
-                    disease: getCheckboxDBVal(this.state.humDis, this.state.disComments),
-                };
-                break;
-            case WIDGET.COMMENTS:
-                payload = {
-                    comments: this.state.other,
-                };
-                break;
-        }
-        payload.passwd = this.state.passwd;
-        fetch(process.env.REACT_APP_API_WRITE_ENDPOINT, {
-            method: 'POST',
-            headers: {
-                'Accept': 'text/html',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        }).then(res => {
-            if (res.status === 200) {
-                return res.text();
-            } else {
+        if (widget !== WIDGET.COMMENTS || this.allSectionsFinished()) {
+            if (widget === WIDGET.COMMENTS) {
+                this.other.setSuccessAlertMessage();
+            }
+            let payload = {};
+            switch (widget) {
+                case WIDGET.OVERVIEW:
+                    payload = {
+                        gene_list: transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
+                        gene_model_update: getCheckboxDBVal(this.state.geneModCorrectionDetails,
+                            this.state.geneModCorrectionDetails),
+                        species_list: transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
+                    };
+                    break;
+                case WIDGET.GENETICS:
+                    payload = {
+                        alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
+                        allele_seq_change: getCheckboxDBVal(this.state.alleleSeqChange),
+                        other_alleles: JSON.stringify(this.state.otherAlleles),
+                        strains_list: transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
+                        other_strains: JSON.stringify(this.state.otherStrains)
+                    };
+                    break;
+                case WIDGET.REAGENT:
+                    payload = {
+                        transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes,
+                            "WBTransgene"),
+                        new_transgenes: JSON.stringify(this.state.otherTransgenes),
+                        new_antibody: getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
+                        other_antibodies: JSON.stringify(this.state.otherAntibs)
+                    };
+                    break;
+                case WIDGET.EXPRESSION:
+                    payload = {
+                        anatomic_expr: getCheckboxDBVal(this.state.anatomicExpr,
+                            this.state.anatomicExprDetails),
+                        site_action: getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
+                        time_action: getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
+                        rnaseq: getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
+                        additional_expr: this.state.additionalExpr
+                    };
+                    break;
+                case WIDGET.INTERACTIONS:
+                    payload = {
+                        gene_int: getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
+                        phys_int: getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
+                        gene_reg: getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
+                    };
+                    break;
+                case WIDGET.PHENOTYPES:
+                    payload = {
+                        allele_pheno: getCheckboxDBVal(this.state.svmAllele),
+                        rnai_pheno: getCheckboxDBVal(this.state.svmRNAi),
+                        transover_pheno: getCheckboxDBVal(this.state.svmTransgene),
+                        chemical: getCheckboxDBVal(this.state.chemical),
+                        env: getCheckboxDBVal(this.state.env),
+                        protein: getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
+                    };
+                    break;
+                case WIDGET.DISEASE:
+                    payload = {
+                        disease: getCheckboxDBVal(this.state.humDis, this.state.disComments),
+                    };
+                    break;
+                case WIDGET.COMMENTS:
+                    payload = {
+                        comments: this.state.other,
+                    };
+                    break;
+            }
+            payload.passwd = this.state.passwd;
+            fetch(process.env.REACT_APP_API_WRITE_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'text/html',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    this.setState({
+                        show_data_saved: true,
+                        data_saved_success: false
+                    });
+                }
+            }).then(data => {
+                if (data === undefined) {
+                    this.setState({
+                        show_data_saved: true,
+                        data_saved_success: false
+                    });
+                }
                 this.setState({
                     show_data_saved: true,
-                    data_saved_success: false
+                    data_saved_success: true,
+                    data_saved_last_widget: widget === WIDGET.COMMENTS
                 });
-            }
-        }).then(data => {
-            if (data === undefined) {
-                this.setState({
-                    show_data_saved: true,
-                    data_saved_success: false
-                });
-            }
-            this.setState({
-                show_data_saved: true,
-                data_saved_success: true,
-                data_saved_last_widget: widget === WIDGET.COMMENTS
+                const newCompletedSections = this.state.completedSections;
+                newCompletedSections[widget] = true;
+                this.setState({completedSections: newCompletedSections});
+            }).catch((err) => {
             });
-            const newCompletedSections = this.state.completedSections;
-            newCompletedSections[widget] = true;
-            this.setState({completedSections: newCompletedSections});
-        }).catch((err) => {});
+        } else {
+            this.setState({
+                show_sections_not_completed: true
+            });
+        }
     }
 
     goToNextSection() {
@@ -556,14 +556,14 @@ class MenuAndWidgets extends React.Component {
     }
 
     render() {
-        let overviewOk = this.state.completedSections["overview"] ? <Glyphicon glyph="ok"/> : false;
-        let expressionOk = this.state.completedSections["expression"] ? <Glyphicon glyph="ok"/> : false;
-        let geneticsOk = this.state.completedSections["genetics"] ? <Glyphicon glyph="ok"/>: false;
-        let interactionsOk = this.state.completedSections["interactions"] ? <Glyphicon glyph="ok"/> : false;
-        let phenotypesOk = this.state.completedSections["phenotypes"] ? <Glyphicon glyph="ok"/> : false;
-        let reagentOk = this.state.completedSections["reagent"] ? <Glyphicon glyph="ok"/> : false;
-        let diseaseOk = this.state.completedSections["disease"] ? <Glyphicon glyph="ok"/> : false;
-        let contact_infoOk = this.state.completedSections["contact_info"] ? <Glyphicon glyph="ok"/> : false;
+        let overviewOk = this.state.completedSections[WIDGET.OVERVIEW] ? <Glyphicon glyph="ok"/> : false;
+        let expressionOk = this.state.completedSections[WIDGET.EXPRESSION] ? <Glyphicon glyph="ok"/> : false;
+        let geneticsOk = this.state.completedSections[WIDGET.GENETICS] ? <Glyphicon glyph="ok"/>: false;
+        let interactionsOk = this.state.completedSections[WIDGET.INTERACTIONS] ? <Glyphicon glyph="ok"/> : false;
+        let phenotypesOk = this.state.completedSections[WIDGET.PHENOTYPES] ? <Glyphicon glyph="ok"/> : false;
+        let reagentOk = this.state.completedSections[WIDGET.REAGENT] ? <Glyphicon glyph="ok"/> : false;
+        let diseaseOk = this.state.completedSections[WIDGET.DISEASE] ? <Glyphicon glyph="ok"/> : false;
+        let contact_infoOk = this.state.completedSections[WIDGET.COMMENTS] ? <Glyphicon glyph="ok"/> : false;
         let data_fetch_err_alert = this.state.show_fetch_data_error ?
             <Alert bsStyle="danger">
                 <Glyphicon glyph="warning-sign"/>
@@ -588,38 +588,38 @@ class MenuAndWidgets extends React.Component {
                                 <div className="panel panel-default">
                                     <div className="panel-body">
                                         <Nav bsStyle="pills" stacked onSelect={this.handleSelectMenu}>
-                                            <IndexLinkContainer to={"overview" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.OVERVIEW}>
-                                                <NavItem eventKey={MENU_INDEX.OVERVIEW}>Overview (Genes and Species)
+                                            <IndexLinkContainer to={WIDGET.OVERVIEW + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.OVERVIEW]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
                                                     &nbsp;{overviewOk}
                                                 </NavItem></IndexLinkContainer>
-                                            <IndexLinkContainer to={"genetics" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.GENETICS}>
-                                                <NavItem eventKey={MENU_INDEX.GENETICS}>Genetics&nbsp;{geneticsOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.GENETICS + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.GENETICS]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}&nbsp;{geneticsOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"reagent" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.REAGENT}>
-                                                <NavItem eventKey={MENU_INDEX.REAGENT}>Reagent&nbsp;{reagentOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.REAGENT + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.REAGENT]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}&nbsp;{reagentOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"expression" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.EXPRESSION}>
-                                                <NavItem eventKey={MENU_INDEX.EXPRESSION}>Expression&nbsp;{expressionOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.EXPRESSION + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.EXPRESSION]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}&nbsp;{expressionOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"interactions" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.INTERACTIONS}>
-                                                <NavItem eventKey={MENU_INDEX.INTERACTIONS}>Interactions&nbsp;{interactionsOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.INTERACTIONS + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.INTERACTIONS]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}&nbsp;{interactionsOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"phenotypes" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.PHENOTYPES}>
-                                                <NavItem eventKey={MENU_INDEX.PHENOTYPES}>Phenotypes and function&nbsp;{phenotypesOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}&nbsp;{phenotypesOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"disease" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.DISEASE}>
-                                                <NavItem eventKey={MENU_INDEX.DISEASE}>Disease&nbsp;{diseaseOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.DISEASE + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.DISEASE]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;{diseaseOk}</NavItem>
                                             </IndexLinkContainer>
-                                            <IndexLinkContainer to={"contact_info" + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX.COMMENTS}>
-                                                <NavItem eventKey={MENU_INDEX.COMMENTS}>Comments and submit&nbsp;{contact_infoOk}</NavItem>
+                                            <IndexLinkContainer to={WIDGET.COMMENTS + this.props.location.search}
+                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.COMMENTS]}>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}&nbsp;{contact_infoOk}</NavItem>
                                             </IndexLinkContainer>
                                         </Nav>
                                     </div>
@@ -629,9 +629,9 @@ class MenuAndWidgets extends React.Component {
                                 <div className="panel panel-default">
                                     <div className="panel-body">
                                         <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
-                                        <Route path="/overview"
+                                        <Route path={"/" + WIDGET.OVERVIEW}
                                                render={() => <Overview callback={this.handleFinishedSection}
-                                                                       saved={this.state.completedSections["overview"]}
+                                                                       saved={this.state.completedSections[WIDGET.OVERVIEW]}
                                                                        ref={instance => { this.overview = instance; }}
                                                                        selectedGenes={this.state.selectedGenes}
                                                                        geneModCorr={this.state.geneModCorrection}
@@ -642,9 +642,9 @@ class MenuAndWidgets extends React.Component {
                                                                        checkCb={this.check_cb}
                                                />}
                                         />
-                                        <Route path="/genetics"
+                                        <Route path={"/" + WIDGET.GENETICS}
                                                render={() => <Genetics  callback={this.handleFinishedSection}
-                                                                        saved={this.state.completedSections["genetics"]}
+                                                                        saved={this.state.completedSections[WIDGET.GENETICS]}
                                                                         ref={instance => { this.genetics = instance; }}
                                                                         selectedAlleles={this.state.selectedAlleles}
                                                                         selectedStrains={this.state.selectedStrains}
@@ -656,9 +656,9 @@ class MenuAndWidgets extends React.Component {
                                                                         checkCb={this.check_cb}
                                                />}
                                         />
-                                        <Route path="/reagent"
+                                        <Route path={"/" + WIDGET.REAGENT}
                                                render={() => <Reagent callback={this.handleFinishedSection}
-                                                                      saved={this.state.completedSections["reagent"]}
+                                                                      saved={this.state.completedSections[WIDGET.REAGENT]}
                                                                       selectedTransgenes={this.state.selectedTransgenes}
                                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                       newAntib={this.state.newAntib}
@@ -670,9 +670,9 @@ class MenuAndWidgets extends React.Component {
                                                                       ref={instance => { this.reagent = instance; }}
                                                />}
                                         />
-                                        <Route path="/expression"
+                                        <Route path={"/" + WIDGET.EXPRESSION}
                                                render={() => <Expression callback={this.handleFinishedSection}
-                                                                         saved={this.state.completedSections["expression"]}
+                                                                         saved={this.state.completedSections[WIDGET.EXPRESSION]}
                                                                          anatomicExpr={this.state.anatomicExpr}
                                                                          anatomicExprDetails={this.state.anatomicExprDetails}
                                                                          siteAction={this.state.siteAction}
@@ -689,10 +689,10 @@ class MenuAndWidgets extends React.Component {
                                                                          ref={instance => { this.expression = instance; }}
                                                />}
                                         />
-                                        <Route path="/interactions"
+                                        <Route path={"/" + WIDGET.INTERACTIONS}
                                                render={() => <Interactions
                                                    callback={this.handleFinishedSection}
-                                                   saved={this.state.completedSections["interactions"]}
+                                                   saved={this.state.completedSections[WIDGET.INTERACTIONS]}
                                                    ref={instance => { this.interactions = instance; }}
                                                    cb_genetic={this.state.svmGeneInt}
                                                    cb_physical={this.state.svmPhysInt}
@@ -705,10 +705,10 @@ class MenuAndWidgets extends React.Component {
                                                    checkCb={this.check_cb}
                                                />}
                                         />
-                                        <Route path="/phenotypes"
+                                        <Route path={"/" + WIDGET.PHENOTYPES}
                                                render={() => <Phenotypes
                                                    callback={this.handleFinishedSection}
-                                                   saved={this.state.completedSections["phenotypes"]}
+                                                   saved={this.state.completedSections[WIDGET.PHENOTYPES]}
                                                    cb_allele={this.state.svmAllele}
                                                    cb_rnai={this.state.svmRNAi}
                                                    cb_transgene={this.state.svmTransgene}
@@ -723,9 +723,9 @@ class MenuAndWidgets extends React.Component {
                                                    checkCb={this.check_cb}
                                                />}
                                         />
-                                        <Route path="/disease"
+                                        <Route path={"/" + WIDGET.DISEASE}
                                                render={() => <Disease callback={this.handleFinishedSection}
-                                                                      saved={this.state.completedSections["disease"]}
+                                                                      saved={this.state.completedSections[WIDGET.DISEASE]}
                                                                       humDis={this.state.humDis}
                                                                       comments={this.state.disComments}
                                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
@@ -734,9 +734,9 @@ class MenuAndWidgets extends React.Component {
                                                                       ref={instance => { this.disease = instance; }}
                                                />}
                                         />
-                                        <Route path="/contact_info" render={() => <ContactInfo
+                                        <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
                                             callback={this.handleFinishedSection}
-                                            saved={this.state.completedSections["contact_info"]}
+                                            saved={this.state.completedSections[WIDGET.COMMENTS]}
                                             other={this.state.other}
                                             stateVarModifiedCallback={this.stateVarModifiedCallback}
                                             ref={instance => { this.other = instance; }}
@@ -749,6 +749,9 @@ class MenuAndWidgets extends React.Component {
                     <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
                     <DataSavedModal show={this.state.show_data_saved} onHide={this.goToNextSection}
                                     success={this.state.data_saved_success} last_widget={this.state.data_saved_last_widget}/>
+                    <SectionsNotCompletedModal show={this.state.show_sections_not_completed}
+                                               onHide={() => this.setState({show_sections_not_completed: false})}
+                                               sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec]).map((sec) => WIDGET_TITLE[sec])}/>
                 </div>
             </div>
         );
