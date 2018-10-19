@@ -414,6 +414,7 @@ class MenuAndWidgets extends React.Component {
     handleFinishedSection(widget) {
         if (widget !== WIDGET.COMMENTS || this.allSectionsFinished()) {
             if (widget === WIDGET.COMMENTS) {
+                // manually change alert for last widget
                 this.other.setSuccessAlertMessage();
             }
             let payload = {};
