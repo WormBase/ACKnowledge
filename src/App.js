@@ -8,7 +8,7 @@ class App extends Component {
     render() {
         let developmentBanner = "";
         if (process.env.NODE_ENV === "development") {
-            developmentBanner = <div id="devBanner"><h2>Development Site</h2></div>;
+            developmentBanner = <div id="devBanner"><h3>Development Site</h3></div>;
         }
         return (
             <div>

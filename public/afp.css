@@ -19,3 +19,7 @@ body {
     color: white;
     text-align: center;
 }
+
+#whiteBanner {
+    height: 20px;
+}

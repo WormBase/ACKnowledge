@@ -579,6 +579,7 @@ class MenuAndWidgets extends React.Component {
             <div className="container">
                 <div className="row">
                     {data_fetch_err_alert}
+                    <div id="whiteBanner"/>
                     <Header />
                     <Title title={title} journal={parameters.journal} pmid={parameters.pmid}/><br/>
                     <div>
