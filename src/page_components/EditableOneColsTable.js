@@ -1,6 +1,6 @@
 import {Component} from "react";
 import React from "react";
-import {Button, FormControl, Glyphicon, Label, Table} from "react-bootstrap";
+import {Button, FormControl, Glyphicon, Table} from "react-bootstrap";
 
 class OneColumnEditableTable extends Component {
     constructor(props) {

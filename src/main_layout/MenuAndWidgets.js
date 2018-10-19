@@ -16,7 +16,7 @@ import Disease from "../pages/Disease";
 import Header from "./Header";
 import {
     AFPValues,
-    apiEndpoints, getCheckboxDBVal,
+    getCheckboxDBVal,
     getCheckbxOrSingleFieldFromWBAPIData,
     getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
 } from "../AFPValues";
@@ -373,7 +373,7 @@ class MenuAndWidgets extends React.Component {
     }
 
     componentDidMount() {
-        fetch(apiEndpoints.apiRead + '&paper=' + this.state.paper_id + '&passwd=' + this.state.passwd)
+        fetch(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + this.state.paper_id + '&passwd=' + this.state.passwd)
             .then(res => {
                 if (res.status === 200) {
                     return res.json()
@@ -489,7 +489,7 @@ class MenuAndWidgets extends React.Component {
                 break;
         }
         payload.passwd = this.state.passwd;
-        fetch(apiEndpoints.apiWrite, {
+        fetch(process.env.REACT_APP_API_WRITE_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Accept': 'text/html',

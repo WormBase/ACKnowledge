@@ -1,14 +1,4 @@
 /**
- * API endpoints for reading and writing AFP, TFP, and SVM values
- *
- * @type {{apiWrite: string, apiRead: string}}
- */
-export const apiEndpoints = {
-    apiWrite: "http://textpressocentral.org:8000/api/write",
-    apiRead: "http://mangolassi.caltech.edu/~azurebrd/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper"
-};
-
-/**
  * generic AFP value object
  */
 export class AFPValues {
@@ -80,7 +70,7 @@ export function getCheckboxDBVal(checkbox, details = "") {
  */
 export function extractEntitiesFromTfpString(entitiesString, prefix) {
     let entities_split = entitiesString.split(" | ");
-    let final_entities_list = Array();
+    let final_entities_list = [];
     for (let i in entities_split) {
         let entity_split = entities_split[i].split(";%;");
         final_entities_list.push(entity_split[1] + " ( " + prefix + entity_split[0] + " )");

@@ -3,11 +3,9 @@ import React from "react";
 import {
     Alert,
     Button,
-    ButtonGroup,
     FormControl,
     Glyphicon,
     Image,
-    Label,
     Modal,
     OverlayTrigger,
     Tooltip
@@ -150,8 +148,7 @@ class MultipleSelect extends Component {
 
     searchWB(searchString, searchType) {
         if (searchString !== "") {
-            fetch('http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=' +
-                searchType + '&userValue=' + searchString)
+            fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' + searchType + '&userValue=' + searchString)
                 .then(res => {
                     if (res.status === 200) {
                         return res.text();
