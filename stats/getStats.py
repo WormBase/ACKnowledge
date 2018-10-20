@@ -1,18 +1,12 @@
-#!/usr/bin/env python3
-
 import argparse
+import logging
 import os
+import re
 import ssl
-import time
-import urllib.parse
-
-from urllib.request import urlopen
-from db_manager import *
-from email_functions import send_email_to_author, send_summary_email_to_admin
-from tpc_api_functions import *
-from entity_extraction import *
 from collections import defaultdict
-
+from db_manager import DBManager
+from tpc_api_functions import get_documents_fulltext
+from entity_extraction import get_matches_in_fulltext, get_species_in_fulltext_from_regex
 
 TPC_PAPERS_PER_QUERY = 10
 
@@ -24,24 +18,20 @@ def main():
     parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
-    parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     parser.add_argument("-t", "--textpresso-token", metavar="Textpresso API token", dest="textpresso_token", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
-                        help="path to the log file to generate. Default ./afp_pipeline.log")
+                        help="path to the log file to generate. Default to stdout")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                                                         'CRITICAL'], default="INFO",
                         help="set the logging level")
-    parser.add_argument("-n", "--num-papers", metavar="num_papers", dest="num_papers", type=int, default=10,
-                        help="number of papers to process per run")
-    parser.add_argument("-a", "--admin-emails", metavar="admin_emails", dest="admin_emails", type=str, nargs="+",
-                        help="list of email addresses of administrators that will receive summary emails with pipeline "
-                             "reports at each iterations")
+    parser.add_argument("-s", "--sample-size", metavar="sample_size", dest="sample_size", type=int, default=1000,
+                        help="sample size")
 
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
-    logger = logging.getLogger("AFP Pipeline")
+    logger = logging.getLogger("AFP Script for statistics")
 
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
 
@@ -72,14 +62,11 @@ def main():
     logger.debug("Number of papers curatable, not emailed, and SVM flagged: " +
                  str(len(curatable_papers_not_processed_svm_flagged)))
 
+    # Sample papers
+
     # disable ssl key verification
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
-
-    #TODO remove this line
-    curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
-                                                  "00053739", "00054192", "00049183"]
-    #curatable_papers_not_processed_svm_flagged = ["00054192"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext from Textpresso")
@@ -162,54 +149,3 @@ def main():
                                                  for transgene_word in transgenes_in_papers_dict[paper_id] if
                                                  transgene_word in transgene_symbol_id_map]) for paper_id in
                                   list(fulltexts_dict.keys())}
-
-    # 8. Write values extracted through tpc to DB and notify
-    urls = []
-    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
-    for paper_id in list(fulltexts_dict.keys()):
-        if db_manager.get_paper_antibody(paper_id):
-            db_manager.set_antibody(paper_id)
-        db_manager.set_extracted_entities_in_paper(paper_id, list(gene_ids_in_documents[paper_id])
-                                                   if paper_id in gene_ids_in_documents else [], "tfp_genestudied")
-        db_manager.set_extracted_entities_in_paper(paper_id, list(allele_ids_in_documents[paper_id])
-                                                   if paper_id in allele_ids_in_documents else [], "tfp_variation")
-        db_manager.set_extracted_entities_in_paper(paper_id, list(set(species_in_papers_dict[paper_id]))
-                                                   if paper_id in species_in_papers_dict else [], "tfp_species")
-        db_manager.set_extracted_entities_in_paper(paper_id, list(set(strains_in_papers_dict[paper_id]))
-                                                   if paper_id in strains_in_papers_dict else [], "tfp_strain")
-        db_manager.set_extracted_entities_in_paper(paper_id, list(transgene_ids_in_documents[paper_id])
-                                                   if paper_id in transgene_ids_in_documents else [], "tfp_transgene")
-        papers_passwd[paper_id] = db_manager.get_passwd(paper_id=paper_id)
-        if not papers_passwd[paper_id]:
-            papers_passwd[paper_id] = time.time()
-            db_manager.set_passwd(paper_id, papers_passwd[paper_id])
-        db_manager.set_version(paper_id)
-        paper_title = db_manager.get_paper_title(paper_id)
-        paper_journal = db_manager.get_paper_journal(paper_id)
-        pmid = db_manager.get_pmid(paper_id)
-
-        # notify author(s) via email
-        if len(email_addr_in_papers_dict[paper_id]) > 0:
-            url = "http://textpressocentral.org:5000?paper=" + paper_id + "&passwd=" + \
-                  str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
-                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid
-            urls.append(url)
-            data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
-            tiny_url = data.read().decode('utf-8')
-            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, ["valerio.arnaboldi@gmail.com"],
-                                 args.email_passwd)
-            db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])
-            #write_email(cur, paper_id, email_addr_in_papers_dict[paper_id])
-
-    # commit and close connection to DB
-    logger.info("Committing changes to DB")
-    db_manager.close()
-    send_summary_email_to_admin(urls=urls, paper_ids=list(fulltexts_dict.keys()),
-                                recipients=args.admin_emails,
-                                email_passwd=args.email_passwd)
-    logger.info("Finished")
-
-
-if __name__ == '__main__':
-    main()

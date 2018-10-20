@@ -5,7 +5,7 @@ from email.message import EmailMessage
 from typing import List
 
 
-def send_email(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], email_passwd):
+def send_email_to_author(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], email_passwd):
     email_content = """Dear Author,
   
 We have identified you as the corresponding author for the recently published paper:
@@ -35,6 +35,40 @@ WormBase""".format(paper_title, paper_journal, afp_link)
     msg = EmailMessage()
     msg.set_content(email_content)
     msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
+    email_content = """Dear Author,
+
+New pepers processed by the Author First Pass Pipeline:
+
+Wormbase Paper Ids:
+
+{}
+
+URLs to AFP web form:
+
+{}
+
+""".format("\n".join(paper_ids), "\n".join(urls))
+
+    msg = EmailMessage()
+    msg.set_content(email_content)
+    msg['Subject'] = "New papers processed by AFP Pipeline"
     msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
