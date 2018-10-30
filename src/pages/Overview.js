@@ -145,7 +145,7 @@ class Overview extends React.Component {
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedSpecies"}
                                 searchType={"species"}
-                                sampleQuery={"e.g. "}
+                                sampleQuery={"e.g. Caenorhabditis"}
                             />
                         </Panel.Body>
                     </Panel>
