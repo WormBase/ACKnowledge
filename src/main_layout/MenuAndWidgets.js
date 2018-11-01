@@ -375,7 +375,7 @@ class MenuAndWidgets extends React.Component {
                 getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
             this.setGeneticsData(getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
                 getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined),
-                getCheckbxOrSingleFieldFromWBAPIData(data.alleleseqchange, data.seqchange),
+                getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange),
                 getTableValuesFromWBAPIData(data.othervariation, false),
                 getTableValuesFromWBAPIData(data.otherstrain, false));
             this.setReagentData(getSetOfEntitiesFromWBAPIData(data.transgene, data.transgene, ""),
