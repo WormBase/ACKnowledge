@@ -295,8 +295,8 @@ class DBManager(object):
                          .format(paper_id, alleles))
 
     def set_allele_seq_change(self, allele_seq_change, paper_id):
-        self.cur.execute("DELETE FROM afp_alleleseqchange WHERE joinkey = '{}'".format(paper_id))
-        self.cur.execute("INSERT INTO afp_alleleseqchange (joinkey, afp_alleleseqchange) VALUES('{}', '{}')"
+        self.cur.execute("DELETE FROM afp_seqchange WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO afp_seqchange (joinkey, afp_seqchange) VALUES('{}', '{}')"
                          .format(paper_id, allele_seq_change))
 
     def set_other_alleles(self, other_alleles, paper_id):

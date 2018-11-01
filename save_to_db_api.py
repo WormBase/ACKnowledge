@@ -114,7 +114,7 @@ class StorageEngine(object):
         self.db_manager.set_env(env=env, paper_id=paper_id)
 
     def store_protein(self, protein, paper_id):
-        self.db_manager.set_protein(protein=protein, paper_id=paper_id)
+            self.db_manager.set_protein(protein=protein, paper_id=paper_id)
 
     # Disease
 
@@ -227,6 +227,7 @@ def main():
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
                                                                         'CRITICAL'], default="INFO",
                         help="set the logging level")
+    parser.add_argument("-p", "--port", metavar="port", dest="port", type=int, help="API port")
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -250,7 +251,7 @@ def main():
     writer = AFPWriter(storage_engine=db)
     app.add_route('/api/write', writer)
 
-    httpd = simple_server.make_server('0.0.0.0', 8000, app)
+    httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()
 
 

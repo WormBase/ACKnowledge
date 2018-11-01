@@ -16,6 +16,7 @@ ENV DB_HOST=""
 ENV DB_NAME=""
 ENV DB_USER=""
 ENV DB_PASSWD=""
+ENV PORT=8000
 
 ADD crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
@@ -26,5 +27,5 @@ RUN touch /var/log/cron.log
 #    crontab /etc/cron.d/afp-cron && \
 #    tail -f /var/log/cron.log
 
-EXPOSE 8000
-CMD python3 save_to_db_api.py -N ${DB_NAME} -U ${DB_USER} -P ${DB_PASSWD} -H ${DB_HOST}
+EXPOSE ${PORT}
+CMD python3 save_to_db_api.py -N ${DB_NAME} -U ${DB_USER} -P ${DB_PASSWD} -H ${DB_HOST} -p ${PORT}
