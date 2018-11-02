@@ -56,7 +56,7 @@ WIDGET_TITLE[WIDGET.COMMENTS] = "Comments and submit";
 class MenuAndWidgets extends React.Component {
     constructor(props) {
         super(props);
-        let currSelectedMenu = MENU_INDEX.OVERVIEW;
+        let currSelectedMenu = MENU_INDEX[WIDGET.OVERVIEW];
         const currentLocation = props.location.pathname;
         if (currentLocation !== "" && currentLocation !== "/") {
             currSelectedMenu = MENU_INDEX[currentLocation.substring(1)];

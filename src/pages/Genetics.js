@@ -133,14 +133,16 @@ class Genetics extends React.Component {
                                         <Checkbox checked={this.state.cb_allele}
                                                   onClick={() => {
                                                       this.toggle_cb("cb_allele", "alleleSeqChange");
-                                                      window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
                                                   }}><strong>Allele sequence change</strong> <OverlayTrigger placement="top"
                                                                                                              overlay={svmTooltip}>
                                             <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                     </div>
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                onClick={() => this.check_cb("cb_allele", "alleleSeqChange")}>
+                                                onClick={() => {
+                                                    window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
+                                                    this.check_cb("cb_allele", "alleleSeqChange");}
+                                                }>
                                             Add details in online form
                                         </Button>
                                     </div>
