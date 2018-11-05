@@ -422,7 +422,7 @@ class MenuAndWidgets extends React.Component {
                 case WIDGET.OVERVIEW:
                     payload = {
                         gene_list: transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
-                        gene_model_update: getCheckboxDBVal(this.state.geneModCorrectionDetails,
+                        gene_model_update: getCheckboxDBVal(this.state.geneModCorrection,
                             this.state.geneModCorrectionDetails),
                         species_list: transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
                     };
