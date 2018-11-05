@@ -36,6 +36,7 @@ def main():
     parser.add_argument("-a", "--admin-emails", metavar="admin_emails", dest="admin_emails", type=str, nargs="+",
                         help="list of email addresses of administrators that will receive summary emails with pipeline "
                              "reports at each iterations")
+    parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
 
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -190,17 +191,19 @@ def main():
 
         # notify author(s) via email
         if len(email_addr_in_papers_dict[paper_id]) > 0:
-            url = "http://textpressocentral.org:5000?paper=" + paper_id + "&passwd=" + \
+            url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal) + "&pmid=" + pmid
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
-            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, ["valerio.arnaboldi@gmail.com"],
+            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, ["daniela@wormbase.org",
+                                                                                  "vanauken@caltech.edu",
+                                                                                  "valerio.arnaboldi@gmail.com"],
                                  args.email_passwd)
             db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            #send_email(paper_title, paper_journal, url, email_addr_in_papers_dict[paper_id][0])
-            #write_email(cur, paper_id, email_addr_in_papers_dict[paper_id])
+            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, email_addr_in_papers_dict[paper_id][0])
+            #db_manager.set_email(paper_id, email_addr_in_papers_dict[paper_id])
 
     # commit and close connection to DB
     logger.info("Committing changes to DB")

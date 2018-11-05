@@ -52,19 +52,11 @@ WormBase""".format(paper_title, paper_journal, afp_link)
 
 
 def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
-    email_content = """Dear Author,
-
-New pepers processed by the Author First Pass Pipeline:
-
-Wormbase Paper Ids:
+    email_content = """New pepers processed by the Author First Pass Pipeline:
 
 {}
 
-URLs to AFP web form:
-
-{}
-
-""".format("\n".join(paper_ids), "\n".join(urls))
+""".format("\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)]))
 
     msg = EmailMessage()
     msg.set_content(email_content)
