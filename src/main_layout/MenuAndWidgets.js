@@ -393,7 +393,7 @@ class MenuAndWidgets extends React.Component {
             this.setPhenotypeData(getCheckbxOrSingleFieldFromWBAPIData(data.newmutant, data.newmutant),
                 getCheckbxOrSingleFieldFromWBAPIData(data.rnai, data.rnai),
                 getCheckbxOrSingleFieldFromWBAPIData(data.overexpr, data.overexpr),
-                getCheckbxOrSingleFieldFromWBAPIData(data.invitro, undefined),
+                getCheckbxOrSingleFieldFromWBAPIData(data.catalyticact, undefined),
                 getCheckbxOrSingleFieldFromWBAPIData(data.chemphen, undefined),
                 getCheckbxOrSingleFieldFromWBAPIData(data.envpheno, undefined));
             this.setDiseaseData(getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
@@ -516,6 +516,10 @@ class MenuAndWidgets extends React.Component {
                 newCompletedSections[widget] = true;
                 this.setState({completedSections: newCompletedSections});
             }).catch((err) => {
+                this.setState({
+                    show_data_saved: true,
+                    data_saved_success: false
+                });
             });
         } else {
             this.setState({

@@ -133,7 +133,7 @@ class Phenotypes extends React.Component {
                         <Form>
                             <FormGroup>
                                 <Checkbox checked={this.state.cb_protein} onClick={() => this.toggle_cb("cb_protein", "svmProtein")}>
-                                    <strong>Protein Activity (i.e., Enzymatic Activity)</strong>
+                                    <strong>Enzymatic Activity</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_protein", "svmProtein")}
