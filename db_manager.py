@@ -400,8 +400,8 @@ class DBManager(object):
                          .format(paper_id, env))
 
     def set_protein(self, protein, paper_id):
-        self.cur.execute("DELETE FROM afp_invitro WHERE joinkey = '{}'".format(paper_id))
-        self.cur.execute("INSERT INTO afp_invitro (joinkey, afp_invitro) VALUES('{}', '{}')"
+        self.cur.execute("DELETE FROM afp_catalyticact WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO afp_catatlyticact (joinkey, afp_catalyticact) VALUES('{}', '{}')"
                          .format(paper_id, protein))
 
     def set_disease(self, disease, paper_id):
