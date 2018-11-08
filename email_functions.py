@@ -75,3 +75,32 @@ def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_pa
         server_ssl.quit()
     except:
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def send_new_submission_notification_email_to_admin(paper_id, paper_passwd, paper_title, paper_journal,
+                                                    recipients: List[str], email_passwd):
+    email_content = """New AFP data submission completed by author for the following paper:
+    
+Paper ID: {}
+Title: {}
+Journal: {}
+
+""".format(paper_id, paper_title, paper_journal)
+
+    msg = EmailMessage()
+    msg.set_content(email_content)
+    msg['Subject'] = "New AFP data submitted by author"
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")

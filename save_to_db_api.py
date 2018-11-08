@@ -2,10 +2,14 @@
 
 import argparse
 import logging
+from typing import List
+
 import falcon
 from wsgiref import simple_server
 from db_manager import DBManager
 from falcon import HTTPStatus
+
+from email_functions import send_new_submission_notification_email_to_admin
 
 
 class StorageEngine(object):
@@ -25,6 +29,12 @@ class StorageEngine(object):
 
     def get_paper_id_from_passwd(self, passwd):
         return self.db_manager.get_paper_id_from_passwd(passwd)
+
+    def get_paper_title(self, paper_id):
+        return self.db_manager.get_paper_title(paper_id=paper_id)
+
+    def get_paper_journal(self, paper_id):
+        return self.db_manager.get_paper_journal(paper_id=paper_id)
 
     # Overview
 
@@ -129,9 +139,11 @@ class StorageEngine(object):
 
 class AFPWriter:
 
-    def __init__(self, storage_engine: StorageEngine):
+    def __init__(self, storage_engine: StorageEngine, admin_emails: List[str], email_passwd: str):
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API")
+        self.admin_emails = admin_emails
+        self.email_passwd = email_passwd
 
     def on_post(self, req, resp):
         with self.db:
@@ -210,6 +222,10 @@ class AFPWriter:
                 # comments
                 if "comments" in req.media:
                     self.db.store_comments(comments=req.media["comments"], paper_id=paper_id)
+                    paper_title = self.db.get_paper_title(paper_id)
+                    paper_journal = self.db.get_paper_journal(paper_id)
+                    send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
+                                                                    paper_journal, self.admin_emails, self.email_passwd)
 
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)
@@ -228,6 +244,9 @@ def main():
                                                                         'CRITICAL'], default="INFO",
                         help="set the logging level")
     parser.add_argument("-p", "--port", metavar="port", dest="port", type=int, help="API port")
+    parser.add_argument("-a", "--admin-emails", metavar="admin_emails", dest="admin_emails", type=str, nargs="+",
+                        help="list of email addresses of administrators")
+    parser.add_argument("-e", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -248,7 +267,7 @@ def main():
 
     app = falcon.API(middleware=[HandleCORS()])
     db = StorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
-    writer = AFPWriter(storage_engine=db)
+    writer = AFPWriter(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
     app.add_route('/api/write', writer)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
