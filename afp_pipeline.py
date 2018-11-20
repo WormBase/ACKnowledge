@@ -197,9 +197,7 @@ def main():
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
-            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, ["daniela@wormbase.org",
-                                                                                  "vanauken@caltech.edu",
-                                                                                  "valerio.arnaboldi@gmail.com"],
+            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
                                  args.email_passwd)
             db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
             #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, email_addr_in_papers_dict[paper_id][0])
