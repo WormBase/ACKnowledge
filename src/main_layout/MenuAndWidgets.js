@@ -21,6 +21,7 @@ import {
     getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
 } from "../AFPValues";
 import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "./MainModals";
+import PersonSelector from "./PersonSelector";
 
 export const WIDGET = Object.freeze({
     OVERVIEW: "overview",
@@ -72,6 +73,8 @@ class MenuAndWidgets extends React.Component {
             showPopup: true,
             paper_id: parameters.paper,
             passwd: parameters.passwd,
+            personid: parameters.personid,
+            personFullname: undefined,
             show_fetch_data_error: false,
             show_data_saved: false,
             data_saved_success: true,
@@ -399,6 +402,39 @@ class MenuAndWidgets extends React.Component {
             this.setDiseaseData(getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
             this.setCommentsData(getCheckbxOrSingleFieldFromWBAPIData(data.comment, undefined));
         }).catch(() => this.setState({show_fetch_data_error: true}));
+        let payload = {};
+        payload.passwd = this.state.passwd;
+        payload.person_id = this.state.personid;
+        fetch(process.env.REACT_APP_API_DB_READ_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Accept': 'text/html',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        }).then(res => {
+            if (res.status === 200) {
+                return res.json();
+            } else {
+                this.setState({
+                    show_fetch_data_error: true
+                });
+            }
+        }).then(data => {
+            if (data === undefined) {
+                this.setState({
+                    show_fetch_data_error: true
+                });
+            }
+            this.setState({ personFullname: data["fullname"] });
+            if (this.personSelector !== undefined) {
+                this.personSelector.setPersonFullname(data["fullname"]);
+            }
+        }).catch((err) => {
+            this.setState({
+                show_fetch_data_error: true
+            });
+        });
     }
 
     handleSelectMenu(selected) {
@@ -484,7 +520,7 @@ class MenuAndWidgets extends React.Component {
                     break;
             }
             payload.passwd = this.state.passwd;
-            fetch(process.env.REACT_APP_API_WRITE_ENDPOINT, {
+            fetch(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, {
                 method: 'POST',
                 headers: {
                     'Accept': 'text/html',
@@ -631,6 +667,14 @@ class MenuAndWidgets extends React.Component {
                                 </div>
                             </div>
                             <div className="col-sm-8">
+                                <div className="panel panel-default">
+                                    <div className="panel-body">
+                                        <PersonSelector fullname={this.state.personFullname}
+                                                        personid={this.state.personid}
+                                                        ref={instance => { this.personSelector = instance; }}
+                                        />
+                                    </div>
+                                </div>
                                 <div className="panel panel-default">
                                     <div className="panel-body">
                                         <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
