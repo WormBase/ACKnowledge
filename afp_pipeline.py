@@ -102,11 +102,11 @@ def main():
         for wb_paper_id in paper_ids:
             paper_id = wb_paper_id.replace("WBPaper", "")
             if paper_id in fulltexts_dict:
-                email_addr_in_papers_dict[paper_id] = re.findall(r'[^@^ ]+@[^@^ ]+\.[^@^ ]+',
-                                                                 fulltexts_dict[paper_id])
+                email_addr_in_papers_dict[paper_id] = get_first_valid_email_address_from_paper(fulltexts_dict[paper_id],
+                                                                                               db_manager)
         logger.info("Removing papers with no email address")
         fulltexts_dict = {paper_id: fulltext for paper_id, fulltext in fulltexts_dict.items() if
-                          len(email_addr_in_papers_dict[paper_id]) > 0}
+                          email_addr_in_papers_dict[paper_id] is not None}
     # cap the number of papers
     if len(fulltexts_dict) > args.num_papers:
         fulltexts_dict = {key: fulltexts_dict[key] for key in list(fulltexts_dict)[0:args.num_papers]}
@@ -190,17 +190,18 @@ def main():
         pmid = db_manager.get_pmid(paper_id)
 
         # notify author(s) via email
-        if len(email_addr_in_papers_dict[paper_id]) > 0:
+        if email_addr_in_papers_dict[paper_id]:
             url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
-                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid
+                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&person_id=" + \
+                  email_addr_in_papers_dict[paper_id][0]
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
             send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
                                  args.email_passwd)
             db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, email_addr_in_papers_dict[paper_id][0])
+            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, email_addr_in_papers_dict[paper_id][1])
             #db_manager.set_email(paper_id, email_addr_in_papers_dict[paper_id])
 
     # commit and close connection to DB

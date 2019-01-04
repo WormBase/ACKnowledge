@@ -29,4 +29,4 @@ RUN touch /var/log/cron.log
 #    tail -f /var/log/cron.log
 
 EXPOSE ${PORT}
-CMD python3 save_to_db_api.py -N ${DB_NAME} -U ${DB_USER} -P ${DB_PASSWD} -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD}
+CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P ${DB_PASSWD} -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD}

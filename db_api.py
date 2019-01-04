@@ -36,6 +36,9 @@ class StorageEngine(object):
     def get_paper_journal(self, paper_id):
         return self.db_manager.get_paper_journal(paper_id=paper_id)
 
+    def get_user_fullname_from_personid(self, person_id):
+        return self.db_manager.get_user_fullname_from_personid(person_id=person_id)
+
     # Overview
 
     def store_genes_list(self, genes, paper_id):
@@ -231,6 +234,29 @@ class AFPWriter:
                 raise falcon.HTTPError(falcon.HTTP_401)
 
 
+class AFPReader:
+
+    def __init__(self, storage_engine: StorageEngine, admin_emails: List[str], email_passwd: str):
+        self.db = storage_engine
+        self.logger = logging.getLogger("AFP API")
+        self.admin_emails = admin_emails
+        self.email_passwd = email_passwd
+
+    def on_post(self, req, resp):
+        with self.db:
+            paper_id = self.db.get_paper_id_from_passwd(req.media["passwd"])
+            if paper_id:
+                self.logger.info("paper found")
+
+                if "person_id" in req.media:
+                    fullname = self.db.get_user_fullname_from_personid(person_id="two" + req.media["person_id"])
+                    resp.body = '{{"fullname": "{}"}}'.format(fullname)
+                    resp.status = falcon.HTTP_200
+
+            else:
+                raise falcon.HTTPError(falcon.HTTP_401)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -269,6 +295,9 @@ def main():
     db = StorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     writer = AFPWriter(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
     app.add_route('/api/write', writer)
+
+    reader = AFPReader(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
+    app.add_route('/api/read', reader)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()

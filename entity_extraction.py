@@ -3,6 +3,8 @@ import re
 
 from tqdm import tqdm
 
+from db_manager import DBManager
+
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "7955": ["zebrafish"],
                    "7227": ["fruitfly", "fruitflies"],
@@ -61,4 +63,16 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
                                                   fulltext.lower()))
             if num_occurrences > min_occurrences:
                 papers_map[paper_id].append(regex_list_mod[0].replace("\\", ""))
+
+
+def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
+    all_addresses = re.findall(r'[^@^ ]+@[^@^ ]+\.[^@^ ]+', fulltext)
+    for address in all_addresses:
+        person_id = db_manager.get_person_id_from_email_address(address)
+        if person_id:
+            curr_address = db_manager.get_current_email_address_for_person(person_id)
+            return person_id, curr_address if curr_address else address
+    return None
+
+
 

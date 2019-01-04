@@ -256,6 +256,26 @@ class DBManager(object):
         rows = self.cur.fetchall()
         return {row[0]: [row[1]] for row in rows}
 
+    def get_person_id_from_email_address(self, email_address):
+        self.cur.execute("SELECT * FROM two_email WHERE two_email='{}'".format(email_address))
+        res = self.cur.fetchone()
+        if res:
+            return res[0]
+        else:
+            self.cur.execute("SELECT * FROM two_old_email WHERE two_old_email='{}'".format(email_address))
+            res = self.cur.fetchone()
+            if res:
+                return res[0]
+        return None
+
+    def get_current_email_address_for_person(self, person_id):
+        self.cur.execute("SELECT * FROM two_email WHERE joinkey='{}'".format(person_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[2]
+        else:
+            return None
+
     def set_extracted_entities_in_paper(self, publication_id, entities_ids: List[str], table_name):
         self.cur.execute("DELETE FROM {} WHERE joinkey = '{}'".format(table_name, publication_id))
         self.cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
@@ -417,3 +437,10 @@ class DBManager(object):
     def set_version(self, paper_id):
         self.cur.execute("DELETE FROM afp_version WHERE joinkey = '{}'".format(paper_id))
         self.cur.execute("INSERT INTO afp_version (joinkey, afp_version) VALUES('{}', '2')".format(paper_id))
+
+    def get_user_fullname_from_personid(self, person_id):
+        self.cur.execute("SELECT * FROM two_fullname WHERE joinkey='{}'".format(person_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[2] + " " + res[1]
+        return None
