@@ -1,9 +1,13 @@
 import logging
 import re
 
+import PyPDF2 as PyPDF2
 from tqdm import tqdm
-
+import urllib.request
 from db_manager import DBManager
+import tempfile
+import shutil
+
 
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "7955": ["zebrafish"],
@@ -74,5 +78,20 @@ def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
             return person_id, curr_address if curr_address else address
     return None
 
+
+def get_fulltext_from_pdfs(pdfs_urls):
+    fulltext = ""
+    for pdf_url in pdfs_urls:
+        with urllib.request.urlopen(pdf_url) as response:
+            with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+                shutil.copyfileobj(response, tmp_file)
+        try:
+            pdf_reader = PyPDF2.PdfFileReader(tmp_file.name)
+            for i in range(pdf_reader.numPages):
+                page_obj = pdf_reader.getPage(i)
+                fulltext += page_obj.extractText()
+        except:
+            pass
+    return fulltext
 
 
