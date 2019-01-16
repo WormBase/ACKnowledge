@@ -70,7 +70,8 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
 
 
 def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
-    all_addresses = re.findall(r'[^@^ ]+@[^@^ ]+\.[^@^ ]+', fulltext)
+    all_addresses = re.findall(r'[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+@[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+\.'
+                               r'[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+', fulltext)
     for address in all_addresses:
         person_id = db_manager.get_person_id_from_email_address(address)
         if person_id:
@@ -92,6 +93,7 @@ def get_fulltext_from_pdfs(pdfs_urls):
                 fulltext += page_obj.extractText()
         except:
             pass
+    fulltext = fulltext.replace("\n", " ")
     return fulltext
 
 

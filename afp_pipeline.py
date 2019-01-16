@@ -92,6 +92,12 @@ def main():
         paper_fulltext = get_fulltext_from_pdfs(db_manager.get_paper_pdf_paths(paper_id=paper_to_process))
         if paper_fulltext != "":
             fulltexts_dict[paper_to_process] = paper_fulltext
+            logger.info("Extracting email address from paper")
+            email_addr_in_papers_dict[paper_to_process] = get_first_valid_email_address_from_paper(
+                fulltexts_dict[paper_to_process], db_manager=db_manager)
+            if not email_addr_in_papers_dict[paper_to_process]:
+                logger.info("Removing paper with no email address")
+                del fulltexts_dict[paper_to_process]
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
@@ -175,7 +181,7 @@ def main():
         if email_addr_in_papers_dict[paper_id]:
             url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
-                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&person_id=" + \
+                  urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&personid=" + \
                   email_addr_in_papers_dict[paper_id][0]
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
