@@ -136,8 +136,12 @@ class StorageEngine(object):
 
     # Comments
 
-    def store_comments(self, comments, paper_id):
+    def store_comments(self, comments, paper_id, person_id):
         self.db_manager.set_comments(comments=comments, paper_id=paper_id)
+        self.db_manager.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
+        self.db_manager.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+        self.db_manager.set_version(paper_id=paper_id)
+        self.db_manager.set_last_touched(paper_id=paper_id)
 
 
 class AFPWriter:
@@ -224,7 +228,8 @@ class AFPWriter:
 
                 # comments
                 if "comments" in req.media:
-                    self.db.store_comments(comments=req.media["comments"], paper_id=paper_id)
+                    self.db.store_comments(comments=req.media["comments"], paper_id=paper_id,
+                                           person_id=req.media["person_id"])
                     paper_title = self.db.get_paper_title(paper_id)
                     paper_journal = self.db.get_paper_journal(paper_id)
                     send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
