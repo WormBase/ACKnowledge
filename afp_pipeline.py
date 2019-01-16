@@ -154,6 +154,7 @@ def main():
 
     # 8. Write values extracted through tpc to DB and notify
     urls = []
+    tinyurls = []
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     for paper_id in list(fulltexts_dict.keys()):
         if db_manager.get_paper_antibody(paper_id):
@@ -186,6 +187,7 @@ def main():
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
+            tinyurls.append(tiny_url)
             send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
                                  args.email_passwd)
             db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
@@ -195,7 +197,7 @@ def main():
     # commit and close connection to DB
     logger.info("Committing changes to DB")
     db_manager.close()
-    send_summary_email_to_admin(urls=urls, paper_ids=list(fulltexts_dict.keys()),
+    send_summary_email_to_admin(urls=tinyurls, paper_ids=list(fulltexts_dict.keys()),
                                 recipients=args.admin_emails,
                                 email_passwd=args.email_passwd)
     logger.info("Finished")

@@ -81,8 +81,10 @@ def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
 
 
 def get_fulltext_from_pdfs(pdfs_urls):
-    fulltext = ""
+    logger = logging.getLogger("AFP fulltext extraction")
+    complete_fulltext = ""
     for pdf_url in pdfs_urls:
+        pdf_fulltext = ""
         with urllib.request.urlopen(pdf_url) as response:
             with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
                 shutil.copyfileobj(response, tmp_file)
@@ -90,10 +92,15 @@ def get_fulltext_from_pdfs(pdfs_urls):
             pdf_reader = PyPDF2.PdfFileReader(tmp_file.name)
             for i in range(pdf_reader.numPages):
                 page_obj = pdf_reader.getPage(i)
-                fulltext += page_obj.extractText()
+                pdf_fulltext += page_obj.extractText()
         except:
             pass
-    fulltext = fulltext.replace("\n", " ")
-    return fulltext
+        sentences = pdf_fulltext.split("\n")
+        if not any(["reviewer" in sentence and "comment" in sentence for sentence in sentences]):
+            complete_fulltext += pdf_fulltext
+        else:
+            logger.info("Skipping response to reviewers")
+    complete_fulltext = complete_fulltext.replace("\n", " ")
+    return complete_fulltext
 
 
