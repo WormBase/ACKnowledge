@@ -516,6 +516,7 @@ class MenuAndWidgets extends React.Component {
                 case WIDGET.COMMENTS:
                     payload = {
                         comments: this.state.other,
+                        person_id: "two" + this.state.personid
                     };
                     break;
             }
