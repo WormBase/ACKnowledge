@@ -182,7 +182,7 @@ def main():
             url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&personid=" + \
-                  email_addr_in_papers_dict[paper_id][0]
+                  email_addr_in_papers_dict[paper_id][0].replace("two", "")
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
