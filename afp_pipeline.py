@@ -7,7 +7,6 @@ import time
 import urllib.parse
 
 from urllib.request import urlopen
-from db_manager import *
 from email_functions import send_email_to_author, send_summary_email_to_admin
 from tpc_api_functions import *
 from entity_extraction import *
@@ -83,33 +82,16 @@ def main():
     #curatable_papers_not_processed_svm_flagged = ["00054192"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
-    logger.info("Getting papers fulltext from Textpresso")
+    logger.info("Getting papers fulltext")
     fulltexts_dict = {}
     email_addr_in_papers_dict = defaultdict(list)
     # process N papers for each Tpc call and continue until the number of papers with fulltext is >= n
     while len(fulltexts_dict) < args.num_papers and len(curatable_papers_not_processed_svm_flagged) > 0:
-        if len(curatable_papers_not_processed_svm_flagged) >= TPC_PAPERS_PER_QUERY:
-            papers_to_process = curatable_papers_not_processed_svm_flagged[0:TPC_PAPERS_PER_QUERY]
-            curatable_papers_not_processed_svm_flagged = curatable_papers_not_processed_svm_flagged[
-                                                         TPC_PAPERS_PER_QUERY:]
-        else:
-            papers_to_process = curatable_papers_not_processed_svm_flagged
-            curatable_papers_not_processed_svm_flagged = []
-        paper_ids = ["WBPaper" + paper_id for paper_id in papers_to_process]
-        logger.info("Getting the fulltext of the processed papers from Textpresso API")
-        fulltexts_dict.update(get_documents_fulltext(args.textpresso_token, paper_ids))
-        logger.info("Extracting email addresses from papers")
-        for wb_paper_id in paper_ids:
-            paper_id = wb_paper_id.replace("WBPaper", "")
-            if paper_id in fulltexts_dict:
-                email_addr_in_papers_dict[paper_id] = get_first_valid_email_address_from_paper(fulltexts_dict[paper_id],
-                                                                                               db_manager)
-        logger.info("Removing papers with no email address")
-        fulltexts_dict = {paper_id: fulltext for paper_id, fulltext in fulltexts_dict.items() if
-                          email_addr_in_papers_dict[paper_id] is not None}
-    # cap the number of papers
-    if len(fulltexts_dict) > args.num_papers:
-        fulltexts_dict = {key: fulltexts_dict[key] for key in list(fulltexts_dict)[0:args.num_papers]}
+        paper_to_process = curatable_papers_not_processed_svm_flagged.pop(0)
+        logger.debug("Extracting fulltext for paper " + paper_to_process)
+        paper_fulltext = get_fulltext_from_pdfs(db_manager.get_paper_pdf_paths(paper_id=paper_to_process))
+        if paper_fulltext != "":
+            fulltexts_dict[paper_to_process] = paper_fulltext
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
