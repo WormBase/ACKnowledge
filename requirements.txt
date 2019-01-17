@@ -1,3 +1,4 @@
+PyPDF2
 psycopg2
 tqdm
 falcon
