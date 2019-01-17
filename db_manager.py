@@ -505,11 +505,22 @@ class DBManager(object):
         self.cur.execute("INSERT INTO afp_version (joinkey, afp_version) VALUES('{}', '2')".format(paper_id))
 
     def get_user_fullname_from_personid(self, person_id):
-        self.cur.execute("SELECT * FROM two_fullname WHERE joinkey='{}'".format(person_id))
-        res = self.cur.fetchone()
+        fullname_arr = []
+        self.cur.execute("SELECT * FROM two_firstname WHERE joinkey='{}' ORDER BY two_order".format(person_id))
+        res = self.cur.fetchall()
         if res:
-            return res[2] + " " + res[1]
-        return None
+            fullname_arr.append(" ".join([col[2] for col in res]))
+        self.cur.execute("SELECT * FROM two_middlename WHERE joinkey='{}' ORDER BY two_order".format(person_id))
+        res = self.cur.fetchall()
+        if res:
+            fullname_arr.append(" ".join([col[2] for col in res]))
+        self.cur.execute("SELECT * FROM two_lastname WHERE joinkey='{}' ORDER BY two_order".format(person_id))
+        res = self.cur.fetchall()
+        if res:
+            fullname_arr.append(" ".join([col[2] for col in res]))
+        if not fullname_arr:
+            fullname_arr = ["Unknown user"]
+        return " ".join(fullname_arr)
 
     def set_pap_gene_list(self, paper_id, person_id):
         self.cur.execute("SELECT * FROM afp_genestudied WHERE joinkey = '{}'".format(paper_id))
