@@ -46,7 +46,7 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
             try:
                 match_counter = len(re.findall(OPENING_REGEX_STR + re.escape(keyword) + CLOSING_REGEX_STR,
                                                fulltext_str))
-                if match_uppercase:
+                if match_uppercase and keyword.upper() != keyword:
                     match_counter += len(re.findall(OPENING_REGEX_STR + re.escape(keyword.upper()) +
                                                     CLOSING_REGEX_STR, fulltext_str))
                 if match_counter >= min_num_occurrences:
