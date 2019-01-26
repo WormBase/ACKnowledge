@@ -1,5 +1,7 @@
+import copy
 import logging
 import re
+import shutil
 
 import PyPDF2 as PyPDF2
 from PyPDF2.generic import TextStringObject
@@ -9,7 +11,6 @@ from tqdm import tqdm
 import urllib.request
 from db_manager import DBManager
 import tempfile
-import shutil
 
 
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
@@ -56,9 +57,10 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
 
 
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_name_map, min_occurrences: int = 1):
+    tx_name_map = copy.deepcopy(taxon_name_map)
     for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
-        taxon_name_map[taxon_id].extend(species_alias_arr)
-    for species_id, regex_list in tqdm(taxon_name_map.items()):
+        tx_name_map[taxon_id].extend(species_alias_arr)
+    for species_id, regex_list in tqdm(tx_name_map.items()):
         if species_id not in SPECIES_BLACKLIST:
             num_occurrences = 0
             regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
@@ -68,7 +70,7 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
                 num_occurrences += len(re.findall(re.compile(OPENING_REGEX_STR + regex_text.lower() +
                                                              CLOSING_REGEX_STR),
                                                   fulltext.lower()))
-            if num_occurrences > min_occurrences:
+            if num_occurrences >= min_occurrences:
                 papers_map[paper_id].append(regex_list_mod[0].replace("\\", ""))
 
 
