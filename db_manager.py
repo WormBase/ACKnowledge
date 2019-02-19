@@ -523,88 +523,64 @@ class DBManager(object):
         return " ".join(fullname_arr)
 
     def set_pap_gene_list(self, paper_id, person_id):
-        self.cur.execute("SELECT * FROM afp_genestudied WHERE joinkey = '{}'".format(paper_id))
-        res_afp = self.cur.fetchone()
-        afp_new_ids = set()
-        if res_afp:
-            afp_new_ids = set([gene_str.split(AFP_IDS_SEPARATOR)[0] for gene_str in res_afp[1]
-                              .split(AFP_ENTITIES_SEPARATOR)])
-        self.cur.execute("SELECT * FROM pap_gene WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("SELECT * FROM pap_gene WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
         res_pap = self.cur.fetchall()
-        pap_existing_ids_all = set()
-        pap_existing_ids_afp = set()
         if res_pap:
-            pap_existing_ids = [(row[1], row[5] == PAP_AFP_EVIDENCE_CODE, row[2]) for row in res_pap]
-            pap_existing_ids_all = set([existing_id[0] for existing_id in pap_existing_ids])
-            pap_existing_ids_afp = set([(existing_id[0], existing_id[2]) for existing_id in pap_existing_ids if
-                                       existing_id[1]])
-        ids_to_insert = afp_new_ids - pap_existing_ids_all
-        ids_order_to_delete = pap_existing_ids_afp
-        if ids_order_to_delete:
-            for id_order_to_delete in ids_order_to_delete:
-                self.cur.execute("DELETE FROM pap_gene WHERE joinkey = '{}' AND pap_gene = '{}'".format(
-                    paper_id, id_order_to_delete[0]))
+            for res in res_pap:
                 self.cur.execute("INSERT INTO h_pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
-                                 "VALUES('{}', '', {}, '', '')".format(paper_id, id_order_to_delete[1]))
+                                 "VALUES('{}', '{}', {}, '{}', '{}')".format(res[0], res[1], res[2], res[3], res[4]))
+        self.cur.execute("DELETE * FROM pap_gene WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
         max_order = 0
         self.cur.execute("SELECT MAX(pap_order) FROM pap_gene WHERE joinkey = '{}' AND pap_evidence <> '{}'"
                          .format(paper_id, PAP_AFP_EVIDENCE_CODE))
         res = self.cur.fetchone()
         if res:
             max_order = int(res[0])
-        if ids_to_insert:
-            for id_to_insert in ids_to_insert:
-                self.cur.execute("INSERT INTO pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
-                                 "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, id_to_insert, max_order + 1,
-                                                                             person_id, PAP_AFP_EVIDENCE_CODE))
-                self.cur.execute("INSERT INTO h_pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
-                                 "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, id_to_insert, max_order + 1,
-                                                                             person_id, PAP_AFP_EVIDENCE_CODE))
-                max_order += 1
+        self.cur.execute("SELECT * FROM afp_genestudied WHERE joinkey = '{}'".format(paper_id))
+        res_afp = self.cur.fetchone()
+        afp_ids = set()
+        if res_afp:
+            afp_ids = set([gene_str.split(AFP_IDS_SEPARATOR)[0] for gene_str in res_afp[1]
+                          .split(AFP_ENTITIES_SEPARATOR)])
+        for afp_id in afp_ids:
+            self.cur.execute("INSERT INTO pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
+                             "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, afp_id, max_order + 1,
+                                                                         person_id, PAP_AFP_EVIDENCE_CODE))
+            self.cur.execute("INSERT INTO h_pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
+                             "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, afp_id, max_order + 1,
+                                                                         person_id, PAP_AFP_EVIDENCE_CODE))
+            max_order += 1
 
     def set_pap_species_list(self, paper_id, person_id):
-        self.cur.execute("SELECT * FROM afp_species WHERE joinkey = '{}'".format(paper_id))
-        res_afp = self.cur.fetchone()
-        afp_new_species_ids = set()
-        if res_afp:
-            afp_new_species_list = [gene_str for gene_str in res_afp[1].split(AFP_ENTITIES_SEPARATOR)]
-            for afp_new_species in afp_new_species_list:
-                self.cur.execute("SELECT * FROM pap_species_index WHERE pap_species_index = '{}'"
-                                 .format(afp_new_species))
-                res_species_index = self.cur.fetchone()
-                if res_species_index:
-                    afp_new_species_ids.add(res_species_index[0])
-        self.cur.execute("SELECT * FROM pap_species WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("SELECT * FROM pap_species WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
         res_pap = self.cur.fetchall()
-        pap_existing_ids_all = set()
-        pap_existing_ids_afp = set()
         if res_pap:
-            pap_existing_ids = [(row[1], row[5] == PAP_AFP_EVIDENCE_CODE, row[2]) for row in res_pap]
-            pap_existing_ids_all = set([existing_id[0] for existing_id in pap_existing_ids])
-            pap_existing_ids_afp = set([(existing_id[0], existing_id[2]) for existing_id in pap_existing_ids if
-                                        existing_id[1]])
-        ids_to_insert = afp_new_species_ids - pap_existing_ids_all
-        ids_order_to_delete = pap_existing_ids_afp
-        if ids_order_to_delete:
-            for id_order_to_delete in ids_order_to_delete:
-                self.cur.execute("DELETE FROM pap_species WHERE joinkey = '{}' AND pap_species = '{}'"
-                                 .format(paper_id, id_order_to_delete[0]))
+            for res in res_pap:
                 self.cur.execute("INSERT INTO h_pap_species (joinkey, pap_species, pap_order, pap_curator, "
-                                 "pap_evidence) VALUES('{}', '', {}, '', '')".format(paper_id, id_order_to_delete[1]))
+                                 "pap_evidence) VALUES('{}', '{}', {}, '{}', '{}')".format(res[0], res[1],
+                                                                                           res[2], res[3], res[4]))
+        self.cur.execute("DELETE * FROM pap_species WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
         max_order = 0
         self.cur.execute("SELECT MAX(pap_order) FROM pap_species WHERE joinkey = '{}' AND pap_evidence <> '{}'"
                          .format(paper_id, PAP_AFP_EVIDENCE_CODE))
         res = self.cur.fetchone()
         if res:
             max_order = int(res[0])
-        if ids_to_insert:
-            for id_to_insert in ids_to_insert:
+        self.cur.execute("SELECT * FROM afp_species WHERE joinkey = '{}'".format(paper_id))
+        res_afp = self.cur.fetchone()
+        afp_ids_species = set([gene_str.split(AFP_IDS_SEPARATOR) for gene_str in res_afp[1]
+                              .split(AFP_ENTITIES_SEPARATOR)])
+        for afp_id_sp in afp_ids_species:
+            self.cur.execute("SELECT * FROM pap_species_index WHERE pap_species_index = '{}'"
+                             .format(afp_id_sp[1]))
+            res_species_index = self.cur.fetchone()
+            if res_species_index:
                 self.cur.execute("INSERT INTO pap_species (joinkey, pap_species, pap_order, pap_curator, pap_evidence) "
-                                 "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, id_to_insert, max_order + 1,
+                                 "VALUES('{}', '{}', {}, '{}', '{}')".format(paper_id, afp_id_sp[0], max_order + 1,
                                                                              person_id, PAP_AFP_EVIDENCE_CODE))
                 self.cur.execute("INSERT INTO h_pap_species (joinkey, pap_species, pap_order, pap_curator, "
                                  "pap_evidence) VALUES('{}', '{}', {}, '{}', '{}')".format(
-                    paper_id, id_to_insert, max_order + 1, person_id, PAP_AFP_EVIDENCE_CODE))
+                                  paper_id, afp_id_sp[0], max_order + 1, person_id, PAP_AFP_EVIDENCE_CODE))
                 max_order += 1
 
     def get_paper_pdf_paths(self, paper_id):

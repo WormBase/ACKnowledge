@@ -24,7 +24,6 @@ def main():
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
-    parser.add_argument("-t", "--textpresso-token", metavar="Textpresso API token", dest="textpresso_token", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -41,7 +40,7 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
-    logger = logging.getLogger("AFP Pipeline")
+    logger = logging.getLogger(__name__)
 
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
 
@@ -76,10 +75,9 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    #TODO remove this line
-    curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
-                                                  "00053739", "00054192", "00049183"]
-    #curatable_papers_not_processed_svm_flagged = ["00054192"]
+    #curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
+    #                                              "00053739", "00054192", "00049183"]
+    #curatable_papers_not_processed_svm_flagged = ["00053873"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext")
@@ -188,11 +186,12 @@ def main():
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
             tinyurls.append(tiny_url)
-            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
-                                 args.email_passwd)
-            db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, email_addr_in_papers_dict[paper_id][1])
-            #db_manager.set_email(paper_id, email_addr_in_papers_dict[paper_id])
+            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
+            #                     args.email_passwd)
+            #db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
+            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
+                                 [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
+            db_manager.set_email(paper_id, [email_addr_in_papers_dict[paper_id][1]])
 
     # commit and close connection to DB
     logger.info("Committing changes to DB")
