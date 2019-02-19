@@ -17,8 +17,13 @@ TAZENDRA_PDFS_LOCATION = "http://tazendra.caltech.edu/~acedb/daniel/"
 class DBManager(object):
     
     def __init__(self, dbname, user, password, host):
-        self.conn = psycopg2.connect("dbname='" + dbname + "' user='" + user + "' password='" + password +
-                                     "' host='" + host + "'")
+        connection_str = "dbname='" + dbname
+        if user:
+            connection_str += "' user='" + user
+        if password:
+            connection_str += "' password='" + password
+        connection_str += "' host='" + host + "'"
+        self.conn = psycopg2.connect()
         self.cur = self.conn.cursor()
 
     def close(self):
