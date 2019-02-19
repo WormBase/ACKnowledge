@@ -23,7 +23,7 @@ class DBManager(object):
         if password:
             connection_str += "' password='" + password
         connection_str += "' host='" + host + "'"
-        self.conn = psycopg2.connect()
+        self.conn = psycopg2.connect(connection_str)
         self.cur = self.conn.cursor()
 
     def close(self):
