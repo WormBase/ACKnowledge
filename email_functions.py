@@ -52,7 +52,7 @@ WormBase""".format(paper_title, paper_journal, afp_link)
 
 
 def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
-    email_content = """New pepers processed by the Author First Pass Pipeline:
+    email_content = """New papers processed by the Author First Pass Pipeline:
 
 {}
 
