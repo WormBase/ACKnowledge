@@ -267,7 +267,7 @@ def main():
                                                  "structures for Author First Pass")
     parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
     parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
-    parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
+    parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str, default="")
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
