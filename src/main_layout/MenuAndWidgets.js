@@ -801,7 +801,7 @@ class MenuAndWidgets extends React.Component {
                                     success={this.state.data_saved_success} last_widget={this.state.data_saved_last_widget}/>
                     <SectionsNotCompletedModal show={this.state.show_sections_not_completed}
                                                onHide={() => this.setState({show_sections_not_completed: false})}
-                                               sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec]).map((sec) => WIDGET_TITLE[sec])}/>
+                                               sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec] && sec !== WIDGET.COMMENTS).map((sec) => WIDGET_TITLE[sec])}/>
                 </div>
             </div>
         );
