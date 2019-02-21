@@ -63,7 +63,9 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
     for species_id, regex_list in tqdm(tx_name_map.items()):
         if species_id not in SPECIES_BLACKLIST:
             num_occurrences = 0
-            regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
+            regex_list_mod = regex_list
+            if len(regex_list[0].split(" ")) > 1:
+                regex_list_mod = [regex_list[0], regex_list[0][0] + "\\. " + " ".join(regex_list[0].split(" ")[1:])]
             if len(regex_list) > 1:
                 regex_list_mod.extend(regex_list[1:])
             for regex_text in regex_list_mod:
