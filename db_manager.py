@@ -303,11 +303,13 @@ class DBManager(object):
     def set_passwd(self, publication_id, passwd):
         self.cur.execute("DELETE FROM afp_passwd WHERE joinkey = '{}'".format(publication_id))
         self.cur.execute("INSERT INTO afp_passwd (joinkey, afp_passwd) VALUES('{}', '{}')".format(publication_id, passwd))
+        self.cur.execute("INSERT INTO afp_passwd_hst (joinkey, afp_passwd_hst) VALUES('{}', '{}')".format(publication_id, passwd))
 
     def set_email(self, publication_id, email_addr_list: List[str]):
         self.cur.execute("DELETE FROM afp_email WHERE joinkey = '{}'".format(publication_id))
         for email_addr in email_addr_list:
             self.cur.execute("INSERT INTO afp_email (joinkey, afp_email) VALUES('{}', '{}')".format(publication_id, email_addr))
+            self.cur.execute("INSERT INTO afp_email_hst (joinkey, afp_email_hst) VALUES('{}', '{}')".format(publication_id, email_addr))
 
     def set_gene_list(self, genes, paper_id):
         self.cur.execute("DELETE FROM afp_genestudied WHERE joinkey = '{}'".format(paper_id))
