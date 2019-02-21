@@ -124,6 +124,7 @@ def get_fulltext_from_pdfs(pdfs_urls):
             elif operator == b_("TD") or operator == b_("Tm"):
                 if len(text) > 0 and text[-1] != " " and text[-1] != "\n":
                     text += " "
+        text = text.replace(" - ", "-")
         return text
 
     logger = logging.getLogger("AFP fulltext extraction")
