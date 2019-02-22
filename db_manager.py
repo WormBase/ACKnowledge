@@ -102,6 +102,10 @@ class DBManager(object):
         rows = self.cur.fetchall()
         for row in rows:
             genes_names.add(row[1])
+        self.cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
+        rows = self.cur.fetchall()
+        for row in rows:
+            genes_names.add(row[1])
         self.cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
         rows = self.cur.fetchall()
         for row in rows:
@@ -113,9 +117,11 @@ class DBManager(object):
         return list(genes_names)
 
     def get_all_alleles(self):
-        self.cur.execute("SELECT * FROM obo_name_variation WHERE joinkey != ''")
+        self.cur.execute("SELECT obo_name_variation.obo_name_variation FROM obo_name_variation JOIN obo_data_variation "
+                         "ON obo_name_variation.joinkey = obo_data_variation.joinkey "
+                         "WHERE obo_data_variation LIKE '%status: \"Live\"%' AND obo_name_variation.joinkey != ''")
         rows = self.cur.fetchall()
-        return [row[1] for row in rows]
+        return [row[0] for row in rows]
 
     def get_all_strains(self):
         """
