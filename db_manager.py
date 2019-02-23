@@ -179,7 +179,9 @@ class DBManager(object):
         gene_cgc_name_from_id_map.update({row[0]: row[1] for row in rows})
         self.cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
         rows = self.cur.fetchall()
-        gene_cgc_name_from_id_map.update({row[0]: row[1] for row in rows})
+        for row in rows:
+            if row[0] not in gene_cgc_name_from_id_map:
+                gene_cgc_name_from_id_map[row[0]] = row[1]
         return gene_cgc_name_from_id_map
 
     def get_allele_name_id_map(self):
