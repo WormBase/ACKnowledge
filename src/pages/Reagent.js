@@ -83,7 +83,7 @@ class Reagent extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Transgenes in the paper <OverlayTrigger placement="top" overlay={transgenesTooltip}>
+                            <Panel.Title componentClass="h3">List of WormBase transgenes identified in the paper <OverlayTrigger placement="top" overlay={transgenesTooltip}>
                                 <Glyphicon glyph="question-sign"/>
                             </OverlayTrigger></Panel.Title>
                         </Panel.Heading>

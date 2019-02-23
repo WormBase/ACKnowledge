@@ -72,8 +72,7 @@ class Overview extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Genes in the paper <OverlayTrigger placement="top"
-                                                                                                overlay={geneTooltip}>
+                            <Panel.Title componentClass="h3">List of WormBase genes identified in the paper <OverlayTrigger placement="top" overlay={geneTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>

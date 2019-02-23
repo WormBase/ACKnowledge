@@ -84,7 +84,7 @@ class Genetics extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Alleles in the paper <OverlayTrigger placement="top" overlay={allelesTooltip}>
+                            <Panel.Title componentClass="h3">List of WormBase alleles identified in the paper <OverlayTrigger placement="top" overlay={allelesTooltip}>
                                 <Glyphicon glyph="question-sign"/>
                             </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
@@ -152,7 +152,7 @@ class Genetics extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Strains in the paper <OverlayTrigger placement="top" overlay={strainsTooltip}>
+                            <Panel.Title componentClass="h3">List of WormBase strains identified in the paper <OverlayTrigger placement="top" overlay={strainsTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
