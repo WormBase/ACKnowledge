@@ -47,13 +47,13 @@ class Overview extends React.Component {
     render() {
         const geneTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of genes in your paper in the box below by adding or removing genes if required.
+                Please validate the list of genes in your paper in the box below by adding or removing genes if required. Only genes mentioned 2 or more times are extracted
             </Tooltip>
         );
 
         const speciesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of species in your paper in the box below by adding or removing species if required.
+                Please validate the list of species in your paper in the box below by adding or removing species if required. Only species mentioned 3 or more times are extracted
             </Tooltip>
         );
 
