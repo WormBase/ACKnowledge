@@ -36,4 +36,4 @@ CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
 #    tail -f /var/log/cron.log
 
 EXPOSE ${PORT}
-CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -l /var/log/afp_db_api.log -L INFO
+CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -l /var/log/afp_db_api.log -L DEBUG
