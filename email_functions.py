@@ -104,3 +104,29 @@ Journal: {}
         server_ssl.quit()
     except:
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def send_new_data_notification_email_to_watcher(data_type_table, paper_ids, recipients, email_passwd):
+    email_content = """New papers flagged positive for data type {}:
+    
+{}
+
+""".format(data_type_table, "\n".join(paper_ids))
+
+    msg = EmailMessage()
+    msg.set_content(email_content)
+    msg['Subject'] = "New positive papers flagged by author through AFP for " + data_type_table
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")

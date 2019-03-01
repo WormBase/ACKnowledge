@@ -631,5 +631,10 @@ class DBManager(object):
         self.cur.execute("INSERT INTO afp_lasttouched_hst (joinkey, afp_lasttouched_hst) VALUES('{}', '{}')"
                          .format(paper_id, curtime))
 
+    def get_positive_paper_ids_sumbitted_last_month_for_data_type(self, data_type_table_name):
+        self.cur.execute("SELECT joinkey from {} WHERE afp_cur_timestamp > now() - interval '1 month' AND "
+                         "{} IS NOT NULL".format(data_type_table_name))
+        rows = self.cur.fetchall()
+        return [row[0] for row in rows]
 
 
