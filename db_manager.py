@@ -584,7 +584,7 @@ class DBManager(object):
         self.cur.execute("SELECT MAX(pap_order) FROM pap_species WHERE joinkey = '{}' AND pap_evidence <> '{}'"
                          .format(paper_id, PAP_AFP_EVIDENCE_CODE))
         res = self.cur.fetchone()
-        if res:
+        if res and res[0]:
             max_order = int(res[0])
         self.cur.execute("SELECT * FROM afp_species WHERE joinkey = '{}'".format(paper_id))
         res_afp = self.cur.fetchone()
