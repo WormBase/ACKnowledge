@@ -378,29 +378,29 @@ class MenuAndWidgets extends React.Component {
             }
             let genesList;
             if (this.state.hideGenes) {
-                genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
+                genesList = new EntityList(new Set(), true);
             } else {
-                genesList = new EntityList(new Set(), false);
+                genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
             }
-            this.setOverviewData(genesList,
-                getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined),
-                getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
+            let speciesList = getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined);
+            let structCorrcb = getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined);
+            this.setOverviewData(genesList, speciesList, structCorrcb);
             let variationsList;
             if (this.state.hideAlleles) {
-                variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
+                variationsList = new EntityList(new Set(), true);
             } else {
-                variationsList = new EntityList(new Set(), false);
+                variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
             }
             let strainsList;
             if (this.state.hideStrains) {
-                strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
+                strainsList = new EntityList(new Set(), true);
             } else {
-                strainsList = new EntityList(new Set(), false);
+                strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
             }
-            this.setGeneticsData(variationsList, strainsList,
-                getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange),
-                getTableValuesFromWBAPIData(data.othervariation, false),
-                getTableValuesFromWBAPIData(data.otherstrain, false));
+            let seqChange = getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange);
+            let otherVariations = getTableValuesFromWBAPIData(data.othervariation, false);
+            let otherStrains = getTableValuesFromWBAPIData(data.otherstrain, false);
+            this.setGeneticsData(variationsList, strainsList, seqChange, otherVariations, otherStrains);
             this.setReagentData(getSetOfEntitiesFromWBAPIData(data.transgene, data.transgene, ""),
                 getCheckbxOrSingleFieldFromWBAPIData(data.antibody, undefined),
                 getTableValuesFromWBAPIData(data.otherantibody, true),
@@ -421,7 +421,7 @@ class MenuAndWidgets extends React.Component {
                 getCheckbxOrSingleFieldFromWBAPIData(data.envpheno, undefined));
             this.setDiseaseData(getCheckbxOrSingleFieldFromWBAPIData(data.humdis, undefined));
             this.setCommentsData(getCheckbxOrSingleFieldFromWBAPIData(data.comment, undefined));
-        }).catch(() => this.setState({show_fetch_data_error: true}));
+        });
         let payload = {};
         payload.passwd = this.state.passwd;
         payload.person_id = this.state.personid;

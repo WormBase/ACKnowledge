@@ -28,7 +28,9 @@ class Overview extends React.Component {
     }
 
     setSelectedGenes(genelist) {
-        this.geneSelect.setSelectedItems(genelist);
+        if (this.geneSelect !== undefined) {
+            this.geneSelect.setSelectedItems(genelist);
+        }
     }
 
     setSelectedSpecies(species) {

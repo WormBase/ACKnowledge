@@ -28,11 +28,15 @@ class Genetics extends React.Component {
     }
 
     setSelectedAlleles(allelelist) {
-        this.alleleSelect.setSelectedItems(allelelist);
+        if (this.alleleSelect !== undefined) {
+            this.alleleSelect.setSelectedItems(allelelist);
+        }
     }
 
     setSelectedStrains(strains) {
-        this.strainSelect.setSelectedItems(strains);
+        if (this.strainSelect !== undefined) {
+            this.strainSelect.setSelectedItems(strains);
+        }
     }
 
     selfStateVarModifiedFunction(value, stateVarName) {
