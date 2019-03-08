@@ -15,7 +15,7 @@ import Title from "./Title";
 import Disease from "../pages/Disease";
 import Header from "./Header";
 import {
-    AFPValues,
+    AFPValues, EntityList,
     getCheckboxDBVal,
     getCheckbxOrSingleFieldFromWBAPIData,
     getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
@@ -118,7 +118,10 @@ class MenuAndWidgets extends React.Component {
             other: "",
             humDis: false,
             disComments: "",
-            show_sections_not_completed: false
+            show_sections_not_completed: false,
+            hideGenes: Boolean(parameters.hide_genes),
+            hideAlleles: Boolean(parameters.hide_alleles),
+            hideStrains: Boolean(parameters.hide_strains),
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
@@ -373,11 +376,28 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            this.setOverviewData(getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene"),
+            let genesList;
+            if (this.state.hideGenes) {
+                genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
+            } else {
+                genesList = new EntityList(new Set(), false);
+            }
+            this.setOverviewData(genesList,
                 getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined),
                 getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined));
-            this.setGeneticsData(getSetOfEntitiesFromWBAPIData(data.variation, data.variation, ""),
-                getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined),
+            let variationsList;
+            if (this.state.hideAlleles) {
+                variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
+            } else {
+                variationsList = new EntityList(new Set(), false);
+            }
+            let strainsList;
+            if (this.state.hideStrains) {
+                strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
+            } else {
+                strainsList = new EntityList(new Set(), false);
+            }
+            this.setGeneticsData(variationsList, strainsList,
                 getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange),
                 getTableValuesFromWBAPIData(data.othervariation, false),
                 getTableValuesFromWBAPIData(data.otherstrain, false));
@@ -690,6 +710,7 @@ class MenuAndWidgets extends React.Component {
                                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                        toggleCb={this.toggle_cb}
                                                                        checkCb={this.check_cb}
+                                                                       hideGenes={this.state.hideGenes}
                                                />}
                                         />
                                         <Route path={"/" + WIDGET.GENETICS}
@@ -704,6 +725,8 @@ class MenuAndWidgets extends React.Component {
                                                                         otherStrains={this.state.otherStrains}
                                                                         toggleCb={this.toggle_cb}
                                                                         checkCb={this.check_cb}
+                                                                        hideAlleles={this.state.hideAlleles}
+                                                                        hideStrains={this.state.hideStrains}
                                                />}
                                         />
                                         <Route path={"/" + WIDGET.REAGENT}

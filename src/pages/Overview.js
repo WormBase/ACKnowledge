@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Alert,
     Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
@@ -53,10 +54,25 @@ class Overview extends React.Component {
 
         const speciesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of species in your paper in the box below by adding or removing species if required. Only species mentioned 3 or more times are extracted
+                Please validate the list of species in your paper in the box below by adding or removing species if required. Only species mentioned 10 or more times are extracted
             </Tooltip>
         );
-
+        let geneListComponent;
+        if (this.props.hideGenes) {
+            geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+        } else {
+            geneListComponent = (
+                <MultipleSelect
+                    itemsNameSingular={"gene"}
+                    itemsNamePlural={"genes"}
+                    selectedItems={this.state.selectedGenes}
+                    ref={instance => { this.geneSelect = instance; }}
+                    selectedItemsCallback={this.props.stateVarModifiedCallback}
+                    stateVarName={"selectedGenes"}
+                    searchType={"gene"}
+                    sampleQuery={"e.g. dbl-1"}
+                />);
+        }
         return (
             <div>
                 <InstructionsAlert
@@ -76,16 +92,26 @@ class Overview extends React.Component {
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <MultipleSelect
-                                itemsNameSingular={"gene"}
-                                itemsNamePlural={"genes"}
-                                selectedItems={this.state.selectedGenes}
-                                ref={instance => { this.geneSelect = instance; }}
-                                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                                stateVarName={"selectedGenes"}
-                                searchType={"gene"}
-                                sampleQuery={"e.g. dbl-1"}
-                            />
+                            {geneListComponent}
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">New Gene</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
+                                            this.check_cb("cb_gmcorr", "geneModCorrection");
+                                            window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
+                                        }}>
+                                            Request New Gene Name/Report Gene-Sequence
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
                         </Panel.Body>
                     </Panel>
                     <Panel>
@@ -115,16 +141,6 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">&nbsp;</div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                            this.check_cb("cb_gmcorr", "geneModCorrection");
-                                            window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
-                                        }}>
-                                            Request New Gene Name/Report Gene-Sequence
-                                        </Button>
-                                    </div>
                                 </div>
                             </div>
                         </Panel.Body>

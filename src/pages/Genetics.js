@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Alert,
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
@@ -55,7 +56,7 @@ class Genetics extends React.Component {
     render() {
         const allelesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of alleles in your paper in the box below by adding or removing alleles if required. Only alleles mentioned 2 or more times are extracted
+                Please validate the list of alleles in your paper in the box below by adding or removing alleles if required. Only alleles mentioned 2 or more times are extracted; note that not all the Million Mutation Project alleles are recognized
             </Tooltip>
         );
 
@@ -69,6 +70,38 @@ class Genetics extends React.Component {
                 This field is prepopulated by Textpresso Central.
             </Tooltip>
         );
+        let allelesListComponent;
+        if (this.props.hideAlleles) {
+            allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+        } else {
+            allelesListComponent = (
+                <MultipleSelect
+                    itemsNameSingular={"allele"}
+                    itemsNamePlural={"alleles"}
+                    selectedItems={this.state.selectedAlleles}
+                    ref={instance => { this.alleleSelect = instance; }}
+                    selectedItemsCallback={this.props.stateVarModifiedCallback}
+                    stateVarName={"selectedAlleles"}
+                    searchType={"variation"}
+                    sampleQuery={"e.g. e1000"}
+                />);
+        }
+        let strainsListComponent;
+        if (this.props.hideStrains) {
+            strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+        } else {
+            strainsListComponent = (
+                <MultipleSelect
+                    itemsNameSingular={"strain"}
+                    itemsNamePlural={"strains"}
+                    selectedItems={this.state.selectedStrains}
+                    ref={instance => { this.strainSelect = instance; }}
+                    selectedItemsCallback={this.props.stateVarModifiedCallback}
+                    stateVarName={"selectedStrains"}
+                    searchType={"strain"}
+                    sampleQuery={"e.g. CB4856"}
+                />);
+        }
         return (
             <div>
                 <InstructionsAlert
@@ -89,16 +122,7 @@ class Genetics extends React.Component {
                             </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <MultipleSelect
-                                itemsNameSingular={"allele"}
-                                itemsNamePlural={"alleles"}
-                                selectedItems={this.state.selectedAlleles}
-                                ref={instance => { this.alleleSelect = instance; }}
-                                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                                stateVarName={"selectedAlleles"}
-                                searchType={"variation"}
-                                sampleQuery={"e.g. e1000"}
-                            />
+                            {allelesListComponent}
                         </Panel.Body>
                     </Panel>
                     <Panel>
@@ -157,16 +181,7 @@ class Genetics extends React.Component {
                                 </OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            <MultipleSelect
-                                itemsNameSingular={"strain"}
-                                itemsNamePlural={"strains"}
-                                selectedItems={this.state.selectedStrains}
-                                ref={instance => { this.strainSelect = instance; }}
-                                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                                stateVarName={"selectedStrains"}
-                                searchType={"strain"}
-                                sampleQuery={"e.g. CB4856"}
-                            />
+                            {strainsListComponent}
                         </Panel.Body>
                     </Panel>
                     <Panel>
