@@ -119,9 +119,9 @@ class MenuAndWidgets extends React.Component {
             humDis: false,
             disComments: "",
             show_sections_not_completed: false,
-            hideGenes: Boolean(parameters.hide_genes),
-            hideAlleles: Boolean(parameters.hide_alleles),
-            hideStrains: Boolean(parameters.hide_strains),
+            hideGenes: parameters.hide_genes === "true",
+            hideAlleles: parameters.hide_alleles === "true",
+            hideStrains: parameters.hide_strains === "true"
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
