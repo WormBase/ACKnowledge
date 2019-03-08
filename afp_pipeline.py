@@ -128,7 +128,7 @@ def main():
         logger.info("Getting list of transgenes through string matching")
         get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
         logger.info("Getting list of species through string matching")
-        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 3)
+        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 10)
     logger.info("Transforming gene keywords into gene ids")
     gene_ids_counters = defaultdict(int)
     for paper_id, genes_list in genes_in_papers_dict.items():
@@ -176,12 +176,16 @@ def main():
         paper_journal = db_manager.get_paper_journal(paper_id)
         pmid = db_manager.get_pmid(paper_id)
 
+        hide_genes = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
+        hide_alleles = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
+        hide_strains = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
         # notify author(s) via email
         if email_addr_in_papers_dict[paper_id]:
             url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&personid=" + \
-                  email_addr_in_papers_dict[paper_id][0].replace("two", "")
+                  email_addr_in_papers_dict[paper_id][0].replace("two", "") + "&hide_genes=" + hide_genes + \
+                  "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
