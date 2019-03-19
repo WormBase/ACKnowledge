@@ -125,6 +125,7 @@ def get_fulltext_from_pdfs(pdfs_urls):
                 if len(text) > 0 and text[-1] != " " and text[-1] != "\n":
                     text += " "
         text = text.replace(" - ", "-")
+        text = re.sub("\\s+", " ", text)
         return text
 
     logger = logging.getLogger("AFP fulltext extraction")
