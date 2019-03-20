@@ -40,24 +40,48 @@ class Other extends React.Component {
                     <Panel>
                         <Panel.Heading>
                             <Panel.Title componentClass="h3">
-                                Update contact info and lineage
+                                Update contact info
                             </Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        Thank you for filling out the form, as a last step please check that your
-                                        contact info and lineage are up to date by clicking on the button below
+                                        Please check that your contact info is up to date by clicking on the button below
                                     </div>
                                 </div>
                                 <br/>
                                 <div className="row">
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                href={"http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/person_lineage.cgi?action=Display&number"}
+                                                href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + this.props.personId}
                                                 target={"_blank"}>
-                                            Update contact info and lineage</Button>
+                                            Update contact info</Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </Panel.Body>
+                    </Panel>
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">
+                                Update lineage
+                            </Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        Please check that your lineage is up to date by clicking on the button below
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col-sm-5">
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info"
+                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + this.props.personId}
+                                                target={"_blank"}>
+                                            Update lineage</Button>
                                     </div>
                                 </div>
                             </div>

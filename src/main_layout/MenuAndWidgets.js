@@ -812,6 +812,7 @@ class MenuAndWidgets extends React.Component {
                                             saved={this.state.completedSections[WIDGET.COMMENTS]}
                                             other={this.state.other}
                                             stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                            personId={this.state.personid}
                                             ref={instance => { this.other = instance; }}
                                         />}/>
                                     </div>
