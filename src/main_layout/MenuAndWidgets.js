@@ -137,6 +137,7 @@ class MenuAndWidgets extends React.Component {
         this.setCommentsData = this.setCommentsData.bind(this);
         this.setWidgetSaved = this.setWidgetSaved.bind(this);
         this.goToNextSection = this.goToNextSection.bind(this);
+        this.setPersonIdCallback = this.setPersonIdCallback.bind(this);
     }
 
     /**
@@ -610,6 +611,13 @@ class MenuAndWidgets extends React.Component {
         this.props.stateVarModifiedCallback(newVal, mainCompVarName);
     }
 
+    setPersonIdCallback(newPersonId) {
+        this.setState({personid: newPersonId});
+        if (this.other !== undefined) {
+            this.other.selfStateVarModifiedFunction(newPersonId, "personid");
+        }
+    }
+
     check_cb(cbName, mainCompVarName) {
         let newStateElem = {};
         newStateElem[cbName] = true;
@@ -694,6 +702,7 @@ class MenuAndWidgets extends React.Component {
                                                         personid={this.state.personid}
                                                         ref={instance => { this.personSelector = instance; }}
                                                         stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                        setPersonIdCallback={this.setPersonIdCallback}
                                         />
                                     </div>
                                 </div>
