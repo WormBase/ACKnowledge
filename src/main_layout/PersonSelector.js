@@ -155,6 +155,7 @@ class PersonSelector extends Component {
                                                      let arr = wbRx.exec(fullData);
                                                      fullData = fullData.replace(wbRx, "");
                                                      this.setState({fullname: fullData, personid: arr[1]});
+                                                     this.props.stateVarModifiedCallback(arr[1], "personid");
                                                      this.handleClose();
                                                  }}>
                                         {[...this.state.availableItems].map(item =>

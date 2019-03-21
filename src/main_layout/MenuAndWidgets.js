@@ -693,6 +693,7 @@ class MenuAndWidgets extends React.Component {
                                         <PersonSelector fullname={this.state.personFullname}
                                                         personid={this.state.personid}
                                                         ref={instance => { this.personSelector = instance; }}
+                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
                                         />
                                     </div>
                                 </div>
