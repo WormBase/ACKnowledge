@@ -8,7 +8,8 @@ class Other extends React.Component {
         super(props, context);
         this.state = {
             saved: props["saved"],
-            other: props["other"]
+            other: props["other"],
+            personid: props.personId
         };
 
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
@@ -54,7 +55,7 @@ class Other extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + this.props.personId}
+                                                href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + this.state.personid}
                                                 target={"_blank"}>
                                             Update contact info</Button>
                                     </div>
@@ -79,7 +80,7 @@ class Other extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + this.props.personId}
+                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + this.state.personid}
                                                 target={"_blank"}>
                                             Update lineage</Button>
                                     </div>
