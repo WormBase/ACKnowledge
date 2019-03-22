@@ -61,7 +61,7 @@ class Overview extends React.Component {
         );
         let geneListComponent;
         if (this.props.hideGenes) {
-            geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+            geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of genes in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
         } else {
             geneListComponent = (
                 <MultipleSelect
@@ -99,7 +99,7 @@ class Overview extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">New Gene</Panel.Title>
+                            <Panel.Title componentClass="h3">New Gene Name</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
@@ -109,7 +109,7 @@ class Overview extends React.Component {
                                             this.check_cb("cb_gmcorr", "geneModCorrection");
                                             window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                         }}>
-                                            Request New Gene Name/Report Gene-Sequence
+                                            Request New Gene Name
                                         </Button>
                                     </div>
                                 </div>
@@ -118,10 +118,20 @@ class Overview extends React.Component {
                     </Panel>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">Gene model updates</Panel.Title>
+                            <Panel.Title componentClass="h3">Gene model updates and gene sequence connection</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
                             <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
+                                            this.check_cb("cb_gmcorr", "geneModCorrection");
+                                            window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
+                                        }}>
+                                            Report Gene-Sequence
+                                        </Button>
+                                    </div>
+                                </div>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Checkbox checked={this.state.cb_gmcorr}

@@ -76,7 +76,7 @@ class Genetics extends React.Component {
         );
         let allelesListComponent;
         if (this.props.hideAlleles) {
-            allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+            allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of alleles in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
         } else {
             allelesListComponent = (
                 <MultipleSelect
@@ -92,7 +92,7 @@ class Genetics extends React.Component {
         }
         let strainsListComponent;
         if (this.props.hideStrains) {
-            strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface</Alert>);
+            strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of strains in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
         } else {
             strainsListComponent = (
                 <MultipleSelect
