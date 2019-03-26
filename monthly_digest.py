@@ -5,17 +5,22 @@ from db_manager import DBManager
 from email_functions import send_new_data_notification_email_to_watcher
 
 
+#AFP_WATCHERS_TABLES = {
+#        "hinxton@warmbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
+#                                 "afp_otherstrain", "afp_rnaseq"],
+#        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
+#        "daniela@wormbase.org": ["tfp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+#        "raymond@wormbase.org": ["afp_siteaction", "afp_timeaction"],
+#        "jae.cho@wormbase.org": ["afp_geneprod"],
+#        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
+#        "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
+#        "ranjana@caltech.edu": ["afp_humdis"]
+#    }
+
 AFP_WATCHERS_TABLES = {
-        "hinxton@warmbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
-                                 "afp_otherstrain", "afp_rnaseq"],
-        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
-        "daniela@wormbase.org": ["tfp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
-        "raymond@wormbase.org": ["afp_siteaction", "afp_timeaction"],
-        "jae.cho@wormbase.org": ["afp_geneprod"],
-        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
-        "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
-        "ranjana@caltech.edu": ["afp_humdis"]
-    }
+       "valearna@caltech.edu": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
+                                "afp_otherstrain", "afp_rnaseq", "afp_humdis"],
+   }
 
 
 def main():
@@ -42,3 +47,7 @@ def main():
             positive_papers = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(table_to_watch)
             send_new_data_notification_email_to_watcher(table_to_watch, positive_papers, afp_watcher, args.email_passwd)
     db_manager.close()
+
+
+if __name__ == '__main__':
+    main()
