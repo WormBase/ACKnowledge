@@ -102,10 +102,6 @@ class DBManager(object):
         rows = self.cur.fetchall()
         for row in rows:
             genes_names.add(row[1])
-        self.cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
-        rows = self.cur.fetchall()
-        for row in rows:
-            genes_names.add(row[1])
         self.cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
         rows = self.cur.fetchall()
         for row in rows:
