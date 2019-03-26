@@ -628,8 +628,10 @@ class DBManager(object):
                          .format(paper_id, curtime))
 
     def get_positive_paper_ids_sumbitted_last_month_for_data_type(self, data_type_table_name):
-        self.cur.execute("SELECT joinkey from {} WHERE afp_cur_timestamp > now() - interval '1 month' AND "
-                         "{} IS NOT NULL AND joinkey }".format(data_type_table_name, data_type_table_name))
+        self.cur.execute("SELECT {}.joinkey from {} join afp_comment on {}.joinkey = afp_comment.joinkey "
+                         "WHERE {}.afp_cur_timestamp > now() - interval '1 month' AND "
+                         "{}.{} IS NOT NULL".format(data_type_table_name, data_type_table_name, data_type_table_name,
+                                                    data_type_table_name, data_type_table_name, data_type_table_name))
         rows = self.cur.fetchall()
         return [row[0] for row in rows]
 
