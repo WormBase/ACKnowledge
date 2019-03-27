@@ -82,12 +82,16 @@ def main():
     logger.info("Getting papers fulltext")
     fulltexts_dict = {}
     email_addr_in_papers_dict = defaultdict(list)
+    processed_papers = 0
+    fulltexts_success = 0
     # process N papers for each Tpc call and continue until the number of papers with fulltext is >= n
     while len(fulltexts_dict) < args.num_papers and len(curatable_papers_not_processed_svm_flagged) > 0:
         paper_to_process = curatable_papers_not_processed_svm_flagged.pop(0)
         logger.debug("Extracting fulltext for paper " + paper_to_process)
         paper_fulltext = get_fulltext_from_pdfs(db_manager.get_paper_pdf_paths(paper_id=paper_to_process))
+        processed_papers += 1
         if paper_fulltext != "":
+            fulltexts_success += 1
             fulltexts_dict[paper_to_process] = paper_fulltext
             logger.info("Extracting email address from paper")
             email_addr_in_papers_dict[paper_to_process] = get_first_valid_email_address_from_paper(
@@ -95,6 +99,7 @@ def main():
             if not email_addr_in_papers_dict[paper_to_process]:
                 logger.info("Removing paper with no email address")
                 del fulltexts_dict[paper_to_process]
+                fulltexts_success -= 1
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
@@ -160,6 +165,9 @@ def main():
         print("Statistics calculated on the latest set of " + str(args.num_papers) + " papers that can be processed by "
                                                                                      "AFP")
         print()
+        print("Number of processed papers: " + str(processed_papers))
+        print("Number of fulltexts successfully extracted with corresponding author registered at WB: " +
+              str(fulltexts_success))
         print("Number of papers with non-empty entity lists: " + str(len(
             [paper_id for paper_id in fulltexts_dict.keys() if entities_not_empty(paper_id)])))
         print("Average number of genes extracted: " + str(np.average(
