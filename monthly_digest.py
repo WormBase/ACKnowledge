@@ -45,8 +45,9 @@ def main():
     for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
         for table_to_watch in tables_to_watch:
             positive_papers = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(table_to_watch)
-            send_new_data_notification_email_to_watcher(table_to_watch, positive_papers, [afp_watcher],
-                                                        args.email_passwd)
+            if len(positive_papers) > 0:
+                send_new_data_notification_email_to_watcher(table_to_watch, positive_papers, [afp_watcher],
+                                                            args.email_passwd)
     db_manager.close()
 
 
