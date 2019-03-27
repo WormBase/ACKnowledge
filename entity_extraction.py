@@ -42,6 +42,7 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
                             match_uppercase: bool = False):
     logger = logging.getLogger("AFP vocabulary extraction")
     logger.addHandler(TqdmHandler)
+    papers_map[paper_id] = []
     for keyword in tqdm(keywords):
         if keyword in fulltext_str or match_uppercase and keyword.upper() in fulltext_str:
             try:
@@ -58,6 +59,7 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
 
 def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_name_map, min_occurrences: int = 1):
     tx_name_map = copy.deepcopy(taxon_name_map)
+    papers_map[paper_id] = []
     for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
         tx_name_map[taxon_id].extend(species_alias_arr)
     for species_id, regex_list in tqdm(tx_name_map.items()):
@@ -80,10 +82,11 @@ def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
     all_addresses = re.findall(r'[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+@[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+\.'
                                r'[^@^ ^"^\\(^\\)^,^:^;^<^>^\[^\\^\]]+', fulltext)
     for address in all_addresses:
-        person_id = db_manager.get_person_id_from_email_address(address)
-        if person_id:
-            curr_address = db_manager.get_current_email_address_for_person(person_id)
-            return person_id, curr_address if curr_address else address
+        if not "'" in address:
+            person_id = db_manager.get_person_id_from_email_address(address)
+            if person_id:
+                curr_address = db_manager.get_current_email_address_for_person(person_id)
+                return person_id, curr_address if curr_address else address
     return None
 
 

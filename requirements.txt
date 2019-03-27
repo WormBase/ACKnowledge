@@ -3,3 +3,4 @@ psycopg2
 tqdm
 falcon
 requests
+numpy

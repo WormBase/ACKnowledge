@@ -1,3 +1,4 @@
+import html
 from collections import defaultdict
 from typing import List
 
@@ -605,16 +606,16 @@ class DBManager(object):
         pdfs = []
         for row in rows:
             if row[0].endswith(".pdf"):
-                if ("_temp" in row[0] or "_ocr" in row[0] or "_lib" in row[0]) and not main_pdf:
-                    main_pdf = row[0].replace('/home/acedb/daniel/Reference/wb/pdf/', TAZENDRA_PDFS_LOCATION)
-                else:
-                    main_pdf = row[0].replace('/home/acedb/daniel/Reference/wb/pdf/', TAZENDRA_PDFS_LOCATION)
+                if (("_temp" in row[0] or "_ocr" in row[0] or "_lib" in row[0]) and not main_pdf) or \
+                        ("_temp" not in row[0] and "_ocr" not in row[0] and "_lib" not in row[0]):
+                    main_pdf_addr = quote(row[0])
+                    main_pdf = main_pdf_addr.replace('/home/acedb/daniel/Reference/wb/pdf/', TAZENDRA_PDFS_LOCATION)
             elif "supplemental" in row[0]:
                 sup_folder = row[0].split("/")[-1]
                 with urllib.request.urlopen(TAZENDRA_PDFS_LOCATION + "/" + sup_folder) as response:
                     html_list = response.read().decode("utf8")
-                    sup_pdfs = re.findall(r">([^><]+\.pdf)<", html_list)
-                    pdfs = [TAZENDRA_PDFS_LOCATION + sup_folder + "/" + quote(sup) for sup in sup_pdfs]
+                    sup_pdfs = [html.unescape(sup_pdf) for sup_pdf in re.findall(r">([^><]+\.pdf)<", html_list)]
+                    pdfs = [TAZENDRA_PDFS_LOCATION + sup_folder + "/" + quote(sup, safe='&/') for sup in sup_pdfs]
         if main_pdf:
             pdfs.append(main_pdf)
         return pdfs

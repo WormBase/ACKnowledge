@@ -5,6 +5,7 @@ import os
 import ssl
 import time
 import urllib.parse
+import numpy as np
 
 from urllib.request import urlopen
 from email_functions import send_email_to_author, send_summary_email_to_admin, notify_admin_of_paper_without_entities
@@ -35,7 +36,7 @@ def main():
                         help="list of email addresses of administrators that will receive summary emails with pipeline "
                              "reports at each iterations")
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
-
+    parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
@@ -75,9 +76,7 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    #curatable_papers_not_processed_svm_flagged = ["00050093", "00053123", "00054889", "00054967", "00053873",
-    #                                              "00053739", "00054192", "00049183"]
-    #curatable_papers_not_processed_svm_flagged = ["00053873"]
+    #curatable_papers_not_processed_svm_flagged = ["00054680"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext")
@@ -150,6 +149,31 @@ def main():
                                                  transgene_word in transgene_symbol_id_map]) for paper_id in
                                   list(fulltexts_dict.keys())}
 
+    def entities_not_empty(pap_id):
+        return pap_id in gene_ids_in_documents and len(gene_ids_in_documents[pap_id]) > 0 or \
+               pap_id in species_in_papers_dict and len(species_in_papers_dict[pap_id]) > 0 or \
+               pap_id in allele_ids_in_documents and len(allele_ids_in_documents[pap_id]) > 0 or \
+               pap_id in transgene_ids_in_documents and len(transgene_ids_in_documents[pap_id]) > 0 or \
+               pap_id in strains_in_papers_dict and len(strains_in_papers_dict[pap_id]) > 0
+
+    if args.print_stats:
+        print("Statistics calculated on the latest set of " + str(args.num_papers) + " papers that can be processed by "
+                                                                                     "AFP")
+        print()
+        print("Number of papers with non-empty entity lists: " + str(len(
+            [paper_id for paper_id in fulltexts_dict.keys() if entities_not_empty(paper_id)])))
+        print("Average number of genes extracted: " + str(np.average(
+            [len(entity_list) if entity_list else 0 for entity_list in gene_ids_in_documents.values()])))
+        print("Average number of species extracted: " + str(np.average(
+            [len(entity_list) if entity_list else 0 for entity_list in species_in_papers_dict.values()])))
+        print("Average number of alleles extracted: " + str(np.average(
+            [len(entity_list) if entity_list else 0 for entity_list in allele_ids_in_documents.values()])))
+        print("Average number of transgenes extracted: " + str(np.average(
+            [len(entity_list) if entity_list else 0 for entity_list in transgene_ids_in_documents.values()])))
+        print("Average number of strains extracted: " + str(np.average(
+            [len(entity_list) if entity_list else 0 for entity_list in strains_in_papers_dict.values()])))
+        exit(0)
+
     # 8. Write values extracted through tpc to DB and notify
     urls = []
     tinyurls = []
@@ -193,9 +217,7 @@ def main():
             #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
             #                     args.email_passwd)
             #db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            if len(gene_ids_in_documents[paper_id]) > 0 and len(species_in_papers_dict[paper_id]) > 0 and \
-                len(allele_ids_in_documents[paper_id]) > 0 and len(transgene_ids_in_documents[paper_id]) > 0 and \
-                    len(strains_in_papers_dict[paper_id]) > 0:
+            if entities_not_empty(paper_id):
                 send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
                                      [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
             else:
