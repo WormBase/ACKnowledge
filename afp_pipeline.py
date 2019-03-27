@@ -7,7 +7,7 @@ import time
 import urllib.parse
 
 from urllib.request import urlopen
-from email_functions import send_email_to_author, send_summary_email_to_admin
+from email_functions import send_email_to_author, send_summary_email_to_admin, notify_admin_of_paper_without_entities
 from tpc_api_functions import *
 from entity_extraction import *
 from collections import defaultdict
@@ -193,8 +193,14 @@ def main():
             #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
             #                     args.email_passwd)
             #db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
-            send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
-                                 [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
+            if len(gene_ids_in_documents[paper_id]) > 0 and len(species_in_papers_dict[paper_id]) > 0 and \
+                len(allele_ids_in_documents[paper_id]) > 0 and len(transgene_ids_in_documents[paper_id]) > 0 and \
+                    len(strains_in_papers_dict[paper_id]) > 0:
+                send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
+                                     [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
+            else:
+                notify_admin_of_paper_without_entities(paper_id, paper_title, paper_journal, tiny_url,
+                                                       args.admin_emails, args.email_passwd)
             db_manager.set_email(paper_id, [email_addr_in_papers_dict[paper_id][1]])
 
     # commit and close connection to DB

@@ -51,6 +51,38 @@ WormBase""".format(paper_title, paper_journal, afp_link)
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
 
 
+def notify_admin_of_paper_without_entities(paper_id, paper_title: str, paper_journal: str, afp_link,
+                                           recipients: List[str], email_passwd):
+    email_content = """The paper:
+
+\"{}\", {}
+
+has empty entity lists.
+
+This is the link to the form for the paper: 
+{}
+
+""".format(paper_title, paper_journal, afp_link)
+
+    msg = EmailMessage()
+    msg.set_content(email_content)
+    msg['Subject'] = "Paper prcessed by AFP has empty entity lists: WBPaper" + paper_id
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
 def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
     email_content = """New papers processed by the Author First Pass Pipeline:
 
