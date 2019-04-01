@@ -36,6 +36,7 @@ def main():
                         help="list of email addresses of administrators that will receive summary emails with pipeline "
                              "reports at each iterations")
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
+    parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -224,12 +225,13 @@ def main():
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')
             tinyurls.append(tiny_url)
-            #send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
-            #                     args.email_passwd)
-            #db_manager.set_email(paper_id, ["valerio.arnaboldi@gmail.com"])
             if entities_not_empty(paper_id):
-                send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
-                                     [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
+                if args.dev_mode:
+                    send_email_to_author(paper_id, paper_title, paper_journal, tiny_url, args.admin_emails,
+                                         args.email_passwd)
+                else:
+                    send_email_to_author(paper_id, paper_title, paper_journal, tiny_url,
+                                         [email_addr_in_papers_dict[paper_id][1]], args.email_passwd)
             else:
                 notify_admin_of_paper_without_entities(paper_id, paper_title, paper_journal, tiny_url,
                                                        args.admin_emails, args.email_passwd)
