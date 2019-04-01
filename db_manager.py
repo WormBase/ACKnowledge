@@ -1,4 +1,5 @@
 import html
+import logging
 from collections import defaultdict
 from typing import List
 
@@ -13,6 +14,9 @@ AFP_ENTITIES_SEPARATOR = " | "
 AFP_IDS_SEPARATOR = ";%;"
 PAP_AFP_EVIDENCE_CODE = "Inferred_automatically \"from author first pass afp_genestudied\""
 TAZENDRA_PDFS_LOCATION = "http://tazendra.caltech.edu/~acedb/daniel/"
+
+
+logger = logging.getLogger(__name__)
 
 
 class DBManager(object):
@@ -618,6 +622,8 @@ class DBManager(object):
                     pdfs = [TAZENDRA_PDFS_LOCATION + sup_folder + "/" + quote(sup, safe='&/') for sup in sup_pdfs]
         if main_pdf:
             pdfs.append(main_pdf)
+            if "_temp" in main_pdf or "_ocr" in main_pdf or "_lib" in main_pdf:
+                logger.warning("Temporary or ocr file found as main pdf")
         return pdfs
 
     def set_last_touched(self, paper_id):

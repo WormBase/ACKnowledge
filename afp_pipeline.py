@@ -100,6 +100,8 @@ def main():
                 logger.info("Removing paper with no email address")
                 del fulltexts_dict[paper_to_process]
                 fulltexts_success -= 1
+        else:
+            logger.warning("Removing paper with empty text")
 
     # 7. Get the list of genes, alleles, strains etc from fulltext
     logger.info("Getting the list of entities from DB")
