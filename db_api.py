@@ -2,8 +2,10 @@
 
 import argparse
 import logging
-from typing import List
+import urllib.parse
 
+from typing import List
+from urllib.request import urlopen
 import falcon
 from wsgiref import simple_server
 from db_manager import DBManager
@@ -38,6 +40,9 @@ class StorageEngine(object):
 
     def get_user_fullname_from_personid(self, person_id):
         return self.db_manager.get_user_fullname_from_personid(person_id=person_id)
+
+    def get_pmid_from_paper_id(self, paper_id):
+        return self.db_manager.get_pmid(paper_id)
 
     # Overview
 
@@ -146,11 +151,12 @@ class StorageEngine(object):
 
 class AFPWriter:
 
-    def __init__(self, storage_engine: StorageEngine, admin_emails: List[str], email_passwd: str):
+    def __init__(self, storage_engine: StorageEngine, admin_emails: List[str], email_passwd: str, afp_base_url: str):
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API")
         self.admin_emails = admin_emails
         self.email_passwd = email_passwd
+        self.afp_base_url = afp_base_url
 
     def on_post(self, req, resp):
         with self.db:
@@ -232,8 +238,17 @@ class AFPWriter:
                                            person_id=req.media["person_id"])
                     paper_title = self.db.get_paper_title(paper_id)
                     paper_journal = self.db.get_paper_journal(paper_id)
+                    url = self.afp_base_url + "?paper=" + paper_id + "&passwd=" + req.media["passwd"] + "&title=" + \
+                                              urllib.parse.quote(paper_title) + "&journal=" + \
+                                              urllib.parse.quote(paper_journal) + "&pmid=" + \
+                                              self.db.get_pmid_from_paper_id(paper_id) + "&personid=" + \
+                                              req.media["person_id"][3:] + \
+                                              "&hide_genes=false&hide_alleles=false&hide_strains=false"
+                    data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
+                    tiny_url = data.read().decode('utf-8')
                     send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
-                                                                    paper_journal, self.admin_emails, self.email_passwd)
+                                                                    paper_journal, self.admin_emails, self.email_passwd,
+                                                                    tiny_url)
 
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)
@@ -278,6 +293,7 @@ def main():
     parser.add_argument("-a", "--admin-emails", metavar="admin_emails", dest="admin_emails", type=str, nargs="+",
                         help="list of email addresses of administrators")
     parser.add_argument("-e", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -298,7 +314,8 @@ def main():
 
     app = falcon.API(middleware=[HandleCORS()])
     db = StorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
-    writer = AFPWriter(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
+    writer = AFPWriter(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd,
+                       afp_base_url=args.afp_base_url)
     app.add_route('/api/write', writer)
 
     reader = AFPReader(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)

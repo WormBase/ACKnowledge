@@ -110,14 +110,16 @@ def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_pa
 
 
 def send_new_submission_notification_email_to_admin(paper_id, paper_passwd, paper_title, paper_journal,
-                                                    recipients: List[str], email_passwd):
+                                                    recipients: List[str], email_passwd, form_url):
     email_content = """New AFP data submission completed by author for the following paper:
     
 Paper ID: {}
 Title: {}
 Journal: {}
 
-""".format(paper_id, paper_title, paper_journal)
+Link to AFP form: {}
+
+""".format(paper_id, paper_title, paper_journal, form_url)
 
     msg = EmailMessage()
     msg.set_content(email_content)
