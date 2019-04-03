@@ -1,0 +1,50 @@
+.header-row {
+    background-color: #ffffff;
+}
+
+.wrap-button {
+    white-space: normal;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+#devBanner {
+    width:100%;
+    overflow:hidden; /* contain floats */
+    background-color: orangered;
+    color: white;
+    text-align: center;
+}
+
+#whiteBanner {
+    height: 20px;
+}
+
+#lateralMenu {
+    height: 100vh;
+    background-color: royalblue;
+    color: white;
+}
+
+a:link {
+    color: white;
+}
+
+/* visited link */
+a:visited {
+    color: white;
+}
+
+/* mouse over link */
+a:hover {
+    color: white;
+}
+
+/* selected link */
+a:active {
+    color: white;
+}
