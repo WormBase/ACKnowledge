@@ -10,6 +10,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    max-width: 100%;
 }
 
 #devBanner {
@@ -30,21 +31,30 @@ body {
     color: white;
 }
 
-a:link {
+.aw:link {
     color: white;
 }
 
 /* visited link */
-a:visited {
+.aw:visited {
     color: white;
 }
 
 /* mouse over link */
-a:hover {
+.aw:hover {
     color: white;
 }
 
 /* selected link */
-a:active {
+.aw:active {
     color: white;
 }
+
+.entityNav {
+    height:110px;
+    border: solid lightgray;
+    overflow:hidden;
+    overflow-y:scroll;
+}
+
+

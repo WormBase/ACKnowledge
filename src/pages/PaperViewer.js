@@ -1,5 +1,14 @@
 import React from 'react';
-import {Button, Form, FormControl, InputGroup, Navbar} from "react-bootstrap";
+import {
+    Button,
+    Form,
+    FormControl,
+    Tab,
+    Tabs
+} from "react-bootstrap";
+import EntityDiffRow from "../page_components/EntityDiffRow";
+import EntitiesListsComparison from "./EntitiesListsComparison";
+import FlaggedDataTypes from "./FlaggedDataTypes";
 
 class PaperViewer extends React.Component {
 
@@ -12,10 +21,7 @@ class PaperViewer extends React.Component {
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-8">
-                        &nbsp;
-                    </div>
-                    <div className="col-sm-4">
+                    <div className="col-sm-12 text-right">
                         <Form inline>
                             <FormControl type="text" placeholder="Paper ID" />
                             <Button type="submit">Load Paper</Button>
@@ -24,107 +30,23 @@ class PaperViewer extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <h2>List of Entities</h2>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Genes</h3>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        Extracted by AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Final list submitted by author
-                    </div>
-                    <div className="col-sm-3">
-                        Added by author wrt AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Removed by author wrt AFP
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Species</h3>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        Extracted by AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Final list submitted by author
-                    </div>
-                    <div className="col-sm-3">
-                        Added by author wrt AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Removed by author wrt AFP
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Alleles</h3>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        Extracted by AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Final list submitted by author
-                    </div>
-                    <div className="col-sm-3">
-                        Added by author wrt AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Removed by author wrt AFP
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Transgenes</h3>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        Extracted by AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Final list submitted by author
-                    </div>
-                    <div className="col-sm-3">
-                        Added by author wrt AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Removed by author wrt AFP
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Strains</h3>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        Extracted by AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Final list submitted by author
-                    </div>
-                    <div className="col-sm-3">
-                        Added by author wrt AFP
-                    </div>
-                    <div className="col-sm-3">
-                        Removed by author wrt AFP
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <hr/>
+                        <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                            <Tab eventKey={1} title="Lists of entities">
+                                <EntitiesListsComparison/>
+                            </Tab>
+                            <Tab eventKey={2} title="Automatically flagged data types">
+                                <FlaggedDataTypes/>
+                            </Tab>
+                            <Tab eventKey={3} title="Other yes/no data types">
+                                <FlaggedDataTypes/>
+                            </Tab>
+                            <Tab eventKey={4} title="Other data types">
+
+                            </Tab>
+                            <Tab eventKey={5} title="Comments">
+
+                            </Tab>
+                        </Tabs>
                     </div>
                 </div>
 

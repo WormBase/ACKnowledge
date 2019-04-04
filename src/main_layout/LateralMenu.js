@@ -21,7 +21,7 @@ class LateralMenu extends React.Component {
                     <div className="col-sm-10">
                         <IndexLinkContainer to="paper"
                                             active={true}>
-                            <a><h4>Paper Viewer</h4></a>
+                            <a className="aw"><h4>Paper Viewer</h4></a>
                         </IndexLinkContainer>
                     </div>
                 </div>
@@ -29,7 +29,7 @@ class LateralMenu extends React.Component {
                     <div className="col-sm-10">
                         <IndexLinkContainer to="stats"
                                             active={true}>
-                            <a><h4>Statistics</h4></a>
+                            <a className="aw"><h4>Statistics</h4></a>
                         </IndexLinkContainer>
                     </div>
                 </div>
