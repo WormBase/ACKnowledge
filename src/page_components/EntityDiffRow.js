@@ -14,30 +14,28 @@ class EntityDiffRow extends React.Component {
                     <div className="col-sm-3">
                         <nav className="entityNav">
                             <ul>
-                                <li>Entity 1</li>
-                                <li>Entity 2</li>
+                                {[...this.props.tfpEntitiesList].sort().map(item => <li>{item}</li>)}
                             </ul>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
                             <ul>
-                                <li>Entity 1</li>
-                                <li>Entity 3</li>
+                                {[...this.props.afpEntitiesList].sort().map(item => <li>{item}</li>)}
                             </ul>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
                             <ul>
-                                <li>Entity 3</li>
+                                {[...this.props.afpEntitiesList].filter(x => !new Set([...this.props.tfpEntitiesList]).has(x)).sort().map(item => <li>{item}</li>)}
                             </ul>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
                             <ul>
-                                <li>Entity 2</li>
+                                {[...this.props.tfpEntitiesList].filter(x => !new Set([...this.props.afpEntitiesList]).has(x)).sort().map(item => <li>{item}</li>)}
                             </ul>
                         </nav>
                     </div>

@@ -7,7 +7,7 @@ class PageArea extends React.Component {
 
     render() {
         return(
-            <div>
+            <div className="pre-scrollable main-page">
                 <Route exact path="/" render={() => (<Redirect to={"/paper"}/>)}/>
                 <Route path={"/paper"}
                        render={() => <PaperViewer/>}/>

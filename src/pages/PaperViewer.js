@@ -6,11 +6,24 @@ import {
     Tab,
     Tabs
 } from "react-bootstrap";
-import EntityDiffRow from "../page_components/EntityDiffRow";
 import EntitiesListsComparison from "./EntitiesListsComparison";
 import FlaggedDataTypes from "./FlaggedDataTypes";
+import {Link, withRouter} from "react-router-dom";
+
 
 class PaperViewer extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            paper_id: undefined
+        };
+        this.setPaperId = this.setPaperId.bind(this);
+    }
+
+    setPaperId(paperId) {
+        this.setState({paper_id: paperId});
+    }
+
 
     render() {
         return(
@@ -22,9 +35,15 @@ class PaperViewer extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12 text-right">
-                        <Form inline>
-                            <FormControl type="text" placeholder="Paper ID" />
-                            <Button type="submit">Load Paper</Button>
+                        <Form inline onSubmit={e => e.preventDefault()}>
+                            <FormControl type="text" placeholder="Paper ID - 8 digits"
+                                         onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""/>
+                            <Link to={
+                                {
+                                    pathname: '/paper',
+                                    search: '?paper_id=' + this.state.paper_id
+                                }
+                            }><Button>Load Paper</Button></Link>
                         </Form>
                     </div>
                 </div>
@@ -55,4 +74,4 @@ class PaperViewer extends React.Component {
     }
 }
 
-export default PaperViewer;
+export default withRouter(PaperViewer);
