@@ -3,6 +3,7 @@ import EntityDiffRow from "../page_components/EntityDiffRow";
 import {withRouter} from "react-router-dom";
 import queryString from 'query-string';
 import {extractEntitiesFromTfpString} from "../AFPValues";
+import LoadingOverlay from 'react-loading-overlay';
 
 class EntitiesListsComparison extends React.Component {
     constructor(props, context) {
@@ -18,7 +19,8 @@ class EntitiesListsComparison extends React.Component {
             tfpStrains: [],
             afpStrains: [],
             tfpTransgenes: [],
-            afpTransgenes: []
+            afpTransgenes: [],
+            isLoading: false
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
     }
@@ -40,6 +42,7 @@ class EntitiesListsComparison extends React.Component {
             paper_id: queryString.parse(this.props.location.search).paper_id
         };
         if (payload.paper_id !== undefined) {
+            this.setState({isLoading: true});
             fetch(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/lists", {
                 method: 'POST',
                 headers: {
@@ -128,6 +131,7 @@ class EntitiesListsComparison extends React.Component {
                     afpStrains: afp_strains,
                     tfpTransgenes: tfp_transgenes,
                     afpTransgenes: afp_transgenes,
+                    isLoading: false
                 })
             }).catch((err) => {
                 alert(err);
@@ -137,38 +141,70 @@ class EntitiesListsComparison extends React.Component {
 
     render() {
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
-                        &nbsp;
+            <LoadingOverlay
+                active={this.state.isLoading}
+                spinner
+                text='Loading paper data...'
+                styles={{
+                    overlay: (base) => ({
+                        ...base,
+                        background: 'rgba(65,105,225,0.5)'
+                    })
+                }}
+            >
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-sm-12">
+                            &nbsp;
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3">
-                        <h4>Extracted by AFP</h4>
+                    <div className="row">
+                        <div className="col-sm-3">
+                            <h4>Extracted by AFP</h4>
+                        </div>
+                        <div className="col-sm-3">
+                            <h4>Final list submitted by author</h4>
+                        </div>
+                        <div className="col-sm-3">
+                            <h4>Added by author w.r.t. AFP</h4>
+                        </div>
+                        <div className="col-sm-3">
+                            <h4>Removed by author w.r.t. AFP</h4>
+                        </div>
                     </div>
-                    <div className="col-sm-3">
-                        <h4>Final list submitted by author</h4>
+                    <EntityDiffRow title="Genes" tfpEntitiesList={this.state.tfpGenestudied}
+                                   afpEntitiesList={this.state.afpGenestudied}/>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
                     </div>
-                    <div className="col-sm-3">
-                        <h4>Added by author w.r.t. AFP</h4>
+                    <EntityDiffRow title="Species" tfpEntitiesList={this.state.tfpSpecies}
+                                   afpEntitiesList={this.state.afpSpecies}/>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
                     </div>
-                    <div className="col-sm-3">
-                        <h4>Removed by author w.r.t. AFP</h4>
+                    <EntityDiffRow title="Alleles" tfpEntitiesList={this.state.tfpAlleles}
+                                   afpEntitiesList={this.state.afpAlleles}/>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
                     </div>
-                </div>
-                <EntityDiffRow title="Genes" tfpEntitiesList={this.state.tfpGenestudied}
-                               afpEntitiesList={this.state.afpGenestudied}/>
-                <EntityDiffRow title="Species" tfpEntitiesList={this.state.tfpSpecies}
-                               afpEntitiesList={this.state.afpSpecies}/>
-                <EntityDiffRow title="Alleles" tfpEntitiesList={this.state.tfpAlleles}
-                               afpEntitiesList={this.state.afpAlleles}/>
-                <EntityDiffRow title="Strains" tfpEntitiesList={this.state.tfpStrains}
-                               afpEntitiesList={this.state.afpStrains}/>
-                <EntityDiffRow title="Transgenes" tfpEntitiesList={this.state.tfpTransgenes}
-                               afpEntitiesList={this.state.afpTransgenes}/>
+                    <EntityDiffRow title="Strains" tfpEntitiesList={this.state.tfpStrains}
+                                   afpEntitiesList={this.state.afpStrains}/>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                    </div>
+                    <EntityDiffRow title="Transgenes" tfpEntitiesList={this.state.tfpTransgenes}
+                                   afpEntitiesList={this.state.afpTransgenes}/>
 
-            </div>
+                </div>
+            </LoadingOverlay>
         );
     }
 }

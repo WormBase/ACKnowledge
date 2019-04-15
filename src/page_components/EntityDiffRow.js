@@ -1,4 +1,5 @@
 import React from 'react';
+import {ListGroup, ListGroupItem} from "react-bootstrap";
 
 class EntityDiffRow extends React.Component {
 
@@ -13,30 +14,30 @@ class EntityDiffRow extends React.Component {
                 <div className="row">
                     <div className="col-sm-3">
                         <nav className="entityNav">
-                            <ul>
-                                {[...this.props.tfpEntitiesList].sort().map(item => <li>{item}</li>)}
-                            </ul>
+                            <ListGroup>
+                                {[...this.props.tfpEntitiesList].sort().map(item => <ListGroupItem>{item}</ListGroupItem>)}
+                            </ListGroup>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
-                            <ul>
-                                {[...this.props.afpEntitiesList].sort().map(item => <li>{item}</li>)}
-                            </ul>
+                            <ListGroup>
+                                {[...this.props.afpEntitiesList].sort().map(item => <ListGroupItem>{item}</ListGroupItem>)}
+                            </ListGroup>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
-                            <ul>
-                                {[...this.props.afpEntitiesList].filter(x => !new Set([...this.props.tfpEntitiesList]).has(x)).sort().map(item => <li>{item}</li>)}
-                            </ul>
+                            <ListGroup>
+                                {[...this.props.afpEntitiesList].filter(x => !new Set([...this.props.tfpEntitiesList]).has(x)).sort().map(item => <ListGroupItem>{item}</ListGroupItem>)}
+                            </ListGroup>
                         </nav>
                     </div>
                     <div className="col-sm-3">
                         <nav className="entityNav">
-                            <ul>
-                                {[...this.props.tfpEntitiesList].filter(x => !new Set([...this.props.afpEntitiesList]).has(x)).sort().map(item => <li>{item}</li>)}
-                            </ul>
+                            <ListGroup>
+                                {[...this.props.tfpEntitiesList].filter(x => !new Set([...this.props.afpEntitiesList]).has(x)).sort().map(item => <ListGroupItem>{item}</ListGroupItem>)}
+                            </ListGroup>
                         </nav>
                     </div>
                 </div>

@@ -13,8 +13,8 @@ class LateralMenu extends React.Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-sm-12">
-                        <h2>Author First Pass</h2>
-                        <h3>Admin dashboard</h3><hr/>
+                        <h3>Author First Pass</h3>
+                        <h4>Admin dashboard</h4><hr/>
                     </div>
                 </div>
                 <div className="row">
