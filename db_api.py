@@ -148,6 +148,71 @@ class StorageEngine(object):
         self.db_manager.set_version(paper_id=paper_id)
         self.db_manager.set_last_touched(paper_id=paper_id)
 
+    # Reader
+
+    def get_all_lists(self, paper_id):
+        tfp_genestudied = self.db_manager.get_feature("tfp_genestudied", paper_id)
+        afp_genestudied = self.db_manager.get_feature("afp_genestudied", paper_id)
+        tfp_species = self.db_manager.get_feature("tfp_species", paper_id)
+        afp_species = self.db_manager.get_feature("afp_species", paper_id)
+        tfp_alleles = self.db_manager.get_feature("tfp_variation", paper_id)
+        afp_alleles = self.db_manager.get_feature("afp_variation", paper_id)
+        tfp_strains = self.db_manager.get_feature("tfp_strain", paper_id)
+        afp_strains = self.db_manager.get_feature("afp_strain", paper_id)
+        tfp_transgenes = self.db_manager.get_feature("tfp_transgene", paper_id)
+        afp_transgenes = self.db_manager.get_feature("afp_transgene", paper_id)
+        return {"tfp_genestudied": tfp_genestudied, "afp_genestudied": afp_genestudied, "tfp_species": tfp_species,
+                "afp_species": afp_species, "tfp_alleles": tfp_alleles, "afp_alleles": afp_alleles,
+                "tfp_strains": tfp_strains, "afp_strains": afp_strains, "tfp_transgenes": tfp_transgenes,
+                "afp_transgenes": afp_transgenes}
+
+    def get_all_flagged_data_types(self, paper_id):
+        svm_seqchange = self.db_manager.get_svm_value("seqchange", paper_id)
+        afp_seqchange = self.db_manager.get_feature("afp_seqchange", paper_id)
+        afp_seqchange_checked = afp_seqchange != ""
+        afp_seqchange_details = afp_seqchange if afp_seqchange != "Checked" and afp_seqchange != "checked" and \
+                                                 afp_seqchange != "" else ""
+        svm_geneint = self.db_manager.get_svm_value("geneint", paper_id)
+        afp_geneint = self.db_manager.get_feature("afp_geneint", paper_id)
+        afp_geneint_checked = afp_geneint != ""
+        afp_geneint_details = afp_geneint if afp_geneint != "Checked" and afp_geneint != "checked" and \
+                                             afp_geneint != "" else ""
+        svm_geneprod = self.db_manager.get_svm_value("geneprod", paper_id)
+        afp_geneprod = self.db_manager.get_feature("afp_geneprod", paper_id)
+        afp_geneprod_checked = afp_geneprod != ""
+        afp_geneprod_details = afp_geneprod if afp_geneprod != "Checked" and afp_geneprod != "checked" and \
+                                               afp_geneprod != "" else ""
+        svm_genereg = self.db_manager.get_svm_value("genereg", paper_id)
+        afp_genereg = self.db_manager.get_feature("afp_genereg", paper_id)
+        afp_genereg_checked = afp_genereg != ""
+        afp_genereg_details = afp_genereg if afp_genereg != "Checked" and afp_genereg != "checked" and \
+                                             afp_genereg != "" else ""
+        svm_newmutant = self.db_manager.get_svm_value("newmutant", paper_id)
+        afp_newmutant = self.db_manager.get_feature("afp_newmutant", paper_id)
+        afp_newmutant_checked = afp_newmutant != ""
+        afp_newmutant_details = afp_newmutant if afp_newmutant != "Checked" and afp_newmutant != "checked" and \
+                                                 afp_newmutant != "" else ""
+        svm_rnai = self.db_manager.get_svm_value("rnai", paper_id)
+        afp_rnai = self.db_manager.get_feature("afp_rnai", paper_id)
+        afp_rnai_checked = afp_rnai != ""
+        afp_rnai_details = afp_rnai if afp_rnai != "Checked" and afp_rnai != "checked" and afp_rnai != "" else ""
+        svm_overexpr = self.db_manager.get_svm_value("overexpr", paper_id)
+        afp_overexpr = self.db_manager.get_feature("afp_overexpr", paper_id)
+        afp_overexpr_checked = afp_overexpr != ""
+        afp_overexpr_details = afp_overexpr if afp_overexpr != "Checked" and afp_overexpr != "checked" and \
+                                               afp_overexpr != "" else ""
+        return {"svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
+                "afp_seqchange_details": afp_seqchange_details, "svm_geneint_checked": svm_geneint,
+                "afp_geneint_checked": afp_geneint_checked, "afp_geneint_details": afp_geneint_details,
+                "svm_geneprod_checked": svm_geneprod, "afp_geneprod_checked": afp_geneprod_checked,
+                "afp_geneprod_details": afp_geneprod_details, "svm_genereg_checked": svm_genereg,
+                "afp_genereg_checked": afp_genereg_checked, "afp_genereg_details": afp_genereg_details,
+                "svm_newmutant_checked": svm_newmutant, "afp_newmutant_checked": afp_newmutant_checked,
+                "afp_newmutant_details": afp_newmutant_details, "svm_rnai_checked": svm_rnai,
+                "afp_rnai_checked": afp_rnai_checked, "afp_rnai_details": afp_rnai_details,
+                "svm_overexpr_checked": svm_overexpr, "afp_overexpr_checked": afp_overexpr_checked,
+                "afp_overexpr_details": afp_overexpr_details}
+
 
 class AFPWriter:
 
@@ -277,6 +342,52 @@ class AFPReader:
                 raise falcon.HTTPError(falcon.HTTP_401)
 
 
+class AFPReaderAdminLists:
+
+    def __init__(self, storage_engine: StorageEngine):
+        self.db = storage_engine
+        self.logger = logging.getLogger("AFP API for Admin")
+
+    def on_post(self, req, resp, req_type):
+        with self.db:
+            if "paper_id" not in req.media:
+                raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+            paper_id = req.media["paper_id"]
+            if req_type == "lists":
+                lists_dict = self.db.get_all_lists(paper_id)
+                resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
+                            '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
+                            '"{}", "tfp_transgenes": "{}", "afp_transgenes": "{}"}}'.format(
+                    lists_dict["tfp_genestudied"], lists_dict["afp_genestudied"], lists_dict["tfp_species"],
+                    lists_dict["afp_species"], lists_dict["tfp_alleles"], lists_dict["afp_alleles"],
+                    lists_dict["tfp_strains"], lists_dict["afp_strains"], lists_dict["tfp_transgenes"],
+                    lists_dict["afp_transgenes"])
+                resp.status = falcon.HTTP_200
+            elif req_type == "flagged":
+                flagged_dict = self.db.get_all_flagged_data_types(paper_id)
+                resp.body = '{{"svm_seqchange_checked": "{}", "afp_seqchange_checked": "{}", ' \
+                            '"afp_seqchange_details": "{}", "svm_geneint_checked": "{}", ' \
+                            '"afp_geneint_checked": "{}", "afp_geneint_details": "{}", ' \
+                            '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
+                            '"afp_geneprod_details": "{}", "svm_genereg_checked": "{}",' \
+                            '"afp_genereg_checked": "{}", "afp_genereg_details": "{}", ' \
+                            '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
+                            '"afp_newmutant_details": "{}", "svm_rnai_checked": "{}",' \
+                            ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
+                            '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
+                            '"afp_overexpr_details": "{}"}}'.format(
+                    flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], flagged_dict["afp_seqchange_details"],
+                    flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], flagged_dict["afp_geneint_details"],
+                    flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], flagged_dict["afp_geneprod_details"],
+                    flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], flagged_dict["afp_genereg_details"],
+                    flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], flagged_dict["afp_newmutant_details"],
+                    flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], flagged_dict["afp_rnai_details"],
+                    flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], flagged_dict["afp_overexpr_details"])
+                resp.status = falcon.HTTP_200
+            else:
+                raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -320,6 +431,9 @@ def main():
 
     reader = AFPReader(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
     app.add_route('/api/read', reader)
+
+    reader = AFPReaderAdminLists(storage_engine=db)
+    app.add_route('/api/read_admin/{req_type}', reader)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()

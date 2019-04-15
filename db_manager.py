@@ -642,4 +642,21 @@ class DBManager(object):
         rows = self.cur.fetchall()
         return [row[0] for row in rows]
 
+    def get_feature(self, table_name, paper_id):
+        self.cur.execute("SELECT {} from {} WHERE joinkey = '{}'".format(table_name, table_name, paper_id))
+        row = self.cur.fetchone()
+        if row:
+            return row[0]
+        else:
+            return ''
+
+    def get_svm_value(self, svm_type, paper_id):
+        self.cur.execute("SELECT cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
+            paper_id, svm_type))
+        row = self.cur.fetchone()
+        if row:
+            return row[0] == "high" or row[0] == "medium"
+        else:
+            return False
+
 
