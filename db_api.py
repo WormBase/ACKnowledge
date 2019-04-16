@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import logging
 import urllib.parse
 
@@ -213,6 +214,83 @@ class StorageEngine(object):
                 "svm_overexpr_checked": svm_overexpr, "afp_overexpr_checked": afp_overexpr_checked,
                 "afp_overexpr_details": afp_overexpr_details}
 
+    def get_all_yes_no_data_types(self, paper_id):
+        afp_modchange = self.db_manager.get_feature("afp_structcorr", paper_id)
+        afp_modchange_checked = afp_modchange != ""
+        afp_modchange_details = afp_modchange if afp_modchange != "Checked" and afp_modchange != "checked" and \
+                                                 afp_modchange != "" else ""
+        afp_newantibody = self.db_manager.get_feature("afp_antibody", paper_id)
+        afp_newantibody_checked = afp_newantibody != ""
+        afp_newantibody_details = afp_newantibody if afp_newantibody != "Checked" and afp_newantibody != "checked" and \
+                                                     afp_newantibody != "" else ""
+        afp_siteaction = self.db_manager.get_feature("afp_siteaction", paper_id)
+        afp_siteaction_checked = afp_siteaction != ""
+        afp_siteaction_details = afp_siteaction if afp_siteaction != "Checked" and afp_siteaction != "checked" and \
+                                                   afp_siteaction != "" else ""
+        afp_timeaction = self.db_manager.get_feature("afp_timeaction", paper_id)
+        afp_timeaction_checked = afp_timeaction != ""
+        afp_timeaction_details = afp_timeaction if afp_timeaction != "Checked" and afp_timeaction != "checked" and \
+                                                   afp_timeaction != "" else ""
+        afp_rnaseq = self.db_manager.get_feature("afp_rnaseq", paper_id)
+        afp_rnaseq_checked = afp_rnaseq != ""
+        afp_rnaseq_details = afp_rnaseq if afp_rnaseq != "Checked" and afp_rnaseq != "checked" and \
+                                           afp_rnaseq != "" else ""
+        afp_chemphen = self.db_manager.get_feature("afp_chemphen", paper_id)
+        afp_chemphen_checked = afp_chemphen != ""
+        afp_chemphen_details = afp_chemphen if afp_chemphen != "Checked" and afp_chemphen != "checked" and \
+                                               afp_chemphen != "" else ""
+        afp_envpheno = self.db_manager.get_feature("afp_envpheno", paper_id)
+        afp_envpheno_checked = afp_envpheno != ""
+        afp_envpheno_details = afp_envpheno if afp_envpheno != "Checked" and afp_envpheno != "checked" and \
+                                               afp_envpheno != "" else ""
+        afp_catalyticact = self.db_manager.get_feature("afp_catalyticact", paper_id)
+        afp_catalyticact_checked = afp_catalyticact != ""
+        afp_catalyticact_details = afp_catalyticact if afp_catalyticact != "Checked" and afp_catalyticact != \
+                                                       "checked" and afp_catalyticact != "" else ""
+        afp_humdis = self.db_manager.get_feature("afp_humdis", paper_id)
+        afp_humdis_checked = afp_humdis != ""
+        afp_humdis_details = afp_humdis if afp_humdis != "Checked" and afp_humdis != "checked" and \
+                                           afp_humdis != "" else ""
+        afp_additionalexpr = self.db_manager.get_feature("afp_additionalexpr", paper_id)
+        return {"afp_modchange_checked": afp_modchange_checked, "afp_modchange_details": afp_modchange_details,
+                "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
+                "afp_siteaction_checked": afp_siteaction_checked, "afp_siteaction_details": afp_siteaction_details,
+                "afp_timeaction_checked": afp_timeaction_checked, "afp_timeaction_details": afp_timeaction_details,
+                "afp_rnaseq_checked": afp_rnaseq_checked, "afp_rnaseq_details": afp_rnaseq_details,
+                "afp_chemphen_checked": afp_chemphen_checked, "afp_chemphen_details": afp_chemphen_details,
+                "afp_envpheno_checked": afp_envpheno_checked, "afp_envpheno_details": afp_envpheno_details,
+                "afp_catalyticact_checked": afp_catalyticact_checked, "afp_catalyticact_details":
+                    afp_catalyticact_details,
+                "afp_humdis_checked": afp_humdis_checked, "afp_humdis_details": afp_humdis_details,
+                "afp_additionalexpr": afp_additionalexpr}
+
+    def get_other_data_types(self, paper_id):
+        afp_newalleles = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
+            "afp_othervariation", paper_id))])
+        afp_newstrains = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
+            "afp_otherstrain", paper_id))])
+        afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
+            "afp_othertransgene", paper_id))])
+        afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(self.db_manager.get_feature(
+            "afp_othertransgene", paper_id)) if elem["name"] != ""])
+        return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
+                "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
+
+    def paper_is_afp_processed(self, paper_id):
+        return self.db_manager.get_feature("afp_version", paper_id) != ""
+
+    def author_has_submitted(self, paper_id):
+        return self.db_manager.author_has_submitted(paper_id)
+
+    def author_has_modified(self, paper_id):
+        return self.db_manager.author_has_modified(paper_id)
+
+    def get_afp_form_link(self, paper_id, base_url):
+        return self.db_manager.get_afp_form_link(paper_id, base_url)
+
+    def get_comments(self, paper_id):
+        return self.db_manager.get_feature("afp_comment", paper_id)
+
 
 class AFPWriter:
 
@@ -344,16 +422,27 @@ class AFPReader:
 
 class AFPReaderAdminLists:
 
-    def __init__(self, storage_engine: StorageEngine):
+    def __init__(self, storage_engine: StorageEngine, afp_base_url: str):
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API for Admin")
+        self.afp_base_url = afp_base_url
 
     def on_post(self, req, resp, req_type):
         with self.db:
             if "paper_id" not in req.media:
                 raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
             paper_id = req.media["paper_id"]
-            if req_type == "lists":
+            if req_type == "status":
+                afp_processed = self.db.paper_is_afp_processed(paper_id)
+                author_submitted = self.db.author_has_submitted(paper_id)
+                author_modified = self.db.author_has_modified(paper_id)
+                afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
+                resp.body = '{{"afp_processed": {}, "author_submitted": {}, "author_modified": {}, "afp_form_link": ' \
+                            '"{}"}}'.format(
+                    "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
+                    author_modified else "false", afp_form_link)
+                resp.status = falcon.HTTP_200
+            elif req_type == "lists":
                 lists_dict = self.db.get_all_lists(paper_id)
                 resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
                             '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
@@ -383,6 +472,40 @@ class AFPReaderAdminLists:
                     flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], flagged_dict["afp_newmutant_details"],
                     flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], flagged_dict["afp_rnai_details"],
                     flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], flagged_dict["afp_overexpr_details"])
+                resp.status = falcon.HTTP_200
+            elif req_type == "other_yn":
+                other_yn = self.db.get_all_yes_no_data_types(paper_id)
+                resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": "{}", ' \
+                            '"afp_newantibody_checked": "{}", "afp_newantibody_details": "{}", ' \
+                            '"afp_siteaction_checked": "{}", "afp_siteaction_details": "{}", ' \
+                            '"afp_timeaction_checked": "{}", "afp_timeaction_details": "{}", ' \
+                            '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": "{}", ' \
+                            '"afp_chemphen_checked": "{}", "afp_chemphen_details": "{}", ' \
+                            '"afp_envpheno_checked": "{}", "afp_envpheno_details": "{}", ' \
+                            '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
+                            '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
+                            '"afp_additionalexpr": "{}"}}'.format(
+                                        other_yn["afp_modchange_checked"], other_yn["afp_modchange_details"],
+                                        other_yn["afp_newantibody_checked"], other_yn["afp_newantibody_details"],
+                                        other_yn["afp_siteaction_checked"], other_yn["afp_siteaction_details"],
+                                        other_yn["afp_timeaction_checked"], other_yn["afp_timeaction_details"],
+                                        other_yn["afp_rnaseq_checked"], other_yn["afp_rnaseq_details"],
+                                        other_yn["afp_chemphen_checked"], other_yn["afp_chemphen_details"],
+                                        other_yn["afp_envpheno_checked"], other_yn["afp_envpheno_details"],
+                                        other_yn["afp_catalyticact_checked"], other_yn["afp_catalyticact_details"],
+                                        other_yn["afp_humdis_checked"], other_yn["afp_humdis_details"],
+                                        other_yn["afp_additionalexpr"])
+                resp.status = falcon.HTTP_200
+            elif req_type == "others":
+                others = self.db.get_other_data_types(paper_id)
+                resp.body = '{{"afp_newalleles": "{}", "afp_newstrains": "{}", "afp_newtransgenes": "{}", ' \
+                            '"afp_otherantibodies": "{}"}}'.format(others["afp_newalleles"], others["afp_newstrains"],
+                                                                   others["afp_newtransgenes"],
+                                                                   others["afp_otherantibodies"])
+                resp.status = falcon.HTTP_200
+            elif req_type == "comments":
+                comments = self.db.get_comments(paper_id)
+                resp.body = '{{"afp_comments": "{}"}}'.format(comments)
                 resp.status = falcon.HTTP_200
             else:
                 raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
@@ -432,7 +555,7 @@ def main():
     reader = AFPReader(storage_engine=db, admin_emails=args.admin_emails, email_passwd=args.email_passwd)
     app.add_route('/api/read', reader)
 
-    reader = AFPReaderAdminLists(storage_engine=db)
+    reader = AFPReaderAdminLists(storage_engine=db, afp_base_url=args.afp_base_url)
     app.add_route('/api/read_admin/{req_type}', reader)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)

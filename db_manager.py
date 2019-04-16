@@ -1,4 +1,5 @@
 import html
+import json
 import logging
 from collections import defaultdict
 from typing import List
@@ -658,5 +659,87 @@ class DBManager(object):
             return row[0] == "high" or row[0] == "medium"
         else:
             return False
+
+    def author_has_submitted(self, paper_id):
+        self.cur.execute("SELECT count(*) from afp_comment WHERE joinkey = '{}'".format(paper_id))
+        row = self.cur.fetchone()
+        return int(row[0]) == 1
+
+    def author_has_modified(self, paper_id):
+        self.cur.execute("SELECT afp_g.afp_genestudied <> tfp_g.tfp_genestudied OR "
+                         "afp_s.afp_species <> tfp_s.tfp_species OR "
+                         "afp_v.afp_variation <> tfp_v.tfp_variation OR "
+                         "afp_st.afp_strain <> tfp_st.tfp_strain OR "
+                         "afp_t.afp_transgene <> tfp_t.tfp_transgene "
+                         "FROM afp_genestudied afp_g JOIN tfp_genestudied tfp_g ON afp_g.joinkey = tfp_g.joinkey "
+                         "JOIN afp_species afp_s ON afp_g.joinkey = afp_s.joinkey JOIN tfp_species tfp_s ON afp_g.joinkey = tfp_s.joinkey "
+                         "JOIN afp_variation afp_v ON afp_g.joinkey = afp_v.joinkey JOIN tfp_variation tfp_v ON afp_g.joinkey = tfp_v.joinkey "
+                         "JOIN afp_strain afp_st ON afp_g.joinkey = afp_st.joinkey JOIN tfp_strain tfp_st ON afp_g.joinkey = tfp_st.joinkey "
+                         "JOIN afp_transgene afp_t ON afp_g.joinkey = afp_t.joinkey JOIN tfp_transgene tfp_t ON afp_g.joinkey = tfp_t.joinkey "
+                         "WHERE afp_g.joinkey = '{}'".format(paper_id))
+        row = self.cur.fetchone()
+        if row and row[0]:
+            return True
+        self.cur.execute("SELECT cur_datatype, cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype IN "
+                         "('seqchange', 'geneint', 'geneprod', 'genereg', 'newmutant', 'rnai', 'overexpr')"
+                         .format(paper_id))
+        rows = self.cur.fetchall()
+        for row in rows:
+            self.cur.execute("SELECT afp_{} = '' AND '{}' <> 'medium' AND '{}' <> 'high' OR (afp_{} <> '' AND '{}' = "
+                             "'medium' OR '{}' = 'high') from afp_{} WHERE "
+                             "joinkey = '{}'".format(row[0], row[1], row[1], row[0], row[1], row[1], row[0], paper_id))
+            row = self.cur.fetchone()
+            if row and row[0]:
+                return True
+        self.cur.execute("SELECT afp_structcorr.afp_structcorr <> '' OR afp_antibody.afp_antibody <> '' OR "
+                         "afp_siteaction.afp_siteaction <> '' OR afp_timeaction.afp_timeaction <> '' OR "
+                         "afp_rnaseq.afp_rnaseq <> '' OR afp_chemphen.afp_chemphen <> '' OR "
+                         "afp_envpheno.afp_envpheno <> '' OR afp_catalyticact.afp_catalyticact <> '' OR "
+                         "afp_comment.afp_comment <> '' "
+                         "FROM afp_structcorr JOIN afp_antibody ON afp_structcorr.joinkey = afp_antibody.joinkey "
+                         "JOIN afp_siteaction ON afp_structcorr.joinkey = afp_siteaction.joinkey "
+                         "JOIN afp_timeaction ON afp_structcorr.joinkey = afp_timeaction.joinkey "
+                         "JOIN afp_rnaseq ON afp_structcorr.joinkey = afp_rnaseq.joinkey "
+                         "JOIN afp_chemphen ON afp_structcorr.joinkey = afp_chemphen.joinkey "
+                         "JOIN afp_envpheno ON afp_structcorr.joinkey = afp_envpheno.joinkey "
+                         "JOIN afp_catalyticact ON afp_structcorr.joinkey = afp_catalyticact.joinkey "
+                         "JOIN afp_comment ON afp_structcorr.joinkey = afp_comment.joinkey "
+                         "WHERE afp_g.joinkey = '{}'".format(paper_id))
+        row = self.cur.fetchone()
+        if row and row[0]:
+            return True
+        afp_newalleles = [elem['name'] for elem in json.loads(self.get_feature("afp_othervariation", paper_id))
+                          if elem["name"] != ""]
+        afp_newstrains = [elem['name'] for elem in json.loads(self.get_feature("afp_otherstrain", paper_id))
+                          if elem["name"] != ""]
+        afp_newtransgenes = [elem['name'] for elem in json.loads(self.get_feature("afp_othertransgene", paper_id))
+                             if elem["name"] != ""]
+        afp_otherantibodies = [elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(self.get_feature(
+                "afp_othertransgene", paper_id)) if elem["name"] != ""]
+        if len(afp_newalleles) > 0 or len(afp_newstrains) > 0 or len(afp_newtransgenes) > 0 or \
+                len(afp_otherantibodies) > 0:
+            return True
+        return False
+
+    def get_corresponding_author_id(self, paper_id):
+        self.cur.execute("SELECT afp_email FROM afp_email WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_person_id_from_email_address(res[0])
+        else:
+            return None
+
+    def get_afp_form_link(self, paper_id, base_url):
+        passwd = self.get_passwd(paper_id)
+        title = self.get_paper_title(paper_id)
+        journal = self.get_paper_journal(paper_id)
+        pmid = self.get_pmid(paper_id)
+        person_id = self.get_corresponding_author_id(paper_id)
+        url = base_url + "?paper=" + paper_id + "&passwd=" + passwd + "&title=" + urllib.parse.quote(title) + \
+              "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&personid=" + \
+              person_id.replace("two", "") + "&hide_genes=false&hide_alleles=false&hide_strains=false"
+        return url
+
+
 
 

@@ -22,7 +22,7 @@ def main():
                                                  "structures for Author First Pass")
     parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
     parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
-    parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
+    parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str, default="")
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
@@ -96,7 +96,7 @@ def main():
             fulltexts_dict[paper_to_process] = paper_fulltext
             logger.info("Extracting email address from paper")
             email_addr_in_papers_dict[paper_to_process] = get_first_valid_email_address_from_paper(
-                fulltexts_dict[paper_to_process], db_manager=db_manager)
+                fulltexts_dict[paper_to_process], db_manager = db_manager)
             if not email_addr_in_papers_dict[paper_to_process]:
                 logger.info("Removing paper with no email address")
                 del fulltexts_dict[paper_to_process]
