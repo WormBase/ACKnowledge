@@ -1,23 +1,17 @@
 import React from 'react';
 
-class EntityDiffRow extends React.Component {
+class FlaggedInfoRow extends React.Component {
 
     render() {
         return(
             <div>
                 <div className="row">
-                    <div className="col-sm-3">
+                    <div className="col-sm-6">
                         {this.props.title}
                     </div>
-                    <div className="col-sm-3">
-                        Checked: <strong>{this.props.tfpChecked}</strong>
-                    </div>
-                    <div className="col-sm-3">
+                    <div className="col-sm-6">
                         Checked: <strong>{this.props.afpChecked}<br/></strong>
                         Details: <strong>{this.props.afpDetails}</strong>
-                    </div>
-                    <div className="col-sm-3">
-                        <strong>{this.props.tfpChecked !== this.props.afpChecked || this.props.afpDetails !== "" ? "True" : "False"}</strong>
                     </div>
                 </div>
                 <div className="row">
@@ -30,4 +24,4 @@ class EntityDiffRow extends React.Component {
     }
 }
 
-export default EntityDiffRow;
+export default FlaggedInfoRow;

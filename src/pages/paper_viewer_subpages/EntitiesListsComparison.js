@@ -1,8 +1,8 @@
 import React from 'react';
-import EntityDiffRow from "../page_components/EntityDiffRow";
+import EntityDiffRow from "../../page_components/EntityDiffRow";
 import {withRouter} from "react-router-dom";
-import queryString from 'query-string';
-import {extractEntitiesFromTfpString} from "../AFPValues";
+import queryString from 'query-string/index';
+import {extractEntitiesFromTfpString} from "../../AFPValues";
 import LoadingOverlay from 'react-loading-overlay';
 
 class EntitiesListsComparison extends React.Component {
