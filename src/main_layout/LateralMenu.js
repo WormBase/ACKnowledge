@@ -1,5 +1,6 @@
 import React from 'react';
 import {IndexLinkContainer} from "react-router-bootstrap";
+import {withRouter} from "react-router-dom";
 
 class LateralMenu extends React.Component {
     constructor(props) {
@@ -19,7 +20,7 @@ class LateralMenu extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-10">
-                        <IndexLinkContainer to="paper"
+                        <IndexLinkContainer to={"paper" + this.props.location.search}
                                             active={true}>
                             <a className="aw"><h4>Paper Viewer</h4></a>
                         </IndexLinkContainer>
@@ -27,7 +28,7 @@ class LateralMenu extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-10">
-                        <IndexLinkContainer to="stats"
+                        <IndexLinkContainer to={"stats" + this.props.location.search}
                                             active={true}>
                             <a className="aw"><h4>Statistics</h4></a>
                         </IndexLinkContainer>
@@ -38,4 +39,4 @@ class LateralMenu extends React.Component {
     }
 }
 
-export default LateralMenu;
+export default withRouter(LateralMenu);
