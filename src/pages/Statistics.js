@@ -7,7 +7,7 @@ class Statistics extends React.Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-sm-2">
-                        Test
+                        Test2
                     </div>
                 </div>
             </div>
