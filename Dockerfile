@@ -9,5 +9,5 @@ RUN npm run build --production
 RUN npm install -g serve
 
 # production environment
-EXPOSE 6000
-CMD ["serve", "-l", "6000", "-s", "build"]
+EXPOSE 5001
+CMD ["serve", "-p", "5001", "-s", "build"]
