@@ -291,6 +291,18 @@ class StorageEngine(object):
     def get_comments(self, paper_id):
         return self.db_manager.get_feature("afp_comment", paper_id)
 
+    def get_num_papers_new_afp_processed(self):
+        return self.db_manager.get_num_papers_new_afp_processed()
+
+    def get_num_papers_old_afp_processed(self):
+        return self.db_manager.get_num_papers_old_afp_processed()
+
+    def get_num_papers_new_afp_author_submitted(self):
+        return self.db_manager.get_num_papers_new_afp_author_submitted()
+
+    def get_num_papers_old_afp_author_submitted(self):
+        return self.db_manager.get_num_papers_old_afp_author_submitted()
+
 
 class AFPWriter:
 
@@ -429,86 +441,97 @@ class AFPReaderAdminLists:
 
     def on_post(self, req, resp, req_type):
         with self.db:
-            if "paper_id" not in req.media:
-                raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
-            paper_id = req.media["paper_id"]
-            if req_type == "status":
-                afp_processed = self.db.paper_is_afp_processed(paper_id)
-                author_submitted = self.db.author_has_submitted(paper_id)
-                author_modified = self.db.author_has_modified(paper_id)
-                afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
-                resp.body = '{{"afp_processed": {}, "author_submitted": {}, "author_modified": {}, "afp_form_link": ' \
-                            '"{}"}}'.format(
-                    "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
-                    author_modified else "false", afp_form_link)
-                resp.status = falcon.HTTP_200
-            elif req_type == "lists":
-                lists_dict = self.db.get_all_lists(paper_id)
-                resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
-                            '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
-                            '"{}", "tfp_transgenes": "{}", "afp_transgenes": "{}"}}'.format(
-                    lists_dict["tfp_genestudied"], lists_dict["afp_genestudied"], lists_dict["tfp_species"],
-                    lists_dict["afp_species"], lists_dict["tfp_alleles"], lists_dict["afp_alleles"],
-                    lists_dict["tfp_strains"], lists_dict["afp_strains"], lists_dict["tfp_transgenes"],
-                    lists_dict["afp_transgenes"])
-                resp.status = falcon.HTTP_200
-            elif req_type == "flagged":
-                flagged_dict = self.db.get_all_flagged_data_types(paper_id)
-                resp.body = '{{"svm_seqchange_checked": "{}", "afp_seqchange_checked": "{}", ' \
-                            '"afp_seqchange_details": "{}", "svm_geneint_checked": "{}", ' \
-                            '"afp_geneint_checked": "{}", "afp_geneint_details": "{}", ' \
-                            '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
-                            '"afp_geneprod_details": "{}", "svm_genereg_checked": "{}",' \
-                            '"afp_genereg_checked": "{}", "afp_genereg_details": "{}", ' \
-                            '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
-                            '"afp_newmutant_details": "{}", "svm_rnai_checked": "{}",' \
-                            ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
-                            '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
-                            '"afp_overexpr_details": "{}"}}'.format(
-                    flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], flagged_dict["afp_seqchange_details"],
-                    flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], flagged_dict["afp_geneint_details"],
-                    flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], flagged_dict["afp_geneprod_details"],
-                    flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], flagged_dict["afp_genereg_details"],
-                    flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], flagged_dict["afp_newmutant_details"],
-                    flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], flagged_dict["afp_rnai_details"],
-                    flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], flagged_dict["afp_overexpr_details"])
-                resp.status = falcon.HTTP_200
-            elif req_type == "other_yn":
-                other_yn = self.db.get_all_yes_no_data_types(paper_id)
-                resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": "{}", ' \
-                            '"afp_newantibody_checked": "{}", "afp_newantibody_details": "{}", ' \
-                            '"afp_siteaction_checked": "{}", "afp_siteaction_details": "{}", ' \
-                            '"afp_timeaction_checked": "{}", "afp_timeaction_details": "{}", ' \
-                            '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": "{}", ' \
-                            '"afp_chemphen_checked": "{}", "afp_chemphen_details": "{}", ' \
-                            '"afp_envpheno_checked": "{}", "afp_envpheno_details": "{}", ' \
-                            '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
-                            '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
-                            '"afp_additionalexpr": "{}"}}'.format(
-                                        other_yn["afp_modchange_checked"], other_yn["afp_modchange_details"],
-                                        other_yn["afp_newantibody_checked"], other_yn["afp_newantibody_details"],
-                                        other_yn["afp_siteaction_checked"], other_yn["afp_siteaction_details"],
-                                        other_yn["afp_timeaction_checked"], other_yn["afp_timeaction_details"],
-                                        other_yn["afp_rnaseq_checked"], other_yn["afp_rnaseq_details"],
-                                        other_yn["afp_chemphen_checked"], other_yn["afp_chemphen_details"],
-                                        other_yn["afp_envpheno_checked"], other_yn["afp_envpheno_details"],
-                                        other_yn["afp_catalyticact_checked"], other_yn["afp_catalyticact_details"],
-                                        other_yn["afp_humdis_checked"], other_yn["afp_humdis_details"],
-                                        other_yn["afp_additionalexpr"])
-                resp.status = falcon.HTTP_200
-            elif req_type == "others":
-                others = self.db.get_other_data_types(paper_id)
-                resp.body = '{{"afp_newalleles": "{}", "afp_newstrains": "{}", "afp_newtransgenes": "{}", ' \
-                            '"afp_otherantibodies": "{}"}}'.format(others["afp_newalleles"], others["afp_newstrains"],
-                                                                   others["afp_newtransgenes"],
-                                                                   others["afp_otherantibodies"])
-                resp.status = falcon.HTTP_200
-            elif req_type == "comments":
-                comments = self.db.get_comments(paper_id)
-                resp.body = '{{"afp_comments": "{}"}}'.format(comments)
-                resp.status = falcon.HTTP_200
+            if req_type != "stats":
+                if "paper_id" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                paper_id = req.media["paper_id"]
+                if req_type == "status":
+                    afp_processed = self.db.paper_is_afp_processed(paper_id)
+                    author_submitted = self.db.author_has_submitted(paper_id)
+                    author_modified = self.db.author_has_modified(paper_id)
+                    afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
+                    resp.body = '{{"afp_processed": {}, "author_submitted": {}, "author_modified": {}, "afp_form_link": ' \
+                                '"{}"}}'.format(
+                        "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
+                        author_modified else "false", afp_form_link)
+                    resp.status = falcon.HTTP_200
+                elif req_type == "lists":
+                    lists_dict = self.db.get_all_lists(paper_id)
+                    resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
+                                '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
+                                '"{}", "tfp_transgenes": "{}", "afp_transgenes": "{}"}}'.format(
+                        lists_dict["tfp_genestudied"], lists_dict["afp_genestudied"], lists_dict["tfp_species"],
+                        lists_dict["afp_species"], lists_dict["tfp_alleles"], lists_dict["afp_alleles"],
+                        lists_dict["tfp_strains"], lists_dict["afp_strains"], lists_dict["tfp_transgenes"],
+                        lists_dict["afp_transgenes"])
+                    resp.status = falcon.HTTP_200
+                elif req_type == "flagged":
+                    flagged_dict = self.db.get_all_flagged_data_types(paper_id)
+                    resp.body = '{{"svm_seqchange_checked": "{}", "afp_seqchange_checked": "{}", ' \
+                                '"afp_seqchange_details": "{}", "svm_geneint_checked": "{}", ' \
+                                '"afp_geneint_checked": "{}", "afp_geneint_details": "{}", ' \
+                                '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
+                                '"afp_geneprod_details": "{}", "svm_genereg_checked": "{}",' \
+                                '"afp_genereg_checked": "{}", "afp_genereg_details": "{}", ' \
+                                '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
+                                '"afp_newmutant_details": "{}", "svm_rnai_checked": "{}",' \
+                                ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
+                                '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
+                                '"afp_overexpr_details": "{}"}}'.format(
+                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], flagged_dict["afp_seqchange_details"],
+                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], flagged_dict["afp_geneint_details"],
+                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], flagged_dict["afp_geneprod_details"],
+                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], flagged_dict["afp_genereg_details"],
+                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], flagged_dict["afp_newmutant_details"],
+                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], flagged_dict["afp_rnai_details"],
+                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], flagged_dict["afp_overexpr_details"])
+                    resp.status = falcon.HTTP_200
+                elif req_type == "other_yn":
+                    other_yn = self.db.get_all_yes_no_data_types(paper_id)
+                    resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": "{}", ' \
+                                '"afp_newantibody_checked": "{}", "afp_newantibody_details": "{}", ' \
+                                '"afp_siteaction_checked": "{}", "afp_siteaction_details": "{}", ' \
+                                '"afp_timeaction_checked": "{}", "afp_timeaction_details": "{}", ' \
+                                '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": "{}", ' \
+                                '"afp_chemphen_checked": "{}", "afp_chemphen_details": "{}", ' \
+                                '"afp_envpheno_checked": "{}", "afp_envpheno_details": "{}", ' \
+                                '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
+                                '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
+                                '"afp_additionalexpr": "{}"}}'.format(
+                                            other_yn["afp_modchange_checked"], other_yn["afp_modchange_details"],
+                                            other_yn["afp_newantibody_checked"], other_yn["afp_newantibody_details"],
+                                            other_yn["afp_siteaction_checked"], other_yn["afp_siteaction_details"],
+                                            other_yn["afp_timeaction_checked"], other_yn["afp_timeaction_details"],
+                                            other_yn["afp_rnaseq_checked"], other_yn["afp_rnaseq_details"],
+                                            other_yn["afp_chemphen_checked"], other_yn["afp_chemphen_details"],
+                                            other_yn["afp_envpheno_checked"], other_yn["afp_envpheno_details"],
+                                            other_yn["afp_catalyticact_checked"], other_yn["afp_catalyticact_details"],
+                                            other_yn["afp_humdis_checked"], other_yn["afp_humdis_details"],
+                                            other_yn["afp_additionalexpr"])
+                    resp.status = falcon.HTTP_200
+                elif req_type == "others":
+                    others = self.db.get_other_data_types(paper_id)
+                    resp.body = '{{"afp_newalleles": "{}", "afp_newstrains": "{}", "afp_newtransgenes": "{}", ' \
+                                '"afp_otherantibodies": "{}"}}'.format(others["afp_newalleles"], others["afp_newstrains"],
+                                                                       others["afp_newtransgenes"],
+                                                                       others["afp_otherantibodies"])
+                    resp.status = falcon.HTTP_200
+                elif req_type == "comments":
+                    comments = self.db.get_comments(paper_id)
+                    resp.body = '{{"afp_comments": "{}"}}'.format(comments)
+                    resp.status = falcon.HTTP_200
+                else:
+                    raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
             else:
-                raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
+                num_papers_new_afp_processed = self.db.get_num_papers_new_afp_processed()
+                num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
+                num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
+                num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
+                resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
+                            '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": "{}"}}'\
+                    .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
+                            num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted)
+                resp.status = falcon.HTTP_200
 
 
 def main():

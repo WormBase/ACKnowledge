@@ -661,7 +661,7 @@ class DBManager(object):
             return False
 
     def author_has_submitted(self, paper_id):
-        self.cur.execute("SELECT count(*) from afp_comment WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("SELECT count(*) from afp_lasttouched WHERE joinkey = '{}'".format(paper_id))
         row = self.cur.fetchone()
         return int(row[0]) == 1
 
@@ -739,6 +739,43 @@ class DBManager(object):
               "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&personid=" + \
               person_id.replace("two", "") + "&hide_genes=false&hide_alleles=false&hide_strains=false"
         return url
+
+    def get_num_papers_new_afp_processed(self):
+        self.cur.execute("SELECT count(*) FROM afp_email JOIN afp_version ON afp_email.joinkey = afp_version.joinkey "
+                         "WHERE afp_version.afp_version = '2'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_num_papers_old_afp_processed(self):
+        self.cur.execute("SELECT count(*) FROM afp_email FULL OUTER JOIN afp_version ON afp_email.joinkey = "
+                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_num_papers_new_afp_author_submitted(self):
+        self.cur.execute("SELECT count(*) FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_num_papers_old_afp_author_submitted(self):
+        self.cur.execute("SELECT count(*) FROM afp_lasttouched FULL OUTER JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version IS NULL OR "
+                         "afp_version.afp_version = '1'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
 
 
 
