@@ -51,9 +51,9 @@ class Comments extends React.Component {
                 if (data === undefined) {
                 }
                 this.setState({
-                    comments: data["comments"],
+                    comments: data["afp_comments"],
                     isLoading: false
-                })
+                });
             }).catch((err) => {
                 alert(err);
             });
