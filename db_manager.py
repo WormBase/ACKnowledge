@@ -735,9 +735,12 @@ class DBManager(object):
         journal = self.get_paper_journal(paper_id)
         pmid = self.get_pmid(paper_id)
         person_id = self.get_corresponding_author_id(paper_id)
-        url = base_url + "?paper=" + paper_id + "&passwd=" + passwd + "&title=" + urllib.parse.quote(title) + \
-              "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&personid=" + \
-              person_id.replace("two", "") + "&hide_genes=false&hide_alleles=false&hide_strains=false"
+        if person_id:
+            url = base_url + "?paper=" + paper_id + "&passwd=" + passwd + "&title=" + urllib.parse.quote(title) + \
+                  "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&personid=" + \
+                  person_id.replace("two", "") + "&hide_genes=false&hide_alleles=false&hide_strains=false"
+        else:
+            url = ""
         return url
 
     def get_num_papers_new_afp_processed(self):
@@ -776,6 +779,13 @@ class DBManager(object):
             return int(res[0])
         else:
             return 0
+
+    def get_num_entities_extracted_by_afp(self, enetity_label):
+        self.cur.execute("SELECT tfp_{} FROM tfp_{} FULL OUTER JOIN afp_version ON "
+                         "tfp_{}.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2'"
+                         .format(enetity_label, enetity_label, enetity_label))
+        res = self.cur.fetchall()
+        return [len(row[0].split(" | ")) for row in res]
 
 
 

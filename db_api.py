@@ -303,6 +303,9 @@ class StorageEngine(object):
     def get_num_papers_old_afp_author_submitted(self):
         return self.db_manager.get_num_papers_old_afp_author_submitted()
 
+    def get_num_entities_extracted_by_afp(self, entity_label):
+        return self.db_manager.get_num_entities_extracted_by_afp(entity_label)
+
 
 class AFPWriter:
 
@@ -527,10 +530,21 @@ class AFPReaderAdminLists:
                 num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
                 num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
                 num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
+                num_extracted_genes_per_paper = self.db.get_num_entities_extracted_by_afp("genestudied")
+                num_extracted_species_per_paper = self.db.get_num_entities_extracted_by_afp("species")
+                num_extracted_alleles_per_paper = self.db.get_num_entities_extracted_by_afp("variation")
+                num_extracted_strains_per_paper = self.db.get_num_entities_extracted_by_afp("strain")
+                num_extracted_transgenes_per_paper = self.db.get_num_entities_extracted_by_afp("transgene")
                 resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
-                            '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": "{}"}}'\
+                            '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
+                            '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
+                            '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
+                            '"num_extracted_transgenes_per_paper": {}}}'\
                     .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
-                            num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted)
+                            num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted,
+                            num_extracted_genes_per_paper, num_extracted_species_per_paper,
+                            num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
+                            num_extracted_transgenes_per_paper)
                 resp.status = falcon.HTTP_200
 
 
