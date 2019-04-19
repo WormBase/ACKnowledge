@@ -22,7 +22,7 @@ class LateralMenu extends React.Component {
                     <div className="col-sm-10">
                         <IndexLinkContainer to={"paper" + this.props.location.search}
                                             active={true}>
-                            <a className="aw"><h4>Paper Viewer</h4></a>
+                            <a className="aw"><h4>Paper Status</h4></a>
                         </IndexLinkContainer>
                     </div>
                 </div>
@@ -30,7 +30,7 @@ class LateralMenu extends React.Component {
                     <div className="col-sm-10">
                         <IndexLinkContainer to={"stats" + this.props.location.search}
                                             active={true}>
-                            <a className="aw"><h4>Statistics</h4></a>
+                            <a className="aw"><h4>Overall Stats</h4></a>
                         </IndexLinkContainer>
                     </div>
                 </div>
