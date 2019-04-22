@@ -22,6 +22,10 @@ class Title extends React.Component {
                 title = <h4 className="text-left"><a
                     href={"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props["pmid"]} target="_blank">{Title.removePdfTags(this.state.title)}</a>; {this.state.journal}
                 </h4>;
+            } else if (this.props["doi"] !== "" && this.props["doi"] !== undefined){
+                title = <h4 className="text-left"><a
+                    href={"https://doi.org/" + this.props["doi"]} target="_blank">{Title.removePdfTags(this.state.title)}</a>; {this.state.journal}
+                </h4>;
             } else {
                 title = <h4 className="text-left">{Title.removePdfTags(this.state.title)}; {this.state.journal}</h4>;
             }
