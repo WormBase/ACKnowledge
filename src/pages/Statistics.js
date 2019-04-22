@@ -78,7 +78,7 @@ class Statistics extends React.Component {
     drawAFPChart(chartId, values) {
         let color = "steelblue";
         let formatCount = d3.format(",.0f");
-        let margin = {top: 10, right: 30, bottom: 30, left: 40},
+        let margin = {top: 20, right: 30, bottom: 30, left: 40},
             width = 960 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -121,7 +121,7 @@ class Statistics extends React.Component {
             .attr("y", -12)
             .attr("x", (x(data[0].x1 - data[0].x0) - x(0)) / 2)
             .attr("text-anchor", "middle")
-            .text(function(d) { return formatCount(d.length); });
+            .text(function(d) { if (d.length > 0) { return formatCount(d.length) } else {return ""}});
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
