@@ -77,7 +77,7 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    #curatable_papers_not_processed_svm_flagged = ["00054680"]
+    curatable_papers_not_processed_svm_flagged = ["00056066"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext")
@@ -210,6 +210,7 @@ def main():
         paper_title = db_manager.get_paper_title(paper_id)
         paper_journal = db_manager.get_paper_journal(paper_id)
         pmid = db_manager.get_pmid(paper_id)
+        doi = db_manager.get_doi_from_paper_id(paper_id)
 
         hide_genes = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
         hide_alleles = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
@@ -220,7 +221,7 @@ def main():
                   str(papers_passwd[paper_id]) + "&title=" + urllib.parse.quote(paper_title) + "&journal=" + \
                   urllib.parse.quote(paper_journal) + "&pmid=" + pmid + "&personid=" + \
                   email_addr_in_papers_dict[paper_id][0].replace("two", "") + "&hide_genes=" + hide_genes + \
-                  "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains
+                  "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + urllib.parse.quote(doi)
             urls.append(url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
             tiny_url = data.read().decode('utf-8')

@@ -230,7 +230,7 @@ class DBManager(object):
             return ""
 
     def get_pmid(self, paper_id):
-        self.cur.execute("SELECT * FROM pap_identifier WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("SELECT * FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier LIKE 'pmid%'".format(paper_id))
         res = self.cur.fetchone()
         if res and res[1].startswith("pmid"):
             return res[1].replace("pmid", "")
@@ -787,6 +787,13 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [len(row[0].split(" | ")) for row in res]
 
+    def get_doi_from_paper_id(self, paper_id):
+        self.cur.execute("SELECT pap_identifier FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier LIKE 'doi%'".format(paper_id))
+        res = self.cur.fetchone()
+        if res and res[0].startswith("doi"):
+            return res[0][3:]
+        else:
+            return ""
 
 
 
