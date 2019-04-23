@@ -39,8 +39,8 @@ class StatusArea extends React.Component {
                                 <Panel>
                                     <Panel.Heading>Paper Status</Panel.Heading>
                                     <Panel.Body>Processed by AFP: &nbsp; <Badge>{this.props.paper_afp_processed}</Badge><br/>
-                                        Data submitted by author: &nbsp; <Badge>{this.props.paper_author_submitted}</Badge><br/>
-                                        Author has modified any data: &nbsp; <Badge>{this.props.paper_author_modified}</Badge>
+                                        Final data submitted by author: &nbsp; <Badge>{this.props.paper_author_submitted}</Badge><br/>
+                                        Author has modified any data (including partial submissions): &nbsp; <Badge>{this.props.paper_author_modified}</Badge>
                                     </Panel.Body>
                                 </Panel>
                             </div>
