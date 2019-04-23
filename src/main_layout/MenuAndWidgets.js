@@ -486,7 +486,7 @@ class MenuAndWidgets extends React.Component {
                     break;
                 case WIDGET.GENETICS:
                     payload = {
-                        alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, "WBVar"),
+                        alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, ""),
                         allele_seq_change: getCheckboxDBVal(this.state.alleleSeqChange),
                         other_alleles: JSON.stringify(this.state.otherAlleles),
                         strains_list: transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
@@ -495,8 +495,7 @@ class MenuAndWidgets extends React.Component {
                     break;
                 case WIDGET.REAGENT:
                     payload = {
-                        transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes,
-                            "WBTransgene"),
+                        transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes, ""),
                         new_transgenes: JSON.stringify(this.state.otherTransgenes),
                         new_antibody: getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
                         other_antibodies: JSON.stringify(this.state.otherAntibs)
