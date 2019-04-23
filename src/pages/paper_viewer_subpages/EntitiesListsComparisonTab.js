@@ -5,7 +5,7 @@ import queryString from 'query-string/index';
 import {extractEntitiesFromTfpString} from "../../AFPValues";
 import LoadingOverlay from 'react-loading-overlay';
 
-class EntitiesListsComparison extends React.Component {
+class EntitiesListsComparisonTab extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -92,7 +92,7 @@ class EntitiesListsComparison extends React.Component {
                 }
                 let afp_alleles = data["afp_alleles"];
                 if (afp_alleles !== '') {
-                    afp_alleles = extractEntitiesFromTfpString(data["afp_alleles"], "WBVar");
+                    afp_alleles = extractEntitiesFromTfpString(data["afp_alleles"], "");
                 } else {
                     afp_alleles = [];
                 }
@@ -116,7 +116,7 @@ class EntitiesListsComparison extends React.Component {
                 }
                 let afp_transgenes = data["afp_transgenes"];
                 if (afp_transgenes !== '') {
-                    afp_transgenes = extractEntitiesFromTfpString(data["afp_transgenes"], "WBTransgene");
+                    afp_transgenes = extractEntitiesFromTfpString(data["afp_transgenes"], "");
                 } else {
                     afp_transgenes = [];
                 }
@@ -209,4 +209,4 @@ class EntitiesListsComparison extends React.Component {
     }
 }
 
-export default withRouter(EntitiesListsComparison);
+export default withRouter(EntitiesListsComparisonTab);

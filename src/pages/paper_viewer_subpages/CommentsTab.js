@@ -5,7 +5,7 @@ import {extractEntitiesFromTfpString} from "../../AFPValues";
 import LoadingOverlay from 'react-loading-overlay';
 import ManualEntityRow from "../../page_components/ManualEntityRow";
 
-class Comments extends React.Component {
+class CommentsTab extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -90,4 +90,4 @@ class Comments extends React.Component {
     }
 }
 
-export default withRouter(Comments);
+export default withRouter(CommentsTab);

@@ -4,7 +4,7 @@ import FlaggedDiffRow from "../../page_components/FlaggedDiffRow";
 import {withRouter} from "react-router-dom";
 import queryString from "query-string/index";
 
-class FlaggedDataTypes extends React.Component {
+class FlaggedDataTypesTab extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -159,4 +159,4 @@ class FlaggedDataTypes extends React.Component {
     }
 }
 
-export default withRouter(FlaggedDataTypes);
+export default withRouter(FlaggedDataTypesTab);

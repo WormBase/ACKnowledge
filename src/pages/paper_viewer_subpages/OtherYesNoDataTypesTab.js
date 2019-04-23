@@ -5,7 +5,7 @@ import {withRouter} from "react-router-dom";
 import queryString from "query-string/index";
 import FlaggedInfoRow from "../../page_components/FlaggedInfoRow";
 
-class OtherYesNoDataTypes extends React.Component {
+class OtherYesNoDataTypesTab extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -167,4 +167,4 @@ class OtherYesNoDataTypes extends React.Component {
     }
 }
 
-export default withRouter(OtherYesNoDataTypes);
+export default withRouter(OtherYesNoDataTypesTab);

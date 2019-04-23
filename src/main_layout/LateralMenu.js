@@ -34,6 +34,14 @@ class LateralMenu extends React.Component {
                         </IndexLinkContainer>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-sm-10">
+                        <IndexLinkContainer to={"lists" + this.props.location.search}
+                                            active={true}>
+                            <a className="aw"><h4>Paper Lists</h4></a>
+                        </IndexLinkContainer>
+                    </div>
+                </div>
             </div>
         );
     }

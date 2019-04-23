@@ -2,6 +2,7 @@ import React from 'react';
 import {Redirect, Route, withRouter} from "react-router-dom";
 import PaperViewer from "../pages/PaperViewer";
 import Statistics from "../pages/Statistics";
+import Lists from "../pages/Lists";
 
 class PageArea extends React.Component {
 
@@ -13,6 +14,8 @@ class PageArea extends React.Component {
                        render={() => <PaperViewer/>}/>
                 <Route path={"/stats"}
                        render={() => <Statistics/>}/>
+                <Route path={"/lists"}
+                       render={() => <Lists/>}/>
             </div>
         );
     }

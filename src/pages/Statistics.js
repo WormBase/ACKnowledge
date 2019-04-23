@@ -79,8 +79,8 @@ class Statistics extends React.Component {
         let color = "steelblue";
         let formatCount = d3.format(",.0f");
         let margin = {top: 20, right: 30, bottom: 30, left: 40},
-            width = 960 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            width = 720 - margin.left - margin.right,
+            height = 300 - margin.top - margin.bottom;
 
         let max = d3.max(values) + 1;
         let min = d3.min(values);

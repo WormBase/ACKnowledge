@@ -1,20 +1,11 @@
 import React from 'react';
 import {
-    Alert, Badge,
     Button,
     Form,
-    FormControl, Jumbotron, Panel,
-    Tab,
-    Tabs
-} from "react-bootstrap";
-import EntitiesListsComparison from "./paper_viewer_subpages/EntitiesListsComparison";
-import FlaggedDataTypes from "./paper_viewer_subpages/FlaggedDataTypes";
+    FormControl} from "react-bootstrap";
 import {Link, withRouter} from "react-router-dom";
 import queryString from "query-string";
-import LoadingOverlay from 'react-loading-overlay';
-import OtherYesNoDataTypes from "./paper_viewer_subpages/OtherYesNoDataTypes";
-import OtherDataTypes from "./paper_viewer_subpages/OtherDataTypes";
-import Comments from "./paper_viewer_subpages/Comments";
+import StatusArea from "./paper_viewer_subpages/StatusArea";
 
 
 class PaperViewer extends React.Component {
@@ -27,6 +18,7 @@ class PaperViewer extends React.Component {
             paper_author_submitted: "NOT LOADED",
             paper_author_modified: "NOT LOADED",
             link_to_afp_form: "",
+            load_diff: false,
             isLoading: true,
             api_called: false
         };
@@ -62,12 +54,14 @@ class PaperViewer extends React.Component {
                     link_to_afp_form: data["afp_form_link"],
                     isLoading: false
                 });
+                if (data["author_submitted"] === true) {
+                    this.setState({load_diff: true});
+                }
             }).catch((err) => {
                 alert(err);
             });
         }
     }
-
 
     setPaperId(paperId) {
         this.setState({paper_id: paperId});
@@ -85,106 +79,6 @@ class PaperViewer extends React.Component {
     }
 
     render() {
-
-        let paper_area = "";
-        if (this.state.paper_id_from_url !== undefined) {
-            paper_area =
-                <div>
-                    <LoadingOverlay
-                        active={this.state.isLoading}
-                        spinner
-                        text='Loading status info...'
-                        styles={{
-                            overlay: (base) => ({
-                                ...base,
-                                background: 'rgba(65,105,225,0.5)'
-                            })
-                        }}
-                    >
-                        <div className="row">
-                            <div className="col-sm-12">
-                                &nbsp;
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <Panel>
-                                    <Panel.Heading>Link to AFP submission form</Panel.Heading>
-                                    <Panel.Body><a href={this.state.link_to_afp_form} target="_blank">{this.state.link_to_afp_form}</a></Panel.Body>
-                                </Panel>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <Panel>
-                                    <Panel.Heading>Paper Status</Panel.Heading>
-                                    <Panel.Body>Processed by AFP: &nbsp; <Badge>{this.state.paper_afp_processed}</Badge><br/>
-                                        Data submitted by author: &nbsp; <Badge>{this.state.paper_author_submitted}</Badge><br/>
-                                        Author has modified any data: &nbsp; <Badge>{this.state.paper_author_modified}</Badge>
-                                    </Panel.Body>
-                                </Panel>
-                            </div>
-                        </div>
-                    </LoadingOverlay>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-                                <Tab eventKey={1} title="Lists of entities">
-                                    <EntitiesListsComparison/>
-                                </Tab>
-                                <Tab eventKey={2} title="Automatically flagged data types">
-                                    <FlaggedDataTypes/>
-                                </Tab>
-                                <Tab eventKey={3} title="Other yes/no data types">
-                                    <OtherYesNoDataTypes/>
-                                </Tab>
-                                <Tab eventKey={4} title="Other data types">
-                                    <OtherDataTypes/>
-                                </Tab>
-                                <Tab eventKey={5} title="Comments">
-                                    <Comments/>
-                                </Tab>
-                            </Tabs>
-                        </div>
-                    </div>
-                </div>
-        } else {
-            paper_area =
-                <div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-2">
-                            &nbsp;
-                        </div>
-                        <div className="col-sm-8">
-                             <Jumbotron>
-                                 <h3>Paper not loaded</h3>
-                                 <p>
-                                     Enter the 8 digit ID of a paper to see its AFP curation status.
-                                 </p>
-                             </Jumbotron>
-                        </div>
-                        <div className="col-sm-2">
-                            &nbsp;
-                        </div>
-                    </div>
-                </div>
-        }
-
         return(
             <div className="container-fluid">
                 <div className="row">
@@ -204,12 +98,23 @@ class PaperViewer extends React.Component {
                                 }
                             }><Button onClick={() => {
                                 this.setState({paper_id_from_url: this.state.paper_id});
-
-                            }}>Load Paper</Button></Link>
+                                this.setState({
+                                    api_called: false,
+                                    load_diff: false
+                                });
+                                this.componentDidUpdate();
+                            }}>
+                                Load Paper
+                            </Button></Link>
                         </Form>
                     </div>
                 </div>
-                {paper_area}
+                <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
+                            isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
+                            paper_afp_processed={this.state.paper_afp_processed}
+                            paper_author_submitted={this.state.paper_author_submitted}
+                            paper_author_modified={this.state.paper_author_modified}
+                />
             </div>
         );
     }
