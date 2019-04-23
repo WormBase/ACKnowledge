@@ -24,6 +24,16 @@ class PaperViewer extends React.Component {
         };
         this.setPaperId = this.setPaperId.bind(this);
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
+        this.loadPaper = this.loadPaper.bind(this);
+    }
+
+    loadPaper() {
+        this.setState({paper_id_from_url: this.state.paper_id});
+        this.setState({
+            api_called: false,
+            load_diff: false
+        });
+        this.componentDidUpdate();
     }
 
     loadDataFromAPI() {
@@ -90,20 +100,14 @@ class PaperViewer extends React.Component {
                     <div className="col-sm-12 text-right">
                         <Form inline onSubmit={e => e.preventDefault()}>
                             <FormControl type="text" placeholder="Paper ID - 8 digits"
-                                         onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""/>
+                                         onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""
+                                         onKeyPress={(target) => {if (target.key === 'Enter') {this.loadPaper()}}}/>
                             <Link to={
                                 {
                                     pathname: '/paper',
                                     search: '?paper_id=' + this.state.paper_id
                                 }
-                            }><Button onClick={() => {
-                                this.setState({paper_id_from_url: this.state.paper_id});
-                                this.setState({
-                                    api_called: false,
-                                    load_diff: false
-                                });
-                                this.componentDidUpdate();
-                            }}>
+                            }><Button onClick={this.loadPaper}>
                                 Load Paper
                             </Button></Link>
                         </Form>
