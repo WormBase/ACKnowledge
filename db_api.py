@@ -266,13 +266,15 @@ class StorageEngine(object):
 
     def get_other_data_types(self, paper_id):
         afp_newalleles = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_othervariation", paper_id))])
+            "afp_othervariation", paper_id))]) if self.db_manager.get_feature("afp_othervariation", paper_id) else ""
         afp_newstrains = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_otherstrain", paper_id))])
+            "afp_otherstrain", paper_id))]) if self.db_manager.get_feature("afp_otherstrain", paper_id) else ""
         afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_othertransgene", paper_id))])
-        afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(self.db_manager.get_feature(
-            "afp_othertransgene", paper_id)) if elem["name"] != ""])
+            "afp_othertransgene", paper_id))]) if self.db_manager.get_feature("afp_othertransgene", paper_id) else ""
+        afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in
+                                          json.loads(self.db_manager.get_feature("afp_othertransgene", paper_id)) if
+                                          elem["name"] != ""]) if self.db_manager.get_feature("afp_othertransgene",
+                                                                                              paper_id) else ""
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
                 "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
 
@@ -305,6 +307,12 @@ class StorageEngine(object):
 
     def get_num_entities_extracted_by_afp(self, entity_label):
         return self.db_manager.get_num_entities_extracted_by_afp(entity_label)
+
+    def get_list_paper_ids_afp_processed(self):
+        return self.db_manager.get_list_paper_ids_afp_processed()
+
+    def get_list_paper_ids_afp_submitted(self):
+        return self.db_manager.get_list_paper_ids_afp_submitted()
 
 
 class AFPWriter:
@@ -444,7 +452,7 @@ class AFPReaderAdminLists:
 
     def on_post(self, req, resp, req_type):
         with self.db:
-            if req_type != "stats":
+            if req_type != "stats" and req_type != "papers":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -526,26 +534,35 @@ class AFPReaderAdminLists:
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
             else:
-                num_papers_new_afp_processed = self.db.get_num_papers_new_afp_processed()
-                num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
-                num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
-                num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
-                num_extracted_genes_per_paper = self.db.get_num_entities_extracted_by_afp("genestudied")
-                num_extracted_species_per_paper = self.db.get_num_entities_extracted_by_afp("species")
-                num_extracted_alleles_per_paper = self.db.get_num_entities_extracted_by_afp("variation")
-                num_extracted_strains_per_paper = self.db.get_num_entities_extracted_by_afp("strain")
-                num_extracted_transgenes_per_paper = self.db.get_num_entities_extracted_by_afp("transgene")
-                resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
-                            '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
-                            '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
-                            '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
-                            '"num_extracted_transgenes_per_paper": {}}}'\
-                    .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
-                            num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted,
-                            num_extracted_genes_per_paper, num_extracted_species_per_paper,
-                            num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
-                            num_extracted_transgenes_per_paper)
-                resp.status = falcon.HTTP_200
+                if req_type == "stats":
+                    num_papers_new_afp_processed = self.db.get_num_papers_new_afp_processed()
+                    num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
+                    num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
+                    num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
+                    num_extracted_genes_per_paper = self.db.get_num_entities_extracted_by_afp("genestudied")
+                    num_extracted_species_per_paper = self.db.get_num_entities_extracted_by_afp("species")
+                    num_extracted_alleles_per_paper = self.db.get_num_entities_extracted_by_afp("variation")
+                    num_extracted_strains_per_paper = self.db.get_num_entities_extracted_by_afp("strain")
+                    num_extracted_transgenes_per_paper = self.db.get_num_entities_extracted_by_afp("transgene")
+                    resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
+                                '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
+                                '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
+                                '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
+                                '"num_extracted_transgenes_per_paper": {}}}'\
+                        .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
+                                num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted,
+                                num_extracted_genes_per_paper, num_extracted_species_per_paper,
+                                num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
+                                num_extracted_transgenes_per_paper)
+                    resp.status = falcon.HTTP_200
+                elif req_type == "papers":
+                    list_processed_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                                   self.db.get_list_paper_ids_afp_processed()])
+                    list_submitted_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                                   self.db.get_list_paper_ids_afp_submitted()])
+                    resp.body = '{{"list_processed_ids": [{}], "list_submitted_ids": [{}]}}'.format(list_processed_ids,
+                                                                                                    list_submitted_ids)
+                    resp.status = falcon.HTTP_200
 
 
 def main():

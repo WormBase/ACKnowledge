@@ -685,11 +685,11 @@ class DBManager(object):
                          .format(paper_id))
         rows = self.cur.fetchall()
         for row in rows:
-            self.cur.execute("SELECT afp_{} = '' AND '{}' <> 'medium' AND '{}' <> 'high' OR (afp_{} <> '' AND '{}' = "
-                             "'medium' OR '{}' = 'high') from afp_{} WHERE "
+            self.cur.execute("SELECT afp_{} = '' AND ('{}' = 'medium' OR '{}' = 'high') OR (afp_{} <> '' AND '{}' <> "
+                             "'medium' AND '{}' <> 'high') from afp_{} WHERE "
                              "joinkey = '{}'".format(row[0], row[1], row[1], row[0], row[1], row[1], row[0], paper_id))
-            row = self.cur.fetchone()
-            if row and row[0]:
+            row2 = self.cur.fetchone()
+            if row2 and row2[0]:
                 return True
         self.cur.execute("SELECT afp_structcorr.afp_structcorr <> '' OR afp_antibody.afp_antibody <> '' OR "
                          "afp_siteaction.afp_siteaction <> '' OR afp_timeaction.afp_timeaction <> '' OR "
@@ -704,18 +704,27 @@ class DBManager(object):
                          "JOIN afp_envpheno ON afp_structcorr.joinkey = afp_envpheno.joinkey "
                          "JOIN afp_catalyticact ON afp_structcorr.joinkey = afp_catalyticact.joinkey "
                          "JOIN afp_comment ON afp_structcorr.joinkey = afp_comment.joinkey "
-                         "WHERE afp_g.joinkey = '{}'".format(paper_id))
+                         "WHERE afp_structcorr.joinkey = '{}'".format(paper_id))
         row = self.cur.fetchone()
         if row and row[0]:
             return True
-        afp_newalleles = [elem['name'] for elem in json.loads(self.get_feature("afp_othervariation", paper_id))
-                          if elem["name"] != ""]
-        afp_newstrains = [elem['name'] for elem in json.loads(self.get_feature("afp_otherstrain", paper_id))
-                          if elem["name"] != ""]
-        afp_newtransgenes = [elem['name'] for elem in json.loads(self.get_feature("afp_othertransgene", paper_id))
-                             if elem["name"] != ""]
-        afp_otherantibodies = [elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(self.get_feature(
-                "afp_othertransgene", paper_id)) if elem["name"] != ""]
+        afp_newalleles = []
+        afp_newstrains = []
+        afp_newtransgenes = []
+        afp_otherantibodies = []
+        new_alleles_raw = self.get_feature("afp_othervariation", paper_id)
+        if new_alleles_raw:
+            afp_newalleles = [elem['name'] for elem in json.loads(new_alleles_raw) if elem["name"] != ""]
+        newstrains_raw = self.get_feature("afp_otherstrain", paper_id)
+        if newstrains_raw:
+            afp_newstrains = [elem['name'] for elem in json.loads(newstrains_raw) if elem["name"] != ""]
+        newtransgenes_raw = self.get_feature("afp_othertransgene", paper_id)
+        if newtransgenes_raw:
+            afp_newtransgenes = [elem['name'] for elem in json.loads(newtransgenes_raw) if elem["name"] != ""]
+        otherantibodies_raw = self.get_feature("afp_othertransgene", paper_id)
+        if otherantibodies_raw:
+            afp_otherantibodies = [elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(
+                otherantibodies_raw) if elem["name"] != ""]
         if len(afp_newalleles) > 0 or len(afp_newstrains) > 0 or len(afp_newtransgenes) > 0 or \
                 len(afp_otherantibodies) > 0:
             return True
@@ -788,12 +797,25 @@ class DBManager(object):
         return [len(row[0].split(" | ")) for row in res]
 
     def get_doi_from_paper_id(self, paper_id):
-        self.cur.execute("SELECT pap_identifier FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier LIKE 'doi%'".format(paper_id))
+        self.cur.execute("SELECT pap_identifier FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier "
+                         "LIKE 'doi%'".format(paper_id))
         res = self.cur.fetchone()
         if res and res[0].startswith("doi"):
             return res[0][3:]
         else:
             return ""
+
+    def get_list_paper_ids_afp_processed(self):
+        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2'")
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_list_paper_ids_afp_submitted(self):
+        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2'")
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
 
 
 
