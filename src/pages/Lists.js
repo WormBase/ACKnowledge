@@ -39,6 +39,9 @@ class Lists extends React.Component {
                                     <Tab eventKey={2} title="Papers with final data submitted by authors">
                                         <PaginatedPapersList listType="submitted" />
                                     </Tab>
+                                    <Tab eventKey={3} title="Papers with partially submitted data">
+                                        <PaginatedPapersList listType="partial" />
+                                    </Tab>
                                 </Tabs>
                             </PanelBody>
                         </Panel>
