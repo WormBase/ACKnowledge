@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
-import {ControlLabel, Form, FormControl, FormGroup, ListGroup, ListGroupItem, Pagination} from "react-bootstrap";
+import {Badge, ControlLabel, Form, FormControl, FormGroup, ListGroup, ListGroupItem, Pagination} from "react-bootstrap";
 import {Link} from "react-router-dom";
 
 class PaginatedPapersList extends React.Component {
@@ -102,25 +102,7 @@ class PaginatedPapersList extends React.Component {
                 >
                     <div className="row">
                         <div className="col-sm-2">
-                            <Form>
-                                <FormGroup controlId="formBasicEmail">
-                                    <ControlLabel>Papers per page</ControlLabel>
-                                    <FormControl
-                                        type="text"
-                                        placeholder={this.state.count}
-                                        onInput={(event) => {
-                                            if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value)) {
-                                                this.setState({
-                                                    count: event.target.value,
-                                                    from_offset: 0,
-                                                    active_page: 1,
-                                                    refresh_list: true
-                                                })
-                                            }
-                                        }}
-                                    />
-                                </FormGroup>
-                            </Form>
+                            <ControlLabel>Number of papers:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
                         </div>
                     </div>
                     <div className="row">
@@ -156,6 +138,29 @@ class PaginatedPapersList extends React.Component {
                                         <Link to={{pathname: '/paper', search: '?paper_id=' + item}}>{item}</Link>
                                     </ListGroupItem>)}
                             </ListGroup>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-3">
+                            <Form>
+                                <FormGroup controlId="formBasicEmail">
+                                    <ControlLabel>Papers per page: </ControlLabel>
+                                    <FormControl
+                                        type="text"
+                                        placeholder={this.state.count}
+                                        onInput={(event) => {
+                                            if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value)) {
+                                                this.setState({
+                                                    count: event.target.value,
+                                                    from_offset: 0,
+                                                    active_page: 1,
+                                                    refresh_list: true
+                                                })
+                                            }
+                                        }}
+                                    />
+                                </FormGroup>
+                            </Form>
                         </div>
                     </div>
                 </LoadingOverlay>
