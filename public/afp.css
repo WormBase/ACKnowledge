@@ -33,8 +33,8 @@ body {
 
 .main-page {
     height: 100vh;
-    max-height: 900px;
-    overflow-y: scroll;
+    max-height: 100vh;
+    overflow-y: auto;
 }
 
 .aw:link {
