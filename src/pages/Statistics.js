@@ -1,7 +1,6 @@
 import React from 'react';
 import * as d3 from 'd3';
 import LoadingOverlay from 'react-loading-overlay';
-import PanelTitle from "react-bootstrap/es/PanelTitle";
 import PanelBody from "react-bootstrap/es/PanelBody";
 import {Panel} from "react-bootstrap";
 import PanelHeading from "react-bootstrap/es/PanelHeading";

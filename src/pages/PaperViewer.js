@@ -28,11 +28,7 @@ class PaperViewer extends React.Component {
     }
 
     loadPaper() {
-        this.setState({paper_id_from_url: this.state.paper_id});
-        this.setState({
-            api_called: false,
-            load_diff: false
-        });
+        this.setState({paper_id_from_url: this.state.paper_id, api_called: false, load_diff: false});
         this.componentDidUpdate();
     }
 
@@ -64,7 +60,7 @@ class PaperViewer extends React.Component {
                     link_to_afp_form: data["afp_form_link"],
                     isLoading: false
                 });
-                if (data["author_submitted"] === true) {
+                if (data["author_submitted"] === true || data["author_modified"] === true) {
                     this.setState({load_diff: true});
                 }
             }).catch((err) => {

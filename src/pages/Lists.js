@@ -36,7 +36,7 @@ class Lists extends React.Component {
                                     <Tab eventKey={1} title="Papers processed by the new AFP">
                                         <PaginatedPapersList listType="processed" />
                                     </Tab>
-                                    <Tab eventKey={2} title="Papers with data submitted by authors">
+                                    <Tab eventKey={2} title="Papers with final data submitted by authors">
                                         <PaginatedPapersList listType="submitted" />
                                     </Tab>
                                 </Tabs>
