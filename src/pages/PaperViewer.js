@@ -101,7 +101,9 @@ class PaperViewer extends React.Component {
                         <Form inline onSubmit={e => e.preventDefault()}>
                             <FormControl type="text" placeholder="Paper ID - 8 digits"
                                          onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""
-                                         onKeyPress={(target) => {if (target.key === 'Enter') {this.loadPaper()}}}/>
+                                         onKeyPress={(target) => {if (target.key === 'Enter') {
+                                             this.props.history.push('?paper_id=' + this.state.paper_id);
+                                             this.loadPaper()}}}/>
                             <Link to={
                                 {
                                     pathname: '/paper',
