@@ -308,11 +308,11 @@ class StorageEngine(object):
     def get_num_entities_extracted_by_afp(self, entity_label):
         return self.db_manager.get_num_entities_extracted_by_afp(entity_label)
 
-    def get_list_paper_ids_afp_processed(self):
-        return self.db_manager.get_list_paper_ids_afp_processed()
+    def get_list_paper_ids_afp_processed(self, from_offset, count):
+        return self.db_manager.get_list_paper_ids_afp_processed(from_offset, count)
 
-    def get_list_paper_ids_afp_submitted(self):
-        return self.db_manager.get_list_paper_ids_afp_submitted()
+    def get_list_paper_ids_afp_submitted(self, from_offset, count):
+        return self.db_manager.get_list_paper_ids_afp_submitted(from_offset, count)
 
 
 class AFPWriter:
@@ -556,12 +556,18 @@ class AFPReaderAdminLists:
                                 num_extracted_transgenes_per_paper)
                     resp.status = falcon.HTTP_200
                 elif req_type == "papers":
-                    list_processed_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                                   self.db.get_list_paper_ids_afp_processed()])
-                    list_submitted_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                                   self.db.get_list_paper_ids_afp_submitted()])
-                    resp.body = '{{"list_processed_ids": [{}], "list_submitted_ids": [{}]}}'.format(list_processed_ids,
-                                                                                                    list_submitted_ids)
+                    from_offset = req.media["from"]
+                    count = req.media["count"]
+                    list_type = req.media["list_type"]
+                    if list_type == "processed":
+                        num_papers = self.db.get_num_papers_new_afp_processed()
+                        list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                             self.db.get_list_paper_ids_afp_processed(from_offset, count)])
+                    else:
+                        num_papers = self.db.get_num_papers_new_afp_author_submitted()
+                        list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                             self.db.get_list_paper_ids_afp_submitted(from_offset, count)])
+                    resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(list_ids, num_papers)
                     resp.status = falcon.HTTP_200
 
 

@@ -805,14 +805,16 @@ class DBManager(object):
         else:
             return ""
 
-    def get_list_paper_ids_afp_processed(self):
-        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2'")
+    def get_list_paper_ids_afp_processed(self, from_offset, count):
+        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2' ORDER BY joinkey ASC "
+                         "OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
-    def get_list_paper_ids_afp_submitted(self):
+    def get_list_paper_ids_afp_submitted(self, from_offset, count):
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2'")
+                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2' "
+                         "ORDER BY joinkey ASC OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
