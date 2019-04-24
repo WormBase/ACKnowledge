@@ -314,6 +314,12 @@ class StorageEngine(object):
     def get_list_paper_ids_afp_submitted(self, from_offset, count):
         return self.db_manager.get_list_paper_ids_afp_submitted(from_offset, count)
 
+    def get_num_papers_new_afp_partial_submissions(self):
+        return self.db_manager.get_num_papers_new_afp_partial_submissions()
+
+    def get_list_papers_new_afp_partial_submissions(self, from_offset, count):
+        return self.db_manager.get_list_papers_new_afp_partial_submissions(from_offset, count)
+
 
 class AFPWriter:
 
@@ -563,10 +569,14 @@ class AFPReaderAdminLists:
                         num_papers = self.db.get_num_papers_new_afp_processed()
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_paper_ids_afp_processed(from_offset, count)])
-                    else:
+                    elif list_type == "submitted":
                         num_papers = self.db.get_num_papers_new_afp_author_submitted()
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_paper_ids_afp_submitted(from_offset, count)])
+                    elif list_type == "partial":
+                        num_papers = self.db.get_num_papers_new_afp_partial_submissions()
+                        list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                             self.db.get_list_papers_new_afp_partial_submissions(from_offset, count)])
                     resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(list_ids, num_papers)
                     resp.status = falcon.HTTP_200
 
