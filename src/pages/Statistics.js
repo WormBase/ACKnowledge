@@ -65,7 +65,8 @@ class Statistics extends React.Component {
                 return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
             })
             .attr("text-anchor", "middle")                          //center the text on it's origin
-            .text(function(d, i) { return ["Old AFP (" + oldCount + ")", "New AFP(" + newCount + ")"][i]; });
+            .text(function(d, i) { return ["Old AFP (" + oldCount + ")", "New AFP(" + newCount + ")"][i]; })
+            .style('fill', 'white');
 
         svg.append("g")
             .attr("transform", "translate(" + (width / 2 - title.length * 3.5) + "," + 20 + ")")
