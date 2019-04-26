@@ -1,12 +1,8 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 import {
-    Badge, Button,
+    Badge,
     ControlLabel,
-    Form,
-    FormControl,
-    FormControlFeedback,
-    FormGroup,
     ListGroup,
     ListGroupItem,
     Pagination
@@ -20,15 +16,14 @@ class PaginatedPapersList extends React.Component {
             list_papers: [],
             num_papers: 0,
             from_offset: 0,
-            count: 20,
             active_page: 1,
             cx: 0,
             isLoading: false,
-            refresh_list: false,
-            countValidationState: null,
-            tmp_count: 0
+            refresh_list: this.props.refreshList,
+            countValidationState: null
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
+        this.refreshList = this.refreshList.bind(this);
     }
 
     componentDidMount() {
@@ -42,11 +37,15 @@ class PaginatedPapersList extends React.Component {
         }
     }
 
+    refreshList() {
+        this.setState({offset_from: 0, refresh_list: true});
+    }
+
     loadDataFromAPI() {
         this.setState({isLoading: true});
         let payload = {
             from: this.state.from_offset,
-            count: this.state.count,
+            count: this.props.papersPerPage,
             list_type: this.props.listType
         };
         fetch(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers", {
@@ -79,13 +78,13 @@ class PaginatedPapersList extends React.Component {
     render() {
 
         let items = [];
-        for (let number = 1; number <= Math.ceil(this.state.num_papers / this.state.count); number++) {
+        for (let number = 1; number <= Math.ceil(this.state.num_papers / this.props.papersPerPage); number++) {
             items.push(
                 <Pagination.Item key={number} active={number === this.state.active_page}
                                  onClick={() => {
                                      this.setState({
                                          active_page: number,
-                                         from_offset: (number - 1) * this.state.count,
+                                         from_offset: (number - 1) * this.props.papersPerPage,
                                          refresh_list: true
                                      });
                                  }}>
@@ -113,7 +112,7 @@ class PaginatedPapersList extends React.Component {
                     }}
                 >
                     <div className="row">
-                        <div className="col-sm-2">
+                        <div className="col-sm-12">
                             <ControlLabel>Number of papers:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
                         </div>
                     </div>
@@ -128,20 +127,20 @@ class PaginatedPapersList extends React.Component {
                                     if (this.state.active_page > 1) {
                                         this.setState({
                                             active_page: this.state.active_page - 1,
-                                            from_offset: this.state.from_offset - this.state.count,
+                                            from_offset: parseInt(this.state.from_offset) - parseInt(this.props.papersPerPage),
                                             refresh_list: true})
                                     }}} />
                                 {items}
                                 <Pagination.Next onClick={() => {
-                                    if (this.state.active_page <  Math.ceil(this.state.num_papers / this.state.count)) {
+                                    if (this.state.active_page <  Math.ceil(this.state.num_papers / this.props.papersPerPage)) {
                                         this.setState({
                                             active_page: this.state.active_page + 1,
-                                            from_offset: this.state.from_offset + this.state.count,
-                                            refresh_list: true})
+                                            from_offset: parseInt(this.state.from_offset) + parseInt(this.props.papersPerPage),
+                                            refresh_list: true});
                                 }}} />
                                 <Pagination.Last onClick={() => {this.setState({
-                                    active_page: Math.ceil(this.state.num_papers / this.state.count),
-                                    from_offset: (Math.ceil(this.state.num_papers / this.state.count) - 1) * this.state.count,
+                                    active_page: Math.ceil(this.state.num_papers / this.props.papersPerPage),
+                                    from_offset: (Math.ceil(this.state.num_papers / this.props.papersPerPage) - 1) * this.props.papersPerPage,
                                     refresh_list: true})}} />
                             </Pagination>
                             <ListGroup>
@@ -150,51 +149,6 @@ class PaginatedPapersList extends React.Component {
                                         <Link to={{pathname: '/paper', search: '?paper_id=' + item}}>{item}</Link>
                                     </ListGroupItem>)}
                             </ListGroup>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            <Form onSubmit={e => e.preventDefault()} inline>
-                                <FormGroup controlId="formValidationError2"
-                                           validationState={this.state.countValidationState}>
-                                    <ControlLabel>Papers per page: &nbsp;</ControlLabel>
-                                    <FormControl
-                                        type="text" autoComplete="off" maxLength="3" bsSize="small"
-                                        placeholder={this.state.count}
-                                        onInput={(event) => {
-                                            if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
-                                                this.setState({
-                                                    tmp_count: event.target.value,
-                                                    countValidationState: null
-                                                })
-                                            } else if (event.target.value !== "") {
-                                                this.setState({
-                                                    countValidationState: "error"
-                                                })
-                                            } else {
-                                                this.setState({
-                                                    countValidationState: null
-                                                })
-                                            }
-                                        }}
-                                        onKeyPress={(target) => {if (target.key === 'Enter' && this.state.tmp_count > 0) {
-                                            this.setState({
-                                                count: this.state.tmp_count,
-                                                from_offset: 0,
-                                                active_page: 1,
-                                                refresh_list: true
-                                            })
-                                        }}}
-                                    />
-                                    <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0)
-                                        this.setState({
-                                            count: this.state.tmp_count,
-                                            from_offset: 0,
-                                            active_page: 1,
-                                            refresh_list: true
-                                        })}}>Refresh</Button>
-                                </FormGroup>
-                            </Form>
                         </div>
                     </div>
                 </LoadingOverlay>

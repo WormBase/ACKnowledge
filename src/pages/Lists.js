@@ -1,5 +1,5 @@
 import React from 'react';
-import {Panel, Tab, Tabs} from "react-bootstrap";
+import {Button, ControlLabel, Form, FormControl, FormGroup, Panel, Tab, Tabs} from "react-bootstrap";
 import PanelBody from "react-bootstrap/es/PanelBody";
 import PanelHeading from "react-bootstrap/es/PanelHeading";
 import PaginatedPapersList from "../page_components/PaginatedPapersList";
@@ -29,6 +29,8 @@ class Lists extends React.Component {
             cx: 0,
             isLoading: false,
             activeTabKey: activeTabKey,
+            papersPerPage: 20,
+            tmp_count: 20
         };
     }
 
@@ -37,22 +39,88 @@ class Lists extends React.Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-sm-12">
+                        &nbsp;
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-4">
                         <Panel>
-                            <PanelHeading>Lists of Paper IDs in the system</PanelHeading>
+                            <PanelHeading>Papers processed by the new AFP</PanelHeading>
                             <PanelBody>
-                                <Tabs defaultActiveKey={this.state.activeTabKey} id="uncontrolled-tab-example">
-                                    <Tab eventKey={1} title="Papers processed by the new AFP">
-                                        <PaginatedPapersList listType="processed" />
-                                    </Tab>
-                                    <Tab eventKey={2} title="Papers with final data submitted by authors">
-                                        <PaginatedPapersList listType="submitted" />
-                                    </Tab>
-                                    <Tab eventKey={3} title="Papers with partially submitted data">
-                                        <PaginatedPapersList listType="partial" />
-                                    </Tab>
-                                </Tabs>
+                                <PaginatedPapersList listType="processed"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.processedList = instance}}
+                                />
                             </PanelBody>
                         </Panel>
+                    </div>
+                    <div className="col-sm-4">
+                        <Panel>
+                            <PanelHeading>Papers with final data submitted by authors</PanelHeading>
+                            <PanelBody>
+                                <PaginatedPapersList listType="submitted"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.submittedList = instance}}
+                                />
+                            </PanelBody>
+                        </Panel>
+                    </div>
+                    <div className="col-sm-4">
+                        <Panel>
+                            <PanelHeading>Papers with partially submitted data</PanelHeading>
+                            <PanelBody>
+                                <PaginatedPapersList listType="partial"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.partialList = instance}}
+                                />
+                            </PanelBody>
+                        </Panel>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-12">
+                        <Form onSubmit={e => e.preventDefault()} inline>
+                            <FormGroup controlId="formValidationError2"
+                                       validationState={this.state.countValidationState}>
+                                <ControlLabel>Papers per page: &nbsp;</ControlLabel>
+                                <FormControl
+                                    type="text" autoComplete="off" maxLength="3" bsSize="small"
+                                    placeholder={this.state.papersPerPage}
+                                    onInput={(event) => {
+                                        if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
+                                            this.setState({
+                                                tmp_count: event.target.value,
+                                                countValidationState: null
+                                            })
+                                        } else if (event.target.value !== "") {
+                                            this.setState({
+                                                countValidationState: "error"
+                                            })
+                                        } else {
+                                            this.setState({
+                                                countValidationState: null
+                                            })
+                                        }
+                                    }}
+                                    onKeyPress={(target) => {if (target.key === 'Enter' && this.state.tmp_count > 0) {
+                                        this.setState({
+                                            papersPerPage: this.state.tmp_count,
+                                        });
+                                        this.processedList.refreshList();
+                                        this.submittedList.refreshList();
+                                        this.partialList.refreshList();
+                                    }}}
+                                />
+                                <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0) {
+                                    this.setState({
+                                        papersPerPage: this.state.tmp_count,
+                                    });
+                                    this.processedList.refreshList();
+                                    this.submittedList.refreshList();
+                                    this.partialList.refreshList();
+                                }}}>Refresh</Button>
+                            </FormGroup>
+                        </Form>
                     </div>
                 </div>
             </div>

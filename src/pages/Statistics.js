@@ -166,17 +166,17 @@ class Statistics extends React.Component {
             });
             this.drawAFPPie("processedPapersPie", [this.state.num_papers_old_afp_processed,
                 this.state.num_papers_new_afp_processed,], ["Old AFP (" + this.state.num_papers_old_afp_processed + ")",
-                "New AFP(" + this.state.num_papers_new_afp_processed + ")"], [undefined, "1"],
+                "New AFP(" + this.state.num_papers_new_afp_processed + ")"], [undefined, undefined],
                 "Papers Processed by AFP", this.props.location.search);
             this.drawAFPPie("submittedPapersPie", [this.state.num_papers_old_afp_author_submitted,
                 this.state.num_papers_new_afp_author_submitted], ["Old AFP (" + this.state.num_papers_old_afp_author_submitted + ")",
-                "New AFP(" + this.state.num_papers_new_afp_author_submitted + ")"], [undefined, "2"],
+                "New AFP(" + this.state.num_papers_new_afp_author_submitted + ")"], [undefined, undefined],
                 "Data Submitted through AFP", this.props.location.search);
             this.drawAFPPie("subVSprocPie", [this.state.num_papers_new_afp_proc_no_sub,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
                 ["Proc no sub (" + this.state.num_papers_new_afp_proc_no_sub + ")",
                 "Full sub (" + this.state.num_papers_new_afp_author_submitted + ")",
-                "Part sub (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, "2", "3"],
+                "Part sub (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
                 "New AFP: Submitted and Processed Data", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);

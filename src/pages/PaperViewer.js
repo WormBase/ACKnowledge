@@ -25,7 +25,10 @@ class PaperViewer extends React.Component {
             link_to_afp_form: "",
             load_diff: false,
             isLoading: true,
-            api_called: false
+            api_called: false,
+            paper_title: "",
+            paper_journal: "",
+            author_address: ""
         };
         this.setPaperId = this.setPaperId.bind(this);
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
@@ -63,6 +66,9 @@ class PaperViewer extends React.Component {
                     paper_author_submitted: data["author_submitted"] ? "TRUE" : "FALSE",
                     paper_author_modified: data["author_modified"] ? "TRUE" : "FALSE",
                     link_to_afp_form: data["afp_form_link"],
+                    paper_title: data["title"],
+                    paper_journal: data["journal"],
+                    author_address: data["email"],
                     isLoading: false
                 });
                 if (data["author_submitted"] === true || data["author_modified"] === true) {
@@ -121,6 +127,9 @@ class PaperViewer extends React.Component {
                             paper_afp_processed={this.state.paper_afp_processed}
                             paper_author_submitted={this.state.paper_author_submitted}
                             paper_author_modified={this.state.paper_author_modified}
+                            paper_title={this.state.paper_title}
+                            paper_journal={this.state.paper_journal}
+                            email={this.state.author_address}
                 />
             </div>
         );

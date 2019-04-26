@@ -37,6 +37,17 @@ class StatusArea extends React.Component {
                         <div className="row">
                             <div className="col-sm-12">
                                 <Panel>
+                                    <Panel.Heading>Paper Info</Panel.Heading>
+                                    <Panel.Body><strong>Title:</strong> &nbsp; {this.props.paper_title}<br/>
+                                        <strong>Journal:</strong> &nbsp; {this.props.paper_journal}<br/>
+                                        <strong>Email:</strong> &nbsp; {this.props.email}
+                                    </Panel.Body>
+                                </Panel>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <Panel>
                                     <Panel.Heading>Paper Status</Panel.Heading>
                                     <Panel.Body>Processed by AFP: &nbsp; <Badge>{this.props.paper_afp_processed}</Badge><br/>
                                         Final data submitted by author: &nbsp; <Badge>{this.props.paper_author_submitted}</Badge><br/>
