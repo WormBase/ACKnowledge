@@ -8,6 +8,12 @@ import PaginatedPapersList from "../page_components/PaginatedPapersList";
 class Lists extends React.Component {
     constructor(props, context) {
         super(props, context);
+        let url = document.location.toString();
+        let activeTabKey = 1;
+        if (url.match('#')) {
+            activeTabKey = parseInt(url.split('#')[1])
+        }
+
         this.state = {
             list_papers_processed: [],
             list_papers_submitted: [],
@@ -20,7 +26,8 @@ class Lists extends React.Component {
             active_page_processed: 1,
             active_page_submitted: 1,
             cx: 0,
-            isLoading: false
+            isLoading: false,
+            activeTabKey: activeTabKey,
         };
     }
 
@@ -32,7 +39,7 @@ class Lists extends React.Component {
                         <Panel>
                             <PanelHeading>Lists of Paper IDs in the system</PanelHeading>
                             <PanelBody>
-                                <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                                <Tabs defaultActiveKey={this.state.activeTabKey} id="uncontrolled-tab-example">
                                     <Tab eventKey={1} title="Papers processed by the new AFP">
                                         <PaginatedPapersList listType="processed" />
                                     </Tab>

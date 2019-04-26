@@ -1,6 +1,16 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
-import {Badge, ControlLabel, Form, FormControl, FormGroup, ListGroup, ListGroupItem, Pagination} from "react-bootstrap";
+import {
+    Badge, Button,
+    ControlLabel,
+    Form,
+    FormControl,
+    FormControlFeedback,
+    FormGroup,
+    ListGroup,
+    ListGroupItem,
+    Pagination
+} from "react-bootstrap";
 import {Link} from "react-router-dom";
 
 class PaginatedPapersList extends React.Component {
@@ -14,7 +24,9 @@ class PaginatedPapersList extends React.Component {
             active_page: 1,
             cx: 0,
             isLoading: false,
-            refresh_list: false
+            refresh_list: false,
+            countValidationState: null,
+            tmp_count: 0
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
     }
@@ -141,24 +153,46 @@ class PaginatedPapersList extends React.Component {
                         </div>
                     </div>
                     <div className="row">
-                        <div className="col-sm-3">
-                            <Form>
-                                <FormGroup controlId="formBasicEmail">
-                                    <ControlLabel>Papers per page: </ControlLabel>
+                        <div className="col-sm-12">
+                            <Form onSubmit={e => e.preventDefault()} inline>
+                                <FormGroup controlId="formValidationError2"
+                                           validationState={this.state.countValidationState}>
+                                    <ControlLabel>Papers per page: &nbsp;</ControlLabel>
                                     <FormControl
-                                        type="text"
+                                        type="text" autoComplete="off" maxLength="3" bsSize="small"
                                         placeholder={this.state.count}
                                         onInput={(event) => {
-                                            if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value)) {
+                                            if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
                                                 this.setState({
-                                                    count: event.target.value,
-                                                    from_offset: 0,
-                                                    active_page: 1,
-                                                    refresh_list: true
+                                                    tmp_count: event.target.value,
+                                                    countValidationState: null
+                                                })
+                                            } else if (event.target.value !== "") {
+                                                this.setState({
+                                                    countValidationState: "error"
+                                                })
+                                            } else {
+                                                this.setState({
+                                                    countValidationState: null
                                                 })
                                             }
                                         }}
+                                        onKeyPress={(target) => {if (target.key === 'Enter' && this.state.tmp_count > 0) {
+                                            this.setState({
+                                                count: this.state.tmp_count,
+                                                from_offset: 0,
+                                                active_page: 1,
+                                                refresh_list: true
+                                            })
+                                        }}}
                                     />
+                                    <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0)
+                                        this.setState({
+                                            count: this.state.tmp_count,
+                                            from_offset: 0,
+                                            active_page: 1,
+                                            refresh_list: true
+                                        })}}>Refresh</Button>
                                 </FormGroup>
                             </Form>
                         </div>
