@@ -320,6 +320,9 @@ class StorageEngine(object):
     def get_list_papers_new_afp_partial_submissions(self, from_offset, count):
         return self.db_manager.get_list_papers_new_afp_partial_submissions(from_offset, count)
 
+    def get_corresponding_author_email(self, paper_id):
+        return self.db_manager.get_corresponding_author_email(paper_id)
+
 
 class AFPWriter:
 
@@ -467,8 +470,12 @@ class AFPReaderAdminLists:
                     author_submitted = self.db.author_has_submitted(paper_id)
                     author_modified = self.db.author_has_modified(paper_id)
                     afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
-                    resp.body = '{{"afp_processed": {}, "author_submitted": {}, "author_modified": {}, "afp_form_link": ' \
-                                '"{}"}}'.format(
+                    title = self.db.get_paper_title(paper_id)
+                    journal = self.db.get_paper_journal(paper_id)
+                    email = self.db.get_corresponding_author_email(paper_id)
+                    resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
+                                '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}"}}'.format(
+                        title, journal, email,
                         "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
                         author_modified else "false", afp_form_link)
                     resp.status = falcon.HTTP_200

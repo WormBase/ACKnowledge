@@ -738,6 +738,14 @@ class DBManager(object):
         else:
             return None
 
+    def get_corresponding_author_email(self, paper_id):
+        self.cur.execute("SELECT afp_email FROM afp_email WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
     def get_afp_form_link(self, paper_id, base_url):
         passwd = self.get_passwd(paper_id)
         title = self.get_paper_title(paper_id)
