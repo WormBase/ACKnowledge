@@ -3,6 +3,8 @@ import {Panel, Tab, Tabs} from "react-bootstrap";
 import PanelBody from "react-bootstrap/es/PanelBody";
 import PanelHeading from "react-bootstrap/es/PanelHeading";
 import PaginatedPapersList from "../page_components/PaginatedPapersList";
+import {withRouter} from "react-router-dom";
+
 
 
 class Lists extends React.Component {
@@ -13,7 +15,6 @@ class Lists extends React.Component {
         if (url.match('#')) {
             activeTabKey = parseInt(url.split('#')[1])
         }
-
         this.state = {
             list_papers_processed: [],
             list_papers_submitted: [],
@@ -59,4 +60,4 @@ class Lists extends React.Component {
     }
 }
 
-export default Lists;
+export default withRouter(Lists);

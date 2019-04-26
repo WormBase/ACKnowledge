@@ -11,9 +11,14 @@ import StatusArea from "./paper_viewer_subpages/StatusArea";
 class PaperViewer extends React.Component {
     constructor(props, context) {
         super(props, context);
+        let paper_id = undefined;
+        let url = document.location.toString();
+        if (url.match("\\?")) {
+            paper_id = queryString.parse(document.location.search).paper_id
+        }
         this.state = {
             paper_id: undefined,
-            paper_id_from_url: queryString.parse(this.props.location.search).paper_id,
+            paper_id_from_url: paper_id,
             paper_afp_processed: "NOT LOADED",
             paper_author_submitted: "NOT LOADED",
             paper_author_modified: "NOT LOADED",

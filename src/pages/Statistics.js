@@ -26,13 +26,14 @@ class Statistics extends React.Component {
             isLoading: false
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
+        this.drawAFPPie = this.drawAFPPie.bind(this);
     }
 
     componentDidMount() {
         this.loadDataFromAPI();
     }
 
-    drawAFPPie(pieId, counts, labels, title) {
+    drawAFPPie(pieId, counts, labels, linkedListsKeys, title, extraUrlArgs) {
         let svg = d3.select("#" + pieId ),
         width = svg.attr("width"),
         height = svg.attr("height"),
@@ -40,7 +41,7 @@ class Statistics extends React.Component {
         g = svg.append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-        let color = d3.scaleOrdinal(d3.schemeCategory10);
+        let color = d3.scaleOrdinal(d3.schemeAccent);
 
         // Generate the pie
         let pie = d3.pie();
@@ -68,8 +69,8 @@ class Statistics extends React.Component {
                 return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
             })
             .attr("text-anchor", "middle")                          //center the text on it's origin
-            .text(function(d, i) { return labels[i]; })
-            .style('fill', 'white');
+            .html(function(d, i) { if (linkedListsKeys[i] !== undefined) { return '<a href="/lists#' +
+                linkedListsKeys[i] + extraUrlArgs + '" onclick="location.reload()">' + labels[i] + '</a>' } else { return labels[i] }});
 
         svg.append("g")
             .attr("transform", "translate(" + (width / 2 - title.length * 3.5) + "," + 20 + ")")
@@ -82,7 +83,7 @@ class Statistics extends React.Component {
         let color = "steelblue";
         let formatCount = d3.format(",.0f");
         let margin = {top: 20, right: 30, bottom: 30, left: 40},
-            width = 720 - margin.left - margin.right,
+            width = window.innerWidth / 3 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
         let max = d3.max(values) + 1;
@@ -165,16 +166,18 @@ class Statistics extends React.Component {
             });
             this.drawAFPPie("processedPapersPie", [this.state.num_papers_old_afp_processed,
                 this.state.num_papers_new_afp_processed,], ["Old AFP (" + this.state.num_papers_old_afp_processed + ")",
-                "New AFP(" + this.state.num_papers_new_afp_processed + ")"], "Papers Processed by AFP");
+                "New AFP(" + this.state.num_papers_new_afp_processed + ")"], [undefined, "1"],
+                "Papers Processed by AFP", this.props.location.search);
             this.drawAFPPie("submittedPapersPie", [this.state.num_papers_old_afp_author_submitted,
                 this.state.num_papers_new_afp_author_submitted], ["Old AFP (" + this.state.num_papers_old_afp_author_submitted + ")",
-                "New AFP(" + this.state.num_papers_new_afp_author_submitted + ")"], "Data Submitted through AFP");
+                "New AFP(" + this.state.num_papers_new_afp_author_submitted + ")"], [undefined, "2"],
+                "Data Submitted through AFP", this.props.location.search);
             this.drawAFPPie("subVSprocPie", [this.state.num_papers_new_afp_proc_no_sub,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
                 ["Proc no sub (" + this.state.num_papers_new_afp_proc_no_sub + ")",
                 "Full sub (" + this.state.num_papers_new_afp_author_submitted + ")",
-                "Part sub (" + this.state.num_papers_new_afp_partial_sub + ")"],
-                "New AFP: Submitted and Processed Data");
+                "Part sub (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, "2", "3"],
+                "New AFP: Submitted and Processed Data", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);
             this.drawAFPChart("numAllelesHist", this.state.num_extracted_alleles_per_paper);
@@ -214,9 +217,9 @@ class Statistics extends React.Component {
                                     Data processed by old and new AFP and submitted by authors
                                 </PanelHeading>
                                 <PanelBody>
-                                    <svg width="300" height="300" id="processedPapersPie"/>
-                                    <svg width="300" height="300" id="submittedPapersPie"/>
-                                    <svg width="300" height="300" id="subVSprocPie"/>
+                                    <svg width="350" height="350" id="processedPapersPie"/>
+                                    <svg width="350" height="350" id="submittedPapersPie"/>
+                                    <svg width="350" height="350" id="subVSprocPie"/>
                                 </PanelBody>
                             </Panel>
                         </div>
