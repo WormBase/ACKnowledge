@@ -17,7 +17,7 @@ class EntityDiffRow extends React.Component {
                         Details: <strong>{this.props.afpDetails}</strong>
                     </div>
                     <div className="col-sm-3">
-                        <strong>{this.props.tfpChecked !== this.props.afpChecked || this.props.afpDetails !== "" ? "Yes" : "No"}</strong>
+                        <strong>{this.props.tfpChecked !== this.props.afpChecked ? "Yes" : "No"}</strong>
                     </div>
                 </div>
                 <div className="row">
