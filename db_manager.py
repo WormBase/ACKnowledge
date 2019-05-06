@@ -814,7 +814,7 @@ class DBManager(object):
             return ""
 
     def get_list_paper_ids_afp_processed(self, from_offset, count):
-        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2' ORDER BY joinkey ASC "
+        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2' ORDER BY joinkey DESC "
                          "OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
@@ -822,7 +822,7 @@ class DBManager(object):
     def get_list_paper_ids_afp_submitted(self, from_offset, count):
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2' "
-                         "ORDER BY joinkey ASC OFFSET {} LIMIT {}".format(from_offset, count))
+                         "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
@@ -904,7 +904,7 @@ class DBManager(object):
                          "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
                          "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
                          "afp_comment.afp_comment IS NOT NULL) "
-                         "ORDER BY afp_ve.joinkey ASC OFFSET {} LIMIT {}".format(from_offset, count))
+                         "ORDER BY afp_ve.joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
