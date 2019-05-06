@@ -144,7 +144,7 @@ class PaginatedPapersList extends React.Component {
                                     refresh_list: true})}} />
                             </Pagination>
                             <ListGroup>
-                                {[...this.state.list_papers].sort().map(item =>
+                                {[...this.state.list_papers].map(item =>
                                     <ListGroupItem>
                                         <Link to={{pathname: '/paper', search: '?paper_id=' + item}}>{item}</Link>
                                     </ListGroupItem>)}
