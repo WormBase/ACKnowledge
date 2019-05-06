@@ -67,7 +67,9 @@ class EntitiesListsComparisonTab extends React.Component {
                     tfp_genestudied = [];
                 }
                 let afp_genestudied = data["afp_genestudied"];
-                if (afp_genestudied !== '') {
+                if (afp_genestudied === 'null') {
+                    afp_genestudied = undefined
+                } else if (afp_genestudied !== '') {
                     afp_genestudied = extractEntitiesFromTfpString(data["afp_genestudied"], "WBGene");
                 } else {
                     afp_genestudied = [];
@@ -79,31 +81,37 @@ class EntitiesListsComparisonTab extends React.Component {
                     tfp_species = [];
                 }
                 let afp_species = data["afp_species"];
-                if (afp_species !== '') {
+                if (afp_species === 'null') {
+                    afp_species = undefined
+                } else if (afp_species !== '') {
                     afp_species = data["afp_species"].split("|");
                 } else {
                     afp_species = [];
                 }
                 let tfp_alleles = data["tfp_alleles"];
-                if (tfp_alleles !== '') {
+                if (tfp_alleles !== 'null' && tfp_alleles !== '') {
                     tfp_alleles = extractEntitiesFromTfpString(data["tfp_alleles"], "");
                 } else {
                     tfp_alleles = [];
                 }
                 let afp_alleles = data["afp_alleles"];
-                if (afp_alleles !== '') {
+                if (afp_alleles === 'null') {
+                    afp_alleles = undefined
+                } else if (afp_alleles !== '') {
                     afp_alleles = extractEntitiesFromTfpString(data["afp_alleles"], "");
                 } else {
                     afp_alleles = [];
                 }
                 let tfp_strains = data["tfp_strains"];
-                if (tfp_strains !== '') {
+                if (tfp_strains !== 'null' && tfp_strains !== '') {
                     tfp_strains = data["tfp_strains"].split("|");
                 } else {
                     tfp_strains = [];
                 }
                 let afp_strains = data["afp_strains"];
-                if (afp_strains !== '') {
+                if (afp_strains === 'null') {
+                    afp_strains = undefined
+                } else if (afp_strains !== '') {
                     afp_strains = data["afp_strains"].split("|");
                 } else {
                     afp_strains = [];
@@ -115,7 +123,9 @@ class EntitiesListsComparisonTab extends React.Component {
                     tfp_transgenes = [];
                 }
                 let afp_transgenes = data["afp_transgenes"];
-                if (afp_transgenes !== '') {
+                if (afp_transgenes === 'null') {
+                    afp_transgenes = undefined
+                } else if (afp_transgenes !== '') {
                     afp_transgenes = extractEntitiesFromTfpString(data["afp_transgenes"], "");
                 } else {
                     afp_transgenes = [];
