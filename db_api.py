@@ -265,16 +265,19 @@ class StorageEngine(object):
                 "afp_additionalexpr": afp_additionalexpr}
 
     def get_other_data_types(self, paper_id):
-        afp_newalleles = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_othervariation", paper_id))]) if self.db_manager.get_feature("afp_othervariation", paper_id) else ""
-        afp_newstrains = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_otherstrain", paper_id))]) if self.db_manager.get_feature("afp_otherstrain", paper_id) else ""
-        afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(self.db_manager.get_feature(
-            "afp_othertransgene", paper_id))]) if self.db_manager.get_feature("afp_othertransgene", paper_id) else ""
+        othervariations = self.db_manager.get_feature("afp_othervariation", paper_id)
+        afp_newalleles = " | ".join([elem['name'] for elem in json.loads(othervariations)]) if \
+            othervariations and othervariations != 'null' else ""
+        otherstrains = self.db_manager.get_feature("afp_otherstrain", paper_id)
+        afp_newstrains = " | ".join([elem['name'] for elem in json.loads(otherstrains)]) if \
+            otherstrains and otherstrains != 'null' else ""
+        othertransgenes = self.db_manager.get_feature("afp_othertransgene", paper_id)
+        afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(othertransgenes)]) if \
+            othertransgenes and othertransgenes != 'null' else ""
+        otherantibodies = self.db_manager.get_feature("afp_otherantibody", paper_id)
         afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in
-                                          json.loads(self.db_manager.get_feature("afp_othertransgene", paper_id)) if
-                                          elem["name"] != ""]) if self.db_manager.get_feature("afp_othertransgene",
-                                                                                              paper_id) else ""
+                                          json.loads(otherantibodies) if
+                                          elem["name"] != ""]) if otherantibodies and otherantibodies != 'null' else ""
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
                 "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
 

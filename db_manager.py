@@ -649,7 +649,7 @@ class DBManager(object):
         if row:
             return row[0]
         else:
-            return ''
+            return 'null'
 
     def get_svm_value(self, svm_type, paper_id):
         self.cur.execute("SELECT cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
