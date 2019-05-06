@@ -713,16 +713,16 @@ class DBManager(object):
         afp_newtransgenes = []
         afp_otherantibodies = []
         new_alleles_raw = self.get_feature("afp_othervariation", paper_id)
-        if new_alleles_raw:
+        if new_alleles_raw and new_alleles_raw != "null":
             afp_newalleles = [elem['name'] for elem in json.loads(new_alleles_raw) if elem["name"] != ""]
         newstrains_raw = self.get_feature("afp_otherstrain", paper_id)
-        if newstrains_raw:
+        if newstrains_raw and new_alleles_raw != "null":
             afp_newstrains = [elem['name'] for elem in json.loads(newstrains_raw) if elem["name"] != ""]
         newtransgenes_raw = self.get_feature("afp_othertransgene", paper_id)
-        if newtransgenes_raw:
+        if newtransgenes_raw and new_alleles_raw != "null":
             afp_newtransgenes = [elem['name'] for elem in json.loads(newtransgenes_raw) if elem["name"] != ""]
         otherantibodies_raw = self.get_feature("afp_othertransgene", paper_id)
-        if otherantibodies_raw:
+        if otherantibodies_raw and otherantibodies_raw != "null":
             afp_otherantibodies = [elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(
                 otherantibodies_raw) if elem["name"] != ""]
         if len(afp_newalleles) > 0 or len(afp_newstrains) > 0 or len(afp_newtransgenes) > 0 or \
