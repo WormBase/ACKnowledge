@@ -312,8 +312,8 @@ class DBManager(object):
             table_name, table_name, publication_id, AFP_ENTITIES_SEPARATOR.join(entities_ids)))
 
     def set_antibody(self, paper_id):
-        self.cur.execute("DELETE FROM afp_antibody WHERE joinkey = '{}'".format(paper_id))
-        self.cur.execute("INSERT INTO afp_antibody (joinkey, afp_antibody) VALUES('{}', 'checked')".format(paper_id))
+        self.cur.execute("DELETE FROM tfp_antibody WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO tfp_antibody (joinkey, afp_antibody) VALUES('{}', 'checked')".format(paper_id))
 
     def set_passwd(self, publication_id, passwd):
         self.cur.execute("DELETE FROM afp_passwd WHERE joinkey = '{}'".format(publication_id))
