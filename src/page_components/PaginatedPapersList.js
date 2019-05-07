@@ -38,7 +38,7 @@ class PaginatedPapersList extends React.Component {
     }
 
     refreshList() {
-        this.setState({offset_from: 0, refresh_list: true});
+        this.setState({active_page: 1, from_offset: 0, refresh_list: true});
     }
 
     loadDataFromAPI() {
@@ -78,7 +78,19 @@ class PaginatedPapersList extends React.Component {
     render() {
 
         let items = [];
-        for (let number = 1; number <= Math.ceil(this.state.num_papers / this.props.papersPerPage); number++) {
+        if (this.state.active_page > 3 && Math.ceil(this.state.num_papers / this.props.papersPerPage) > 4) {
+            items.push(
+                <Pagination.Ellipsis onClick={() => {
+                                     this.setState({
+                                         active_page: this.state.active_page - 2,
+                                         from_offset: (this.state.active_page - 3) * this.props.papersPerPage,
+                                         refresh_list: true
+                                     });
+                                 }}/>);
+        }
+        for (let number = Math.max(this.state.active_page - 2, 1);
+             number <= Math.min(Math.ceil(this.state.num_papers / this.props.papersPerPage), this.state.active_page + 2);
+             number++) {
             items.push(
                 <Pagination.Item key={number} active={number === this.state.active_page}
                                  onClick={() => {
@@ -92,7 +104,16 @@ class PaginatedPapersList extends React.Component {
                 </Pagination.Item>,
             );
         }
-
+        if ((Math.ceil(this.state.num_papers / this.props.papersPerPage) - this.state.active_page) > 2 && Math.ceil(this.state.num_papers / this.props.papersPerPage) > 4) {
+            items.push(
+                <Pagination.Ellipsis onClick={() => {
+                                     this.setState({
+                                         active_page: this.state.active_page + 2,
+                                         from_offset: (this.state.active_page + 1) * this.props.papersPerPage,
+                                         refresh_list: true
+                                     });
+                                 }}/>);
+        }
         return(
             <div className="container-fluid">
                 <div className="row">
