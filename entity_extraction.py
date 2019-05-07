@@ -79,9 +79,12 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
 
 
 def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager):
-    all_addresses = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', fulltext)
+    all_addresses = re.findall(r'[\(\[]?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\)\]\.]?', fulltext)
+    if not all_addresses:
+        fulltext = fulltext.replace(". ", ".")
+        all_addresses = re.findall(r'[\(\[]?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\)\]\.]?', fulltext)
     for address in all_addresses:
-        if not "'" in address:
+        if "'" not in address:
             person_id = db_manager.get_person_id_from_email_address(address)
             if person_id:
                 curr_address = db_manager.get_current_email_address_for_person(person_id)
