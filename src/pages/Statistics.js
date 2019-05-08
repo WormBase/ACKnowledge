@@ -56,21 +56,17 @@ class Statistics extends React.Component {
                     .attr("class", "arc");
         //Draw arc paths
         arcs.append("path")
+            .attr("stroke", "gray")
             .attr("fill", function(d, i) {
                 return color(i);
             })
             .attr("d", arc);
 
-        arcs.append("text")                                     //add a label to each slice
-                .attr("transform", function(d) {                    //set the label's origin to the center of the arc
-                //we have to make sure to set these before calling arc.centroid
-                d.innerRadius = 0;
-                d.outerRadius = radius;
-                return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
-            })
-            .attr("text-anchor", "middle")                          //center the text on it's origin
-            .html(function(d, i) { if (linkedListsKeys[i] !== undefined) { return '<a href="/lists#' +
-                linkedListsKeys[i] + extraUrlArgs + '" onclick="location.reload()">' + labels[i] + '</a>' } else { return labels[i] }});
+        arcs.append("text")
+            .attr("transform", d => "translate(" + arc.centroid(d) + ")")
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "middle")
+            .text(function(d, i) { return labels[i] });
 
         svg.append("g")
             .attr("transform", "translate(" + (width / 2 - title.length * 3.5) + "," + 20 + ")")
@@ -82,7 +78,7 @@ class Statistics extends React.Component {
     drawAFPChart(chartId, values) {
         let color = "steelblue";
         let formatCount = d3.format(",.0f");
-        let margin = {top: 20, right: 30, bottom: 30, left: 40},
+        let margin = {top: 20, right: 30, bottom: 50, left: 40},
             width = window.innerWidth / 3 - margin.left - margin.right,
             height = 300 - margin.top - margin.bottom;
 
@@ -130,6 +126,19 @@ class Statistics extends React.Component {
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
             .call(xAxis);
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x",0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("# of papers");
+        svg.append("text")
+            .attr("transform",
+                "translate(" + (width/2) + " ," +
+                (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("# of entities");
     }
 
     loadDataFromAPI() {
@@ -174,9 +183,9 @@ class Statistics extends React.Component {
                 "Data Submitted through AFP", this.props.location.search);
             this.drawAFPPie("subVSprocPie", [this.state.num_papers_new_afp_proc_no_sub,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
-                ["Proc no sub (" + this.state.num_papers_new_afp_proc_no_sub + ")",
-                "Full sub (" + this.state.num_papers_new_afp_author_submitted + ")",
-                "Part sub (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
+                ["Proc No Sub (" + this.state.num_papers_new_afp_proc_no_sub + ")",
+                "Sub (" + this.state.num_papers_new_afp_author_submitted + ")",
+                "Part (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
                 "New AFP: Submitted and Processed Data", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);

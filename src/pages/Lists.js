@@ -96,7 +96,7 @@ class Lists extends React.Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-4">
-                        <Panel>
+                        <Panel className="listPanel">
                             <PanelHeading>Papers processed by the new AFP</PanelHeading>
                             <PanelBody>
                                 <PaginatedPapersList listType="processed"
@@ -107,7 +107,7 @@ class Lists extends React.Component {
                         </Panel>
                     </div>
                     <div className="col-sm-4">
-                        <Panel>
+                        <Panel className="listPanel">
                             <PanelHeading>Papers with final data submitted by authors</PanelHeading>
                             <PanelBody>
                                 <PaginatedPapersList listType="submitted"
@@ -118,7 +118,7 @@ class Lists extends React.Component {
                         </Panel>
                     </div>
                     <div className="col-sm-4">
-                        <Panel>
+                        <Panel className="listPanel">
                             <PanelHeading>Papers with partially submitted data</PanelHeading>
                             <PanelBody>
                                 <PaginatedPapersList listType="partial"

@@ -70,3 +70,7 @@ div {
     word-wrap: break-word;
 }
 
+.listPanel {
+    min-height: 700px;
+}
+

@@ -137,7 +137,7 @@ class PaginatedPapersList extends React.Component {
                 >
                     <div className="row">
                         <div className="col-sm-12">
-                            <ControlLabel>Number of papers:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
+                            <ControlLabel># of papers in this list:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
                         </div>
                     </div>
                     <div className="row">
