@@ -142,7 +142,7 @@ class PaginatedPapersList extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            <Pagination>
+                            <Pagination bsSize="small">
                                 <Pagination.First onClick={() => {this.setState({
                                     active_page: 1,
                                     from_offset: 0,
