@@ -15,6 +15,7 @@ class Lists extends React.Component {
         if (url.match('#')) {
             activeTabKey = parseInt(url.split('#')[1])
         }
+        const defNumPapersPerPage = 10;
         this.state = {
             list_papers_processed: [],
             list_papers_submitted: [],
@@ -23,14 +24,14 @@ class Lists extends React.Component {
             processed_from_offset: 0,
             processed_count: 5,
             submitted_from_offset: 0,
-            submitted_count: 20,
+            submitted_count: defNumPapersPerPage,
             active_page_processed: 1,
             active_page_submitted: 1,
             cx: 0,
             isLoading: false,
             activeTabKey: activeTabKey,
-            papersPerPage: 20,
-            tmp_count: 20
+            papersPerPage: defNumPapersPerPage,
+            tmp_count: defNumPapersPerPage
         };
     }
 
@@ -40,41 +41,6 @@ class Lists extends React.Component {
                 <div className="row">
                     <div className="col-sm-12">
                         &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-4">
-                        <Panel>
-                            <PanelHeading>Papers processed by the new AFP</PanelHeading>
-                            <PanelBody>
-                                <PaginatedPapersList listType="processed"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.processedList = instance}}
-                                />
-                            </PanelBody>
-                        </Panel>
-                    </div>
-                    <div className="col-sm-4">
-                        <Panel>
-                            <PanelHeading>Papers with final data submitted by authors</PanelHeading>
-                            <PanelBody>
-                                <PaginatedPapersList listType="submitted"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.submittedList = instance}}
-                                />
-                            </PanelBody>
-                        </Panel>
-                    </div>
-                    <div className="col-sm-4">
-                        <Panel>
-                            <PanelHeading>Papers with partially submitted data</PanelHeading>
-                            <PanelBody>
-                                <PaginatedPapersList listType="partial"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.partialList = instance}}
-                                />
-                            </PanelBody>
-                        </Panel>
                     </div>
                 </div>
                 <div className="row">
@@ -121,6 +87,46 @@ class Lists extends React.Component {
                                 }}}>Refresh</Button>
                             </FormGroup>
                         </Form>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-12">
+                        &nbsp;
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-4">
+                        <Panel>
+                            <PanelHeading>Papers processed by the new AFP</PanelHeading>
+                            <PanelBody>
+                                <PaginatedPapersList listType="processed"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.processedList = instance}}
+                                />
+                            </PanelBody>
+                        </Panel>
+                    </div>
+                    <div className="col-sm-4">
+                        <Panel>
+                            <PanelHeading>Papers with final data submitted by authors</PanelHeading>
+                            <PanelBody>
+                                <PaginatedPapersList listType="submitted"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.submittedList = instance}}
+                                />
+                            </PanelBody>
+                        </Panel>
+                    </div>
+                    <div className="col-sm-4">
+                        <Panel>
+                            <PanelHeading>Papers with partially submitted data</PanelHeading>
+                            <PanelBody>
+                                <PaginatedPapersList listType="partial"
+                                                     papersPerPage={this.state.papersPerPage}
+                                                     ref={instance => {this.partialList = instance}}
+                                />
+                            </PanelBody>
+                        </Panel>
                     </div>
                 </div>
             </div>

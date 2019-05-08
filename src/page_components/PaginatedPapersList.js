@@ -76,21 +76,24 @@ class PaginatedPapersList extends React.Component {
     }
 
     render() {
-
+        const maxNumPagesToDisplay = 5;
+        const totNumPages = Math.ceil(this.state.num_papers / this.props.papersPerPage);
+        const firstDisplayedPage = Math.max(Math.min(this.state.active_page -
+            Math.floor(maxNumPagesToDisplay / 2), totNumPages - maxNumPagesToDisplay + 1), 1);
+        const lastDisplayedPage = Math.min(totNumPages, firstDisplayedPage + maxNumPagesToDisplay - 1);
         let items = [];
-        if (this.state.active_page > 3 && Math.ceil(this.state.num_papers / this.props.papersPerPage) > 4) {
+        if (firstDisplayedPage > 1) {
             items.push(
                 <Pagination.Ellipsis onClick={() => {
-                                     this.setState({
-                                         active_page: this.state.active_page - 2,
-                                         from_offset: (this.state.active_page - 3) * this.props.papersPerPage,
-                                         refresh_list: true
-                                     });
-                                 }}/>);
+                    this.setState({
+                        active_page: firstDisplayedPage - 1,
+                        from_offset: (firstDisplayedPage - 2) * this.props.papersPerPage,
+                        refresh_list: true
+                    });
+                }}/>);
         }
-        for (let number = Math.max(this.state.active_page - 2, 1);
-             number <= Math.min(Math.ceil(this.state.num_papers / this.props.papersPerPage), this.state.active_page + 2);
-             number++) {
+
+        for (let number = firstDisplayedPage; number <= lastDisplayedPage; number++) {
             items.push(
                 <Pagination.Item key={number} active={number === this.state.active_page}
                                  onClick={() => {
@@ -104,15 +107,15 @@ class PaginatedPapersList extends React.Component {
                 </Pagination.Item>,
             );
         }
-        if ((Math.ceil(this.state.num_papers / this.props.papersPerPage) - this.state.active_page) > 2 && Math.ceil(this.state.num_papers / this.props.papersPerPage) > 4) {
+        if (totNumPages > lastDisplayedPage) {
             items.push(
                 <Pagination.Ellipsis onClick={() => {
-                                     this.setState({
-                                         active_page: this.state.active_page + 2,
-                                         from_offset: (this.state.active_page + 1) * this.props.papersPerPage,
-                                         refresh_list: true
-                                     });
-                                 }}/>);
+                    this.setState({
+                        active_page: lastDisplayedPage + 1,
+                        from_offset: (lastDisplayedPage) * this.props.papersPerPage,
+                        refresh_list: true
+                    });
+                }}/>);
         }
         return(
             <div className="container-fluid">
