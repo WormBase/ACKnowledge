@@ -624,7 +624,8 @@ class DBManager(object):
         if main_pdf:
             pdfs.append(main_pdf)
             if "_temp" in main_pdf or "_ocr" in main_pdf or "_lib" in main_pdf:
-                logger.warning("Temporary or ocr file found as main pdf")
+                logger.warning("Temporary or ocr file found as main pdf, discarding")
+                return []
         return pdfs
 
     def set_last_touched(self, paper_id):
