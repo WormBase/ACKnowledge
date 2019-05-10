@@ -1,8 +1,8 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 import {
-    Badge,
-    ControlLabel,
+    Badge, Button,
+    ControlLabel, Form, FormControl, FormGroup,
     ListGroup,
     ListGroupItem,
     Pagination
@@ -20,10 +20,11 @@ class PaginatedPapersList extends React.Component {
             cx: 0,
             isLoading: false,
             refresh_list: this.props.refreshList,
-            countValidationState: null
+            pageValidationState: null
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
         this.refreshList = this.refreshList.bind(this);
+        this.goToPage = this.goToPage.bind(this);
     }
 
     componentDidMount() {
@@ -39,6 +40,13 @@ class PaginatedPapersList extends React.Component {
 
     refreshList() {
         this.setState({active_page: 1, from_offset: 0, refresh_list: true});
+    }
+
+    goToPage() {
+        this.setState({
+            active_page: this.state.active_page_tmp,
+        });
+        this.refreshList()
     }
 
     loadDataFromAPI() {
@@ -138,6 +146,45 @@ class PaginatedPapersList extends React.Component {
                     <div className="row">
                         <div className="col-sm-12">
                             <ControlLabel># of papers in this list:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <Form onSubmit={e => e.preventDefault()} inline>
+                                <FormGroup controlId="formValidationError2"
+                                           validationState={this.state.pageValidationState}>
+                                    <ControlLabel>Go to page: &nbsp;</ControlLabel>
+                                    <FormControl
+                                        type="text" autoComplete="off" bsSize="small"
+                                        placeholder={"1.." + totNumPages}
+                                        onInput={(event) => {
+                                            if (event.target.value !== "") {
+                                                let pageNum = parseFloat(event.target.value);
+                                                if (isNaN(pageNum) && isFinite(pageNum) && pageNum > 0) {
+                                                    this.setState({
+                                                        active_page_tmp: parseFloat(event.target.value),
+                                                        pageValidationState: null
+                                                    })
+                                                } else {
+                                                    this.setState({
+                                                        pageValidationState: "error"
+                                                    })
+                                                }
+                                            } else {
+                                                this.setState({
+                                                    pageValidationState: null
+                                                })
+                                            }
+                                        }}
+                                        onKeyPress={(target) => {if (target.key === 'Enter' && this.state.tmp_count > 0) {
+                                            this.goToPage()
+                                        }}}
+                                    />
+                                    <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0) {
+                                        this.goToPage()
+                                    }}}>Refresh</Button>
+                                </FormGroup>
+                            </Form>
                         </div>
                     </div>
                     <div className="row">
