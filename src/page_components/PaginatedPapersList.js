@@ -45,8 +45,9 @@ class PaginatedPapersList extends React.Component {
     goToPage() {
         this.setState({
             active_page: this.state.active_page_tmp,
+            from_offset: (this.state.active_page_tmp - 1) * this.props.papersPerPage,
+            refresh_list: true
         });
-        this.refreshList()
     }
 
     loadDataFromAPI() {
@@ -150,45 +151,6 @@ class PaginatedPapersList extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            <Form onSubmit={e => e.preventDefault()} inline>
-                                <FormGroup controlId="formValidationError2"
-                                           validationState={this.state.pageValidationState}>
-                                    <ControlLabel>Go to page: &nbsp;</ControlLabel>
-                                    <FormControl
-                                        type="text" autoComplete="off" bsSize="small"
-                                        placeholder={"1.." + totNumPages}
-                                        onInput={(event) => {
-                                            if (event.target.value !== "") {
-                                                let pageNum = parseFloat(event.target.value);
-                                                if (isNaN(pageNum) && isFinite(pageNum) && pageNum > 0) {
-                                                    this.setState({
-                                                        active_page_tmp: parseFloat(event.target.value),
-                                                        pageValidationState: null
-                                                    })
-                                                } else {
-                                                    this.setState({
-                                                        pageValidationState: "error"
-                                                    })
-                                                }
-                                            } else {
-                                                this.setState({
-                                                    pageValidationState: null
-                                                })
-                                            }
-                                        }}
-                                        onKeyPress={(target) => {if (target.key === 'Enter' && this.state.tmp_count > 0) {
-                                            this.goToPage()
-                                        }}}
-                                    />
-                                    <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0) {
-                                        this.goToPage()
-                                    }}}>Refresh</Button>
-                                </FormGroup>
-                            </Form>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
                             <Pagination bsSize="small">
                                 <Pagination.First onClick={() => {this.setState({
                                     active_page: 1,
@@ -214,6 +176,55 @@ class PaginatedPapersList extends React.Component {
                                     from_offset: (Math.ceil(this.state.num_papers / this.props.papersPerPage) - 1) * this.props.papersPerPage,
                                     refresh_list: true})}} />
                             </Pagination>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <Form onSubmit={e => e.preventDefault()} inline>
+                                <FormGroup controlId="formValidationError2"
+                                           validationState={this.state.pageValidationState}>
+                                    <ControlLabel>Go to page: &nbsp;</ControlLabel>
+                                    <FormControl
+                                        type="text" autoComplete="off" bsSize="small"
+                                        placeholder={"1.." + totNumPages}
+                                        onInput={(event) => {
+                                            if (event.target.value !== "") {
+                                                let pageNum = parseFloat(event.target.value);
+                                                if (!event.target.value.includes(",") && !event.target.value.includes(".") &&
+                                                    !isNaN(pageNum) && isFinite(pageNum) && pageNum > 0 && pageNum <= totNumPages) {
+                                                    this.setState({
+                                                        active_page_tmp: parseFloat(event.target.value),
+                                                        pageValidationState: null
+                                                    })
+                                                } else {
+                                                    this.setState({
+                                                        pageValidationState: "error"
+                                                    })
+                                                }
+                                            } else {
+                                                this.setState({
+                                                    pageValidationState: null
+                                                })
+                                            }
+                                        }}
+                                        onKeyPress={(target) => {if (target.key === 'Enter') {
+                                            this.goToPage()
+                                        }}}
+                                    />
+                                    <Button bsStyle="primary" bsSize="small" onClick={() => {
+                                        this.goToPage()
+                                    }}>Go</Button>
+                                </FormGroup>
+                            </Form>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            &nbsp;
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-12">
                             <ListGroup>
                                 {[...this.state.list_papers].map(item =>
                                     <ListGroupItem>
