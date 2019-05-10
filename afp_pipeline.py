@@ -96,7 +96,7 @@ def main():
             fulltexts_dict[paper_to_process] = paper_fulltext
             logger.info("Extracting email address from paper")
             email_addr_in_papers_dict[paper_to_process] = get_first_valid_email_address_from_paper(
-                fulltexts_dict[paper_to_process], db_manager=db_manager)
+                fulltext=fulltexts_dict[paper_to_process], db_manager=db_manager, paper_id=paper_to_process)
             if not email_addr_in_papers_dict[paper_to_process]:
                 logger.info("Removing paper with no email address")
                 del fulltexts_dict[paper_to_process]

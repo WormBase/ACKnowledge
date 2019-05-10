@@ -306,6 +306,16 @@ class DBManager(object):
         else:
             return None
 
+    def get_corresponding_email(self, paper_id):
+        self.cur.execute("SELECT author_id from pap_author_corresponding WHERE joinkey='{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            self.cur.execute("SELECT two_email from two_email WHERE joinkey='{}'".format("two" + res[0]))
+            res2 = self.cur.fetchone()
+            if res2:
+                return [res2[0]]
+        return []
+
     def set_extracted_entities_in_paper(self, publication_id, entities_ids: List[str], table_name):
         self.cur.execute("DELETE FROM {} WHERE joinkey = '{}'".format(table_name, publication_id))
         self.cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
@@ -736,14 +746,6 @@ class DBManager(object):
         res = self.cur.fetchone()
         if res:
             return self.get_person_id_from_email_address(res[0])
-        else:
-            return None
-
-    def get_corresponding_author_email(self, paper_id):
-        self.cur.execute("SELECT afp_email FROM afp_email WHERE joinkey = '{}'".format(paper_id))
-        res = self.cur.fetchone()
-        if res:
-            return res[0]
         else:
             return None
 
