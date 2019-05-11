@@ -174,16 +174,15 @@ class Statistics extends React.Component {
                 isLoading: false
             });
             this.drawAFPPie("oldAFPPie", [this.state.num_papers_old_afp_processed,
-                this.state.num_papers_old_afp_author_submitted,], ["Pns (" + (
+                this.state.num_papers_old_afp_author_submitted,], [
                     parseInt(this.state.num_papers_old_afp_processed) - parseInt(
-                        this.state.num_papers_old_afp_author_submitted)) + ")",
-                "S (" + this.state.num_papers_old_afp_author_submitted + ")"], [undefined, undefined],
+                        this.state.num_papers_old_afp_author_submitted),
+                this.state.num_papers_old_afp_author_submitted], [undefined, undefined],
                 "Old AFP", this.props.location.search);
             this.drawAFPPie("newAFPPie", [this.state.num_papers_new_afp_proc_no_sub,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
-                ["Pns (" + this.state.num_papers_new_afp_proc_no_sub + ")",
-                "S (" + this.state.num_papers_new_afp_author_submitted + ")",
-                "Pa (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
+                [this.state.num_papers_new_afp_proc_no_sub, this.state.num_papers_new_afp_author_submitted,
+                this.state.num_papers_new_afp_partial_sub], [undefined, undefined, undefined],
                 "New AFP: Submitted and Processed Data", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);
@@ -224,14 +223,68 @@ class Statistics extends React.Component {
                                     Data processed by old and new AFP and submitted by authors
                                 </PanelHeading>
                                 <PanelBody>
-                                    <svg width="500" height="500" id="oldAFPPie"/>
-                                    <svg width="500" height="500" id="newAFPPie"/>
-                                    <div>
-                                        <ListGroup>
-                                            <ListGroupItem><Label bsStyle="primary">S</Label> = Submission completed by author</ListGroupItem>
-                                            <ListGroupItem><Label bsStyle="primary">Pns</Label> = Processed by AFP but no data submitted by author</ListGroupItem>
-                                            <ListGroupItem><Label bsStyle="primary">Pa</Label> = Partial submission by author</ListGroupItem>
-                                        </ListGroup>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-4">
+                                                <svg width="500" height="500" id="oldAFPPie"/>
+                                            </div>
+                                            <div className="col-sm-4">
+                                                <svg width="500" height="500" id="newAFPPie"/>
+                                            </div>
+                                            <div className="col-sm-4">
+                                                <div className="container-fluid">
+                                                    <div className="row">
+                                                        <div className="col-sm-12">
+                                                            &nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-12">
+                                                            &nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-12">
+                                                            &nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-12">
+                                                            &nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-12">
+                                                            &nbsp;
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-2">
+                                                            <div className="box colorAccent1"/>
+                                                        </div>
+                                                        <div className="col-sm-10">
+                                                            Processed by AFP but no data submitted by author
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-2">
+                                                            <div className="box colorAccent2"/>
+                                                        </div>
+                                                        <div className="col-sm-10">
+                                                            Submission completed by author
+                                                        </div>
+                                                    </div>
+                                                    <div className="row">
+                                                        <div className="col-sm-2">
+                                                            <div className="box colorAccent3"/>
+                                                        </div>
+                                                        <div className="col-sm-10">
+                                                            Partial submission by author
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </PanelBody>
                             </Panel>

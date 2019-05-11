@@ -74,3 +74,23 @@ div {
     min-height: 700px;
 }
 
+.box{
+	width:40px;
+	height:20px;
+    margin: 3px;
+    border-style: solid;
+    border-color: gray;
+}
+
+.colorAccent1 {
+
+    background-color: #7fc97f;
+}
+
+.colorAccent2 {
+    background-color: #beaed4;
+}
+
+.colorAccent3 {
+    background-color: #fdc086;
+}
