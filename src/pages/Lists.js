@@ -3,7 +3,7 @@ import {Button, ControlLabel, Form, FormControl, FormGroup, Panel, Tab, Tabs} fr
 import PanelBody from "react-bootstrap/es/PanelBody";
 import PanelHeading from "react-bootstrap/es/PanelHeading";
 import PaginatedPapersList from "../page_components/PaginatedPapersList";
-import {withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 
 
 
@@ -31,7 +31,8 @@ class Lists extends React.Component {
             isLoading: false,
             activeTabKey: activeTabKey,
             papersPerPage: defNumPapersPerPage,
-            tmp_count: defNumPapersPerPage
+            tmp_count: defNumPapersPerPage,
+            paper_id: undefined
         };
     }
 
@@ -41,6 +42,22 @@ class Lists extends React.Component {
                 <div className="row">
                     <div className="col-sm-12">
                         &nbsp;
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-sm-12 text-right">
+                        <Form inline onSubmit={e => e.preventDefault()}>
+                            <FormControl type="text" placeholder="Paper ID - 8 digits"
+                                         onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""/>
+                            <Link to={
+                                {
+                                    pathname: '/paper',
+                                    search: '?paper_id=' + this.state.paper_id
+                                }
+                            }><Button>
+                                Load in Paper Status Page
+                            </Button></Link>
+                        </Form>
                     </div>
                 </div>
                 <div className="row">

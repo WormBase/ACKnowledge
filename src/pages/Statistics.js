@@ -2,7 +2,7 @@ import React from 'react';
 import * as d3 from 'd3';
 import LoadingOverlay from 'react-loading-overlay';
 import PanelBody from "react-bootstrap/es/PanelBody";
-import {Panel} from "react-bootstrap";
+import {Badge, Label, ListGroup, ListGroupItem, Panel} from "react-bootstrap";
 import PanelHeading from "react-bootstrap/es/PanelHeading";
 import {withRouter} from "react-router-dom";
 
@@ -47,7 +47,7 @@ class Statistics extends React.Component {
         let pie = d3.pie();
         let arc = d3.arc()
             .outerRadius(radius - 20)
-            .innerRadius(0);
+            .innerRadius(110);
         //Generate groups
         let arcs = g.selectAll("arc")
                     .data(pie(counts))
@@ -173,19 +173,17 @@ class Statistics extends React.Component {
                 num_extracted_transgenes_per_paper: data["num_extracted_transgenes_per_paper"],
                 isLoading: false
             });
-            this.drawAFPPie("processedPapersPie", [this.state.num_papers_old_afp_processed,
-                this.state.num_papers_new_afp_processed,], ["Old AFP (" + this.state.num_papers_old_afp_processed + ")",
-                "New AFP(" + this.state.num_papers_new_afp_processed + ")"], [undefined, undefined],
-                "Papers Processed by AFP", this.props.location.search);
-            this.drawAFPPie("submittedPapersPie", [this.state.num_papers_old_afp_author_submitted,
-                this.state.num_papers_new_afp_author_submitted], ["Old AFP (" + this.state.num_papers_old_afp_author_submitted + ")",
-                "New AFP(" + this.state.num_papers_new_afp_author_submitted + ")"], [undefined, undefined],
-                "Data Submitted through AFP", this.props.location.search);
-            this.drawAFPPie("subVSprocPie", [this.state.num_papers_new_afp_proc_no_sub,
+            this.drawAFPPie("oldAFPPie", [this.state.num_papers_old_afp_processed,
+                this.state.num_papers_old_afp_author_submitted,], ["Pns (" + (
+                    parseInt(this.state.num_papers_old_afp_processed) - parseInt(
+                        this.state.num_papers_old_afp_author_submitted)) + ")",
+                "S (" + this.state.num_papers_old_afp_author_submitted + ")"], [undefined, undefined],
+                "Old AFP", this.props.location.search);
+            this.drawAFPPie("newAFPPie", [this.state.num_papers_new_afp_proc_no_sub,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
-                ["Proc No Sub (" + this.state.num_papers_new_afp_proc_no_sub + ")",
-                "Sub (" + this.state.num_papers_new_afp_author_submitted + ")",
-                "Part (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
+                ["Pns (" + this.state.num_papers_new_afp_proc_no_sub + ")",
+                "S (" + this.state.num_papers_new_afp_author_submitted + ")",
+                "Pa (" + this.state.num_papers_new_afp_partial_sub + ")"], [undefined, undefined, undefined],
                 "New AFP: Submitted and Processed Data", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);
@@ -226,9 +224,15 @@ class Statistics extends React.Component {
                                     Data processed by old and new AFP and submitted by authors
                                 </PanelHeading>
                                 <PanelBody>
-                                    <svg width="350" height="350" id="processedPapersPie"/>
-                                    <svg width="350" height="350" id="submittedPapersPie"/>
-                                    <svg width="350" height="350" id="subVSprocPie"/>
+                                    <svg width="500" height="500" id="oldAFPPie"/>
+                                    <svg width="500" height="500" id="newAFPPie"/>
+                                    <div>
+                                        <ListGroup>
+                                            <ListGroupItem><Label bsStyle="primary">S</Label> = Submission completed by author</ListGroupItem>
+                                            <ListGroupItem><Label bsStyle="primary">Pns</Label> = Processed by AFP but no data submitted by author</ListGroupItem>
+                                            <ListGroupItem><Label bsStyle="primary">Pa</Label> = Partial submission by author</ListGroupItem>
+                                        </ListGroup>
+                                    </div>
                                 </PanelBody>
                             </Panel>
                         </div>
