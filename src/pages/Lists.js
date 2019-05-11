@@ -48,7 +48,8 @@ class Lists extends React.Component {
                     <div className="col-sm-12 text-right">
                         <Form inline onSubmit={e => e.preventDefault()}>
                             <FormControl type="text" placeholder="Paper ID - 8 digits"
-                                         onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""/>
+                                         onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
+                                         onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
                             <Link to={
                                 {
                                     pathname: '/paper',
