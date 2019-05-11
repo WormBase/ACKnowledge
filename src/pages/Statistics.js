@@ -47,7 +47,7 @@ class Statistics extends React.Component {
         let pie = d3.pie();
         let arc = d3.arc()
             .outerRadius(radius - 20)
-            .innerRadius(110);
+            .innerRadius(95);
         //Generate groups
         let arcs = g.selectAll("arc")
                     .data(pie(counts))
