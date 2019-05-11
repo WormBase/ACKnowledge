@@ -307,7 +307,9 @@ class DBManager(object):
             return None
 
     def get_corresponding_email(self, paper_id):
-        self.cur.execute("SELECT author_id from pap_author_corresponding WHERE joinkey='{}'".format(paper_id))
+        self.cur.execute("SELECT pap_author_corresponding.author_id from pap_author_corresponding JOIN pap_author ON "
+                         "pap_author_corresponding.pap_author = pap_author.pap_author "
+                         "WHERE pap_author.joinkey='{}'".format(paper_id))
         res = self.cur.fetchone()
         if res:
             self.cur.execute("SELECT two_email from two_email WHERE joinkey='{}'".format("two" + res[0]))
@@ -749,6 +751,14 @@ class DBManager(object):
         else:
             return None
 
+    def get_afp_email(self, paper_id):
+        self.cur.execute("SELECT afp_email FROM afp_email WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
+
     def get_afp_form_link(self, paper_id, base_url):
         passwd = self.get_passwd(paper_id)
         title = self.get_paper_title(paper_id)
@@ -802,7 +812,8 @@ class DBManager(object):
 
     def get_num_entities_extracted_by_afp(self, enetity_label):
         self.cur.execute("SELECT tfp_{} FROM tfp_{} FULL OUTER JOIN afp_version ON "
-                         "tfp_{}.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2'"
+                         "tfp_{}.joinkey = afp_version.joinkey JOIN afp_email ON "
+                         "afp_version.joinkey = afp_email.joinkey WHERE afp_version.afp_version = '2'"
                          .format(enetity_label, enetity_label, enetity_label))
         res = self.cur.fetchall()
         return [len(row[0].split(" | ")) for row in res]

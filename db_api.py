@@ -324,7 +324,7 @@ class StorageEngine(object):
         return self.db_manager.get_list_papers_new_afp_partial_submissions(from_offset, count)
 
     def get_corresponding_author_email(self, paper_id):
-        return self.db_manager.get_corresponding_author_email(paper_id)
+        return self.db_manager.get_afp_email(paper_id)
 
 
 class AFPWriter:
