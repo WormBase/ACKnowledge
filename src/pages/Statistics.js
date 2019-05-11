@@ -226,10 +226,10 @@ class Statistics extends React.Component {
                                     <div className="container-fluid">
                                         <div className="row">
                                             <div className="col-sm-4">
-                                                <svg width="500" height="500" id="oldAFPPie"/>
+                                                <svg width="400" height="400" id="oldAFPPie"/>
                                             </div>
                                             <div className="col-sm-4">
-                                                <svg width="500" height="500" id="newAFPPie"/>
+                                                <svg width="400" height="400" id="newAFPPie"/>
                                             </div>
                                             <div className="col-sm-4">
                                                 <div className="container-fluid">
