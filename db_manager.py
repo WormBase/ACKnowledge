@@ -828,7 +828,9 @@ class DBManager(object):
             return ""
 
     def get_list_paper_ids_afp_processed(self, from_offset, count):
-        self.cur.execute("SELECT joinkey FROM afp_version WHERE afp_version.afp_version = '2' ORDER BY joinkey DESC "
+        self.cur.execute("SELECT afp_email.joinkey FROM afp_email JOIN afp_version "
+                         "ON afp_email.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2' "
+                         "ORDER BY afp_email.joinkey DESC "
                          "OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
