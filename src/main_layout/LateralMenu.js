@@ -1,6 +1,7 @@
 import React from 'react';
 import {IndexLinkContainer} from "react-router-bootstrap";
 import {withRouter} from "react-router-dom";
+import {Col, Container, Row} from "react-bootstrap";
 
 class LateralMenu extends React.Component {
     render() {
@@ -11,38 +12,61 @@ class LateralMenu extends React.Component {
         }
 
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
-                        <h3>Author First Pass</h3>
-                        <h4>Admin dashboard</h4><hr/>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-10">
+            <Container fluid>
+                <Row>
+                    <Col sm="10">
+                        &nbsp;
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
+                        <h5>Author First Pass</h5>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
+                        <h6>Admin Dashboard</h6>
+                    </Col>
+                </Row>
+
+                <Row>
+                    <Col sm="10">
+                        <hr/>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
+                        <IndexLinkContainer to={"home" + args}
+                                            active={true}>
+                            <a className="aw"><h6>Home</h6></a>
+                        </IndexLinkContainer>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
                         <IndexLinkContainer to={"paper" + args}
                                             active={true}>
-                            <a className="aw"><h4>Paper Status</h4></a>
+                            <a className="aw"><h6>Paper Status</h6></a>
                         </IndexLinkContainer>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-10">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
                         <IndexLinkContainer to={"stats" + args}
                                             active={true}>
-                            <a className="aw"><h4>Overall Stats</h4></a>
+                            <a className="aw"><h6>Overall Stats</h6></a>
                         </IndexLinkContainer>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-10">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
                         <IndexLinkContainer to={"lists" + args}
                                             active={true}>
-                            <a className="aw"><h4>Paper Lists</h4></a>
+                            <a className="aw"><h6>Paper Lists</h6></a>
                         </IndexLinkContainer>
-                    </div>
-                </div>
-            </div>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

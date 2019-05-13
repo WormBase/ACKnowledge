@@ -1,10 +1,8 @@
 import React from 'react';
 import * as d3 from 'd3';
 import LoadingOverlay from 'react-loading-overlay';
-import PanelBody from "react-bootstrap/es/PanelBody";
-import {Badge, Label, ListGroup, ListGroupItem, Panel} from "react-bootstrap";
-import PanelHeading from "react-bootstrap/es/PanelHeading";
 import {withRouter} from "react-router-dom";
+import {Card, Col, Container, Row} from "react-bootstrap";
 
 
 class Statistics extends React.Component {
@@ -198,8 +196,7 @@ class Statistics extends React.Component {
 
     render() {
         return(
-            <div className="container-fluid">
-
+            <Container fluid>
                 <LoadingOverlay
                     active={this.state.isLoading}
                     spinner
@@ -211,143 +208,158 @@ class Statistics extends React.Component {
                         })
                     }}
                 >
-                    <div className="row">
-                        <div className="col-sm-12">
+                    <Row>
+                        <Col sm="12">
                             &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            <Panel>
-                                <PanelHeading>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            <Card>
+                                <Card.Header>
                                     Data processed by old and new AFP and submitted by authors
-                                </PanelHeading>
-                                <PanelBody>
-                                    <div className="container-fluid">
-                                        <div className="row">
-                                            <div className="col-sm-4">
+                                </Card.Header>
+                                <Card.Body>
+                                    <Container>
+                                        <Row>
+                                            <Col sm="4">
                                                 <svg width="400" height="400" id="oldAFPPie"/>
-                                            </div>
-                                            <div className="col-sm-4">
+                                            </Col>
+                                            <Col sm="4">
                                                 <svg width="400" height="400" id="newAFPPie"/>
-                                            </div>
-                                            <div className="col-sm-4">
-                                                <div className="container-fluid">
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
+                                            </Col>
+                                            <Col sm="4">
+                                                <Container fluid>
+                                                    <Row>
+                                                        <Col sm="12">
                                                             &nbsp;
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
                                                             &nbsp;
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
                                                             &nbsp;
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
                                                             &nbsp;
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
                                                             &nbsp;
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-2">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="2">
                                                             <div className="box colorAccent1"/>
-                                                        </div>
-                                                        <div className="col-sm-10">
+                                                        </Col>
+                                                        <Col sm="10">
                                                             Processed by AFP but no data submitted by author
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-2">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="2">
                                                             <div className="box colorAccent2"/>
-                                                        </div>
-                                                        <div className="col-sm-10">
+                                                        </Col>
+                                                        <Col sm="10">
                                                             Submission completed by author
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-2">
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="2">
                                                             <div className="box colorAccent3"/>
-                                                        </div>
-                                                        <div className="col-sm-10">
+                                                        </Col>
+                                                        <Col sm="10">
                                                             Partial submission by author
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <Panel>
-                                <PanelHeading>
+                                                        </Col>
+                                                    </Row>
+                                                </Container>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="6">
+                            <Card>
+                                <Card.Header>
                                     Number of genes per paper
-                                </PanelHeading>
-                                <PanelBody>
+                                </Card.Header>
+                                <Card.Body>
                                     <svg width="300" height="300" id="numGenesHist"/>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                        <div className="col-sm-6">
-                            <Panel>
-                                <PanelHeading>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col sm="6">
+                            <Card>
+                                <Card.Header>
                                     Number of species per paper
-                                </PanelHeading>
-                                <PanelBody>
+                                </Card.Header>
+                                <Card.Body>
                                     <svg width="300" height="300" id="numSpeciesHist"/>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <Panel>
-                                <PanelHeading>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="6">
+                            <Card>
+                                <Card.Header>
                                     Number of alleles per paper
-                                </PanelHeading>
-                                <PanelBody>
+                                </Card.Header>
+                                <Card.Body>
                                     <svg width="300" height="300" id="numAllelesHist"/>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                        <div className="col-sm-6">
-                            <Panel>
-                                <PanelHeading>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                        <Col sm="6">
+                            <Card>
+                                <Card.Header>
                                     Number of strains per paper
-                                </PanelHeading>
-                                <PanelBody>
+                                </Card.Header>
+                                <Card.Body>
                                     <svg width="300" height="300" id="numStrainsHist"/>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <Panel>
-                                <PanelHeading>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="6">
+                            <Card>
+                                <Card.Header>
                                     Number of transgenes per paper
-                                </PanelHeading>
-                                <PanelBody>
+                                </Card.Header>
+                                <Card.Body>
                                     <svg width="300" height="300" id="numTransgenesHist"/>
-                                </PanelBody>
-                            </Panel>
-                        </div>
-                    </div>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                    </Row>
                 </LoadingOverlay>
-            </div>
+            </Container>
         );
     }
 }

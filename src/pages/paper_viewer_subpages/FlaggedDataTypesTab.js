@@ -122,16 +122,16 @@ class FlaggedDataTypesTab extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-3">
-                            <h4>Data type</h4>
+                            <h5>Data type</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Extracted by AFP</h4>
+                            <h5>Extracted by AFP</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Submitted/confirmed by author</h4>
+                            <h5>Submitted/confirmed by author</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Author changed?</h4>
+                            <h5>Author changed?</h5>
                         </div>
                     </div>
                     <div className="row">

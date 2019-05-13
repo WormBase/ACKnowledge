@@ -2,6 +2,7 @@ import React from 'react';
 import {withRouter} from "react-router-dom";
 import LateralMenu from "./LateralMenu";
 import PageArea from "./PageArea";
+import {Col, Container, Nav, Navbar, Row} from "react-bootstrap";
 
 class Main extends React.Component {
     constructor(props) {
@@ -10,16 +11,16 @@ class Main extends React.Component {
 
     render() {
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-2" id="lateralMenu">
+            <Container fluid>
+                <Row>
+                    <Col sm="2" id="lateralMenu">
                         <LateralMenu/>
-                    </div>
-                    <div className="col-sm-10">
+                    </Col>
+                    <Col sm="10">
                         <PageArea/>
-                    </div>
-                </div>
-            </div>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

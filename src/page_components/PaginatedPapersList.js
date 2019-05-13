@@ -1,11 +1,11 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 import {
-    Badge, Button,
-    ControlLabel, Form, FormControl, FormGroup,
+    Badge, Button, Col, Container,
+    Form, FormControl,
     ListGroup,
     ListGroupItem,
-    Pagination
+    Pagination, Row
 } from "react-bootstrap";
 import {Link} from "react-router-dom";
 
@@ -20,7 +20,7 @@ class PaginatedPapersList extends React.Component {
             cx: 0,
             isLoading: false,
             refresh_list: this.props.refreshList,
-            pageValidationState: null
+            pageValidationState: false
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
         this.refreshList = this.refreshList.bind(this);
@@ -43,11 +43,13 @@ class PaginatedPapersList extends React.Component {
     }
 
     goToPage() {
-        this.setState({
-            active_page: this.state.active_page_tmp,
-            from_offset: (this.state.active_page_tmp - 1) * this.props.papersPerPage,
-            refresh_list: true
-        });
+        if (this.state.pageValidationState) {
+            this.setState({
+                active_page: this.state.active_page_tmp,
+                from_offset: (this.state.active_page_tmp - 1) * this.props.papersPerPage,
+                refresh_list: true
+            });
+        }
     }
 
     loadDataFromAPI() {
@@ -127,12 +129,7 @@ class PaginatedPapersList extends React.Component {
                 }}/>);
         }
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
-                        &nbsp;
-                    </div>
-                </div>
+            <Container>
                 <LoadingOverlay
                     active={this.state.isLoading}
                     spinner
@@ -144,14 +141,19 @@ class PaginatedPapersList extends React.Component {
                         })
                     }}
                 >
-                    <div className="row">
-                        <div className="col-sm-12">
-                            <ControlLabel># of papers in this list:</ControlLabel> <Badge>{this.state.num_papers}</Badge>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
-                            <Pagination bsSize="small">
+                    <Row>
+                        <Col sm="12">
+                            <Form.Label># of papers in this list:</Form.Label> <Badge variant="secondary">{this.state.num_papers}</Badge>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            <Pagination size="sm">
                                 <Pagination.First onClick={() => {this.setState({
                                     active_page: 1,
                                     from_offset: 0,
@@ -176,16 +178,16 @@ class PaginatedPapersList extends React.Component {
                                     from_offset: (Math.ceil(this.state.num_papers / this.props.papersPerPage) - 1) * this.props.papersPerPage,
                                     refresh_list: true})}} />
                             </Pagination>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             <Form onSubmit={e => e.preventDefault()} inline>
-                                <FormGroup controlId="formValidationError2"
-                                           validationState={this.state.pageValidationState}>
-                                    <ControlLabel>Go to page: &nbsp;</ControlLabel>
+                                <Form.Group controlId="validationCustom01"
+                                            isValid={false}>
+                                    <Form.Label>Go to page: &nbsp;</Form.Label>
                                     <FormControl
-                                        type="text" autoComplete="off" bsSize="small"
+                                        type="text" autoComplete="off" size="sm"
                                         placeholder={"1.." + totNumPages}
                                         onInput={(event) => {
                                             if (event.target.value !== "") {
@@ -194,16 +196,16 @@ class PaginatedPapersList extends React.Component {
                                                     !isNaN(pageNum) && isFinite(pageNum) && pageNum > 0 && pageNum <= totNumPages) {
                                                     this.setState({
                                                         active_page_tmp: parseFloat(event.target.value),
-                                                        pageValidationState: null
+                                                        pageValidationState: true
                                                     })
                                                 } else {
                                                     this.setState({
-                                                        pageValidationState: "error"
+                                                        pageValidationState: false
                                                     })
                                                 }
                                             } else {
                                                 this.setState({
-                                                    pageValidationState: null
+                                                    pageValidationState: true
                                                 })
                                             }
                                         }}
@@ -211,30 +213,30 @@ class PaginatedPapersList extends React.Component {
                                             this.goToPage()
                                         }}}
                                     />
-                                    <Button bsStyle="primary" bsSize="small" onClick={() => {
+                                    <Button variant="outline-primary" size="sm" onClick={() => {
                                         this.goToPage()
                                     }}>Go</Button>
-                                </FormGroup>
+                                </Form.Group>
                             </Form>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             <ListGroup>
                                 {[...this.state.list_papers].map(item =>
                                     <ListGroupItem>
                                         <Link to={{pathname: '/paper', search: '?paper_id=' + item}}>{item}</Link>
                                     </ListGroupItem>)}
                             </ListGroup>
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
                 </LoadingOverlay>
-            </div>
+            </Container>
         );
     }
 }

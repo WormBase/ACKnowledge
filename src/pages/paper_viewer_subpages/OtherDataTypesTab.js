@@ -112,7 +112,7 @@ class OtherDataTypesTab extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            <h4>Entities Added by author</h4>
+                            <h5>Entities Added by author</h5>
                         </div>
                     </div>
                     <ManualEntityRow title="New Alleles" afpEntityList={this.state.afpNewAlleles}/>

@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-    Button,
+    Button, Col, Container,
     Form,
-    FormControl} from "react-bootstrap";
+    FormControl, Nav, Navbar, NavDropdown, Row
+} from "react-bootstrap";
 import {Link, withRouter} from "react-router-dom";
 import queryString from "query-string";
 import StatusArea from "./paper_viewer_subpages/StatusArea";
@@ -24,7 +25,7 @@ class PaperViewer extends React.Component {
             paper_author_modified: "NOT LOADED",
             link_to_afp_form: "",
             load_diff: false,
-            isLoading: true,
+            isLoading: false,
             api_called: false,
             paper_title: "",
             paper_journal: "",
@@ -44,7 +45,7 @@ class PaperViewer extends React.Component {
         let payload = {
             paper_id: this.state.paper_id_from_url
         };
-        if (payload.paper_id !== undefined) {
+        if (payload.paper_id !== undefined && payload.paper_id !== "undefined") {
             this.setState({isLoading: true});
             fetch(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/status", {
                 method: 'POST',
@@ -89,7 +90,7 @@ class PaperViewer extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.paper_id_from_url !== undefined && !this.state.api_called) {
+        if (this.state.paper_id_from_url !== undefined && this.state.paper_id_from_url != "undefined" && !this.state.api_called) {
             this.loadDataFromAPI();
             this.setState({api_called: true})
         }
@@ -97,41 +98,44 @@ class PaperViewer extends React.Component {
 
     render() {
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
-                        &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12 text-right">
-                        <Form inline onSubmit={e => e.preventDefault()}>
-                            <FormControl type="text" placeholder="Paper ID - 8 digits"
-                                         onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""
-                                         onKeyPress={(target) => {if (target.key === 'Enter') {
-                                             this.props.history.push('?paper_id=' + this.state.paper_id);
-                                             this.loadPaper()}}}/>
-                            <Link to={
-                                {
-                                    pathname: '/paper',
-                                    search: '?paper_id=' + this.state.paper_id
-                                }
-                            }><Button onClick={this.loadPaper}>
-                                Load Paper
-                            </Button></Link>
-                        </Form>
-                    </div>
-                </div>
-                <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
-                            isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
-                            paper_afp_processed={this.state.paper_afp_processed}
-                            paper_author_submitted={this.state.paper_author_submitted}
-                            paper_author_modified={this.state.paper_author_modified}
-                            paper_title={this.state.paper_title}
-                            paper_journal={this.state.paper_journal}
-                            email={this.state.author_address}
-                />
-            </div>
+            <Container fluid>
+                <Row>
+                    <Col sm="12">
+                        <Navbar bg="light" expand="lg">
+                            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                            <Navbar.Collapse id="basic-navbar-nav">
+                                <Nav className="mr-auto">
+                                </Nav>
+                                <Form inline onSubmit={e => e.preventDefault()}>
+                                    <FormControl type="text" placeholder="Paper ID - 8 digits" className="mr-sm-2"
+                                                 onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""
+                                                 onKeyPress={(target) => {if (target.key === 'Enter') {
+                                                     this.props.history.push('?paper_id=' + this.state.paper_id);
+                                                     this.loadPaper()}}}/>
+                                    <Link to={
+                                        {
+                                            pathname: '/paper',
+                                            search: '?paper_id=' + this.state.paper_id
+                                        }
+                                    }><Button variant="outline-primary">Load Paper</Button></Link>
+                                </Form>
+                            </Navbar.Collapse>
+                        </Navbar>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
+                        <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
+                                    isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
+                                    paper_afp_processed={this.state.paper_afp_processed}
+                                    paper_author_submitted={this.state.paper_author_submitted}
+                                    paper_author_modified={this.state.paper_author_modified}
+                                    paper_title={this.state.paper_title}
+                                    paper_journal={this.state.paper_journal}
+                                    email={this.state.author_address} />
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

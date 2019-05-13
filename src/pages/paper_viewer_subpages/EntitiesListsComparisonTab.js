@@ -170,16 +170,16 @@ class EntitiesListsComparisonTab extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-3">
-                            <h4>Extracted by AFP</h4>
+                            <h5>Extracted by AFP</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Final list submitted by author</h4>
+                            <h5>Final list submitted by author</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Added by author w.r.t. AFP</h4>
+                            <h5>Added by author w.r.t. AFP</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h4>Removed by author w.r.t. AFP</h4>
+                            <h5>Removed by author w.r.t. AFP</h5>
                         </div>
                     </div>
                     <EntityDiffRow title="Genes" tfpEntitiesList={this.state.tfpGenestudied}

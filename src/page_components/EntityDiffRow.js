@@ -20,7 +20,7 @@ class EntityDiffRow extends React.Component {
             <div>
                 <div className="row">
                     <div className="col-sm-12">
-                    <h4>{this.props.title}</h4>
+                    <h6>{this.props.title}</h6>
                     </div>
                 </div>
                 <div className="row">

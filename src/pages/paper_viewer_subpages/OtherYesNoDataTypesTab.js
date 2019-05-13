@@ -119,10 +119,10 @@ class OtherYesNoDataTypesTab extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-6">
-                            <h4>Data type</h4>
+                            <h5>Data type</h5>
                         </div>
                         <div className="col-sm-6">
-                            <h4>Submitted by author</h4>
+                            <h5>Submitted by author</h5>
                         </div>
                     </div>
                     <div className="row">

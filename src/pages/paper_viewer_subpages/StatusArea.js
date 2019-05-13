@@ -1,6 +1,6 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
-import {Badge, Jumbotron, Panel} from "react-bootstrap";
+import {Badge, Card, Col, Container, Jumbotron, Row} from "react-bootstrap";
 import TabsArea from "./TabsArea";
 
 
@@ -10,14 +10,14 @@ class StatusArea extends React.Component {
         let link_to_afp_form = "";
         if (this.props.link_to_afp_form !== "") {
             link_to_afp_form =
-                <Panel>
-                    <Panel.Heading>Link to AFP submission form</Panel.Heading>
-                    <Panel.Body><a href={this.props.link_to_afp_form} target="_blank">{this.props.link_to_afp_form}</a></Panel.Body>
-                </Panel>
+                <Card>
+                    <Card.Header>Link to AFP submission form</Card.Header>
+                    <Card.Body><a href={this.props.link_to_afp_form} target="_blank">{this.props.link_to_afp_form}</a></Card.Body>
+                </Card>
         }
-        if (this.props.paper_id !== undefined) {
+        if (this.props.paper_id !== undefined && this.props.paper_id !== "undefined") {
             return (
-                <div>
+                <Container fluid>
                     <LoadingOverlay
                         active={this.props.isLoading}
                         spinner
@@ -29,81 +29,91 @@ class StatusArea extends React.Component {
                             })
                         }}
                     >
-                        <div className="row">
-                            <div className="col-sm-12">
+                        <Row>
+                            <Col sm="12">
                                 &nbsp;
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <Panel>
-                                    <Panel.Heading>Paper Info</Panel.Heading>
-                                    <Panel.Body><strong>Title:</strong> &nbsp; {this.props.paper_title}<br/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                <Card>
+                                    <Card.Header>Paper Info</Card.Header>
+                                    <Card.Body><strong>Title:</strong> &nbsp; {this.props.paper_title}<br/>
                                         <strong>Journal:</strong> &nbsp; {this.props.paper_journal}<br/>
                                         <strong>Email:</strong> &nbsp; {this.props.email}
-                                    </Panel.Body>
-                                </Panel>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <Panel>
-                                    <Panel.Heading>Paper Status</Panel.Heading>
-                                    <Panel.Body>Processed by AFP: &nbsp; <Badge>{this.props.paper_afp_processed}</Badge><br/>
-                                        Final data submitted by author: &nbsp; <Badge>{this.props.paper_author_submitted}</Badge><br/>
-                                        Author has modified any data (including partial submissions): &nbsp; <Badge>{this.props.paper_author_modified}</Badge>
-                                    </Panel.Body>
-                                </Panel>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                &nbsp;
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                <Card>
+                                    <Card.Header>Paper Status</Card.Header>
+                                    <Card.Body>Processed by AFP: &nbsp; <Badge variant="secondary">{this.props.paper_afp_processed}</Badge><br/>
+                                        Final data submitted by author: &nbsp; <Badge variant="secondary">{this.props.paper_author_submitted}</Badge><br/>
+                                        Author has modified any data (including partial submissions): &nbsp; <Badge variant="secondary">{this.props.paper_author_modified}</Badge>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                &nbsp;
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
                                 {link_to_afp_form}
-                            </div>
-                        </div>
+                            </Col>
+                        </Row>
                     </LoadingOverlay>
-                    <div className="row">
-                        <div className="col-sm-12">
+                    <Row>
+                        <Col sm="12">
                             &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             <TabsArea show={this.props.load_diff}/>
-                        </div>
-                    </div>
-                </div>
+                        </Col>
+                    </Row>
+                </Container>
             )
         } else {
             return (
-                <div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                <Container fluid>
+                    <Row>
+                        <Col sm="12">
                             &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-12">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             &nbsp;
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-2">
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="2">
                             &nbsp;
-                        </div>
-                        <div className="col-sm-8">
+                        </Col>
+                        <Col sm="8">
                             <Jumbotron>
                                 <h3>Paper not loaded</h3>
                                 <p>
                                     Enter the 8 digit ID of a paper to see its AFP curation status.
                                 </p>
                             </Jumbotron>
-                        </div>
-                        <div className="col-sm-2">
+                        </Col>
+                        <Col sm="2">
                             &nbsp;
-                        </div>
-                    </div>
-                </div>
+                        </Col>
+                    </Row>
+                </Container>
             )
         }
     }

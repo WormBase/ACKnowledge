@@ -1,7 +1,5 @@
 import React from 'react';
-import {Button, ControlLabel, Form, FormControl, FormGroup, Panel, Tab, Tabs} from "react-bootstrap";
-import PanelBody from "react-bootstrap/es/PanelBody";
-import PanelHeading from "react-bootstrap/es/PanelHeading";
+import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row} from "react-bootstrap";
 import PaginatedPapersList from "../page_components/PaginatedPapersList";
 import {Link, withRouter} from "react-router-dom";
 
@@ -38,37 +36,43 @@ class Lists extends React.Component {
 
     render() {
         return(
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
+            <Container fluid>
+                <Row>
+                    <Col sm="12">
+                        <Navbar bg="light" expand="lg">
+                            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                            <Navbar.Collapse id="basic-navbar-nav">
+                                <Nav className="mr-auto">
+                                </Nav>
+                                <Form inline onSubmit={e => e.preventDefault()}>
+                                    <FormControl type="text" placeholder="Paper ID - 8 digits" className="mr-sm-2"
+                                                 onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
+                                                 onKeyPress={(target) => {if (target.key === 'Enter') {
+                                                     this.props.history.push('/paper?paper_id=' + this.state.paper_id)}}}/>
+                                    <Link to={
+                                        {
+                                            pathname: '/paper',
+                                            search: '?paper_id=' + this.state.paper_id
+                                        }
+                                    }><Button variant="outline-primary">Load in Paper Viewer</Button></Link>
+                                </Form>
+                            </Navbar.Collapse>
+                        </Navbar>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
                         &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12 text-right">
-                        <Form inline onSubmit={e => e.preventDefault()}>
-                            <FormControl type="text" placeholder="Paper ID - 8 digits"
-                                         onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
-                                         onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
-                            <Link to={
-                                {
-                                    pathname: '/paper',
-                                    search: '?paper_id=' + this.state.paper_id
-                                }
-                            }><Button>
-                                Load in Paper Status Page
-                            </Button></Link>
-                        </Form>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
                         <Form onSubmit={e => e.preventDefault()} inline>
                             <FormGroup controlId="formValidationError2"
                                        validationState={this.state.countValidationState}>
-                                <ControlLabel>Papers per page: &nbsp;</ControlLabel>
+                                <Form.Label>Papers per page: &nbsp;</Form.Label>
                                 <FormControl
-                                    type="text" autoComplete="off" maxLength="3" bsSize="small"
+                                    type="text" autoComplete="off" maxLength="3" size="sm"
                                     placeholder={this.state.papersPerPage}
                                     onInput={(event) => {
                                         if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) && isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
@@ -95,7 +99,7 @@ class Lists extends React.Component {
                                         this.partialList.refreshList();
                                     }}}
                                 />
-                                <Button bsStyle="primary" bsSize="small" onClick={() => { if (this.state.tmp_count > 0) {
+                                <Button variant="outline-primary" size="sm" onClick={() => { if (this.state.tmp_count > 0) {
                                     this.setState({
                                         papersPerPage: this.state.tmp_count,
                                     });
@@ -105,49 +109,49 @@ class Lists extends React.Component {
                                 }}}>Refresh</Button>
                             </FormGroup>
                         </Form>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
                         &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-4">
-                        <Panel className="listPanel">
-                            <PanelHeading>Papers processed by the new AFP</PanelHeading>
-                            <PanelBody>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="4">
+                        <Card className="listPanel">
+                            <Card.Header>Papers processed by the new AFP</Card.Header>
+                            <Card.Body>
                                 <PaginatedPapersList listType="processed"
                                                      papersPerPage={this.state.papersPerPage}
                                                      ref={instance => {this.processedList = instance}}
                                 />
-                            </PanelBody>
-                        </Panel>
-                    </div>
-                    <div className="col-sm-4">
-                        <Panel className="listPanel">
-                            <PanelHeading>Papers with final data submitted by authors</PanelHeading>
-                            <PanelBody>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col sm="4">
+                        <Card className="listPanel">
+                            <Card.Header>Papers with final data submitted by authors</Card.Header>
+                            <Card.Body>
                                 <PaginatedPapersList listType="submitted"
                                                      papersPerPage={this.state.papersPerPage}
                                                      ref={instance => {this.submittedList = instance}}
                                 />
-                            </PanelBody>
-                        </Panel>
-                    </div>
-                    <div className="col-sm-4">
-                        <Panel className="listPanel">
-                            <PanelHeading>Papers with partially submitted data</PanelHeading>
-                            <PanelBody>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col sm="4">
+                        <Card className="listPanel">
+                            <Card.Header>Papers with partially submitted data</Card.Header>
+                            <Card.Body>
                                 <PaginatedPapersList listType="partial"
                                                      papersPerPage={this.state.papersPerPage}
                                                      ref={instance => {this.partialList = instance}}
                                 />
-                            </PanelBody>
-                        </Panel>
-                    </div>
-                </div>
-            </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }
