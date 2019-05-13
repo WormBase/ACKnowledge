@@ -108,7 +108,7 @@ class Home extends React.Component {
                             <Card.Body>
                                 <h1 className="text-center"><FontAwesomeIcon icon={faChartBar}/></h1>
                                 <Card.Text>
-                                    Get an overview of the data extracted by the AFP
+                                    Read statistics about the data extracted by the AFP and get an overview of the papers processes by the pipeline
                                 </Card.Text>
                             </Card.Body>
                         </Card>
