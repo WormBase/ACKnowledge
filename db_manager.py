@@ -308,7 +308,7 @@ class DBManager(object):
 
     def get_corresponding_email(self, paper_id):
         self.cur.execute("SELECT pap_author_corresponding.author_id from pap_author_corresponding JOIN pap_author ON "
-                         "pap_author_corresponding.pap_author = pap_author.pap_author "
+                         "pap_author_corresponding.author_id = pap_author.pap_author "
                          "WHERE pap_author.joinkey='{}'".format(paper_id))
         res = self.cur.fetchone()
         if res:
