@@ -81,9 +81,9 @@ class Home extends React.Component {
                                 <Card.Text>
                                     Check if a specific paper has been processed by the AFP and see data submitted by authors
                                 </Card.Text>
+                                <Form.Label>Load a Paper:</Form.Label>&nbsp;
                                 <Form inline onSubmit={e => e.preventDefault()}>
-                                    <Form.Label>Load a Paper:</Form.Label>&nbsp;
-                                    <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm"
+                                    <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm" style={{ width: '150px' }}
                                                  onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
                                                  onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
                                     <Link to={
