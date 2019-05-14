@@ -228,54 +228,40 @@ class Statistics extends React.Component {
                                             <Col sm="4">
                                                 <svg width="400" height="400" id="newAFPPie"/>
                                             </Col>
-                                            <Col sm="4">
+                                        </Row>
+                                        <Row>
+                                            <Col sm="12">
                                                 <Container fluid>
                                                     <Row>
-                                                        <Col sm="12">
-                                                            &nbsp;
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col sm="12">
-                                                            &nbsp;
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col sm="12">
-                                                            &nbsp;
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col sm="12">
-                                                            &nbsp;
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
-                                                        <Col sm="12">
-                                                            &nbsp;
-                                                        </Col>
-                                                    </Row>
-                                                    <Row>
                                                         <Col sm="2">
+                                                            &nbsp;
+                                                        </Col>
+                                                        <Col sm="1">
                                                             <div className="box colorAccent1"/>
                                                         </Col>
-                                                        <Col sm="10">
+                                                        <Col sm="9">
                                                             Processed by AFP but no data submitted by author
                                                         </Col>
                                                     </Row>
                                                     <Row>
                                                         <Col sm="2">
+                                                            &nbsp;
+                                                        </Col>
+                                                        <Col sm="1">
                                                             <div className="box colorAccent2"/>
                                                         </Col>
-                                                        <Col sm="10">
+                                                        <Col sm="9">
                                                             Submission completed by author
                                                         </Col>
                                                     </Row>
                                                     <Row>
                                                         <Col sm="2">
+                                                            &nbsp;
+                                                        </Col>
+                                                        <Col sm="1">
                                                             <div className="box colorAccent3"/>
                                                         </Col>
-                                                        <Col sm="10">
+                                                        <Col sm="9">
                                                             Partial submission by author
                                                         </Col>
                                                     </Row>
