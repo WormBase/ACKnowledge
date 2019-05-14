@@ -182,13 +182,12 @@ class PaginatedPapersList extends React.Component {
                     </Row>
                     <Row>
                         <Col sm="12">
+                            Go to page:
                             <Form onSubmit={e => e.preventDefault()} inline>
-                                <Form.Group controlId="validationCustom01"
-                                            isValid={false}>
-                                    <Form.Label>Go to page: &nbsp;</Form.Label>
+                                <Form.Group>
                                     <FormControl
                                         type="text" autoComplete="off" size="sm"
-                                        placeholder={"1.." + totNumPages}
+                                        placeholder={"1.." + totNumPages} style={{ maxWidth: '80px'}}
                                         onInput={(event) => {
                                             if (event.target.value !== "") {
                                                 let pageNum = parseFloat(event.target.value);

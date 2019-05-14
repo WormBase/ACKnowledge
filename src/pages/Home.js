@@ -70,7 +70,7 @@ class Home extends React.Component {
                         &nbsp;
                     </Col>
                     <Col sm="3">
-                        <Card style={{ height: '300px' }}>
+                        <Card style={{ minHeight: '300px' }}>
                             <Card.Header>
                                 <Link to={'/paper' + args}>
                                     Paper Status Viewer
@@ -81,9 +81,10 @@ class Home extends React.Component {
                                 <Card.Text>
                                     Check if a specific paper has been processed by the AFP and see data submitted by authors
                                 </Card.Text>
+                                <Form.Group controlId="formBasicEmail">
                                 <Form.Label>Load a Paper:</Form.Label>&nbsp;
                                 <Form inline onSubmit={e => e.preventDefault()}>
-                                    <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm" style={{ width: '150px' }}
+                                    <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm" style={{ maxWidth: '120px' }}
                                                  onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
                                                  onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
                                     <Link to={
@@ -95,11 +96,12 @@ class Home extends React.Component {
                                         Load
                                     </Button></Link>
                                 </Form>
+                                </Form.Group>
                             </Card.Body>
                         </Card>
                     </Col>
                     <Col sm="3">
-                        <Card style={{ height: '300px' }}>
+                        <Card style={{ minHeight: '300px' }}>
                             <Card.Header>
                                 <Link to={'/stats' + args}>
                                     Overall Stats
@@ -114,7 +116,7 @@ class Home extends React.Component {
                         </Card>
                     </Col>
                     <Col sm="3">
-                        <Card style={{ height: '300px' }}>
+                        <Card style={{ minHeight: '300px' }}>
                             <Card.Header>
                                 <Link to={'lists' + args}>
                                     Paper Lists
