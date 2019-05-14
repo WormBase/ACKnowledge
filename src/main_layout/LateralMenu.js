@@ -20,26 +20,24 @@ class LateralMenu extends React.Component {
                 </Row>
                 <Row>
                     <Col sm="10">
-                        <h5>Author First Pass</h5>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="10">
-                        <h6>Admin Dashboard</h6>
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col sm="10">
-                        <hr/>
+                        <IndexLinkContainer to={"home" + args}
+                                            active={true}>
+                            <a className="aw"><h5>Author First Pass</h5></a>
+                        </IndexLinkContainer>
                     </Col>
                 </Row>
                 <Row>
                     <Col sm="10">
                         <IndexLinkContainer to={"home" + args}
                                             active={true}>
-                            <a className="aw"><h6>Home</h6></a>
+                            <a className="aw"><h6>Admin Dashboard</h6></a>
                         </IndexLinkContainer>
+                    </Col>
+                </Row>
+
+                <Row>
+                    <Col sm="10">
+                        <hr/>
                     </Col>
                 </Row>
                 <Row>

@@ -70,7 +70,7 @@ class Home extends React.Component {
                         &nbsp;
                     </Col>
                     <Col sm="3">
-                        <Card style={{ minHeight: '300px' }}>
+                        <Card style={{ minHeight: '350px' }}>
                             <Card.Header>
                                 <Link to={'/paper' + args}>
                                     Paper Status Viewer
@@ -101,7 +101,7 @@ class Home extends React.Component {
                         </Card>
                     </Col>
                     <Col sm="3">
-                        <Card style={{ minHeight: '300px' }}>
+                        <Card style={{ minHeight: '350px' }}>
                             <Card.Header>
                                 <Link to={'/stats' + args}>
                                     Overall Stats
@@ -116,7 +116,7 @@ class Home extends React.Component {
                         </Card>
                     </Col>
                     <Col sm="3">
-                        <Card style={{ minHeight: '300px' }}>
+                        <Card style={{ minHeight: '350px' }}>
                             <Card.Header>
                                 <Link to={'lists' + args}>
                                     Paper Lists
