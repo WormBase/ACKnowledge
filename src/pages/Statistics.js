@@ -119,7 +119,7 @@ class Statistics extends React.Component {
             .attr("fill", function(d) { return colorScale(d.length) });
         bar.append("text")
             .attr("dy", ".75em")
-            .attr("y", -12)
+            .attr("y", -15)
             .attr("x", (x(data[0].x1 - data[0].x0) - x(0)) / 2)
             .attr("text-anchor", "middle")
             .text(function(d) { if (d.length > 0) { return formatCount(d.length) } else {return ""}});
