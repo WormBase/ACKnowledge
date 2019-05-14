@@ -33,11 +33,14 @@ class Statistics extends React.Component {
 
     drawAFPPie(pieId, counts, labels, linkedListsKeys, title, extraUrlArgs) {
         let svg = d3.select("#" + pieId ),
-        width = svg.attr("width"),
-        height = svg.attr("height"),
-        radius = Math.min(width, height) / 2 - 30,
-        g = svg.append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+            width = window.innerWidth / 3,
+            height =  window.innerHeight / 2,
+            radius = Math.min(width, height) / 2.7,
+            g = svg.append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        svg.attr("width", width)
+            .attr("height", height);
 
         let color = d3.scaleOrdinal(d3.schemeAccent);
 
@@ -45,7 +48,7 @@ class Statistics extends React.Component {
         let pie = d3.pie();
         let arc = d3.arc()
             .outerRadius(radius - 20)
-            .innerRadius(95);
+            .innerRadius(width / 7);
         //Generate groups
         let arcs = g.selectAll("arc")
                     .data(pie(counts))
@@ -222,11 +225,11 @@ class Statistics extends React.Component {
                                 <Card.Body>
                                     <Container>
                                         <Row>
-                                            <Col sm="4">
-                                                <svg width="400" height="400" id="oldAFPPie"/>
+                                            <Col sm="6">
+                                                <svg id="oldAFPPie"/>
                                             </Col>
-                                            <Col sm="4">
-                                                <svg width="400" height="400" id="newAFPPie"/>
+                                            <Col sm="6">
+                                                <svg id="newAFPPie"/>
                                             </Col>
                                         </Row>
                                         <Row>
