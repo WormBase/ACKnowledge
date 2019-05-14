@@ -33,9 +33,9 @@ class Statistics extends React.Component {
 
     drawAFPPie(pieId, counts, labels, linkedListsKeys, title, extraUrlArgs) {
         let svg = d3.select("#" + pieId ),
-            width = window.innerWidth / 3,
-            height =  window.innerHeight / 2,
-            radius = Math.min(width, height) / 2.7,
+            width = window.innerWidth / 4,
+            height = width * 0.9,
+            radius = Math.min(width, height) / 2 - 20,
             g = svg.append("g")
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
@@ -48,7 +48,7 @@ class Statistics extends React.Component {
         let pie = d3.pie();
         let arc = d3.arc()
             .outerRadius(radius - 20)
-            .innerRadius(width / 7);
+            .innerRadius(width / 5);
         //Generate groups
         let arcs = g.selectAll("arc")
                     .data(pie(counts))
@@ -223,48 +223,52 @@ class Statistics extends React.Component {
                                     Data processed by old and new AFP and submitted by authors
                                 </Card.Header>
                                 <Card.Body>
-                                    <Container>
+                                    <Container fluid>
                                         <Row>
-                                            <Col sm="6">
+                                            <Col sm="4">
                                                 <svg id="oldAFPPie"/>
                                             </Col>
-                                            <Col sm="6">
+                                            <Col sm="4">
                                                 <svg id="newAFPPie"/>
                                             </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col sm="12">
+                                            <Col sm="4">
                                                 <Container fluid>
                                                     <Row>
-                                                        <Col sm="2">
+                                                        <Col sm="12">
                                                             &nbsp;
                                                         </Col>
-                                                        <Col sm="1">
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
+                                                            &nbsp;
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="12">
+                                                            &nbsp;
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col sm="2">
                                                             <div className="box colorAccent1"/>
                                                         </Col>
-                                                        <Col sm="9">
+                                                        <Col sm="10">
                                                             Processed by AFP but no data submitted by author
                                                         </Col>
                                                     </Row>
                                                     <Row>
                                                         <Col sm="2">
-                                                            &nbsp;
-                                                        </Col>
-                                                        <Col sm="1">
                                                             <div className="box colorAccent2"/>
                                                         </Col>
-                                                        <Col sm="9">
+                                                        <Col sm="10">
                                                             Submission completed by author
                                                         </Col>
                                                     </Row>
                                                     <Row>
                                                         <Col sm="2">
-                                                            &nbsp;
-                                                        </Col>
-                                                        <Col sm="1">
                                                             <div className="box colorAccent3"/>
                                                         </Col>
-                                                        <Col sm="9">
+                                                        <Col sm="10">
                                                             Partial submission by author
                                                         </Col>
                                                     </Row>
