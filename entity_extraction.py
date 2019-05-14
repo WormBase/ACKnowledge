@@ -2,12 +2,12 @@ import copy
 import logging
 import re
 import shutil
+from typing import Dict, Set, List
 
 import PyPDF2 as PyPDF2
 from PyPDF2.generic import TextStringObject
 from PyPDF2.pdf import ContentStream, b_, FloatObject, NumberObject
 from PyPDF2.utils import u_
-from tqdm import tqdm
 import urllib.request
 from db_manager import DBManager
 import tempfile
@@ -29,21 +29,12 @@ OPENING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
 CLOSING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
 
 
-class TqdmHandler(logging.StreamHandler):
-    def __init__(self):
-        logging.StreamHandler.__init__(self)
-
-    def emit(self, record):
-        msg = self.format(record)
-        tqdm.write(msg)
+logger = logging.getLogger(__name__)
 
 
 def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences,
                             match_uppercase: bool = False):
-    logger = logging.getLogger("AFP vocabulary extraction")
-    logger.addHandler(TqdmHandler)
-    papers_map[paper_id] = []
-    for keyword in tqdm(keywords):
+    for keyword in keywords:
         if keyword in fulltext_str or match_uppercase and keyword.upper() in fulltext_str:
             try:
                 match_counter = len(re.findall(OPENING_REGEX_STR + re.escape(keyword) + CLOSING_REGEX_STR,
@@ -52,17 +43,17 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
                     match_counter += len(re.findall(OPENING_REGEX_STR + re.escape(keyword.upper()) +
                                                     CLOSING_REGEX_STR, fulltext_str))
                 if match_counter >= min_num_occurrences:
-                    papers_map[paper_id].append(keyword)
+                    papers_map[paper_id].add(keyword)
             except:
                 pass
 
 
-def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_name_map, min_occurrences: int = 1):
+def get_species_in_fulltext_from_regex(fulltext: str, papers_map: Dict[str, Set[str]], paper_id: str,
+                                       taxon_name_map: Dict[str, List[str]], min_occurrences: int = 1):
     tx_name_map = copy.deepcopy(taxon_name_map)
-    papers_map[paper_id] = []
     for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
         tx_name_map[taxon_id].extend(species_alias_arr)
-    for species_id, regex_list in tqdm(tx_name_map.items()):
+    for species_id, regex_list in tx_name_map.items():
         if species_id not in SPECIES_BLACKLIST:
             num_occurrences = 0
             regex_list_mod = regex_list
@@ -75,7 +66,7 @@ def get_species_in_fulltext_from_regex(fulltext, papers_map, paper_id, taxon_nam
                                                              CLOSING_REGEX_STR),
                                                   fulltext.lower()))
             if num_occurrences >= min_occurrences:
-                papers_map[paper_id].append(regex_list_mod[0].replace("\\", ""))
+                papers_map[paper_id].add(regex_list_mod[0].replace("\\", ""))
 
 
 def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager, paper_id):
@@ -135,7 +126,6 @@ def get_fulltext_from_pdfs(pdfs_urls):
         text = re.sub("\\s+", " ", text)
         return text
 
-    logger = logging.getLogger("AFP fulltext extraction")
     complete_fulltext = ""
     for pdf_url in pdfs_urls:
         pdf_fulltext = ""

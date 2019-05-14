@@ -12,9 +12,22 @@ from email_functions import send_email_to_author, send_summary_email_to_admin, n
 from tpc_api_functions import *
 from entity_extraction import *
 from collections import defaultdict
+from tqdm import tqdm
+
+
+class TqdmHandler(logging.StreamHandler):
+    def __init__(self):
+        logging.StreamHandler.__init__(self)
+
+    def emit(self, record):
+        msg = self.format(record)
+        tqdm.write(msg)
 
 
 TPC_PAPERS_PER_QUERY = 10
+
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -41,8 +54,6 @@ def main():
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
-
-    logger = logging.getLogger(__name__)
 
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
 
@@ -77,7 +88,7 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    #curatable_papers_not_processed_svm_flagged = ["00056066"]
+    curatable_papers_not_processed_svm_flagged = ["00055906"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext")
@@ -111,31 +122,40 @@ def main():
     alleles_vocabulary = set(db_manager.get_all_alleles())
     strains_vocabulary = set(db_manager.get_all_strains())
     transgene_vocabulary = set(db_manager.get_all_transgenes())
-    genes_in_papers_dict = defaultdict(list)
-    alleles_in_papers_dict = defaultdict(list)
-    strains_in_papers_dict = defaultdict(list)
-    transgenes_in_papers_dict = defaultdict(list)
-    species_in_papers_dict = defaultdict(list)
+    genes_in_papers_dict = defaultdict(set)
+    alleles_in_papers_dict = defaultdict(set)
+    strains_in_papers_dict = defaultdict(set)
+    transgenes_in_papers_dict = defaultdict(set)
+    species_in_papers_dict = defaultdict(set)
     papers_passwd = {}
     taxon_species_map = db_manager.get_taxonid_speciesnamearr_map()
 
     gene_symbol_id_map = db_manager.get_gene_name_id_map()
     allele_symbol_id_map = db_manager.get_allele_name_id_map()
     transgene_symbol_id_map = db_manager.get_transgene_name_id_map()
+    paper_titles = {paper_id: db_manager.get_paper_title(paper_id=paper_id) for paper_id in fulltexts_dict.keys()}
     db_manager.close()
 
-    for paper_id, fulltext in fulltexts_dict.items():
+    for paper_id, fulltext in tqdm(fulltexts_dict.items()):
         logger.info("Processing paper " + paper_id)
+
         logger.info("Getting list of genes through string matching")
         get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2, match_uppercase=True)
+        get_matches_in_fulltext(paper_titles[paper_id], genes_vocabulary, genes_in_papers_dict,
+                                paper_id, 1, match_uppercase=True)
         logger.info("Getting list of alleles through string matching")
         get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
+        get_matches_in_fulltext(paper_titles[paper_id], alleles_vocabulary, alleles_in_papers_dict, paper_id, 1)
         logger.info("Getting list of strains through string matching")
         get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 1)
+        get_matches_in_fulltext(paper_titles[paper_id], strains_vocabulary, strains_in_papers_dict, paper_id, 1)
         logger.info("Getting list of transgenes through string matching")
         get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
+        get_matches_in_fulltext(paper_titles[paper_id], transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
         logger.info("Getting list of species through string matching")
         get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 10)
+        get_species_in_fulltext_from_regex(paper_titles[paper_id], species_in_papers_dict, paper_id,
+                                           taxon_species_map, 1)
     logger.info("Transforming gene keywords into gene ids")
     gene_ids_counters = defaultdict(int)
     for paper_id, genes_list in genes_in_papers_dict.items():
