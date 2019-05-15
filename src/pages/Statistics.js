@@ -203,7 +203,7 @@ class Statistics extends React.Component {
                 <LoadingOverlay
                     active={this.state.isLoading}
                     spinner
-                    text='Loading paper data...'
+                    text='Loading data...'
                     styles={{
                         overlay: (base) => ({
                             ...base,
