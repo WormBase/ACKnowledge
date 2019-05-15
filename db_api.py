@@ -282,7 +282,8 @@ class StorageEngine(object):
                 "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
 
     def paper_is_afp_processed(self, paper_id):
-        return self.db_manager.get_feature("afp_version", paper_id) != ""
+        afp_version = self.db_manager.get_feature("afp_version", paper_id)
+        return afp_version != "" and afp_version != "null"
 
     def author_has_submitted(self, paper_id):
         return self.db_manager.author_has_submitted(paper_id)
