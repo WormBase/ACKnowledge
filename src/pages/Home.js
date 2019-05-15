@@ -85,6 +85,7 @@ class Home extends React.Component {
                                 <Form.Label>Load a Paper:</Form.Label>&nbsp;
                                 <Form inline onSubmit={e => e.preventDefault()}>
                                     <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm" style={{ width: '60%' }}
+                                                 autoComplete="off"
                                                  onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
                                                  onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
                                     <Link to={

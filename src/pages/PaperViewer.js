@@ -74,6 +74,8 @@ class PaperViewer extends React.Component {
                 });
                 if (data["author_submitted"] === true || data["author_modified"] === true) {
                     this.setState({load_diff: true});
+                } else {
+                    this.setState({load_diff: false});
                 }
             }).catch((err) => {
                 alert(err);
@@ -90,9 +92,19 @@ class PaperViewer extends React.Component {
     }
 
     componentDidUpdate() {
-        if (this.state.paper_id_from_url !== undefined && this.state.paper_id_from_url != "undefined" && !this.state.api_called) {
+        if (this.state.paper_id_from_url !== undefined && this.state.paper_id_from_url !== "undefined" && !this.state.api_called) {
             this.loadDataFromAPI();
             this.setState({api_called: true})
+        }
+    }
+
+    componentWillReceiveProps(nextProps){
+        let url = document.location.toString();
+        if (url.match("\\?")) {
+            this.setState({
+                paper_id_from_url: queryString.parse(document.location.search).paper_id,
+                api_called: false
+            });
         }
     }
 

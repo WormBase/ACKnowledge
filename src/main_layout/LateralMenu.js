@@ -1,9 +1,16 @@
 import React from 'react';
 import {IndexLinkContainer} from "react-router-bootstrap";
-import {withRouter} from "react-router-dom";
-import {Col, Container, Row} from "react-bootstrap";
+import {Link, withRouter} from "react-router-dom";
+import {Button, Col, Container, Form, Row} from "react-bootstrap";
 
 class LateralMenu extends React.Component {
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            paper_id: undefined
+        };
+    }
+
     render() {
         let url = document.location.toString();
         let args = "";
@@ -35,6 +42,35 @@ class LateralMenu extends React.Component {
                         <hr/>
                     </Col>
                 </Row>
+                <Row>
+                    <Col sm="10">
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Load a Paper:</Form.Label>&nbsp;
+                            <Form inline onSubmit={e => e.preventDefault()}>
+                                <Form.Control type="text" placeholder="Paper ID - 8 digits" size="sm"
+                                              autoComplete="off" style={{ width: '70%' }}
+                                              onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
+                                              onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
+                                <Link to={
+                                    {
+                                        pathname: '/paper',
+                                        search: '?paper_id=' + this.state.paper_id,
+                                        state: 'refresh'
+                                    }
+                                }><Button variant="default" size="sm">
+                                    Load
+                                </Button></Link>
+                            </Form>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
+                        <hr/>
+                    </Col>
+                </Row>
+
+
                 <Row>
                     <Col sm="10">
                         <IndexLinkContainer to={"paper" + args}
