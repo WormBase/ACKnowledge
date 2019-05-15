@@ -184,7 +184,7 @@ class Statistics extends React.Component {
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
                 [this.state.num_papers_new_afp_proc_no_sub, this.state.num_papers_new_afp_author_submitted,
                 this.state.num_papers_new_afp_partial_sub], [undefined, undefined, undefined],
-                "New AFP: Submitted and Processed Data", this.props.location.search);
+                "New AFP", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
             this.drawAFPChart("numSpeciesHist", this.state.num_extracted_species_per_paper);
             this.drawAFPChart("numAllelesHist", this.state.num_extracted_alleles_per_paper);
