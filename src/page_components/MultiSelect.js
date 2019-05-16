@@ -261,6 +261,19 @@ class MultipleSelect extends Component {
                                placeholder={"Start typing to filter " + this.state.itemsNamePlural + " list"}/>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-sm-12">
+                        <Button bsStyle="info" className="pull-right" bsSize="xsmall" onClick={() => {
+                            const element = document.createElement("a");
+                            const file = new Blob([[... this.state.selectedItemsToDisplay].join("\n")],
+                                {type: 'text/plain'});
+                            element.href = URL.createObjectURL(file);
+                            element.download = "entities.txt";
+                            document.body.appendChild(element); // Required for this to work in FireFox
+                            element.click();
+                        }}>Export .txt</Button>
+                    </div>
+                </div>
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Select from Wormbase {this.state.itemsNameSingular} list</Modal.Title>
