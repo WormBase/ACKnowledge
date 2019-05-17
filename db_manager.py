@@ -47,7 +47,7 @@ class DBManager(object):
         """
         self.cur.execute("SELECT * FROM pap_primary_data JOIN pap_type "
                          "ON pap_primary_data.joinkey = pap_type.joinkey "
-                         "JOIN pap_species ON pap_primary_data.joinkey = ppap_species.joinkey "
+                         "JOIN pap_species ON pap_primary_data.joinkey = pap_species.joinkey "
                          "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' "
                          "AND pap_species.pap_species = '6239'")
         rows = self.cur.fetchall()
