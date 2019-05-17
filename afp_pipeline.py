@@ -179,7 +179,6 @@ def main():
 
     def entities_not_empty(pap_id):
         return pap_id in gene_ids_in_documents and len(gene_ids_in_documents[pap_id]) > 0 or \
-               pap_id in species_in_papers_dict and len(species_in_papers_dict[pap_id]) > 0 or \
                pap_id in allele_ids_in_documents and len(allele_ids_in_documents[pap_id]) > 0 or \
                pap_id in transgene_ids_in_documents and len(transgene_ids_in_documents[pap_id]) > 0 or \
                pap_id in strains_in_papers_dict and len(strains_in_papers_dict[pap_id]) > 0
