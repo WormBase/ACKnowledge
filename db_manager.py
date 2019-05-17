@@ -45,12 +45,13 @@ class DBManager(object):
         Returns:
             Set[str]: the set of curatable papers
         """
-        self.cur.execute("SELECT * FROM pap_primary_data WHERE pap_primary_data = 'primary'")
+        self.cur.execute("SELECT * FROM pap_primary_data JOIN pap_type "
+                         "ON pap_primary_data.joinkey = pap_type.joinkey "
+                         "JOIN pap_species ON pap_primary_data.joinkey = ppap_species.joinkey "
+                         "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' "
+                         "AND pap_species.pap_species = '6239'")
         rows = self.cur.fetchall()
         curatable_papers = [row[0] for row in rows]
-        self.cur.execute("SELECT * FROM pap_type WHERE pap_type = '1'")
-        rows = self.cur.fetchall()
-        curatable_papers.extend([row[0] for row in rows])
         return set(curatable_papers)
 
     def get_set_of_afp_processed_papers(self):
