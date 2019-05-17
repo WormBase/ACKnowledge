@@ -265,10 +265,10 @@ class MultipleSelect extends Component {
                     <div className="col-sm-12">
                         <Button bsStyle="info" className="pull-right" bsSize="xsmall" onClick={() => {
                             const element = document.createElement("a");
-                            const file = new Blob([[... this.state.selectedItemsToDisplay].join("\n")],
+                            const file = new Blob([[... this.state.selectedItemsToDisplay].sort().join("\n")],
                                 {type: 'text/plain'});
                             element.href = URL.createObjectURL(file);
-                            element.download = "entities.txt";
+                            element.download = this.state.itemsNamePlural + ".txt";
                             document.body.appendChild(element); // Required for this to work in FireFox
                             element.click();
                         }}>Export .txt</Button>
