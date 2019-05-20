@@ -658,8 +658,9 @@ class DBManager(object):
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name,
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name))
         rows = self.cur.fetchall()
-        return [row[0] for row in rows if row[1] != "" and row[1] != "[{\"id\":1,\"name\":\"\"}]" and
-                row[1] != "[{\"id\":1,\"name\":\"\",\"publicationId\":\"\"}]"]
+        return {row[0]: row[1] if row[1] != "Checked" else "" for row in rows if row[1] != "" and
+                row[1] != "[{\"id\":1,\"name\":\"\"}]" and
+                row[1] != "[{\"id\":1,\"name\":\"\",\"publicationId\":\"\"}]"}
 
     def get_feature(self, table_name, paper_id):
         self.cur.execute("SELECT {} from {} WHERE joinkey = '{}'".format(table_name, table_name, paper_id))

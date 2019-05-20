@@ -45,9 +45,10 @@ def main():
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
         for table_to_watch in tables_to_watch:
-            positive_papers = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(table_to_watch)
-            if len(positive_papers) > 0:
-                send_new_data_notification_email_to_watcher(table_to_watch, positive_papers, [afp_watcher],
+            positive_papers_val = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(
+                table_to_watch)
+            if len(positive_papers_val) > 0:
+                send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val, [afp_watcher],
                                                             args.email_passwd)
     db_manager.close()
 

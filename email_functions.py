@@ -2,6 +2,8 @@ import logging
 import smtplib
 
 from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from typing import List
 
 
@@ -140,15 +142,18 @@ Link to AFP form: {}
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
 
 
-def send_new_data_notification_email_to_watcher(data_type_table, paper_ids, recipients, email_passwd):
-    email_content = """New papers flagged 'positive' during the last month for data type {}:
+def send_new_data_notification_email_to_watcher(data_type_table, paper_ids_val, recipients, email_passwd):
+    email_content = """New papers flagged 'positive' during the last month for data type {}: <br/><br>
     
 {}
 
-""".format(data_type_table, "\n".join(paper_ids))
+""".format(data_type_table, "<br/>".join(["<a href='http://textpressocentral.org:5001/paper?paper_id=" +
+                                          paper_id + "'>" + paper_id + "</a>:  " + paper_ids_val[paper_id] for paper_id
+                                          in paper_ids_val.keys()]))
 
-    msg = EmailMessage()
-    msg.set_content(email_content)
+    body = MIMEText(email_content, "html")
+    msg = MIMEMultipart('alternative')
+    msg.attach(body)
     msg['Subject'] = "New positive papers flagged by author through AFP for " + data_type_table
     msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
     msg['To'] = ", ".join(recipients)
