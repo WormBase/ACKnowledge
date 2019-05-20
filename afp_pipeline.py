@@ -231,9 +231,12 @@ def main():
         pmid = db_manager.get_pmid(paper_id)
         doi = db_manager.get_doi_from_paper_id(paper_id)
 
-        hide_genes = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
-        hide_alleles = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
-        hide_strains = "true" if len(gene_ids_in_documents[paper_id]) > 100 else "false"
+        hide_genes = "true" if paper_id in gene_ids_in_documents and len(gene_ids_in_documents[paper_id]) > 100 else \
+            "false"
+        hide_alleles = "true" if paper_id in gene_ids_in_documents and len(gene_ids_in_documents[paper_id]) > 100 else \
+            "false"
+        hide_strains = "true" if paper_id in gene_ids_in_documents and len(gene_ids_in_documents[paper_id]) > 100 else \
+            "false"
         # notify author(s) via email
         if email_addr_in_papers_dict[paper_id]:
             url = args.afp_base_url + "?paper=" + paper_id + "&passwd=" + \

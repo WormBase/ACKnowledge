@@ -141,7 +141,7 @@ Link to AFP form: {}
 
 
 def send_new_data_notification_email_to_watcher(data_type_table, paper_ids, recipients, email_passwd):
-    email_content = """New papers flagged positive for data type {}:
+    email_content = """New papers flagged 'positive' during the last month for data type {}:
     
 {}
 
