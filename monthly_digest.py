@@ -9,7 +9,7 @@ AFP_WATCHERS_TABLES = {
        "hinxton@warmbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
                                 "afp_otherstrain", "afp_rnaseq"],
        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
-       "daniela@wormbase.org": ["tfp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+       "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
        "raymond@wormbase.org": ["afp_siteaction", "afp_timeaction"],
        "jae.cho@wormbase.org": ["afp_geneprod"],
        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
@@ -17,10 +17,11 @@ AFP_WATCHERS_TABLES = {
        "ranjana@caltech.edu": ["afp_humdis"]
    }
 
-#AFP_WATCHERS_TABLES = {
-#       "valearna@caltech.edu": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
-#                                "afp_otherstrain", "afp_rnaseq", "afp_humdis"],
-#  }
+# AFP_WATCHERS_TABLES = {
+#     "valearna@caltech.edu": ["afp_humdis", "afp_comment"],
+#     "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+#     "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
+# }
 
 
 def main():

@@ -650,12 +650,16 @@ class DBManager(object):
                          .format(paper_id, curtime))
 
     def get_positive_paper_ids_sumbitted_last_month_for_data_type(self, data_type_table_name):
-        self.cur.execute("SELECT {}.joinkey from {} join afp_comment on {}.joinkey = afp_comment.joinkey "
-                         "WHERE {}.afp_cur_timestamp > now() - interval '1 month' AND "
-                         "{}.{} IS NOT NULL".format(data_type_table_name, data_type_table_name, data_type_table_name,
-                                                    data_type_table_name, data_type_table_name, data_type_table_name))
+        self.cur.execute("SELECT {}.joinkey, {}.{} from {} join afp_lasttouched "
+                         "ON {}.joinkey = afp_lasttouched.joinkey JOIN afp_version "
+                         "ON afp_lasttouched.joinkey = afp_version.joinkey "
+                         "WHERE afp_version.afp_version = '2' AND {}.afp_timestamp > now() - interval '1 month' AND "
+                         "{}.{} IS NOT NULL".format(
+            data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name,
+            data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name))
         rows = self.cur.fetchall()
-        return [row[0] for row in rows]
+        return [row[0] for row in rows if row[1] != "" and row[1] != "[{\"id\":1,\"name\":\"\"}]" and
+                row[1] != "[{\"id\":1,\"name\":\"\",\"publicationId\":\"\"}]"]
 
     def get_feature(self, table_name, paper_id):
         self.cur.execute("SELECT {} from {} WHERE joinkey = '{}'".format(table_name, table_name, paper_id))
