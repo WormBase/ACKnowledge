@@ -22,8 +22,11 @@ ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 
 ADD crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
-RUN touch /var/log/cron.log
+RUN touch /var/log/afp_pipeline.log
+RUN touch /var/log/afp_monthly_digest.log
+RUN crontab /etc/cron.d/afp-cron
 
+EXPOSE ${PORT}
 CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $DB_HOST > /etc/afp_db_host && \
     echo $DB_NAME > /etc/afp_db_name && \
@@ -31,7 +34,6 @@ CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $DB_PASSWD > /etc/afp_db_passwd && \
     echo $ADMINS > /etc/afp_admins && \
     echo $NUM_PAPERS_PER_RUN > /etc/afp_num_papers_per_run && \
-    echo $AFP_BASE_URL > /etc/afp_base_url
-
-EXPOSE ${PORT}
-CMD crontab /etc/cron.d/afp-cron && python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG
+    echo $AFP_BASE_URL > /etc/afp_base_url && \
+    cron && \
+    python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG
