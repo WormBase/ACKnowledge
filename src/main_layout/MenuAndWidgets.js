@@ -22,6 +22,7 @@ import {
 } from "../AFPValues";
 import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "./MainModals";
 import PersonSelector from "./PersonSelector";
+import LoadingOverlay from 'react-loading-overlay';
 
 export const WIDGET = Object.freeze({
     OVERVIEW: "overview",
@@ -121,7 +122,8 @@ class MenuAndWidgets extends React.Component {
             show_sections_not_completed: false,
             hideGenes: parameters.hide_genes === "true",
             hideAlleles: parameters.hide_alleles === "true",
-            hideStrains: parameters.hide_strains === "true"
+            hideStrains: parameters.hide_strains === "true",
+            isLoading: false
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
@@ -469,6 +471,7 @@ class MenuAndWidgets extends React.Component {
     }
 
     handleFinishedSection(widget) {
+        this.setState({isLoading: true});
         if (widget !== WIDGET.COMMENTS || this.allSectionsFinished()) {
             if (widget === WIDGET.COMMENTS) {
                 // manually change alert for last widget
@@ -554,19 +557,22 @@ class MenuAndWidgets extends React.Component {
                 } else {
                     this.setState({
                         show_data_saved: true,
-                        data_saved_success: false
+                        data_saved_success: false,
+                        isLoading: false
                     });
                 }
             }).then(data => {
                 if (data === undefined) {
                     this.setState({
                         show_data_saved: true,
-                        data_saved_success: false
+                        data_saved_success: false,
+                        isLoading: false
                     });
                 }
                 this.setState({
                     show_data_saved: true,
                     data_saved_success: true,
+                    isLoading: false,
                     data_saved_last_widget: widget === WIDGET.COMMENTS
                 });
                 const newCompletedSections = this.state.completedSections;
@@ -575,7 +581,8 @@ class MenuAndWidgets extends React.Component {
             }).catch((err) => {
                 this.setState({
                     show_data_saved: true,
-                    data_saved_success: false
+                    data_saved_success: false,
+                    isLoading: false
                 });
             });
         } else {
@@ -707,123 +714,129 @@ class MenuAndWidgets extends React.Component {
                                 </div>
                                 <div className="panel panel-default">
                                     <div className="panel-body">
-                                        <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
-                                        <Route path={"/" + WIDGET.OVERVIEW}
-                                               render={() => <Overview callback={this.handleFinishedSection}
-                                                                       saved={this.state.completedSections[WIDGET.OVERVIEW]}
-                                                                       ref={instance => { this.overview = instance; }}
-                                                                       selectedGenes={this.state.selectedGenes}
-                                                                       geneModCorr={this.state.geneModCorrection}
-                                                                       geneModCorrDetails={this.state.geneModCorrectionDetails}
-                                                                       selectedSpecies={this.state.selectedSpecies}
-                                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                       toggleCb={this.toggle_cb}
-                                                                       checkCb={this.check_cb}
-                                                                       hideGenes={this.state.hideGenes}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.GENETICS}
-                                               render={() => <Genetics  callback={this.handleFinishedSection}
-                                                                        saved={this.state.completedSections[WIDGET.GENETICS]}
-                                                                        ref={instance => { this.genetics = instance; }}
-                                                                        selectedAlleles={this.state.selectedAlleles}
-                                                                        selectedStrains={this.state.selectedStrains}
-                                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                        alleleSeqChange={this.state.alleleSeqChange}
-                                                                        otherAlleles={this.state.otherAlleles}
-                                                                        otherStrains={this.state.otherStrains}
-                                                                        toggleCb={this.toggle_cb}
-                                                                        checkCb={this.check_cb}
-                                                                        hideAlleles={this.state.hideAlleles}
-                                                                        hideStrains={this.state.hideStrains}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.REAGENT}
-                                               render={() => <Reagent callback={this.handleFinishedSection}
-                                                                      saved={this.state.completedSections[WIDGET.REAGENT]}
-                                                                      selectedTransgenes={this.state.selectedTransgenes}
-                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                      newAntib={this.state.newAntib}
-                                                                      newAntibDetails={this.state.newAntibDetails}
-                                                                      otherAntibs={this.state.otherAntibs}
-                                                                      otherTransgenes={this.state.otherTransgenes}
-                                                                      toggleCb={this.toggle_cb}
-                                                                      checkCb={this.check_cb}
-                                                                      ref={instance => { this.reagent = instance; }}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.EXPRESSION}
-                                               render={() => <Expression callback={this.handleFinishedSection}
-                                                                         saved={this.state.completedSections[WIDGET.EXPRESSION]}
-                                                                         anatomicExpr={this.state.anatomicExpr}
-                                                                         anatomicExprDetails={this.state.anatomicExprDetails}
-                                                                         siteAction={this.state.siteAction}
-                                                                         siteActionDetails={this.state.siteActionDetails}
-                                                                         timeAction={this.state.timeAction}
-                                                                         timeActionDetails={this.state.timeActionDetails}
-                                                                         rnaSeq={this.state.rnaSeq}
-                                                                         rnaSeqDetails={this.state.rnaSeqDetails}
-                                                                         additionalExpr={this.state.additionalExpr}
-                                                                         stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                         selfStateVarModifiedFunction={this.stateVarModifiedCallback}
-                                                                         toggleCb={this.toggle_cb}
-                                                                         checkCb={this.check_cb}
-                                                                         ref={instance => { this.expression = instance; }}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.INTERACTIONS}
-                                               render={() => <Interactions
-                                                   callback={this.handleFinishedSection}
-                                                   saved={this.state.completedSections[WIDGET.INTERACTIONS]}
-                                                   ref={instance => { this.interactions = instance; }}
-                                                   cb_genetic={this.state.svmGeneInt}
-                                                   cb_physical={this.state.svmPhysInt}
-                                                   cb_regulatory={this.state.svmGeneReg}
-                                                   cb_genetic_details={this.state.svmGeneIntDetails}
-                                                   cb_physical_details={this.state.svmPhysIntDetails}
-                                                   cb_regulatory_details={this.state.svmGeneRegDetails}
-                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                   toggleCb={this.toggle_cb}
-                                                   checkCb={this.check_cb}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.PHENOTYPES}
-                                               render={() => <Phenotypes
-                                                   callback={this.handleFinishedSection}
-                                                   saved={this.state.completedSections[WIDGET.PHENOTYPES]}
-                                                   cb_allele={this.state.svmAllele}
-                                                   cb_rnai={this.state.svmRNAi}
-                                                   cb_transgene={this.state.svmTransgene}
-                                                   cb_protein={this.state.svmProtein}
-                                                   cb_transgene_details={this.state.svmTransgeneDetails}
-                                                   cb_protein_details={this.state.svmProteinDetails}
-                                                   cb_chemical={this.state.chemical}
-                                                   cb_env={this.state.env}
-                                                   stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                   ref={instance => { this.phenotype = instance; }}
-                                                   toggleCb={this.toggle_cb}
-                                                   checkCb={this.check_cb}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.DISEASE}
-                                               render={() => <Disease callback={this.handleFinishedSection}
-                                                                      saved={this.state.completedSections[WIDGET.DISEASE]}
-                                                                      humDis={this.state.humDis}
-                                                                      comments={this.state.disComments}
-                                                                      stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                      toggleCb={this.toggle_cb}
-                                                                      checkCb={this.check_cb}
-                                                                      ref={instance => { this.disease = instance; }}
-                                               />}
-                                        />
-                                        <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
-                                            callback={this.handleFinishedSection}
-                                            saved={this.state.completedSections[WIDGET.COMMENTS]}
-                                            other={this.state.other}
-                                            stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                            personId={this.state.personid}
-                                            ref={instance => { this.other = instance; }}
-                                        />}/>
+                                        <LoadingOverlay
+                                            active={this.state.isLoading}
+                                            spinner
+                                            text='Sending data ...'
+                                        >
+                                            <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
+                                            <Route path={"/" + WIDGET.OVERVIEW}
+                                                   render={() => <Overview callback={this.handleFinishedSection}
+                                                                           saved={this.state.completedSections[WIDGET.OVERVIEW]}
+                                                                           ref={instance => { this.overview = instance; }}
+                                                                           selectedGenes={this.state.selectedGenes}
+                                                                           geneModCorr={this.state.geneModCorrection}
+                                                                           geneModCorrDetails={this.state.geneModCorrectionDetails}
+                                                                           selectedSpecies={this.state.selectedSpecies}
+                                                                           stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                           toggleCb={this.toggle_cb}
+                                                                           checkCb={this.check_cb}
+                                                                           hideGenes={this.state.hideGenes}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.GENETICS}
+                                                   render={() => <Genetics  callback={this.handleFinishedSection}
+                                                                            saved={this.state.completedSections[WIDGET.GENETICS]}
+                                                                            ref={instance => { this.genetics = instance; }}
+                                                                            selectedAlleles={this.state.selectedAlleles}
+                                                                            selectedStrains={this.state.selectedStrains}
+                                                                            stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                            alleleSeqChange={this.state.alleleSeqChange}
+                                                                            otherAlleles={this.state.otherAlleles}
+                                                                            otherStrains={this.state.otherStrains}
+                                                                            toggleCb={this.toggle_cb}
+                                                                            checkCb={this.check_cb}
+                                                                            hideAlleles={this.state.hideAlleles}
+                                                                            hideStrains={this.state.hideStrains}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.REAGENT}
+                                                   render={() => <Reagent callback={this.handleFinishedSection}
+                                                                          saved={this.state.completedSections[WIDGET.REAGENT]}
+                                                                          selectedTransgenes={this.state.selectedTransgenes}
+                                                                          stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                          newAntib={this.state.newAntib}
+                                                                          newAntibDetails={this.state.newAntibDetails}
+                                                                          otherAntibs={this.state.otherAntibs}
+                                                                          otherTransgenes={this.state.otherTransgenes}
+                                                                          toggleCb={this.toggle_cb}
+                                                                          checkCb={this.check_cb}
+                                                                          ref={instance => { this.reagent = instance; }}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.EXPRESSION}
+                                                   render={() => <Expression callback={this.handleFinishedSection}
+                                                                             saved={this.state.completedSections[WIDGET.EXPRESSION]}
+                                                                             anatomicExpr={this.state.anatomicExpr}
+                                                                             anatomicExprDetails={this.state.anatomicExprDetails}
+                                                                             siteAction={this.state.siteAction}
+                                                                             siteActionDetails={this.state.siteActionDetails}
+                                                                             timeAction={this.state.timeAction}
+                                                                             timeActionDetails={this.state.timeActionDetails}
+                                                                             rnaSeq={this.state.rnaSeq}
+                                                                             rnaSeqDetails={this.state.rnaSeqDetails}
+                                                                             additionalExpr={this.state.additionalExpr}
+                                                                             stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                             selfStateVarModifiedFunction={this.stateVarModifiedCallback}
+                                                                             toggleCb={this.toggle_cb}
+                                                                             checkCb={this.check_cb}
+                                                                             ref={instance => { this.expression = instance; }}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.INTERACTIONS}
+                                                   render={() => <Interactions
+                                                       callback={this.handleFinishedSection}
+                                                       saved={this.state.completedSections[WIDGET.INTERACTIONS]}
+                                                       ref={instance => { this.interactions = instance; }}
+                                                       cb_genetic={this.state.svmGeneInt}
+                                                       cb_physical={this.state.svmPhysInt}
+                                                       cb_regulatory={this.state.svmGeneReg}
+                                                       cb_genetic_details={this.state.svmGeneIntDetails}
+                                                       cb_physical_details={this.state.svmPhysIntDetails}
+                                                       cb_regulatory_details={this.state.svmGeneRegDetails}
+                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                       toggleCb={this.toggle_cb}
+                                                       checkCb={this.check_cb}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.PHENOTYPES}
+                                                   render={() => <Phenotypes
+                                                       callback={this.handleFinishedSection}
+                                                       saved={this.state.completedSections[WIDGET.PHENOTYPES]}
+                                                       cb_allele={this.state.svmAllele}
+                                                       cb_rnai={this.state.svmRNAi}
+                                                       cb_transgene={this.state.svmTransgene}
+                                                       cb_protein={this.state.svmProtein}
+                                                       cb_transgene_details={this.state.svmTransgeneDetails}
+                                                       cb_protein_details={this.state.svmProteinDetails}
+                                                       cb_chemical={this.state.chemical}
+                                                       cb_env={this.state.env}
+                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                       ref={instance => { this.phenotype = instance; }}
+                                                       toggleCb={this.toggle_cb}
+                                                       checkCb={this.check_cb}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.DISEASE}
+                                                   render={() => <Disease callback={this.handleFinishedSection}
+                                                                          saved={this.state.completedSections[WIDGET.DISEASE]}
+                                                                          humDis={this.state.humDis}
+                                                                          comments={this.state.disComments}
+                                                                          stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                                          toggleCb={this.toggle_cb}
+                                                                          checkCb={this.check_cb}
+                                                                          ref={instance => { this.disease = instance; }}
+                                                   />}
+                                            />
+                                            <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
+                                                callback={this.handleFinishedSection}
+                                                saved={this.state.completedSections[WIDGET.COMMENTS]}
+                                                other={this.state.other}
+                                                stateVarModifiedCallback={this.stateVarModifiedCallback}
+                                                personId={this.state.personid}
+                                                ref={instance => { this.other = instance; }}
+                                            />}/>
+                                        </LoadingOverlay>
                                     </div>
                                 </div>
                             </div>
