@@ -119,9 +119,11 @@ Paper ID: {}
 Title: {}
 Journal: {}
 
-Link to AFP form: {}
+Link to AFP admin dashboard: {}
+Link to AFP form for authors: {}
 
-""".format(paper_id, paper_title, paper_journal, form_url)
+""".format(paper_id, paper_title, paper_journal, "http://textpressocentral.org:5001/paper?paper_id=" + paper_id,
+           form_url)
 
     msg = EmailMessage()
     msg.set_content(email_content)
