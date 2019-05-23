@@ -327,6 +327,9 @@ class StorageEngine(object):
     def get_corresponding_author_email(self, paper_id):
         return self.db_manager.get_afp_email(paper_id)
 
+    def get_doi_from_paper_id(self, paper_id):
+        return self.db_manager.get_doi_from_paper_id(paper_id)
+
 
 class AFPWriter:
 
@@ -477,12 +480,14 @@ class AFPReaderAdminLists:
                     title = self.db.get_paper_title(paper_id)
                     journal = self.db.get_paper_journal(paper_id)
                     email = self.db.get_corresponding_author_email(paper_id)
-                    self.db.get_
+                    pmid = self.db.get_pmid_from_paper_id(paper_id)
+                    doi = self.db.get_doi_from_paper_id(paper_id)
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
-                                '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}"}}'.format(
+                                '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}", "pmid": "{}", ' \
+                                '"doi": "{}"}}'.format(
                         title, journal, email,
                         "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
-                        author_modified else "false", afp_form_link)
+                        author_modified else "false", afp_form_link, pmid, doi)
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
                     lists_dict = self.db.get_all_lists(paper_id)
