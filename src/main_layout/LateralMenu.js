@@ -46,11 +46,14 @@ class LateralMenu extends React.Component {
                     <Col sm="10">
                         <Form.Group controlId="formBasicEmail">
                             <Form.Label>Load a Paper:</Form.Label>&nbsp;
-                            <Form inline onSubmit={e => e.preventDefault()}>
+                            <Form inline onSubmit={e => e.preventDefault()} ref={(el) => this.searchForm = el}>
                                 <Form.Control type="text" placeholder="Paper ID - 8 digits" size="sm"
                                               autoComplete="off" style={{ width: '100%' }}
                                               onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
-                                              onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
+                                              onKeyPress={(target) => {if (target.key === 'Enter') {
+                                                  this.props.history.push("/paper?paper_id=" + this.state.paper_id);
+                                                  this.searchForm.reset();
+                                              }}}/>
                             </Form>
                         </Form.Group>
                     </Col>
