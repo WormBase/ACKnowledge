@@ -477,6 +477,7 @@ class AFPReaderAdminLists:
                     title = self.db.get_paper_title(paper_id)
                     journal = self.db.get_paper_journal(paper_id)
                     email = self.db.get_corresponding_author_email(paper_id)
+                    self.db.get_
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
                                 '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}"}}'.format(
                         title, journal, email,

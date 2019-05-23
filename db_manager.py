@@ -770,10 +770,11 @@ class DBManager(object):
         title = self.get_paper_title(paper_id)
         journal = self.get_paper_journal(paper_id)
         pmid = self.get_pmid(paper_id)
+        doi = self.get_doi_from_paper_id(paper_id)
         person_id = self.get_corresponding_author_id(paper_id)
         if person_id:
             url = base_url + "?paper=" + paper_id + "&passwd=" + passwd + "&title=" + urllib.parse.quote(title) + \
-                  "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&personid=" + \
+                  "&journal=" + urllib.parse.quote(journal) + "&pmid=" + pmid + "&doi=" + doi + "&personid=" + \
                   person_id.replace("two", "") + "&hide_genes=false&hide_alleles=false&hide_strains=false"
         else:
             url = ""
