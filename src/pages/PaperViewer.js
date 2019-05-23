@@ -29,7 +29,9 @@ class PaperViewer extends React.Component {
             api_called: false,
             paper_title: "",
             paper_journal: "",
-            author_address: ""
+            author_address: "",
+            pmid: undefined,
+            doi: undefined
         };
         this.setPaperId = this.setPaperId.bind(this);
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
@@ -70,6 +72,8 @@ class PaperViewer extends React.Component {
                     paper_title: data["title"],
                     paper_journal: data["journal"],
                     author_address: data["email"],
+                    pmid: data["pmid"],
+                    doi: data["doi"],
                     isLoading: false
                 });
                 if (data["author_submitted"] === true || data["author_modified"] === true) {
@@ -144,7 +148,9 @@ class PaperViewer extends React.Component {
                                     paper_author_modified={this.state.paper_author_modified}
                                     paper_title={this.state.paper_title}
                                     paper_journal={this.state.paper_journal}
-                                    email={this.state.author_address} />
+                                    email={this.state.author_address}
+                                    pmid={this.state.pmid}
+                                    doi={this.state.doi} />
                     </Col>
                 </Row>
             </Container>

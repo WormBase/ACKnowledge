@@ -40,7 +40,9 @@ class StatusArea extends React.Component {
                                     <Card.Header>Paper Info</Card.Header>
                                     <Card.Body><strong>Title:</strong> &nbsp; {this.props.paper_title}<br/>
                                         <strong>Journal:</strong> &nbsp; {this.props.paper_journal}<br/>
-                                        <strong>Email:</strong> &nbsp; {this.props.email}
+                                        <strong>Email:</strong> &nbsp; {this.props.email} <br/>
+                                        <strong>Link to pubmed source:</strong> &nbsp; <a href={"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props.pmid} target="blank_">{"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props.pmid}</a> <br/>
+                                        <strong>Link to doi source:</strong> &nbsp; <a href={"https://doi.org/" + this.props.doi} target="blank_">{"https://doi.org/" + this.props.doi}</a>
                                     </Card.Body>
                                 </Card>
                             </Col>
