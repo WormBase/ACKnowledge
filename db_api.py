@@ -330,6 +330,12 @@ class StorageEngine(object):
     def get_doi_from_paper_id(self, paper_id):
         return self.db_manager.get_doi_from_paper_id(paper_id)
 
+    def get_author_token_from_email(self, email):
+        return self.db_manager.get_author_token_from_email(email)
+
+    def get_author_email_from_token(self, token):
+        return self.db_manager.get_author_email_from_token(token)
+
 
 class AFPWriter:
 
@@ -610,6 +616,33 @@ class AFPReaderAdminLists:
                     resp.status = falcon.HTTP_200
 
 
+class AFPReaderAuthorDash:
+    def __init__(self, storage_engine: StorageEngine):
+        self.db = storage_engine
+        self.logger = logging.getLogger("AFP API for Author Dashboard")
+
+    def on_post(self, req, resp, req_type):
+        with self.db:
+            if req_type == "send_link":
+                if "email" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                email = req.media["email"]
+                token = self.db.get_author_token_from_email(email)
+                if token:
+                    resp.body = '{{"token": "{}"}}'.format(token)
+                    resp.status = falcon.HTTP_200
+                else:
+                    raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
+            elif req_type == "get_papers":
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                email = self.db.get_author_email_from_token(passwd)
+                resp.status = falcon.HTTP_200
+            else:
+                raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -656,6 +689,9 @@ def main():
 
     reader = AFPReaderAdminLists(storage_engine=db, afp_base_url=args.afp_base_url)
     app.add_route('/api/read_admin/{req_type}', reader)
+
+    reader_authdash = AFPReaderAuthorDash(storage_engine=db)
+    app.add_route('/api/read_authdash/{req_type}', reader_authdash)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()

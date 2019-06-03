@@ -1,3 +1,4 @@
+from datetime import datetime
 import html
 import json
 import logging
@@ -931,6 +932,22 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
+    def get_author_token_from_email(self, email):
+        self.cur.execute("SELECT two_timestamp FROM two_email WHERE two_email = '{}'".format(email))
+        res = self.cur.fetchone()
+        if res:
+            return str(res[0].timestamp()) + "." + str(res[0].utcoffset().seconds)
+        else:
+            return None
 
+    def get_author_email_from_token(self, token):
+        tokenarr = token.split(".")
+        ts_token = datetime.utcfromtimestamp((int(tokenarr[0]) - int(tokenarr[2])) * 1000 + int(tokenarr))
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return res[0]
+        else:
+            return None
 
 
