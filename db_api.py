@@ -333,8 +333,11 @@ class StorageEngine(object):
     def get_author_token_from_email(self, email):
         return self.db_manager.get_author_token_from_email(email)
 
-    def get_author_email_from_token(self, token):
-        return self.db_manager.get_author_email_from_token(token)
+    def get_papers_processed_from_auth_token(self, token, offset, count):
+        return self.db_manager.get_papers_processed_from_auth_token(token, offset, count)
+
+    def get_papers_submitted_from_auth_token(self, token, offset, count):
+        return self.db_manager.get_papers_submitted_from_auth_token(token, offset, count)
 
 
 class AFPWriter:
@@ -633,11 +636,27 @@ class AFPReaderAuthorDash:
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
-            elif req_type == "get_papers":
+            elif req_type == "get_processed_papers":
+                from_offset = req.media["from"]
+                count = req.media["count"]
                 if "passwd" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 passwd = req.media["passwd"]
-                email = self.db.get_author_email_from_token(passwd)
+                processed = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                      self.db.get_papers_processed_from_auth_token(passwd, offset=from_offset,
+                                                                                   count=count)])
+                resp.body = '{{"paper_ids": [{}]}}'.format(processed)
+                resp.status = falcon.HTTP_200
+            elif req_type == "get_submitted_papers":
+                from_offset = req.media["from"]
+                count = req.media["count"]
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                submitted = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                      self.db.get_papers_submitted_from_auth_token(passwd, offset=from_offset,
+                                                                                   count=count)])
+                resp.body = '{{"paper_ids": [{}]}}'.format(submitted)
                 resp.status = falcon.HTTP_200
             else:
                 raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)

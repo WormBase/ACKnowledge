@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import html
 import json
 import logging
@@ -843,10 +843,30 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
+    def get_list_paper_ids_afp_processed_for_author(self, author_email, from_offset, count):
+        self.cur.execute("SELECT afp_email.joinkey FROM afp_email JOIN afp_version "
+                         "ON afp_email.joinkey = afp_version.joinkey "
+                         "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
+                         "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
+                         "AND afp_email.afp_email = '{}' "
+                         "ORDER BY afp_email.joinkey DESC "
+                         "OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
     def get_list_paper_ids_afp_submitted(self, from_offset, count):
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2' "
                          "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_list_paper_ids_afp_submitted_by_author(self, author_email, from_offset, count):
+        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey "
+                         "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
+                         "WHERE afp_email = '{}' AND afp_version.afp_version = '2' "
+                         "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(author_email, from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
@@ -936,18 +956,26 @@ class DBManager(object):
         self.cur.execute("SELECT two_timestamp FROM two_email WHERE two_email = '{}'".format(email))
         res = self.cur.fetchone()
         if res:
-            return str(res[0].timestamp()) + "." + str(res[0].utcoffset().seconds)
+            return str(res[0].timestamp()) + "/" + str(int(res[0].utcoffset().total_seconds()/3600))
         else:
             return None
 
-    def get_author_email_from_token(self, token):
-        tokenarr = token.split(".")
-        ts_token = datetime.utcfromtimestamp((int(tokenarr[0]) - int(tokenarr[2])) * 1000 + int(tokenarr))
+    def get_papers_processed_from_auth_token(self, token, offset, count):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
         self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
         res = self.cur.fetchone()
         if res:
-            return res[0]
+            return self.get_list_paper_ids_afp_processed_for_author(res[0], from_offset=offset, count=count)
         else:
-            return None
+            return []
 
-
+    def get_papers_submitted_from_auth_token(self, token, offset, count):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_list_paper_ids_afp_submitted_by_author(res[0], from_offset=offset, count=count)
+        else:
+            return []
