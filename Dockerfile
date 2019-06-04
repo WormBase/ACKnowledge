@@ -11,6 +11,7 @@ FROM nginx:1.15.2-alpine
 
 COPY --from=build-stage /usr/src/app/build/ /var/www
 
+COPY public/e403.html /etc/nginx/html/e403.html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # production environment
