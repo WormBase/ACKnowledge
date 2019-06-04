@@ -8,7 +8,7 @@ from email_functions import send_new_data_notification_email_to_watcher
 
 
 AFP_WATCHERS_TABLES = {
-       "hinxton@warmbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
+       "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
                                 "afp_otherstrain", "afp_rnaseq"],
        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
        "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
