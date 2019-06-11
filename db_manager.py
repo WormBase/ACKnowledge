@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 import html
 import json
 import logging
@@ -1124,15 +1124,13 @@ class DBManager(object):
     def is_token_valid(self, token):
         ts_tokenarr = token.split("/")
         if len(ts_tokenarr) == 2:
-            ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-            print(ts_token)
+            ts_token = (datetime.utcfromtimestamp(float(ts_tokenarr[0])) + timedelta(hours=int(ts_tokenarr[1])))\
+                           .strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
             self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
             res = self.cur.fetchone()
             if res:
                 return True
             else:
-                print("nothing found")
                 return False
         else:
-            print("something wrong")
             return False
