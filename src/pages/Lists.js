@@ -66,10 +66,12 @@ class Lists extends React.Component {
                                                          passwd={this.props.token}/>
                                 </Tab>
                                 <Tab eventKey="2" title="Data submission completed">
-                                    T2
+                                    <PaginatedSearchList endpoint="get_submitted_papers" papersPerPage="10"
+                                                         passwd={this.props.token}/>
                                 </Tab>
                                 <Tab eventKey="3" title="Partial data submission">
-                                    T3
+                                    <PaginatedSearchList endpoint="get_partial_papers" papersPerPage="10"
+                                                         passwd={this.props.token}/>
                                 </Tab>
                             </Tabs>
                         </Col>
