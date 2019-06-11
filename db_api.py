@@ -12,7 +12,7 @@ from wsgiref import simple_server
 from db_manager import DBManager
 from falcon import HTTPStatus
 
-from email_functions import send_new_submission_notification_email_to_admin
+from email_functions import send_new_submission_notification_email_to_admin, send_link_to_author_dashboard
 
 
 class StorageEngine(object):
@@ -330,6 +330,30 @@ class StorageEngine(object):
     def get_doi_from_paper_id(self, paper_id):
         return self.db_manager.get_doi_from_paper_id(paper_id)
 
+    def get_author_token_from_email(self, email):
+        return self.db_manager.get_author_token_from_email(email)
+
+    def get_papers_processed_from_auth_token(self, token, offset, count):
+        return self.db_manager.get_papers_processed_from_auth_token(token, offset, count)
+
+    def get_papers_submitted_from_auth_token(self, token, offset, count):
+        return self.db_manager.get_papers_submitted_from_auth_token(token, offset, count)
+
+    def get_num_papers_processed_from_auth_token(self, token):
+        return self.db_manager.get_num_papers_processed_from_auth_token(token)
+
+    def get_num_papers_submitted_from_auth_token(self, token):
+        return self.db_manager.get_num_papers_submitted_from_auth_token(token)
+
+    def get_papers_partial_from_auth_token(self, token, offset, count):
+        return self.db_manager.get_papers_partial_from_auth_token(token, offset, count)
+
+    def get_num_papers_partial_from_auth_token(self, token):
+        return self.db_manager.get_num_papers_partial_from_auth_token(token)
+
+    def is_token_valid(self, token):
+        return self.db_manager.is_token_valid(token)
+
 
 class AFPWriter:
 
@@ -610,6 +634,83 @@ class AFPReaderAdminLists:
                     resp.status = falcon.HTTP_200
 
 
+class AFPReaderAuthorDash:
+    def __init__(self, storage_engine: StorageEngine, email_passwd: str, afp_base_url: str):
+        self.db = storage_engine
+        self.logger = logging.getLogger("AFP API for Author Dashboard")
+        self.email_passwd = email_passwd
+        self.afp_base_url = afp_base_url
+
+    def on_post(self, req, resp, req_type):
+        with self.db:
+            if req_type == "send_link":
+                if "email" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                email = req.media["email"]
+                token = self.db.get_author_token_from_email(email)
+                if token:
+                    send_link_to_author_dashboard(token, [email], self.email_passwd)
+                    resp.status = falcon.HTTP_200
+                else:
+                    raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
+            elif req_type == "get_token_from_email":
+                email = req.media["email"]
+                token = self.db.get_author_token_from_email(email)
+                if token:
+                    resp.body = '{{"token": "{}"}}'.format(token)
+                    resp.status = falcon.HTTP_200
+                else:
+                    raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
+            elif req_type == "is_token_valid":
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                token_valid = self.db.is_token_valid(passwd)
+                resp.body = '{{"token_valid": "{}"}}'.format(token_valid)
+                resp.status = falcon.HTTP_200
+            elif req_type == "get_processed_papers":
+                from_offset = req.media["from"]
+                count = req.media["count"]
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                processed = ",".join(["{\"paper_id\":" + "\"" + pap_id + "\", \"title\": \"" + self.db.get_paper_title(
+                    pap_id) + "\", \"afp_link\":\"" + self.db.get_afp_form_link(pap_id, self.afp_base_url) + "\"}"
+                                      for pap_id in self.db.get_papers_processed_from_auth_token(
+                        passwd, offset=from_offset, count=count)])
+                num_papers = self.db.get_num_papers_processed_from_auth_token(passwd)
+                resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(processed, num_papers)
+                resp.status = falcon.HTTP_200
+            elif req_type == "get_submitted_papers":
+                from_offset = req.media["from"]
+                count = req.media["count"]
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                submitted = ",".join(["{\"paper_id\":" + "\"" + pap_id + "\", \"title\": \"" + self.db.get_paper_title(
+                    pap_id) + "\", \"afp_link\":\"" + self.db.get_afp_form_link(pap_id, self.afp_base_url) + "\"}"
+                                      for pap_id in self.db.get_papers_submitted_from_auth_token(
+                    passwd, offset=from_offset, count=count)])
+                num_papers = self.db.get_num_papers_submitted_from_auth_token(passwd)
+                resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(submitted, num_papers)
+                resp.status = falcon.HTTP_200
+            elif req_type == "get_partial_papers":
+                from_offset = req.media["from"]
+                count = req.media["count"]
+                if "passwd" not in req.media:
+                    raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+                passwd = req.media["passwd"]
+                partial = ",".join(["{\"paper_id\":" + "\"" + pap_id + "\", \"title\": \"" + self.db.get_paper_title(
+                    pap_id) + "\", \"afp_link\":\"" + self.db.get_afp_form_link(pap_id, self.afp_base_url) + "\"}"
+                                      for pap_id in self.db.get_papers_partial_from_auth_token(
+                        passwd, offset=from_offset, count=count)])
+                num_papers = self.db.get_num_papers_partial_from_auth_token(passwd)
+                resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(partial, num_papers)
+                resp.status = falcon.HTTP_200
+            else:
+                raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -656,6 +757,10 @@ def main():
 
     reader = AFPReaderAdminLists(storage_engine=db, afp_base_url=args.afp_base_url)
     app.add_route('/api/read_admin/{req_type}', reader)
+
+    reader_authdash = AFPReaderAuthorDash(storage_engine=db, email_passwd=args.email_passwd,
+                                          afp_base_url=args.afp_base_url)
+    app.add_route('/api/read_authdash/{req_type}', reader_authdash)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()

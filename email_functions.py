@@ -173,3 +173,30 @@ def send_new_data_notification_email_to_watcher(data_type_table, paper_ids_val, 
         server_ssl.quit()
     except:
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def send_link_to_author_dashboard(token, recipients, email_passwd):
+    email_content = """Click here to retrieve the list of your papers processed by the Author First Pass: <br/><br/>
+    
+<a href='http://textpressocentral.org:5002?token={}'>http://textpressocentral.org:5002?token={}</a>
+
+""".format(token, token)
+
+    body = MIMEText(email_content, "html")
+    msg = MIMEMultipart('alternative')
+    msg.attach(body)
+    msg['Subject'] = "Author First Pass - access link to author page"
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")

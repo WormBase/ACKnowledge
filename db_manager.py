@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import html
 import json
 import logging
@@ -842,12 +843,49 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
+    def get_list_paper_ids_afp_processed_for_author(self, author_email, from_offset, count):
+        self.cur.execute("SELECT afp_email.joinkey FROM afp_email JOIN afp_version "
+                         "ON afp_email.joinkey = afp_version.joinkey "
+                         "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
+                         "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
+                         "AND afp_email.afp_email = '{}' "
+                         "ORDER BY afp_email.joinkey DESC "
+                         "OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_num_paper_ids_afp_processed_for_author(self, author_email):
+        self.cur.execute("SELECT COUNT(afp_email.joinkey) FROM afp_email JOIN afp_version "
+                         "ON afp_email.joinkey = afp_version.joinkey "
+                         "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
+                         "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
+                         "AND afp_email.afp_email = '{}'".format(author_email))
+        res = self.cur.fetchone()
+        return res[0]
+
     def get_list_paper_ids_afp_submitted(self, from_offset, count):
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version = '2' "
                          "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
+
+    def get_list_paper_ids_afp_submitted_by_author(self, author_email, from_offset, count):
+        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey "
+                         "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
+                         "WHERE afp_email = '{}' AND afp_version.afp_version = '2' "
+                         "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_num_paper_ids_afp_submitted_by_author(self, author_email):
+        self.cur.execute("SELECT COUNT(afp_lasttouched.joinkey) FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey "
+                         "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
+                         "WHERE afp_email = '{}' AND afp_version.afp_version = '2'".format(author_email))
+        res = self.cur.fetchone()
+        return res[0]
 
     def get_num_papers_new_afp_partial_submissions(self):
         self.cur.execute("SELECT count(*) FROM afp_version afp_ve "
@@ -931,6 +969,167 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
+    def get_num_papers_new_afp_partial_submissions_by_author(self, author_email):
+        self.cur.execute("SELECT count(*) FROM afp_version afp_ve "
+                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
+                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
+                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
+                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
+                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
+                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
+                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
+                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
+                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
+                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
+                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
+                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
+                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
+                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
+                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
+                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
+                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
+                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
+                         "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
+                         "WHERE afp_email = '{}' AND afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
+                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
+                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
+                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
+                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
+                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
+                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
+                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
+                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
+                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
+                         "afp_comment.afp_comment IS NOT NULL) ".format(author_email))
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
 
+    def get_list_papers_new_afp_partial_submissions_by_author(self, author_email, from_offset, count):
+        self.cur.execute("SELECT afp_ve.joinkey FROM afp_version afp_ve "
+                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
+                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
+                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
+                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
+                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
+                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
+                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
+                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
+                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
+                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
+                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
+                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
+                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
+                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
+                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
+                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
+                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
+                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
+                         "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
+                         "WHERE afp_email = '{}' AND afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
+                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
+                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
+                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
+                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
+                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
+                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
+                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
+                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
+                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
+                         "afp_comment.afp_comment IS NOT NULL) "
+                         "ORDER BY afp_ve.joinkey DESC OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
 
+    def get_author_token_from_email(self, email):
+        self.cur.execute("SELECT two_timestamp FROM two_email WHERE two_email = '{}'".format(email))
+        res = self.cur.fetchall()
+        if res:
+            return str(res[0][0].timestamp()) + "/" + str(int(res[0][0].utcoffset().total_seconds()/3600))
+        else:
+            return None
 
+    def get_papers_processed_from_auth_token(self, token, offset, count):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_list_paper_ids_afp_processed_for_author(res[0], from_offset=offset, count=count)
+        else:
+            return []
+
+    def get_num_papers_processed_from_auth_token(self, token):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_num_paper_ids_afp_processed_for_author(res[0])
+        else:
+            return []
+
+    def get_papers_submitted_from_auth_token(self, token, offset, count):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_list_paper_ids_afp_submitted_by_author(res[0], from_offset=offset, count=count)
+        else:
+            return []
+
+    def get_num_papers_submitted_from_auth_token(self, token):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_num_paper_ids_afp_submitted_by_author(res[0])
+        else:
+            return []
+
+    def get_papers_partial_from_auth_token(self, token, offset, count):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_list_papers_new_afp_partial_submissions_by_author(res[0], from_offset=offset, count=count)
+        else:
+            return []
+
+    def get_num_papers_partial_from_auth_token(self, token):
+        ts_tokenarr = token.split("/")
+        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+        res = self.cur.fetchone()
+        if res:
+            return self.get_num_papers_new_afp_partial_submissions_by_author(res[0])
+        else:
+            return []
+
+    def is_token_valid(self, token):
+        ts_tokenarr = token.split("/")
+        if len(ts_tokenarr) == 2:
+            ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+            self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
+            res = self.cur.fetchone()
+            if res:
+                return True
+            else:
+                return False
+        else:
+            return False
