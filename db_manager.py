@@ -1125,11 +1125,14 @@ class DBManager(object):
         ts_tokenarr = token.split("/")
         if len(ts_tokenarr) == 2:
             ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
+            print(ts_token)
             self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
             res = self.cur.fetchone()
             if res:
                 return True
             else:
+                print("nothing found")
                 return False
         else:
+            print("something wrong")
             return False
