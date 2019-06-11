@@ -242,7 +242,7 @@ class PaginatedSearchList extends React.Component {
                                 <ListGroup>
                                     {[...this.state.list_papers].map(item =>
                                         <ListGroupItem>
-                                            <a href="" target="_blank">{item}</a>
+                                            <a href={item["afp_link"]} target="_blank">{item["title"]}</a>
                                         </ListGroupItem>)}
                                 </ListGroup>
                             </Col>
