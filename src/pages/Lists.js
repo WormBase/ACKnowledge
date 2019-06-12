@@ -60,6 +60,16 @@ class Lists extends React.Component {
                     </Row>
                     <Row>
                         <Col sm="12">
+                            <h2 className="text-center">Your AFP papers</h2>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="12">
                             <Tabs defaultActiveKey="1" id="uncontrolled-tab-example">
                                 <Tab eventKey="1" title="Papers waiting for data submission">
                                     <PaginatedSearchList endpoint="get_processed_papers" papersPerPage="10"
