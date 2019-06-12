@@ -1062,75 +1062,60 @@ class DBManager(object):
             return None
 
     def get_papers_processed_from_auth_token(self, token, offset, count):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_list_paper_ids_afp_processed_for_author(res[0], from_offset=offset, count=count)
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_list_paper_ids_afp_processed_for_author(email, from_offset=offset, count=count)
         else:
             return []
 
     def get_num_papers_processed_from_auth_token(self, token):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_num_paper_ids_afp_processed_for_author(res[0])
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_num_paper_ids_afp_processed_for_author(email)
         else:
             return []
 
     def get_papers_submitted_from_auth_token(self, token, offset, count):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_list_paper_ids_afp_submitted_by_author(res[0], from_offset=offset, count=count)
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_list_paper_ids_afp_submitted_by_author(email, from_offset=offset, count=count)
         else:
             return []
 
     def get_num_papers_submitted_from_auth_token(self, token):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_num_paper_ids_afp_submitted_by_author(res[0])
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_num_paper_ids_afp_submitted_by_author(email)
         else:
             return []
 
     def get_papers_partial_from_auth_token(self, token, offset, count):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_list_papers_new_afp_partial_submissions_by_author(res[0], from_offset=offset, count=count)
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_list_papers_new_afp_partial_submissions_by_author(email, from_offset=offset, count=count)
         else:
             return []
 
     def get_num_papers_partial_from_auth_token(self, token):
-        ts_tokenarr = token.split("/")
-        ts_token = datetime.fromtimestamp(float(ts_tokenarr[0])).strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
-        self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
-        res = self.cur.fetchone()
-        if res:
-            return self.get_num_papers_new_afp_partial_submissions_by_author(res[0])
+        email = self.get_email_from_token(token)
+        if email:
+            return self.get_num_papers_new_afp_partial_submissions_by_author(email)
         else:
             return []
 
     def is_token_valid(self, token):
+        return self.get_email_from_token(token) is not None
+
+    def get_email_from_token(self, token):
         ts_tokenarr = token.split("/")
         if len(ts_tokenarr) == 2:
-            ts_token = (datetime.utcfromtimestamp(float(ts_tokenarr[0])) + timedelta(hours=int(ts_tokenarr[1])))\
+            ts_token = (datetime.utcfromtimestamp(float(ts_tokenarr[0])) + timedelta(hours=int(ts_tokenarr[1]))) \
                            .strftime('%Y-%m-%d %H:%M:%S.%f') + ts_tokenarr[1]
             self.cur.execute("SELECT two_email FROM two_email WHERE two_timestamp = '{}'".format(ts_token))
             res = self.cur.fetchone()
             if res:
-                return True
+                return res[0]
             else:
-                return False
+                return None
         else:
-            return False
+            return None
