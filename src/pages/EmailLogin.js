@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card, Col, Container, Form, FormControl, FormLabel, Row} from "react-bootstrap";
+import {Alert, Button, Card, Col, Container, Form, FormControl, FormLabel, Row} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons'
 
@@ -7,7 +7,8 @@ class EmailLogin extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            email_address: undefined
+            email_address: undefined,
+            showError: false
         };
 
         this.requestEmailLink = this.requestEmailLink.bind(this);
@@ -25,8 +26,9 @@ class EmailLogin extends React.Component {
                 body: JSON.stringify(payload)
             }).then(res => {
                 if (res.status === 200) {
-                    return res.text();
+                    this.setState({showSuccess: true});
                 } else {
+                    this.setState({showError: true});
                 }
             }).then(data => {
                 if (data === undefined) {
@@ -39,6 +41,12 @@ class EmailLogin extends React.Component {
     }
 
     render() {
+        let error_message = "";
+        if (this.state.showError) {
+            error_message = <Alert variant="danger">Email not found in the AFP system</Alert>;
+        } else if (this.state.showSuccess) {
+            error_message = <Alert variant="success">Email sent</Alert>;
+        }
         return(
             <Container fluid>
                 <Row>
@@ -70,7 +78,8 @@ class EmailLogin extends React.Component {
                                         <FormLabel>Email address</FormLabel>
                                         <FormControl type="text" placeholder="Enter your email address" style={{ width: '100%' }}
                                                      onChange={(e) => {this.setState({email_address: e.target.value})}} onSubmit=""
-                                                     onKeyPress={(target) => {if (target.key === 'Enter') { this.requestEmailLink() }}}/><br/>
+                                                     onKeyPress={(target) => {if (target.key === 'Enter') { this.requestEmailLink() }}}/>
+                                        {error_message}<br/>
                                         <Button onClick={() => { this.requestEmailLink() }}>Request Access</Button>
                                     </Form>
                                 </Card.Text>
