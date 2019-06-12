@@ -60,7 +60,7 @@ class Lists extends React.Component {
                     </Row>
                     <Row>
                         <Col sm="12">
-                            <h2 className="text-center">Your AFP papers</h2>
+                            <h2 className="text-center">Your Author First Pass papers</h2>
                         </Col>
                     </Row>
                     <Row>

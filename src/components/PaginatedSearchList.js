@@ -251,7 +251,20 @@ class PaginatedSearchList extends React.Component {
                 </Container>
             );
         } else {
-            return("No papers in this list");
+            return(
+                <Container fluid>
+                    <Row>
+                        <Col>
+                            &nbsp;
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <h4>No papers in this list</h4>
+                        </Col>
+                    </Row>
+                </Container>
+            );
         }
     }
 }
