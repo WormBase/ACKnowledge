@@ -70,7 +70,7 @@ This is the link to the form for the paper:
 
     msg = EmailMessage()
     msg.set_content(email_content)
-    msg['Subject'] = "Paper prcessed by AFP has empty entity lists: WBPaper" + paper_id
+    msg['Subject'] = "Paper processed by AFP has empty entity lists: WBPaper" + paper_id
     msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
