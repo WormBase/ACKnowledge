@@ -19,7 +19,7 @@ SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "9606": ["human"],
                    "10090": ["mouse", "mice", "murine"],
                    "10116": ["rat"],
-                   "559292": ["yeast", "budding yeast"],
+                   "559292": ["budding yeast"],
                    "4896": ["fission yeast"]}
 
 SPECIES_BLACKLIST = {"4853", "30023", "8805", "216498", "1420681", "10231", "156766", "80388", "101142", "31138",
