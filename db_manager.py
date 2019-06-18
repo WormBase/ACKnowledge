@@ -854,20 +854,52 @@ class DBManager(object):
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
-    def get_list_paper_ids_afp_processed_for_author(self, author_email, from_offset, count):
+    def get_list_paper_ids_afp_waiting_submission_for_author(self, author_email, from_offset, count):
         author_id = self.get_author_id_from_email(author_email)
-        self.cur.execute("SELECT DISTINCT afp_email.joinkey FROM afp_email JOIN afp_version "
-                         "ON afp_email.joinkey = afp_version.joinkey "
+        self.cur.execute("SELECT DISTINCT afp_email.joinkey FROM afp_email JOIN afp_version afp_ve "
+                         "ON afp_email.joinkey = afp_ve.joinkey "
                          "JOIN pap_author ON afp_email.joinkey = pap_author.joinkey "
                          "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
-                         "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
+                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
+                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
+                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
+                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
+                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
+                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
+                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
+                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
+                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
+                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
+                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
+                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
+                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
+                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
+                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
+                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
+                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
+                         "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_ve.afp_version = '2' "
                          "AND (afp_email.afp_email = '{}' OR pap_author.pap_author = '{}') "
+                         "AND afp_g.afp_genestudied IS NULL AND afp_s.afp_species IS NULL AND "
+                         "afp_v.afp_variation IS NULL AND afp_st.afp_strain IS NULL AND "
+                         "afp_t.afp_transgene IS NULL AND afp_seq.afp_seqchange IS NULL AND "
+                         "afp_ge.afp_geneint IS NULL AND afp_gp.afp_geneprod IS NULL AND "
+                         "afp_gr.afp_genereg IS NULL AND afp_nm.afp_newmutant IS NULL AND "
+                         "afp_rnai.afp_rnai IS NULL AND afp_ov.afp_overexpr IS NULL AND "
+                         "afp_stc.afp_structcorr IS NULL AND afp_antibody.afp_antibody IS NULL AND "
+                         "afp_siteaction.afp_siteaction IS NULL AND afp_timeaction.afp_timeaction IS NULL AND "
+                         "afp_rnaseq.afp_rnaseq IS NULL AND afp_chemphen.afp_chemphen IS NULL AND "
+                         "afp_envpheno.afp_envpheno IS NULL AND afp_catalyticact.afp_catalyticact IS NULL AND "
+                         "afp_comment.afp_comment IS NULL "
                          "ORDER BY afp_email.joinkey DESC "
                          "OFFSET {} LIMIT {}".format(author_email, author_id, from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
-    def get_num_paper_ids_afp_processed_for_author(self, author_email):
+    def get_num_paper_ids_afp_waiting_submission_for_author(self, author_email):
         author_id = self.get_author_id_from_email(author_email)
         self.cur.execute("SELECT COUNT(DISTINCT afp_email.joinkey) FROM afp_email JOIN afp_version "
                          "ON afp_email.joinkey = afp_version.joinkey "
@@ -877,7 +909,7 @@ class DBManager(object):
                          "AND (afp_email.afp_email = '{}' OR pap_author.pap_author = '{}')".format(author_email,
                                                                                                    author_id))
         res = self.cur.fetchone()
-        return res[0]
+        return res[0] - self.get_num_papers_new_afp_partial_submissions_by_author(author_email)
 
     def get_list_paper_ids_afp_submitted(self, from_offset, count):
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
@@ -895,7 +927,7 @@ class DBManager(object):
                          "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_version.afp_version = '2' "
                          "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(author_email, author_id, from_offset, count))
         res = self.cur.fetchall()
-        return [row[0] for row in res]
+        return [row[0] for row in res if row[0]]
 
     def get_num_paper_ids_afp_submitted_by_author(self, author_email):
         author_id = self.get_author_id_from_email(author_email)
@@ -933,17 +965,17 @@ class DBManager(object):
                          "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
                          "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
                          "WHERE afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
-                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
-                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
-                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
-                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
-                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
-                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
-                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
-                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
-                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
-                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
-                         "afp_comment.afp_comment IS NOT NULL) ")
+                         "AND (afp_g.afp_genestudied IS NULL OR afp_s.afp_species IS NULL OR "
+                         "afp_v.afp_variation IS NULL OR afp_st.afp_strain IS NULL OR "
+                         "afp_t.afp_transgene IS NULL OR afp_seq.afp_seqchange IS NULL OR "
+                         "afp_ge.afp_geneint IS NULL OR afp_gp.afp_geneprod IS NULL OR "
+                         "afp_gr.afp_genereg IS NULL OR afp_nm.afp_newmutant IS NULL OR "
+                         "afp_rnai.afp_rnai IS NULL OR afp_ov.afp_overexpr IS NULL OR "
+                         "afp_stc.afp_structcorr IS NULL OR afp_antibody.afp_antibody IS NULL OR "
+                         "afp_siteaction.afp_siteaction IS NULL OR afp_timeaction.afp_timeaction IS NULL OR "
+                         "afp_rnaseq.afp_rnaseq IS NULL OR afp_chemphen.afp_chemphen IS NULL OR "
+                         "afp_envpheno.afp_envpheno IS NULL OR afp_catalyticact.afp_catalyticact IS NULL OR "
+                         "afp_comment.afp_comment IS NULL) ")
         res = self.cur.fetchone()
         if res:
             return int(res[0])
@@ -1015,8 +1047,8 @@ class DBManager(object):
                          "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
                          "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
                          "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
-                         "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
-                         "JOIN pap_author ON afp_l.joinkey = pap_author.joinkey "
+                         "JOIN afp_email ON afp_ve.joinkey = afp_email.joinkey "
+                         "JOIN pap_author ON afp_ve.joinkey = pap_author.joinkey "
                          "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_ve.afp_version = '2' "
                          "AND afp_l.afp_lasttouched is NULL "
                          "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
@@ -1061,8 +1093,8 @@ class DBManager(object):
                          "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
                          "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
                          "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
-                         "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
-                         "JOIN pap_author ON afp_l.joinkey = pap_author.joinkey "
+                         "JOIN afp_email ON afp_ve.joinkey = afp_email.joinkey "
+                         "JOIN pap_author ON afp_ve.joinkey = pap_author.joinkey "
                          "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_ve.afp_version = '2' "
                          "AND afp_l.afp_lasttouched is NULL "
                          "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
@@ -1092,14 +1124,14 @@ class DBManager(object):
     def get_papers_processed_from_auth_token(self, token, offset, count):
         email = self.get_email_from_token(token)
         if email:
-            return self.get_list_paper_ids_afp_processed_for_author(email, from_offset=offset, count=count)
+            return self.get_list_paper_ids_afp_waiting_submission_for_author(email, from_offset=offset, count=count)
         else:
             return []
 
     def get_num_papers_processed_from_auth_token(self, token):
         email = self.get_email_from_token(token)
         if email:
-            return self.get_num_paper_ids_afp_processed_for_author(email)
+            return self.get_num_paper_ids_afp_waiting_submission_for_author(email)
         else:
             return []
 
