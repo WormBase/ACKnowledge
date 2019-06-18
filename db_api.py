@@ -586,16 +586,7 @@ class AFPReaderAdminLists:
                     num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
                     num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
                     num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
-                    list_papers_new_afp_full_sub = self.db.get_list_paper_ids_afp_submitted(
-                        0, num_papers_new_afp_author_submitted)
-                    list_papers_new_afp_processed = self.db.get_list_paper_ids_afp_processed(
-                        0, num_papers_new_afp_processed)
                     num_papers_new_afp_partial_sub = self.db.get_num_papers_new_afp_partial_submissions()
-                    list_papers_new_afp_partial_sub = self.db.get_list_papers_new_afp_partial_submissions(
-                        0, num_papers_new_afp_partial_sub)
-                    num_papers_new_afp_proc_no_sub = len(set(list_papers_new_afp_processed) -
-                                                         (set(list_papers_new_afp_full_sub) |
-                                                         set(list_papers_new_afp_partial_sub)))
                     num_extracted_genes_per_paper = self.db.get_num_entities_extracted_by_afp("genestudied")
                     num_extracted_species_per_paper = self.db.get_num_entities_extracted_by_afp("species")
                     num_extracted_alleles_per_paper = self.db.get_num_entities_extracted_by_afp("variation")
@@ -603,13 +594,13 @@ class AFPReaderAdminLists:
                     num_extracted_transgenes_per_paper = self.db.get_num_entities_extracted_by_afp("transgene")
                     resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
                                 '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
-                                '"{}", "num_papers_new_afp_proc_no_sub": "{}", "num_papers_new_afp_partial_sub": ' \
+                                '"{}", "num_papers_new_afp_partial_sub": ' \
                                 '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
                                 '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
                                 '"num_extracted_transgenes_per_paper": {}}}'\
                         .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
                                 num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted,
-                                num_papers_new_afp_proc_no_sub, num_papers_new_afp_partial_sub,
+                                num_papers_new_afp_partial_sub,
                                 num_extracted_genes_per_paper, num_extracted_species_per_paper,
                                 num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
                                 num_extracted_transgenes_per_paper)
