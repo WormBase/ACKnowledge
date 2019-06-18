@@ -322,6 +322,15 @@ class DBManager(object):
                 return [res2[0]]
         return []
 
+    def get_author_id_from_email(self, email):
+        self.cur.execute("SELECT joinkey from two_email "
+                         "WHERE two_email = '{}'".format(email))
+        res = self.cur.fetchone()
+        if res:
+            return res[0].replace("two", "")
+        else:
+            return None
+
     def set_extracted_entities_in_paper(self, publication_id, entities_ids: List[str], table_name):
         self.cur.execute("DELETE FROM {} WHERE joinkey = '{}'".format(table_name, publication_id))
         self.cur.execute("INSERT INTO {} (joinkey, {}) VALUES('{}', '{}')".format(
@@ -846,22 +855,27 @@ class DBManager(object):
         return [row[0] for row in res]
 
     def get_list_paper_ids_afp_processed_for_author(self, author_email, from_offset, count):
-        self.cur.execute("SELECT afp_email.joinkey FROM afp_email JOIN afp_version "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT DISTINCT afp_email.joinkey FROM afp_email JOIN afp_version "
                          "ON afp_email.joinkey = afp_version.joinkey "
+                         "JOIN pap_author ON afp_email.joinkey = pap_author.joinkey "
                          "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
                          "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
-                         "AND afp_email.afp_email = '{}' "
+                         "AND (afp_email.afp_email = '{}' OR pap_author.pap_author = '{}') "
                          "ORDER BY afp_email.joinkey DESC "
-                         "OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+                         "OFFSET {} LIMIT {}".format(author_email, author_id, from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
     def get_num_paper_ids_afp_processed_for_author(self, author_email):
-        self.cur.execute("SELECT COUNT(afp_email.joinkey) FROM afp_email JOIN afp_version "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT COUNT(DISTINCT afp_email.joinkey) FROM afp_email JOIN afp_version "
                          "ON afp_email.joinkey = afp_version.joinkey "
+                         "JOIN pap_author ON afp_email.joinkey = pap_author.joinkey "
                          "FULL OUTER JOIN afp_lasttouched ON afp_email.joinkey = afp_lasttouched.joinkey "
                          "WHERE afp_lasttouched.afp_lasttouched IS NULL AND afp_version.afp_version = '2' "
-                         "AND afp_email.afp_email = '{}'".format(author_email))
+                         "AND (afp_email.afp_email = '{}' OR pap_author.pap_author = '{}')".format(author_email,
+                                                                                                   author_id))
         res = self.cur.fetchone()
         return res[0]
 
@@ -873,19 +887,24 @@ class DBManager(object):
         return [row[0] for row in res]
 
     def get_list_paper_ids_afp_submitted_by_author(self, author_email, from_offset, count):
-        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT DISTINCT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey "
                          "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
-                         "WHERE afp_email = '{}' AND afp_version.afp_version = '2' "
-                         "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+                         "JOIN pap_author ON afp_lasttouched.joinkey = pap_author.joinkey "
+                         "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_version.afp_version = '2' "
+                         "ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(author_email, author_id, from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
     def get_num_paper_ids_afp_submitted_by_author(self, author_email):
-        self.cur.execute("SELECT COUNT(afp_lasttouched.joinkey) FROM afp_lasttouched JOIN afp_version ON "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT COUNT(DISTINCT afp_lasttouched.joinkey) FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey "
                          "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
-                         "WHERE afp_email = '{}' AND afp_version.afp_version = '2'".format(author_email))
+                         "JOIN pap_author ON afp_lasttouched.joinkey = pap_author.joinkey "
+                         "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_version.afp_version = '2'"
+                         .format(author_email, author_id))
         res = self.cur.fetchone()
         return res[0]
 
@@ -972,7 +991,8 @@ class DBManager(object):
         return [row[0] for row in res]
 
     def get_num_papers_new_afp_partial_submissions_by_author(self, author_email):
-        self.cur.execute("SELECT count(*) FROM afp_version afp_ve "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT count(DISTINCT afp_ve.joinkey) FROM afp_version afp_ve "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
                          "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
                          "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
@@ -996,7 +1016,9 @@ class DBManager(object):
                          "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
                          "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
                          "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
-                         "WHERE afp_email = '{}' AND afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "JOIN pap_author ON afp_l.joinkey = pap_author.joinkey "
+                         "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_ve.afp_version = '2' "
+                         "AND afp_l.afp_lasttouched is NULL "
                          "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
                          "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
                          "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
@@ -1007,7 +1029,7 @@ class DBManager(object):
                          "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
                          "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
                          "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
-                         "afp_comment.afp_comment IS NOT NULL) ".format(author_email))
+                         "afp_comment.afp_comment IS NOT NULL) ".format(author_email, author_id))
         res = self.cur.fetchone()
         if res:
             return int(res[0])
@@ -1015,7 +1037,8 @@ class DBManager(object):
             return 0
 
     def get_list_papers_new_afp_partial_submissions_by_author(self, author_email, from_offset, count):
-        self.cur.execute("SELECT afp_ve.joinkey FROM afp_version afp_ve "
+        author_id = self.get_author_id_from_email(author_email)
+        self.cur.execute("SELECT DISTINCT afp_ve.joinkey FROM afp_version afp_ve "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
                          "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
                          "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
@@ -1039,7 +1062,9 @@ class DBManager(object):
                          "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
                          "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey "
                          "JOIN afp_email ON afp_l.joinkey = afp_email.joinkey "
-                         "WHERE afp_email = '{}' AND afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "JOIN pap_author ON afp_l.joinkey = pap_author.joinkey "
+                         "WHERE (afp_email = '{}' OR pap_author.pap_author = '{}') AND afp_ve.afp_version = '2' "
+                         "AND afp_l.afp_lasttouched is NULL "
                          "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
                          "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
                          "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
@@ -1051,7 +1076,8 @@ class DBManager(object):
                          "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
                          "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
                          "afp_comment.afp_comment IS NOT NULL) "
-                         "ORDER BY afp_ve.joinkey DESC OFFSET {} LIMIT {}".format(author_email, from_offset, count))
+                         "ORDER BY afp_ve.joinkey DESC OFFSET {} LIMIT {}".format(author_email, author_id, from_offset,
+                                                                                  count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
 
