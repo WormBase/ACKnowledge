@@ -96,7 +96,7 @@ class Lists extends React.Component {
                 <Row>
                     <Col sm="4">
                         <Card className="listPanel">
-                            <Card.Header>Papers processed by the new AFP</Card.Header>
+                            <Card.Header>Papers waiting for data submission</Card.Header>
                             <Card.Body>
                                 <PaginatedPapersList listType="processed"
                                                      papersPerPage={this.state.papersPerPage}

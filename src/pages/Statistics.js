@@ -13,7 +13,6 @@ class Statistics extends React.Component {
             num_papers_old_afp_processed: 0,
             num_papers_new_afp_author_submitted: 0,
             num_papers_old_afp_author_submitted: 0,
-            num_papers_new_afp_proc_no_sub: 0,
             num_papers_new_afp_partial_sub: 0,
             num_extracted_genes_per_paper: [],
             num_extracted_species_per_paper: [],
@@ -165,7 +164,6 @@ class Statistics extends React.Component {
                 num_papers_old_afp_processed: data["num_papers_old_afp_processed"],
                 num_papers_new_afp_author_submitted: data["num_papers_new_afp_author_submitted"],
                 num_papers_old_afp_author_submitted: data["num_papers_old_afp_author_submitted"],
-                num_papers_new_afp_proc_no_sub: data["num_papers_new_afp_proc_no_sub"],
                 num_papers_new_afp_partial_sub: data["num_papers_new_afp_partial_sub"],
                 num_extracted_genes_per_paper: data["num_extracted_genes_per_paper"],
                 num_extracted_species_per_paper: data["num_extracted_species_per_paper"],
@@ -180,9 +178,9 @@ class Statistics extends React.Component {
                         this.state.num_papers_old_afp_author_submitted),
                 this.state.num_papers_old_afp_author_submitted], [undefined, undefined],
                 "Old AFP", this.props.location.search);
-            this.drawAFPPie("newAFPPie", [this.state.num_papers_new_afp_proc_no_sub,
+            this.drawAFPPie("newAFPPie", [this.state.num_papers_new_afp_processed,
                 this.state.num_papers_new_afp_author_submitted, this.state.num_papers_new_afp_partial_sub],
-                [this.state.num_papers_new_afp_proc_no_sub, this.state.num_papers_new_afp_author_submitted,
+                [this.state.num_papers_new_afp_processed, this.state.num_papers_new_afp_author_submitted,
                 this.state.num_papers_new_afp_partial_sub], [undefined, undefined, undefined],
                 "New AFP", this.props.location.search);
             this.drawAFPChart("numGenesHist", this.state.num_extracted_genes_per_paper);
