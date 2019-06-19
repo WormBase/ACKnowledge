@@ -1244,3 +1244,34 @@ class DBManager(object):
                 return None
         else:
             return None
+
+    def get_num_papers_no_entities(self):
+        self.cur.execute("select count(*) FROM "
+                         "afp_version JOIN tfp_genestudied ON afp_version.joinkey = tfp_genestudied.joinkey "
+                         "JOIN tfp_transgene ON afp_version.joinkey = tfp_transgene.joinkey "
+                         "JOIN tfp_variation ON afp_version.joinkey = tfp_variation.joinkey "
+                         "JOIN tfp_strain ON afp_version.joinkey = tfp_strain.joinkey "
+                         "WHERE afp_version.afp_version = '2' AND tfp_genestudied.tfp_genestudied = '' "
+                         "AND tfp_transgene.tfp_transgene = '' AND tfp_variation.tfp_variation = '' "
+                         "AND tfp_strain = ''")
+        res = self.cur.fetchone()
+        if res:
+            return res[0]
+        else:
+            return 0
+
+    def get_list_papers_no_entities(self, from_offset, count):
+        self.cur.execute("select afp_version.joinkey FROM "
+                         "afp_version JOIN tfp_genestudied ON afp_version.joinkey = tfp_genestudied.joinkey "
+                         "JOIN tfp_transgene ON afp_version.joinkey = tfp_transgene.joinkey "
+                         "JOIN tfp_variation ON afp_version.joinkey = tfp_variation.joinkey "
+                         "JOIN tfp_strain ON afp_version.joinkey = tfp_strain.joinkey "
+                         "WHERE afp_version.afp_version = '2' AND tfp_genestudied.tfp_genestudied = '' "
+                         "AND tfp_transgene.tfp_transgene = '' AND tfp_variation.tfp_variation = '' "
+                         "AND tfp_strain = '' "
+                         "OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        if res:
+            return [papid[0] for papid in res]
+        else:
+            return []
