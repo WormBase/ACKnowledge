@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row} from "react-bootstrap";
+import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
 import PaginatedPapersList from "../page_components/PaginatedPapersList";
 import {Link, withRouter} from "react-router-dom";
 
@@ -74,6 +74,7 @@ class Lists extends React.Component {
                                         this.processedList.refreshList();
                                         this.submittedList.refreshList();
                                         this.partialList.refreshList();
+                                        this.emptyList.refreshList();
                                     }}}
                                 />
                                 <Button variant="outline-primary" size="sm" onClick={() => { if (this.state.tmp_count > 0) {
@@ -83,6 +84,7 @@ class Lists extends React.Component {
                                     this.processedList.refreshList();
                                     this.submittedList.refreshList();
                                     this.partialList.refreshList();
+                                    this.emptyList.refreshList();
                                 }}}>Refresh</Button>
                             </FormGroup>
                         </Form>
@@ -94,38 +96,75 @@ class Lists extends React.Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col sm="4">
-                        <Card className="listPanel">
-                            <Card.Header>Papers waiting for data submission</Card.Header>
-                            <Card.Body>
-                                <PaginatedPapersList listType="processed"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.processedList = instance}}
-                                />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col sm="4">
-                        <Card className="listPanel">
-                            <Card.Header>Papers with final data submitted by authors</Card.Header>
-                            <Card.Body>
-                                <PaginatedPapersList listType="submitted"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.submittedList = instance}}
-                                />
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                    <Col sm="4">
-                        <Card className="listPanel">
-                            <Card.Header>Papers with partially submitted data</Card.Header>
-                            <Card.Body>
-                                <PaginatedPapersList listType="partial"
-                                                     papersPerPage={this.state.papersPerPage}
-                                                     ref={instance => {this.partialList = instance}}
-                                />
-                            </Card.Body>
-                        </Card>
+                    <Col sm="12">
+                        <Tabs defaultActiveKey="emailed">
+                            <Tab eventKey="emailed" title="Emailed to authors">
+                                <Container fluid>
+                                    <Row>
+                                        <Col sm="12">
+                                            &nbsp;
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col sm="4">
+                                            <Card className="listPanel">
+                                                <Card.Header>Papers waiting for data submission</Card.Header>
+                                                <Card.Body>
+                                                    <PaginatedPapersList listType="processed"
+                                                                         papersPerPage={this.state.papersPerPage}
+                                                                         ref={instance => {this.processedList = instance}}
+                                                    />
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col sm="4">
+                                            <Card className="listPanel">
+                                                <Card.Header>Papers with final data submitted by authors</Card.Header>
+                                                <Card.Body>
+                                                    <PaginatedPapersList listType="submitted"
+                                                                         papersPerPage={this.state.papersPerPage}
+                                                                         ref={instance => {this.submittedList = instance}}
+                                                    />
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                        <Col sm="4">
+                                            <Card className="listPanel">
+                                                <Card.Header>Papers with partially submitted data</Card.Header>
+                                                <Card.Body>
+                                                    <PaginatedPapersList listType="partial"
+                                                                         papersPerPage={this.state.papersPerPage}
+                                                                         ref={instance => {this.partialList = instance}}
+                                                    />
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    </Row>
+                                </Container>
+                            </Tab>
+                            <Tab eventKey="noemail" title="Not emailed">
+                                <Container fluid>
+                                    <Row>
+                                        <Col sm="12">
+                                            &nbsp;
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col sm="4">
+                                            <Card className="listPanel">
+                                                <Card.Header>Papers with empty entity lists</Card.Header>
+                                                <Card.Body>
+                                                    <PaginatedPapersList listType="empty"
+                                                                         papersPerPage={this.state.papersPerPage}
+                                                                         ref={instance => {this.emptyList = instance}}
+                                                    />
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    </Row>
+                                </Container>
+                            </Tab>
+                        </Tabs>
                     </Col>
                 </Row>
             </Container>
