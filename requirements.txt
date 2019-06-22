@@ -1,0 +1,6 @@
+PyPDF2
+psycopg2-binary
+tqdm
+falcon
+requests
+numpy
