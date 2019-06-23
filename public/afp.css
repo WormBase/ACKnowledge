@@ -1,0 +1,25 @@
+.header-row {
+    background-color: #ffffff;
+}
+
+.wrap-button {
+    white-space: normal;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+#devBanner {
+    width:100%;
+    overflow:hidden; /* contain floats */
+    background-color: orangered;
+    color: white;
+    text-align: center;
+}
+
+#whiteBanner {
+    height: 20px;
+}
