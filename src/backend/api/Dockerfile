@@ -1,13 +1,8 @@
-FROM ubuntu:16.04
-
-RUN apt update && apt install -y python3 python3-pip cron
+FROM python3
 
 WORKDIR /usr/src/app
-
 ADD requirements.txt .
-
 RUN pip3 install -r requirements.txt
-
 COPY . /usr/src/app
 
 ENV EMAIL_PASSWD=""
@@ -21,4 +16,4 @@ ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 
 EXPOSE ${PORT}
-CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG
+CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG >> /var/log/afp_db_api.info 2>&1

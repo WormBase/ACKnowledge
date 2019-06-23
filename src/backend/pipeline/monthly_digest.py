@@ -3,8 +3,8 @@
 import argparse
 import logging
 
-from db_manager import DBManager
-from email_functions import send_new_data_notification_email_to_watcher
+from src.backend.dbmanager import DBManager
+from src.backend.common.emailtools import send_new_data_notification_email_to_watcher
 
 
 AFP_WATCHERS_TABLES = {

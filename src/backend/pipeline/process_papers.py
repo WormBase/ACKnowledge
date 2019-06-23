@@ -8,9 +8,9 @@ import urllib.parse
 import numpy as np
 
 from urllib.request import urlopen
-from email_functions import send_email_to_author, send_summary_email_to_admin, notify_admin_of_paper_without_entities
-from tpc_api_functions import *
-from entity_extraction import *
+from src.backend.common.emailtools import *
+from src.backend.common.nttxtraction import *
+from src.backend.dbmanager import DBManager
 from collections import defaultdict
 from tqdm import tqdm
 
