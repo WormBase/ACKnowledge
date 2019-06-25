@@ -1,7 +1,7 @@
 import React from 'react';
 import {Col, Container, Row, Tab, Tabs} from "react-bootstrap";
-import Message from "../../../../components/Message";
-import PaginatedSearchList from "../../../../components/PaginatedSearchList";
+import Message from "../components/Message";
+import PaginatedSearchList from "../components/PaginatedSearchList";
 
 class Lists extends React.Component {
     constructor(props, context) {
