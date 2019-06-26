@@ -1,7 +1,12 @@
-from src.backend.api.storagengin.afp_storage_engine import AFPStorageEngine
+import logging
+
+from src.backend.api.storagengin.afp_storage_engine import AFPStorageBaseEngine
 
 
-class FeedbackFormStorageEngine(AFPStorageEngine):
+logger = logging.getLogger(__name__)
+
+
+class FeedbackFormStorageEngine(AFPStorageBaseEngine):
 
     def __init__(self, dbname, user, password, host):
         super().__init__(dbname, user, password, host)

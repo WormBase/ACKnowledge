@@ -10,7 +10,7 @@ import numpy as np
 from urllib.request import urlopen
 from src.backend.common.emailtools import *
 from src.backend.common.nttxtraction import *
-from src.backend.dbmanager import DBManager
+from src.backend.common.dbmanager import DBManager
 from collections import defaultdict
 from tqdm import tqdm
 

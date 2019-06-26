@@ -3,7 +3,7 @@
 import argparse
 import logging
 
-from src.backend.dbmanager import DBManager
+from src.backend.common.dbmanager import DBManager
 from src.backend.common.emailtools import send_new_data_notification_email_to_watcher
 
 

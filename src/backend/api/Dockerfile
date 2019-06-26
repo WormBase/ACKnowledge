@@ -1,9 +1,11 @@
-FROM python3
+FROM python:3.7-slim
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-COPY . /usr/src/app
+COPY src/backend/api src/backend/api
+COPY src/backend/common src/backend/common
+
 
 ENV EMAIL_PASSWD=""
 ENV DB_HOST=""
@@ -12,8 +14,9 @@ ENV DB_USER=""
 ENV DB_PASSWD=""
 ENV PORT=8000
 ENV ADMINS=""
-ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 
+ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
+
 EXPOSE ${PORT}
-CMD python3 db_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG >> /var/log/afp_db_api.info 2>&1
+CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG >> /var/log/afp_db_api.info 2>&1

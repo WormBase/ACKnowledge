@@ -6,13 +6,15 @@ docs/_build/*
 .coveragerc
 venv/*
 
-/node_modules
+node_modules
 
 # testing
-/coverage
+coverage
 
 # production
-/build
+build
+
+package-lock.json
 
 # misc
 .DS_Store

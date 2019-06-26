@@ -1,7 +1,12 @@
-from src.backend.api.storagengin.afp_storage_engine import AFPStorageEngine
+import logging
+
+from src.backend.api.storagengin.afp_storage_engine import AFPStorageBaseEngine
 
 
-class AuthorPapersPageStorageEngine(AFPStorageEngine):
+logger = logging.getLogger(__name__)
+
+
+class AuthorPapersPageStorageEngine(AFPStorageBaseEngine):
 
     def __init__(self, dbname, user, password, host):
         super().__init__(dbname, user, password, host)

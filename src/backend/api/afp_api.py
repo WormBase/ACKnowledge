@@ -68,7 +68,8 @@ def main():
 
     author_papers_db = AuthorPapersPageStorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password,
                                                      host=args.db_host)
-    author_papers_reader = AuthorPapersPageReader(storage_engine=author_papers_db, afp_base_url=args.afp_base_url)
+    author_papers_reader = AuthorPapersPageReader(storage_engine=author_papers_db, afp_base_url=args.afp_base_url,
+                                                  email_passwd=args.email_passwd)
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)

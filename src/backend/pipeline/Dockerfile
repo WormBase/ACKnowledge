@@ -1,10 +1,10 @@
-FROM python3
+FROM python:3.7-slim
 
-RUN apt update && apt install -y python3 python3-pip cron
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-COPY . /usr/src/app
+COPY src/backend/pipeline src/backend/pipeline
+COPY src/backend/common src/backend/common
 
 ENV EMAIL_PASSWD=""
 ENV DB_HOST=""
@@ -16,13 +16,12 @@ ENV ADMINS=""
 ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 
-ADD crontab /etc/cron.d/afp-cron
+ADD src/backend/pipeline/cron /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
 RUN touch /var/log/afp_pipeline.log
 RUN touch /var/log/afp_monthly_digest.log
 RUN crontab /etc/cron.d/afp-cron
 
-EXPOSE ${PORT}
 CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $DB_HOST > /etc/afp_db_host && \
     echo $DB_NAME > /etc/afp_db_name && \

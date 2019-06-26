@@ -1,13 +1,16 @@
 import falcon
+import logging
 
 from src.backend.api.storagengin.curator_dashboard import CuratorDashboardStorageEngine
+
+
+logger = logging.getLogger(__name__)
 
 
 class CuratorDashboardReader:
 
     def __init__(self, storage_engine: CuratorDashboardStorageEngine, afp_base_url: str):
         self.db = storage_engine
-        self.logger = logging.getLogger("AFP API for Admin")
         self.afp_base_url = afp_base_url
 
     def on_post(self, req, resp, req_type):

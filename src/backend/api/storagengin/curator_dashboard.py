@@ -1,7 +1,12 @@
-from src.backend.api.storagengin.afp_storage_engine import AFPStorageEngine
+import logging
+
+from src.backend.api.storagengin.afp_storage_engine import AFPStorageBaseEngine
 
 
-class CuratorDashboardStorageEngine(AFPStorageEngine):
+logger = logging.getLogger(__name__)
+
+
+class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
 
     def __init__(self, dbname, user, password, host):
         super().__init__(dbname, user, password, host)
@@ -145,9 +150,6 @@ class CuratorDashboardStorageEngine(AFPStorageEngine):
 
     def author_has_modified(self, paper_id):
         return self.db_manager.author_has_modified(paper_id)
-
-    def get_afp_form_link(self, paper_id, base_url):
-        return self.db_manager.get_afp_form_link(paper_id, base_url)
 
     def get_comments(self, paper_id):
         return self.db_manager.get_feature("afp_comment", paper_id)

@@ -1,4 +1,11 @@
+import logging
+
+import falcon
+
 from src.backend.api.storagengin.author_papers_page import AuthorPapersPageStorageEngine
+from src.backend.common.emailtools import send_link_to_author_dashboard
+
+logger = logging.getLogger(__name__)
 
 
 class AuthorPapersPageReader:

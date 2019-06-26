@@ -1,4 +1,4 @@
-from src.backend.dbmanager import DBManager
+from src.backend.common.dbmanager import DBManager
 
 
 class AFPStorageBaseEngine(object):
@@ -30,3 +30,6 @@ class AFPStorageBaseEngine(object):
 
     def get_pmid_from_paper_id(self, paper_id):
         return self.db_manager.get_pmid(paper_id)
+
+    def get_afp_form_link(self, paper_id, base_url):
+        return self.db_manager.get_afp_form_link(paper_id, base_url)
