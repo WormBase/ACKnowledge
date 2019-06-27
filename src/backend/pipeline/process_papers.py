@@ -245,7 +245,7 @@ def main():
                   email_addr_in_papers_dict[paper_id][0].replace("two", "") + "&hide_genes=" + hide_genes + \
                   "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + urllib.parse.quote(doi)
             urls.append(url)
-            data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
+            data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
             tiny_url = data.read().decode('utf-8')
             tinyurls.append(tiny_url)
             if entities_not_empty(paper_id):
