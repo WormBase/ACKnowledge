@@ -1,5 +1,7 @@
 FROM python:3.7-slim
 
+RUN apt-get update && apt-get install cron
+
 WORKDIR /usr/src/app/
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
@@ -16,7 +18,7 @@ ENV ADMINS=""
 ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 
-ADD src/backend/pipeline/cron /etc/cron.d/afp-cron
+ADD src/backend/pipeline/crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
 RUN touch /var/log/afp_pipeline.log
 RUN touch /var/log/afp_monthly_digest.log

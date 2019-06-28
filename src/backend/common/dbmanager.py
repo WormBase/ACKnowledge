@@ -562,13 +562,15 @@ class DBManager(object):
         return " ".join(fullname_arr)
 
     def set_pap_gene_list(self, paper_id, person_id):
-        self.cur.execute("SELECT * FROM pap_gene WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
+        self.cur.execute("SELECT * FROM pap_gene WHERE joinkey = '{}' AND pap_evidence = '{}'".format(
+            paper_id, PAP_AFP_EVIDENCE_CODE))
         res_pap = self.cur.fetchall()
         if res_pap:
             for res in res_pap:
                 self.cur.execute("INSERT INTO h_pap_gene (joinkey, pap_gene, pap_order, pap_curator, pap_evidence) "
                                  "VALUES('{}', '{}', {}, '{}', '{}')".format(res[0], res[1], res[2], res[3], res[4]))
-        self.cur.execute("DELETE FROM pap_gene WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
+        self.cur.execute("DELETE FROM pap_gene WHERE joinkey = '{}' AND pap_evidence = '{}'".format(
+            paper_id, PAP_AFP_EVIDENCE_CODE))
         max_order = 0
         self.cur.execute("SELECT MAX(pap_order) FROM pap_gene WHERE joinkey = '{}' AND pap_evidence <> '{}'"
                          .format(paper_id, PAP_AFP_EVIDENCE_CODE))
@@ -591,14 +593,16 @@ class DBManager(object):
             max_order += 1
 
     def set_pap_species_list(self, paper_id, person_id):
-        self.cur.execute("SELECT * FROM pap_species WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
+        self.cur.execute("SELECT * FROM pap_species WHERE joinkey = '{}' AND pap_evidence = '{}'".format(
+            paper_id, PAP_AFP_EVIDENCE_CODE))
         res_pap = self.cur.fetchall()
         if res_pap:
             for res in res_pap:
                 self.cur.execute("INSERT INTO h_pap_species (joinkey, pap_species, pap_order, pap_curator, "
                                  "pap_evidence) VALUES('{}', '{}', {}, '{}', '{}')".format(res[0], res[1],
                                                                                            res[2], res[3], res[4]))
-        self.cur.execute("DELETE FROM pap_species WHERE pap_evidence = '{}'".format(PAP_AFP_EVIDENCE_CODE))
+        self.cur.execute("DELETE FROM pap_species WHERE joinkey = '{}' AND pap_evidence = '{}'".format(
+            paper_id, PAP_AFP_EVIDENCE_CODE))
         max_order = 0
         self.cur.execute("SELECT MAX(pap_order) FROM pap_species WHERE joinkey = '{}' AND pap_evidence <> '{}'"
                          .format(paper_id, PAP_AFP_EVIDENCE_CODE))
@@ -744,7 +748,7 @@ class DBManager(object):
         newtransgenes_raw = self.get_feature("afp_othertransgene", paper_id)
         if newtransgenes_raw and new_alleles_raw != "null":
             afp_newtransgenes = [elem['name'] for elem in json.loads(newtransgenes_raw) if elem["name"] != ""]
-        otherantibodies_raw = self.get_feature("afp_othertransgene", paper_id)
+        otherantibodies_raw = self.get_feature("afp_otherantibody", paper_id)
         if otherantibodies_raw and otherantibodies_raw != "null":
             afp_otherantibodies = [elem['name'] + ";%;" + elem["publicationId"] for elem in json.loads(
                 otherantibodies_raw) if elem["name"] != ""]

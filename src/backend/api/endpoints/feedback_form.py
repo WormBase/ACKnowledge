@@ -128,7 +128,7 @@ class FeedbackFormWriter:
                                               self.db.get_pmid_from_paper_id(paper_id) + "&personid=" + \
                                               req.media["person_id"][3:] + \
                                               "&hide_genes=false&hide_alleles=false&hide_strains=false"
-                    data = urlopen("http://tinyurl.com/api-create.php?url=" + url)
+                    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
                     send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
                                                                     paper_journal, self.admin_emails, self.email_passwd,
