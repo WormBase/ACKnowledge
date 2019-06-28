@@ -1,6 +1,6 @@
 FROM python:3.7-slim
 
-RUN apt-get update && apt-get install cron
+RUN apt-get update && apt-get install -y cron
 
 WORKDIR /usr/src/app/
 ADD requirements.txt .
@@ -13,7 +13,6 @@ ENV DB_HOST=""
 ENV DB_NAME=""
 ENV DB_USER=""
 ENV DB_PASSWD=""
-ENV PORT=8000
 ENV ADMINS=""
 ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
@@ -24,6 +23,8 @@ RUN touch /var/log/afp_pipeline.log
 RUN touch /var/log/afp_monthly_digest.log
 RUN crontab /etc/cron.d/afp-cron
 
+ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
+
 CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $DB_HOST > /etc/afp_db_host && \
     echo $DB_NAME > /etc/afp_db_name && \
@@ -32,4 +33,4 @@ CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $ADMINS > /etc/afp_admins && \
     echo $NUM_PAPERS_PER_RUN > /etc/afp_num_papers_per_run && \
     echo $AFP_BASE_URL > /etc/afp_base_url && \
-    cron && tail -f /dev/null & > /dev/null &
+    cron && tail -f /dev/null
