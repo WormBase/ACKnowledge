@@ -39,7 +39,7 @@ class Main extends React.Component {
                 <Navbar bg="primary" variant="dark">
                     <Navbar.Brand>
                         <img src={logo} height="30" width="30" />
-                        &nbsp; Author First Pass (IWM 2019)
+                        &nbsp; Author First Pass (no email authentication)
                     </Navbar.Brand>
                     <Nav className="mr-auto">
                         <Nav.Link href="?token=">Login</Nav.Link>
