@@ -9,9 +9,9 @@ from PyPDF2.generic import TextStringObject
 from PyPDF2.pdf import ContentStream, b_, FloatObject, NumberObject
 from PyPDF2.utils import u_
 import urllib.request
-from db_manager import DBManager
 import tempfile
 
+from src.backend.common.dbmanager import DBManager
 
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "7955": ["zebrafish"],
