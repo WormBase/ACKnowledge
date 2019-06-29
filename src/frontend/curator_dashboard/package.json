@@ -1,5 +1,5 @@
 {
-  "name": "afp_admin_webapp",
+  "name": "afp_curator_dashboard",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
