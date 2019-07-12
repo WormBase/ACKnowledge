@@ -52,9 +52,9 @@ class Disease extends React.Component {
                             </Checkbox>
                             <ul>
                                 <li><strong>Gene/allele or strain that recapitulates disease phenotype and is used in
-                                    this study to gain insight into human disease pathogenesis. (Note: If a strain name
-                                    is not provided in the paper, eg. CL2006, we will not be able to curate your
-                                    strain/s as disease model/s)</strong></li>
+                                    this study to gain insight into human disease pathogenesis.</strong> (Note: If a
+                                    strain name is not provided in the paper, eg. CL2006, we will not be able to curate
+                                    your strain/s as disease model/s)</li>
                                 <li><strong>Transgenic studies with either human (or worm) disease relevant gene</strong></li>
                                 <li><strong>Modifiers of a new or previously established disease model (eg., drugs, herbals, chemicals, etc)</strong></li>
                             </ul>
