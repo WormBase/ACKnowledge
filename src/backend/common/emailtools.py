@@ -22,13 +22,13 @@ If you would like to flag* your paper for detailed curation, please visit:
 
 *Flagging your paper involves identifying the types of data present and should take <10 minutes.
 
-In addition, WormBase has recently launched Micropublication:biology, a peer-reviewed journal 
+Please feel free to forward the link to a co-author if you are unable to complete the form at this time.
+
+In addition, WormBase has recently launched microPublication Biology, a peer-reviewed journal 
 that publishes citable, single experimental results, such as those often omitted from standard 
 journal articles due to space constraints or confirmatory or negative results. If you have such 
 unpublished data generated during this study, we encourage you to submit it at 
 http://bit.ly/2BcFas0.
-
-Please feel free to forward the link to a co-author if you are unable to complete the form at this time.
 
 Please contact help@wormbase.org or contact@micropublication.org if you would like more 
 information about flagging your paper for curation or Micropublication.
