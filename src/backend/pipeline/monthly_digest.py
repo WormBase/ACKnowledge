@@ -25,8 +25,7 @@ AFP_WATCHERS_TABLES = {
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
-                                                 "structures for Author First Pass")
+    parser = argparse.ArgumentParser(description="Send monthly digest to curators with submissions from AFP")
     parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
     parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)

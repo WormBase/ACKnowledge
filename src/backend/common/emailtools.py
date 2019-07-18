@@ -200,3 +200,45 @@ def send_link_to_author_dashboard(token, recipients, email_passwd):
         server_ssl.quit()
     except:
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def send_reminder_to_author(paper_id, paper_title: str, paper_journal: str, afp_link,
+                            recipients: List[str], email_passwd, final_call: bool = False):
+    final_text = "Note that after one week’s time, partial submissions will be checked and entered into WormBase by " \
+                 "one of our curators." if final_call else ""
+
+    email_content = """Dear Author,
+
+We recently sent an email asking for your help in flagging entities and data types for WormBase curation for the 
+recently published paper:
+
+\"{}\", {}
+
+We would like to remind you that it is still possible to submit your response by visiting the Author First Pass Form 
+for your paper: {}
+
+If you have started on the form, but not finished, you may resume your submission to complete the process.
+
+If you have questions about completing the form, please feel free to reply to this email and we will be happy to assist 
+you. {}
+
+Thank you for helping WormBase!
+""".format(paper_title, paper_journal, afp_link, final_text)
+
+    msg = EmailMessage()
+    msg.set_content(email_content)
+    msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
+    msg['From'] = "WormBase Outreach<outreach@wormbase.org>"
+    msg['To'] = ", ".join(recipients)
+
+    gmail_user = "outreach@wormbase.org"
+    gmail_password = email_passwd
+    logger = logging.getLogger("AFP Email module")
+    try:
+        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server_ssl.login(gmail_user, gmail_password)
+        server_ssl.send_message(msg)
+        logger.info("Email sent to: " + ", ".join(recipients))
+        server_ssl.quit()
+    except:
+        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
