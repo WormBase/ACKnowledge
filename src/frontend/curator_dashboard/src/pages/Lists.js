@@ -44,6 +44,17 @@ class Lists extends React.Component {
                 </Row>
                 <Row>
                     <Col sm="12">
+                        <h5>Datatype: threshold (CURRENT)</h5>
+                        <h6>gene: 2, protein: 2, allele: 2, strain: 1, species: 10, transgene: 1</h6>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
+                        &nbsp;
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="12">
                         <Form onSubmit={e => e.preventDefault()} inline>
                             <FormGroup controlId="formValidationError2"
                                        validationState={this.state.countValidationState}>
