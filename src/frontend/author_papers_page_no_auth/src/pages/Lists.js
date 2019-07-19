@@ -116,7 +116,11 @@ class Lists extends React.Component {
                     </Row>
                     <Row>
                         <Col sm="12">
-                            <h2 className="text-center">Your Author First Pass papers</h2>
+                            <p>
+                                Below is a list of papers for which you are an author and that have been processed by the new WormBase Author First Pass data flagging pipeline.
+                            </p>
+                            <p>To verify the flagged data, please click on the link to your paper.</p>
+                            <p>Thank you for helping WormBase curate your paper!</p>
                         </Col>
                     </Row>
                     <Row>
