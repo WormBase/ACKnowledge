@@ -76,11 +76,7 @@ class PaperViewer extends React.Component {
                     doi: data["doi"],
                     isLoading: false
                 });
-                if (data["author_submitted"] === true || data["author_modified"] === true) {
-                    this.setState({load_diff: true});
-                } else {
-                    this.setState({load_diff: false});
-                }
+                this.setState({load_diff: true});
             }).catch((err) => {
                 alert(err);
             });
