@@ -61,7 +61,7 @@ class EntitiesListsComparisonTab extends React.Component {
 
                 }
                 let tfp_genestudied = data["tfp_genestudied"];
-                if (tfp_genestudied !== '') {
+                if (tfp_genestudied !== '' && tfp_genestudied !== 'null') {
                     tfp_genestudied = extractEntitiesFromTfpString(data["tfp_genestudied"], "WBGene");
                 } else {
                     tfp_genestudied = [];
@@ -75,7 +75,7 @@ class EntitiesListsComparisonTab extends React.Component {
                     afp_genestudied = [];
                 }
                 let tfp_species = data["tfp_species"];
-                if (tfp_species !== '') {
+                if (tfp_species !== '' && tfp_species !== 'null') {
                     tfp_species = data["tfp_species"].split("|");
                 } else {
                     tfp_species = [];
@@ -117,7 +117,7 @@ class EntitiesListsComparisonTab extends React.Component {
                     afp_strains = [];
                 }
                 let tfp_transgenes = data["tfp_transgenes"];
-                if (tfp_transgenes !== '') {
+                if (tfp_transgenes !== '' && tfp_transgenes !== 'null') {
                     tfp_transgenes = extractEntitiesFromTfpString(data["tfp_transgenes"], "");
                 } else {
                     tfp_transgenes = [];
