@@ -38,6 +38,11 @@ class PaginatedPapersList extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps, nextContext) {
+        this.setState({refresh_list: true});
+        this.componentDidUpdate();
+    }
+
     refreshList() {
         this.setState({active_page: 1, from_offset: 0, refresh_list: true});
     }
@@ -57,7 +62,8 @@ class PaginatedPapersList extends React.Component {
         let payload = {
             from: this.state.from_offset,
             count: this.props.papersPerPage,
-            list_type: this.props.listType
+            list_type: this.props.listType,
+            svm_filters: [...this.props.svmFilters].join(',')
         };
         fetch(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers", {
             method: 'POST',
