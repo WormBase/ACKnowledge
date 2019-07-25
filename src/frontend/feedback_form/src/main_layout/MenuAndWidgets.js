@@ -657,7 +657,7 @@ class MenuAndWidgets extends React.Component {
                     {data_fetch_err_alert}
                     <div id="whiteBanner"/>
                     <Header />
-                    <Title title={title} journal={parameters.journal} pmid={parameters.pmid}/><br/>
+                    <Title title={title} journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
                     <div>
                         <div>
                             <div className="col-sm-4">
