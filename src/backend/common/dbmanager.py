@@ -50,7 +50,8 @@ class DBManager(object):
                          "ON pap_primary_data.joinkey = pap_type.joinkey "
                          "JOIN pap_species ON pap_primary_data.joinkey = pap_species.joinkey "
                          "JOIN pap_year ON pap_primary_data.joinkey = pap_year.joinkey "
-                         "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' "
+                         "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' AND "
+                         "pap_type.pap_type <> '26' "
                          "AND pap_species.pap_species = '6239' AND CAST(REGEXP_REPLACE(COALESCE(pap_year,'0'), "
                          "'[^0-9]+', '', 'g') AS INTEGER) >= {}".format(str(datetime.now().year - 2)))
         rows = self.cur.fetchall()
