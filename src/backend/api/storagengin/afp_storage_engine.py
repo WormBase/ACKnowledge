@@ -31,5 +31,8 @@ class AFPStorageBaseEngine(object):
     def get_pmid_from_paper_id(self, paper_id):
         return self.db_manager.get_pmid(paper_id)
 
+    def get_doi_from_paper_id(self, paper_id):
+        return self.db_manager.get_doi_from_paper_id(paper_id)
+
     def get_afp_form_link(self, paper_id, base_url):
         return self.db_manager.get_afp_form_link(paper_id, base_url)
