@@ -832,7 +832,8 @@ class DBManager(object):
 
     def get_num_papers_old_afp_processed(self):
         self.cur.execute("SELECT count(*) FROM afp_email FULL OUTER JOIN afp_version ON afp_email.joinkey = "
-                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1'")
+                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1' "
+                         "AND afp_email.afp_email IS NOT NULL")
         res = self.cur.fetchone()
         if res:
             return int(res[0])
@@ -850,7 +851,8 @@ class DBManager(object):
 
     def get_num_papers_old_afp_author_submitted(self):
         self.cur.execute("SELECT count(*) FROM afp_lasttouched FULL OUTER JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version IS NULL OR "
+                         "afp_lasttouched.joinkey = afp_version.joinkey JOIN afp_email "
+                         "ON afp_lasttouched.joinkey = afp_email.joinkey WHERE afp_version.afp_version IS NULL OR "
                          "afp_version.afp_version = '1'")
         res = self.cur.fetchone()
         if res:
