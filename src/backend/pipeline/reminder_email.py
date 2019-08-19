@@ -32,13 +32,15 @@ def main():
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     # first reminder after one month
     for options in (((1, 2), False), ((2, 3), True)):
-        for paper_id, author_email in db_manager.get_papers_and_emails_without_submission_emailed_between_months(options[0][0], options[0][1]):
+        for paper_id_email_arr in db_manager.get_papers_and_emails_without_submission_emailed_between_months(options[0][0], options[0][1]):
+            paper_id = paper_id_email_arr[0]
+            author_email = paper_id_email_arr[1]
             paper_title = db_manager.get_paper_title(paper_id)
             paper_journal = db_manager.get_paper_journal(paper_id)
             afp_link = db_manager.get_afp_form_link(paper_id, args.afp_base_url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
             tiny_url = data.read().decode('utf-8')
-            send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, author_email, args.email_passwd,
+            send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, [author_email], args.email_passwd,
                                     options[1])
 
     db_manager.close()
