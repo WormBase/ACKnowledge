@@ -39,7 +39,7 @@ def main():
             data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
             tiny_url = data.read().decode('utf-8')
             author_email = db_manager.get_corresponding_email(paper_id)
-            send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, [author_email], args.email_passwd,
+            send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, author_email, args.email_passwd,
                                     options[1])
 
     db_manager.close()
