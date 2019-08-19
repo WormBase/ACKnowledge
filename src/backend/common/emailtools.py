@@ -88,11 +88,15 @@ This is the link to the form for the paper:
 
 
 def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
+    if paper_ids:
+        paperid_list = "\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)])
+    else:
+        paperid_list = "No papers processed this time"
     email_content = """New papers processed by the Author First Pass Pipeline:
 
 {}
 
-""".format("\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)]))
+""".format(paperid_list)
 
     msg = EmailMessage()
     msg.set_content(email_content)
