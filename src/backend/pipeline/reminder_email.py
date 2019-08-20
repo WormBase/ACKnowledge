@@ -2,12 +2,16 @@
 
 import argparse
 import logging
+import time
 import urllib.parse
 
 from urllib.request import urlopen
 
 from src.backend.common.dbmanager import DBManager
 from src.backend.common.emailtools import send_reminder_to_author
+
+
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -42,7 +46,9 @@ def main():
             tiny_url = data.read().decode('utf-8')
             send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, [author_email], args.email_passwd,
                                     options[1])
-
+            logger.info("going to sleep for ~15 minutes")
+            time.sleep(1000)
+    logger.info("finished sending reminder emails")
     db_manager.close()
 
 
