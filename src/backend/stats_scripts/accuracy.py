@@ -32,6 +32,15 @@ def main():
     jaccard_alleles = []
     jaccard_strains = []
     jaccard_transgenes = []
+    accuracy_alleleseqchange = []
+    accuracy_anatomicexpr = []
+    accuracy_geneticint = []
+    accuracy_physint = []
+    accuracy_regulint = []
+    accuracy_allelepheno = []
+    accuracy_rnaipheno = []
+    accuracy_transgeneoverexprpheno = []
+
     for paper_id in list_ids:
         tfp_genestudied = [gene_str.split(";%;")[0] for gene_str in
                            db_manager.get_feature("tfp_genestudied", paper_id).split("|")]
@@ -60,12 +69,55 @@ def main():
                        db_manager.get_feature("afp_transgene", paper_id).split("|")]
         jaccard_transgenes.append(len(set(tfp_transgenes) & set(afp_transgenes)) / len(set(tfp_transgenes) | set(afp_transgenes)))
 
-    print("Jaccard indices: ")
+        svm_seqchange = db_manager.get_svm_value("seqchange", paper_id)
+        afp_seqchange = db_manager.get_feature("afp_seqchange", paper_id)
+        afp_seqchange = afp_seqchange != '' and afp_seqchange != 'null'
+        accuracy_alleleseqchange.append(1 if svm_seqchange == afp_seqchange else 0)
+        svm_otherexpr = db_manager.get_svm_value("otherexpr", paper_id)
+        afp_otherexpr = db_manager.get_feature("afp_otherexpr", paper_id)
+        afp_otherexpr = afp_otherexpr != '' and afp_otherexpr != 'null'
+        accuracy_anatomicexpr.append(1 if svm_otherexpr == afp_otherexpr else 0)
+        svm_geneint = db_manager.get_svm_value("geneint", paper_id)
+        afp_geneint = db_manager.get_feature("afp_geneint", paper_id)
+        afp_geneint = afp_geneint != '' and afp_geneint != 'null'
+        accuracy_geneticint.append(1 if svm_geneint == afp_geneint else 0)
+        svm_geneprod = db_manager.get_svm_value("geneprod", paper_id)
+        afp_geneprod = db_manager.get_feature("afp_geneprod", paper_id)
+        afp_geneprod = afp_geneprod != '' and afp_geneprod != 'null'
+        accuracy_physint.append(1 if svm_geneprod == afp_geneprod else 0)
+        svm_genereg = db_manager.get_svm_value("genereg", paper_id)
+        afp_genereg = db_manager.get_feature("afp_genereg", paper_id)
+        afp_genereg = afp_genereg != '' and afp_genereg != 'null'
+        accuracy_regulint.append(1 if svm_genereg == afp_genereg else 0)
+        svm_newmutant = db_manager.get_svm_value("newmutant", paper_id)
+        afp_newmutant = db_manager.get_feature("afp_newmutant", paper_id)
+        afp_newmutant = afp_newmutant != '' and afp_newmutant != 'null'
+        accuracy_allelepheno.append(1 if svm_newmutant == afp_newmutant else 0)
+        svm_rnai = db_manager.get_svm_value("rnai", paper_id)
+        afp_rnai = db_manager.get_feature("afp_rnai", paper_id)
+        afp_rnai = afp_rnai != '' and afp_rnai != 'null'
+        accuracy_rnaipheno.append(1 if svm_rnai == afp_rnai else 0)
+        svm_overexpr = db_manager.get_svm_value("overexpr", paper_id)
+        afp_overexpr = db_manager.get_feature("afp_overexpr", paper_id)
+        afp_overexpr = afp_overexpr != '' and afp_overexpr != 'null'
+        accuracy_transgeneoverexprpheno.append(1 if svm_overexpr == afp_overexpr else 0)
+
+    print("Jaccard indices:")
     print("genes", str(np.average(jaccard_genes)))
     print("species", str(np.average(jaccard_species)))
     print("alleles", str(np.average(jaccard_alleles)))
     print("strains", str(np.average(jaccard_strains)))
     print("transgenes", str(np.average(jaccard_transgenes)))
+
+    print("Accuracy indices:")
+    print("Allele sequence change", str(np.average(accuracy_alleleseqchange)))
+    print("Anatomic expression in WT condition", str(np.average(accuracy_anatomicexpr)))
+    print("Genetic interactions", str(np.average(accuracy_geneticint)))
+    print("Physical interactions", str(np.average(accuracy_physint)))
+    print("Regulatory interactions", str(np.average(accuracy_regulint)))
+    print("Allele phenotype", str(np.average(accuracy_allelepheno)))
+    print("RNAi phenotype", str(np.average(accuracy_rnaipheno)))
+    print("Transgene overexpression phenotype", str(np.average(accuracy_transgeneoverexprpheno)))
 
 
 if __name__ == '__main__':
