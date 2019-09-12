@@ -1333,7 +1333,6 @@ class DBManager(object):
             return []
 
     def get_papers_and_emails_without_submission_emailed_between_months(self, after_month, before_month):
-
         self.cur.execute("SELECT afp_email.joinkey, afp_email.afp_email from afp_email JOIN afp_version "
                          "ON afp_email.joinkey = afp_version.joinkey FULL OUTER JOIN afp_lasttouched "
                          "ON afp_email.joinkey = afp_lasttouched.joinkey "
@@ -1343,3 +1342,16 @@ class DBManager(object):
                          "AND afp_lasttouched.afp_lasttouched IS NULL".format(after_month, before_month))
         rows = self.cur.fetchall()
         return [(row[0], row[1]) for row in rows]
+
+    def get_num_submissions_year_month_old_afp(self, year, month):
+        self.cur.execute("select count(*) from afp_email full outer join afp_version on "
+                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version is null "
+                         "and extract(year from afp_email.afp_timestamp) = {}"
+                         "and afp_email.afp_email is not null and extract(month from afp_email.afp_timestamp) = {}"
+                         .format(year, month))
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
