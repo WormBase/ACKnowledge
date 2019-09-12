@@ -48,7 +48,9 @@ class CuratorDashboardReader:
                     resp.status = falcon.HTTP_200
                 elif req_type == "flagged":
                     flagged_dict = self.db.get_all_flagged_data_types(paper_id)
-                    resp.body = '{{"svm_seqchange_checked": "{}", "afp_seqchange_checked": "{}", ' \
+                    resp.body = '{{"svm_otherexpr_checked": "{}", "afp_otherexpr_checked": "{}", ' \
+                                '"afp_otherexpr_details": "{}", "svm_seqchange_checked": "{}", ' \
+                                '"afp_seqchange_checked": "{}", ' \
                                 '"afp_seqchange_details": "{}", "svm_geneint_checked": "{}", ' \
                                 '"afp_geneint_checked": "{}", "afp_geneint_details": "{}", ' \
                                 '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
@@ -59,6 +61,7 @@ class CuratorDashboardReader:
                                 ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
                                 '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
                                 '"afp_overexpr_details": "{}"}}'.format(
+                        flagged_dict["svm_otherexpr_checked"], flagged_dict["afp_otherexpr_checked"], repr(flagged_dict["afp_otherexpr_details"]),
                         flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], repr(flagged_dict["afp_seqchange_details"]),
                         flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], repr(flagged_dict["afp_geneint_details"]),
                         flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], repr(flagged_dict["afp_geneprod_details"]),

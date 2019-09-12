@@ -71,6 +71,9 @@ class FlaggedDataTypesTab extends React.Component {
 
                 }
                 this.setState({
+                    svm_otherexpr_checked: data["svm_otherexpr_checked"],
+                    afp_otherexpr_checked: data["afp_otherexpr_checked"],
+                    afp_otherexpr_details: data["afp_otherexpr_details"],
                     svm_seqchange_checked: data["svm_seqchange_checked"],
                     afp_seqchange_checked: data["afp_seqchange_checked"],
                     afp_seqchange_details: data["afp_seqchange_details"],
@@ -139,6 +142,8 @@ class FlaggedDataTypesTab extends React.Component {
                             <hr/>
                         </div>
                     </div>
+                    <FlaggedDiffRow title="Anatomic expression data in WT condition" afpChecked={this.state.afp_seqchange_checked}
+                                    tfpChecked={this.state.svm_seqchange_checked} afpDetails={this.state.afp_seqchange_details}/>
                     <FlaggedDiffRow title="Allele sequence change" afpChecked={this.state.afp_seqchange_checked}
                                     tfpChecked={this.state.svm_seqchange_checked} afpDetails={this.state.afp_seqchange_details}/>
                     <FlaggedDiffRow title="Genetic interactions" afpChecked={this.state.afp_geneint_checked}
