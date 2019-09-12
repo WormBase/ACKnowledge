@@ -59,13 +59,13 @@ class CuratorDashboardReader:
                                 ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
                                 '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
                                 '"afp_overexpr_details": "{}"}}'.format(
-                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], flagged_dict["afp_seqchange_details"],
-                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], flagged_dict["afp_geneint_details"],
-                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], flagged_dict["afp_geneprod_details"],
-                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], flagged_dict["afp_genereg_details"],
-                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], flagged_dict["afp_newmutant_details"],
-                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], flagged_dict["afp_rnai_details"],
-                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], flagged_dict["afp_overexpr_details"])
+                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], repr(flagged_dict["afp_seqchange_details"]),
+                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], repr(flagged_dict["afp_geneint_details"]),
+                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], repr(flagged_dict["afp_geneprod_details"]),
+                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], repr(flagged_dict["afp_genereg_details"]),
+                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], repr(flagged_dict["afp_newmutant_details"]),
+                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], repr(flagged_dict["afp_rnai_details"]),
+                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], repr(flagged_dict["afp_overexpr_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
                     other_yn = self.db.get_all_yes_no_data_types(paper_id)
@@ -79,15 +79,15 @@ class CuratorDashboardReader:
                                 '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
                                 '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
                                 '"afp_additionalexpr": "{}"}}'.format(
-                                            other_yn["afp_modchange_checked"], other_yn["afp_modchange_details"],
-                                            other_yn["afp_newantibody_checked"], other_yn["afp_newantibody_details"],
-                                            other_yn["afp_siteaction_checked"], other_yn["afp_siteaction_details"],
-                                            other_yn["afp_timeaction_checked"], other_yn["afp_timeaction_details"],
-                                            other_yn["afp_rnaseq_checked"], other_yn["afp_rnaseq_details"],
-                                            other_yn["afp_chemphen_checked"], other_yn["afp_chemphen_details"],
-                                            other_yn["afp_envpheno_checked"], other_yn["afp_envpheno_details"],
-                                            other_yn["afp_catalyticact_checked"], other_yn["afp_catalyticact_details"],
-                                            other_yn["afp_humdis_checked"], other_yn["afp_humdis_details"],
+                                            other_yn["afp_modchange_checked"], repr(other_yn["afp_modchange_details"]),
+                                            other_yn["afp_newantibody_checked"], repr(other_yn["afp_newantibody_details"]),
+                                            other_yn["afp_siteaction_checked"], repr(other_yn["afp_siteaction_details"]),
+                                            other_yn["afp_timeaction_checked"], repr(other_yn["afp_timeaction_details"]),
+                                            other_yn["afp_rnaseq_checked"], repr(other_yn["afp_rnaseq_details"]),
+                                            other_yn["afp_chemphen_checked"], repr(other_yn["afp_chemphen_details"]),
+                                            other_yn["afp_envpheno_checked"], repr(other_yn["afp_envpheno_details"]),
+                                            other_yn["afp_catalyticact_checked"], repr(other_yn["afp_catalyticact_details"]),
+                                            other_yn["afp_humdis_checked"], repr(other_yn["afp_humdis_details"]),
                                             other_yn["afp_additionalexpr"])
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
@@ -98,7 +98,7 @@ class CuratorDashboardReader:
                                                                        others["afp_otherantibodies"])
                     resp.status = falcon.HTTP_200
                 elif req_type == "comments":
-                    comments = self.db.get_comments(paper_id)
+                    comments = repr(self.db.get_comments(paper_id))
                     resp.body = '{{"afp_comments": "{}"}}'.format(comments)
                     resp.status = falcon.HTTP_200
                 else:
