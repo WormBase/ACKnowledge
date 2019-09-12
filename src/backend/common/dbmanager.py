@@ -744,10 +744,10 @@ class DBManager(object):
         if new_alleles_raw and new_alleles_raw != "null":
             afp_newalleles = [elem['name'] for elem in json.loads(new_alleles_raw) if elem["name"] != ""]
         newstrains_raw = self.get_feature("afp_otherstrain", paper_id)
-        if newstrains_raw and new_alleles_raw != "null":
+        if newstrains_raw and newstrains_raw != "null":
             afp_newstrains = [elem['name'] for elem in json.loads(newstrains_raw) if elem["name"] != ""]
         newtransgenes_raw = self.get_feature("afp_othertransgene", paper_id)
-        if newtransgenes_raw and new_alleles_raw != "null":
+        if newtransgenes_raw and newtransgenes_raw != "null":
             afp_newtransgenes = [elem['name'] for elem in json.loads(newtransgenes_raw) if elem["name"] != ""]
         otherantibodies_raw = self.get_feature("afp_otherantibody", paper_id)
         if otherantibodies_raw and otherantibodies_raw != "null":
