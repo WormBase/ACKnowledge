@@ -88,7 +88,7 @@ class CuratorDashboardReader:
                                             other_yn["afp_envpheno_checked"], repr(other_yn["afp_envpheno_details"]),
                                             other_yn["afp_catalyticact_checked"], repr(other_yn["afp_catalyticact_details"]),
                                             other_yn["afp_humdis_checked"], repr(other_yn["afp_humdis_details"]),
-                                            other_yn["afp_additionalexpr"])
+                                            repr(other_yn["afp_additionalexpr"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
                     others = self.db.get_other_data_types(paper_id)
