@@ -165,16 +165,16 @@ class DBManager(object):
             Dict[str, str]: the map between gene symbol and id
         """
         gene_name_id_map = {}
-        self.cur.execute("SELECT * FROM gin_locus WHERE joinkey != ''")
-        rows = self.cur.fetchall()
-        gene_name_id_map.update({row[1]: row[0] for row in rows})
         self.cur.execute("SELECT * FROM gin_synonyms WHERE joinkey != ''")
         rows = self.cur.fetchall()
         gene_name_id_map.update({row[1]: row[0] for row in rows})
-        self.cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
+        self.cur.execute("SELECT * FROM gin_seqname WHERE joinkey != ''")
         rows = self.cur.fetchall()
         gene_name_id_map.update({row[1]: row[0] for row in rows})
-        self.cur.execute("SELECT * FROM gin_seqname WHERE joinkey != ''")
+        self.cur.execute("SELECT * FROM gin_locus WHERE joinkey != ''")
+        rows = self.cur.fetchall()
+        gene_name_id_map.update({row[1]: row[0] for row in rows})
+        self.cur.execute("SELECT * FROM gin_wbgene WHERE joinkey != ''")
         rows = self.cur.fetchall()
         gene_name_id_map.update({row[1]: row[0] for row in rows})
         return gene_name_id_map
