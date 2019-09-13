@@ -122,17 +122,20 @@ class FeedbackFormWriter:
                                            person_id=req.media["person_id"])
                     paper_title = self.db.get_paper_title(paper_id)
                     paper_journal = self.db.get_paper_journal(paper_id)
+                    author_email = self.db.get_paper_email(paper_id)
+                    doi = self.db.get_doi_from_paper_id(paper_id)
                     url = self.afp_base_url + "?paper=" + paper_id + "&passwd=" + req.media["passwd"] + "&title=" + \
                                               urllib.parse.quote(paper_title) + "&journal=" + \
                                               urllib.parse.quote(paper_journal) + "&pmid=" + \
                                               self.db.get_pmid_from_paper_id(paper_id) + "&personid=" + \
                                               req.media["person_id"][3:] + \
-                                              "&hide_genes=false&hide_alleles=false&hide_strains=false"
+                                              "&hide_genes=false&hide_alleles=false&hide_strains=false" + \
+                                              urllib.parse.quote(doi)
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
                     send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
-                                                                    paper_journal, self.admin_emails, self.email_passwd,
-                                                                    tiny_url)
+                                                                    paper_journal, author_email, self.admin_emails,
+                                                                    self.email_passwd, tiny_url)
 
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)

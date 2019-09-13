@@ -25,11 +25,17 @@ class AFPStorageBaseEngine(object):
     def get_paper_journal(self, paper_id):
         return self.db_manager.get_paper_journal(paper_id=paper_id)
 
+    def get_paper_email(self, paper_id):
+        return self.db_manager.get_afp_email(paper_id)
+
     def get_user_fullname_from_personid(self, person_id):
         return self.db_manager.get_user_fullname_from_personid(person_id=person_id)
 
     def get_pmid_from_paper_id(self, paper_id):
         return self.db_manager.get_pmid(paper_id)
+
+    def get_doi_from_paper_id(self, paper_id):
+        return self.db_manager.get_doi_from_paper_id(paper_id)
 
     def get_afp_form_link(self, paper_id, base_url):
         return self.db_manager.get_afp_form_link(paper_id, base_url)

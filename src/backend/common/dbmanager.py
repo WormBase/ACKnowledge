@@ -50,7 +50,8 @@ class DBManager(object):
                          "ON pap_primary_data.joinkey = pap_type.joinkey "
                          "JOIN pap_species ON pap_primary_data.joinkey = pap_species.joinkey "
                          "JOIN pap_year ON pap_primary_data.joinkey = pap_year.joinkey "
-                         "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' "
+                         "WHERE pap_primary_data.pap_primary_data = 'primary' AND pap_type.pap_type <> '14' AND "
+                         "pap_type.pap_type <> '26' "
                          "AND pap_species.pap_species = '6239' AND CAST(REGEXP_REPLACE(COALESCE(pap_year,'0'), "
                          "'[^0-9]+', '', 'g') AS INTEGER) >= {}".format(str(datetime.now().year - 2)))
         rows = self.cur.fetchall()
@@ -743,10 +744,10 @@ class DBManager(object):
         if new_alleles_raw and new_alleles_raw != "null":
             afp_newalleles = [elem['name'] for elem in json.loads(new_alleles_raw) if elem["name"] != ""]
         newstrains_raw = self.get_feature("afp_otherstrain", paper_id)
-        if newstrains_raw and new_alleles_raw != "null":
+        if newstrains_raw and newstrains_raw != "null":
             afp_newstrains = [elem['name'] for elem in json.loads(newstrains_raw) if elem["name"] != ""]
         newtransgenes_raw = self.get_feature("afp_othertransgene", paper_id)
-        if newtransgenes_raw and new_alleles_raw != "null":
+        if newtransgenes_raw and newtransgenes_raw != "null":
             afp_newtransgenes = [elem['name'] for elem in json.loads(newtransgenes_raw) if elem["name"] != ""]
         otherantibodies_raw = self.get_feature("afp_otherantibody", paper_id)
         if otherantibodies_raw and otherantibodies_raw != "null":
@@ -839,7 +840,8 @@ class DBManager(object):
 
     def get_num_papers_old_afp_processed(self):
         self.cur.execute("SELECT count(*) FROM afp_email FULL OUTER JOIN afp_version ON afp_email.joinkey = "
-                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1'")
+                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1' "
+                         "AND afp_email.afp_email IS NOT NULL")
         res = self.cur.fetchone()
         if res:
             return int(res[0])
@@ -857,7 +859,8 @@ class DBManager(object):
 
     def get_num_papers_old_afp_author_submitted(self):
         self.cur.execute("SELECT count(*) FROM afp_lasttouched FULL OUTER JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey WHERE afp_version.afp_version IS NULL OR "
+                         "afp_lasttouched.joinkey = afp_version.joinkey JOIN afp_email "
+                         "ON afp_lasttouched.joinkey = afp_email.joinkey WHERE afp_version.afp_version IS NULL OR "
                          "afp_version.afp_version = '1'")
         res = self.cur.fetchone()
         if res:
@@ -1344,9 +1347,8 @@ class DBManager(object):
         else:
             return []
 
-    def get_papers_without_submission_emailed_between_months(self, after_month, before_month):
-
-        self.cur.execute("SELECT afp_email.joinkey from afp_email JOIN afp_version "
+    def get_papers_and_emails_without_submission_emailed_between_months(self, after_month, before_month):
+        self.cur.execute("SELECT afp_email.joinkey, afp_email.afp_email from afp_email JOIN afp_version "
                          "ON afp_email.joinkey = afp_version.joinkey FULL OUTER JOIN afp_lasttouched "
                          "ON afp_email.joinkey = afp_lasttouched.joinkey "
                          "WHERE afp_email.afp_timestamp < now() - interval '{} month' "
@@ -1354,4 +1356,17 @@ class DBManager(object):
                          "AND afp_version.afp_version = '2' "
                          "AND afp_lasttouched.afp_lasttouched IS NULL".format(after_month, before_month))
         rows = self.cur.fetchall()
-        return [row[0] for row in rows]
+        return [(row[0], row[1]) for row in rows]
+
+    def get_num_submissions_year_month_old_afp(self, year, month):
+        self.cur.execute("select count(*) from afp_email full outer join afp_version on "
+                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version is null "
+                         "and extract(year from afp_email.afp_timestamp) = {}"
+                         "and afp_email.afp_email is not null and extract(month from afp_email.afp_timestamp) = {}"
+                         .format(year, month))
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+

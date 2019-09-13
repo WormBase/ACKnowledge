@@ -29,6 +29,12 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
                 "afp_transgenes": afp_transgenes}
 
     def get_all_flagged_data_types(self, paper_id):
+        svm_otherexpr = self.db_manager.get_svm_value("otherexpr", paper_id)
+        afp_otherexpr = self.db_manager.get_feature("afp_otherexpr", paper_id)
+        afp_otherexpr_checked = afp_otherexpr != "" and afp_otherexpr != "null"
+        afp_otherexpr_details = afp_otherexpr if afp_otherexpr != "Checked" and afp_otherexpr != "checked" and \
+                                                 afp_otherexpr != "" else ""
+
         svm_seqchange = self.db_manager.get_svm_value("seqchange", paper_id)
         afp_seqchange = self.db_manager.get_feature("afp_seqchange", paper_id)
         afp_seqchange_checked = afp_seqchange != "" and afp_seqchange != "null"
@@ -63,7 +69,9 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
         afp_overexpr_checked = afp_overexpr != "" and afp_overexpr != "null"
         afp_overexpr_details = afp_overexpr if afp_overexpr != "Checked" and afp_overexpr != "checked" and \
                                                afp_overexpr != "" else ""
-        return {"svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
+        return {"svm_otherexpr_checked": svm_otherexpr, "afp_otherexpr_checked": afp_otherexpr_checked,
+                "afp_otherexpr_details": afp_otherexpr_details,
+                "svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
                 "afp_seqchange_details": afp_seqchange_details, "svm_geneint_checked": svm_geneint,
                 "afp_geneint_checked": afp_geneint_checked, "afp_geneint_details": afp_geneint_details,
                 "svm_geneprod_checked": svm_geneprod, "afp_geneprod_checked": afp_geneprod_checked,

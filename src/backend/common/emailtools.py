@@ -88,11 +88,15 @@ This is the link to the form for the paper:
 
 
 def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
+    if paper_ids:
+        paperid_list = "\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)])
+    else:
+        paperid_list = "No papers processed this time"
     email_content = """New papers processed by the Author First Pass Pipeline:
 
 {}
 
-""".format("\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)]))
+""".format(paperid_list)
 
     msg = EmailMessage()
     msg.set_content(email_content)
@@ -113,19 +117,20 @@ def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_pa
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
 
 
-def send_new_submission_notification_email_to_admin(paper_id, paper_passwd, paper_title, paper_journal,
+def send_new_submission_notification_email_to_admin(paper_id, paper_passwd, paper_title, paper_journal, paper_email,
                                                     recipients: List[str], email_passwd, form_url):
     email_content = """New AFP data submission completed by author for the following paper:
     
 Paper ID: {}
 Title: {}
 Journal: {}
+Corresponding Author email: {} 
 
 Link to AFP admin dashboard: {}
 Link to AFP form for authors: {}
 
-""".format(paper_id, paper_title, paper_journal, "http://textpressocentral.org:5001/paper?paper_id=" + paper_id,
-           form_url)
+""".format(paper_id, paper_title, paper_journal, paper_email, "http://textpressocentral.org:5001/paper?paper_id=" +
+           paper_id, form_url)
 
     msg = EmailMessage()
     msg.set_content(email_content)
