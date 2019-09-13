@@ -39,8 +39,7 @@ class PaginatedPapersList extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
-        this.setState({refresh_list: true});
-        this.componentDidUpdate();
+        this.loadDataFromAPI();
     }
 
     refreshList() {

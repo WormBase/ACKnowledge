@@ -105,24 +105,33 @@ class Lists extends React.Component {
                                             <Card>
                                                 <Card.Header>Filter paper lists by flagged data types</Card.Header>
                                                 <Card.Body>
-                                                    <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemSvmFilter("seqchange")}/>
-                                                    <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemSvmFilter("geneint")}/>
-                                                    <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemSvmFilter("geneprod")}/>
-                                                    <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemSvmFilter("genereg")}/>
-                                                    <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemSvmFilter("newmutant")}/>
-                                                    <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemSvmFilter("rnai")}/>
-                                                    <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemSvmFilter("overexpr")}/>
-                                                    <br/>
-                                                    <Form.Check type="checkbox" label="Gene model correction/update"/>
-                                                    <Form.Check type="checkbox" label="Newly generated antibody"/>
-                                                    <Form.Check type="checkbox" label="Site of action data"/>
-                                                    <Form.Check type="checkbox" label="Time of action data"/>
-                                                    <Form.Check type="checkbox" label="RNAseq data"/>
-                                                    <Form.Check type="checkbox" label="Chemically induced phenotype"/>
-                                                    <Form.Check type="checkbox" label="Environmental induced phenotype"/>
-                                                    <Form.Check type="checkbox" label="Enzymatic activity"/>
-                                                    <Form.Check type="checkbox" label="Human disease model"/>
-                                                    <Form.Check type="checkbox" label="Additional type of expression data"/>
+                                                    <Container fluid>
+                                                        <Row>
+                                                            <Col sm="6">
+                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemSvmFilter("otherexpr")}/>
+                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemSvmFilter("seqchange")}/>
+                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemSvmFilter("geneint")}/>
+                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemSvmFilter("geneprod")}/>
+                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemSvmFilter("genereg")}/>
+                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemSvmFilter("newmutant")}/>
+                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemSvmFilter("rnai")}/>
+                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemSvmFilter("overexpr")}/>
+                                                            </Col>
+                                                            <Col sm="6">
+                                                                <Form.Check type="checkbox" label="Gene model correction/update"/>
+                                                                <Form.Check type="checkbox" label="Newly generated antibody"/>
+                                                                <Form.Check type="checkbox" label="Site of action data"/>
+                                                                <Form.Check type="checkbox" label="Time of action data"/>
+                                                                <Form.Check type="checkbox" label="RNAseq data"/>
+                                                                <Form.Check type="checkbox" label="Chemically induced phenotype"/>
+                                                                <Form.Check type="checkbox" label="Environmental induced phenotype"/>
+                                                                <Form.Check type="checkbox" label="Enzymatic activity"/>
+                                                                <Form.Check type="checkbox" label="Human disease model"/>
+                                                                <Form.Check type="checkbox" label="Additional type of expression data"/>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+
                                                 </Card.Body>
                                             </Card>
                                         </Col>

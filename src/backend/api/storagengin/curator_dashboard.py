@@ -169,8 +169,8 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_num_papers_old_afp_processed(self):
         return self.db_manager.get_num_papers_old_afp_processed()
 
-    def get_num_papers_new_afp_author_submitted(self):
-        return self.db_manager.get_num_papers_new_afp_author_submitted()
+    def get_num_papers_new_afp_author_submitted(self, svm_filters):
+        return self.db_manager.get_num_papers_new_afp_author_submitted(svm_filters)
 
     def get_num_papers_old_afp_author_submitted(self):
         return self.db_manager.get_num_papers_old_afp_author_submitted()
@@ -181,8 +181,8 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filter):
         return self.db_manager.get_list_paper_ids_afp_processed(from_offset, count, svm_filter)
 
-    def get_list_paper_ids_afp_submitted(self, from_offset, count):
-        return self.db_manager.get_list_paper_ids_afp_submitted(from_offset, count)
+    def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters):
+        return self.db_manager.get_list_paper_ids_afp_submitted(from_offset, count, svm_filters)
 
     def get_num_papers_new_afp_partial_submissions(self):
         return self.db_manager.get_num_papers_new_afp_partial_submissions()

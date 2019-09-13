@@ -141,9 +141,9 @@ class CuratorDashboardReader:
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_paper_ids_afp_processed(from_offset, count, svm_filters)])
                     elif list_type == "submitted":
-                        num_papers = self.db.get_num_papers_new_afp_author_submitted()
+                        num_papers = self.db.get_num_papers_new_afp_author_submitted(svm_filters)
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                             self.db.get_list_paper_ids_afp_submitted(from_offset, count)])
+                                             self.db.get_list_paper_ids_afp_submitted(from_offset, count, svm_filters)])
                     elif list_type == "partial":
                         num_papers = self.db.get_num_papers_new_afp_partial_submissions()
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
