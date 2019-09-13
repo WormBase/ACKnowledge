@@ -76,7 +76,7 @@ class EntitiesListsComparisonTab extends React.Component {
                 }
                 let tfp_species = data["tfp_species"];
                 if (tfp_species !== '' && tfp_species !== 'null') {
-                    tfp_species = data["tfp_species"].split("|");
+                    tfp_species = data["tfp_species"].split(" | ");
                 } else {
                     tfp_species = [];
                 }
@@ -84,7 +84,7 @@ class EntitiesListsComparisonTab extends React.Component {
                 if (afp_species === 'null') {
                     afp_species = undefined
                 } else if (afp_species !== '') {
-                    afp_species = data["afp_species"].split("|");
+                    afp_species = data["afp_species"].split(" | ");
                 } else {
                     afp_species = [];
                 }
@@ -104,7 +104,7 @@ class EntitiesListsComparisonTab extends React.Component {
                 }
                 let tfp_strains = data["tfp_strains"];
                 if (tfp_strains !== 'null' && tfp_strains !== '') {
-                    tfp_strains = data["tfp_strains"].split("|");
+                    tfp_strains = data["tfp_strains"].split(" | ");
                 } else {
                     tfp_strains = [];
                 }
@@ -112,7 +112,7 @@ class EntitiesListsComparisonTab extends React.Component {
                 if (afp_strains === 'null') {
                     afp_strains = undefined
                 } else if (afp_strains !== '') {
-                    afp_strains = data["afp_strains"].split("|");
+                    afp_strains = data["afp_strains"].split(" | ");
                 } else {
                     afp_strains = [];
                 }
