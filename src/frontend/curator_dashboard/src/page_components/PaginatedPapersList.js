@@ -62,7 +62,8 @@ class PaginatedPapersList extends React.Component {
             from: this.state.from_offset,
             count: this.props.papersPerPage,
             list_type: this.props.listType,
-            svm_filters: [...this.props.svmFilters].join(',')
+            svm_filters: [...this.props.svmFilters].join(','),
+            manual_filters: [...this.props.manualFilters].join(',')
         };
         fetch(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers", {
             method: 'POST',

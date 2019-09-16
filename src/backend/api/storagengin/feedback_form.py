@@ -99,7 +99,7 @@ class FeedbackFormStorageEngine(AFPStorageBaseEngine):
         self.db_manager.set_env(env=env, paper_id=paper_id)
 
     def store_protein(self, protein, paper_id):
-            self.db_manager.set_protein(protein=protein, paper_id=paper_id)
+        self.db_manager.set_protein(protein=protein, paper_id=paper_id)
 
     # Disease
 

@@ -33,7 +33,8 @@ class Lists extends React.Component {
             tmp_count: defNumPapersPerPage,
             paper_id: undefined,
             filterOpen: false,
-            svmFilter: new Set()
+            svmFilter: new Set(),
+            manualFilter: new Set()
         };
 
         this.toggleFilter = this.toggleFilter.bind(this);
@@ -43,14 +44,24 @@ class Lists extends React.Component {
         this.setState({filterOpen: !this.state.filterOpen})
     }
 
-    addRemSvmFilter(svmDatatype) {
-        let tempSet = this.state.svmFilter;
-        if (tempSet.has(svmDatatype)) {
-            tempSet.delete(svmDatatype);
-        } else {
-            tempSet.add(svmDatatype);
+    addRemFilter(Datatype, filterType) {
+        let tempSet = new Set();
+        if (filterType === "svm") {
+            tempSet = this.state.svmFilter;
+        } else if (filterType === "manual") {
+            tempSet = this.state.manualFilter;
         }
-        this.setState({svmFilter: tempSet})
+        if (tempSet.has(Datatype)) {
+            tempSet.delete(Datatype);
+        } else {
+            tempSet.add(Datatype);
+        }
+        if (filterType === "svm") {
+            this.setState({svmFilter: tempSet})
+        } else if (filterType === "manual") {
+            this.setState({manualFilter: tempSet})
+        }
+
     }
 
     render() {
@@ -107,27 +118,52 @@ class Lists extends React.Component {
                                                 <Card.Body>
                                                     <Container fluid>
                                                         <Row>
+                                                            <Col sm="12">
+                                                                <ul>
+                                                                    <li>
+                                                                        SVM filters are applied to EXTRACTED data for 'waiting for submissions' and 'partial submissions', and to SUBMITTED data for full submissions
+                                                                    </li>
+                                                                    <li>
+                                                                        Manual filters are applied to SUBMITTED data
+                                                                    </li>
+                                                                </ul>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
                                                             <Col sm="6">
-                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemSvmFilter("otherexpr")}/>
-                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemSvmFilter("seqchange")}/>
-                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemSvmFilter("geneint")}/>
-                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemSvmFilter("geneprod")}/>
-                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemSvmFilter("genereg")}/>
-                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemSvmFilter("newmutant")}/>
-                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemSvmFilter("rnai")}/>
-                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemSvmFilter("overexpr")}/>
+                                                                <strong>Automatically flagged data types (SVMs)</strong>
                                                             </Col>
                                                             <Col sm="6">
-                                                                <Form.Check type="checkbox" label="Gene model correction/update"/>
-                                                                <Form.Check type="checkbox" label="Newly generated antibody"/>
-                                                                <Form.Check type="checkbox" label="Site of action data"/>
-                                                                <Form.Check type="checkbox" label="Time of action data"/>
-                                                                <Form.Check type="checkbox" label="RNAseq data"/>
-                                                                <Form.Check type="checkbox" label="Chemically induced phenotype"/>
-                                                                <Form.Check type="checkbox" label="Environmental induced phenotype"/>
-                                                                <Form.Check type="checkbox" label="Enzymatic activity"/>
-                                                                <Form.Check type="checkbox" label="Human disease model"/>
-                                                                <Form.Check type="checkbox" label="Additional type of expression data"/>
+                                                                <strong>Manually flagged data types</strong>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                            <Col sm="12">
+                                                                &nbsp;
+                                                            </Col>
+                                                        </Row>
+                                                        <Row>
+                                                            <Col sm="6">
+                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemFilter("otherexpr", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemFilter("seqchange", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemFilter("geneint", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemFilter("geneprod", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemFilter("genereg", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemFilter("newmutant", "svm")}/>
+                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemFilter("rnai", "svm")}/>
+                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemFilter("overexpr", "svm")}/>
+                                                            </Col>
+                                                            <Col sm="6">
+                                                                <Form.Check type="checkbox" label="Gene model correction/update" onChange={() => this.addRemFilter("structcorr", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Newly generated antibody" onChange={() => this.addRemFilter("antibody", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Site of action data" onChange={() => this.addRemFilter("siteaction", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Time of action data" onChange={() => this.addRemFilter("timeaction", "manual")}/>
+                                                                <Form.Check type="checkbox" label="RNAseq data" onChange={() => this.addRemFilter("rnaseq", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Chemically induced phenotype" onChange={() => this.addRemFilter("chemphen", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Environmental induced phenotype" onChange={() => this.addRemFilter("envpheno", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Enzymatic activity" onChange={() => this.addRemFilter("catalyticact", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Human disease model" onChange={() => this.addRemFilter("humdis", "manual")}/>
+                                                                <Form.Check type="checkbox" label="Additional type of expression data" onChange={() => this.addRemFilter("additionalexpr", "manual")}/>
                                                             </Col>
                                                         </Row>
                                                     </Container>
@@ -231,6 +267,7 @@ class Lists extends React.Component {
                                                                          papersPerPage={this.state.papersPerPage}
                                                                          ref={instance => {this.processedList = instance}}
                                                                          svmFilters={this.state.svmFilter}
+                                                                         manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -243,6 +280,7 @@ class Lists extends React.Component {
                                                                          papersPerPage={this.state.papersPerPage}
                                                                          ref={instance => {this.submittedList = instance}}
                                                                          svmFilters={this.state.svmFilter}
+                                                                         manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -255,6 +293,7 @@ class Lists extends React.Component {
                                                                          papersPerPage={this.state.papersPerPage}
                                                                          ref={instance => {this.partialList = instance}}
                                                                          svmFilters={this.state.svmFilter}
+                                                                         manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -278,6 +317,7 @@ class Lists extends React.Component {
                                                                          papersPerPage={this.state.papersPerPage}
                                                                          ref={instance => {this.emptyList = instance}}
                                                                          svmFilters={this.state.svmFilter}
+                                                                         manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
