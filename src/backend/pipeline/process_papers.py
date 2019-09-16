@@ -88,7 +88,7 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    curatable_papers_not_processed_svm_flagged = ["00057005"]
+    #curatable_papers_not_processed_svm_flagged = ["00057005"]
 
     # 6. Get fulltext for papers obtained in 5. from Textpresso
     logger.info("Getting papers fulltext")
