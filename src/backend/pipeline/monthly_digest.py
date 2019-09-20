@@ -12,7 +12,7 @@ AFP_WATCHERS_TABLES = {
                                 "afp_otherstrain", "afp_rnaseq"],
        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
        "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
-       "raymond@wormbase.org": ["afp_siteaction", "afp_timeaction"],
+       "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
        "jae.cho@wormbase.org": ["afp_geneprod"],
        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
        "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
