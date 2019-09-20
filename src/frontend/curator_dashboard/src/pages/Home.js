@@ -7,7 +7,7 @@ import {
 import {Link, withRouter} from "react-router-dom";
 import Card from "react-bootstrap/es/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch, faChartBar, faList } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faChartBar, faList, faUsers } from '@fortawesome/free-solid-svg-icons'
 
 class Home extends React.Component {
     constructor(props, context) {
@@ -66,7 +66,7 @@ class Home extends React.Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col sm="1">
+                    <Col sm="3">
                         &nbsp;
                     </Col>
                     <Col sm="3">
@@ -117,6 +117,19 @@ class Home extends React.Component {
                         </Card>
                     </Col>
                     <Col sm="3">
+                        &nbsp;
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        &nbsp;
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="3">
+                        &nbsp;
+                    </Col>
+                    <Col sm="3">
                         <Card style={{ minHeight: '350px' }}>
                             <Card.Header>
                                 <Link to={'lists' + args}>
@@ -131,7 +144,23 @@ class Home extends React.Component {
                             </Card.Body>
                         </Card>
                     </Col>
-                    <Col sm="2">
+                    <Col sm="3">
+                        <Card style={{ minHeight: '350px' }}>
+                            <Card.Header>
+                                <Link to={'/contributors' + args}>
+                                    Contributors
+                                </Link>
+                            </Card.Header>
+                            <Card.Body>
+                                <h1 className="text-center"><FontAwesomeIcon icon={faUsers}/></h1>
+                                <Card.Text>
+                                    Find the top contributors to AFP submissions and the authors who received more AFP
+                                    emails
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                    <Col sm="3">
                         &nbsp;
                     </Col>
                 </Row>

@@ -4,6 +4,7 @@ import PaperViewer from "../pages/PaperViewer";
 import Statistics from "../pages/Statistics";
 import Lists from "../pages/Lists";
 import Home from "../pages/Home";
+import Contributors from "../pages/Contributors";
 
 class PageArea extends React.Component {
 
@@ -19,6 +20,8 @@ class PageArea extends React.Component {
                        render={() => <Statistics/>}/>
                 <Route path={"/lists"}
                        render={() => <Lists/>}/>
+                <Route path={"/contributors"}
+                       render={() => <Contributors/>}/>
             </div>
         );
     }

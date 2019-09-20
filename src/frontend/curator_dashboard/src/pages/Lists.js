@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
-import PaginatedPapersList from "../page_components/PaginatedPapersList";
+import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
 
@@ -15,6 +15,7 @@ class Lists extends React.Component {
             activeTabKey = parseInt(url.split('#')[1])
         }
         const defNumPapersPerPage = 10;
+
         this.state = {
             list_papers_processed: [],
             list_papers_submitted: [],
@@ -34,7 +35,7 @@ class Lists extends React.Component {
             paper_id: undefined,
             filterOpen: false,
             svmFilter: new Set(),
-            manualFilter: new Set()
+            manualFilter: new Set(),
         };
 
         this.toggleFilter = this.toggleFilter.bind(this);
@@ -42,6 +43,10 @@ class Lists extends React.Component {
 
     toggleFilter() {
         this.setState({filterOpen: !this.state.filterOpen})
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+
     }
 
     addRemFilter(Datatype, filterType) {
@@ -65,6 +70,7 @@ class Lists extends React.Component {
     }
 
     render() {
+        let papersProcessedDataManager = new DataManager()
         return(
             <Container fluid>
                 <Row>
