@@ -154,4 +154,6 @@ def get_fulltext_from_pdfs(pdfs_urls):
             complete_fulltext += main_text
             complete_fulltext = complete_fulltext.replace("\n", " ")
             return complete_fulltext
+        else:
+            logger.info("Paper with main pdf that cannot be converted: " + pdfs_urls[-1])
     return ""
