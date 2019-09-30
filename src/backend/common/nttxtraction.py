@@ -144,6 +144,7 @@ def get_fulltext_from_pdfs(pdfs_urls):
             return pdf_fulltext
         else:
             logger.info("Skipping response to reviewers")
+            return ""
 
     if pdfs_urls:
         complete_fulltext = ""

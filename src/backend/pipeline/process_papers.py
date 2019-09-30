@@ -99,7 +99,7 @@ def main():
     # process N papers for each Tpc call and continue until the number of papers with fulltext is >= n
     while len(fulltexts_dict) < args.num_papers and len(curatable_papers_not_processed_svm_flagged) > 0:
         paper_to_process = curatable_papers_not_processed_svm_flagged.pop(0)
-        logger.debug("Extracting fulltext for paper " + paper_to_process)
+        logger.info("Extracting fulltext for paper " + paper_to_process)
         paper_fulltext = get_fulltext_from_pdfs(db_manager.get_paper_pdf_paths(paper_id=paper_to_process))
         processed_papers += 1
         if paper_fulltext != "":
