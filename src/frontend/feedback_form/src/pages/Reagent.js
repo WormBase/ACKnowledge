@@ -96,7 +96,7 @@ class Reagent extends React.Component {
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedTransgenes"}
                                 searchType={"transgene"}
-                                sampleQuery={"e.g. ctIs40 or ycEx60"}
+                                sampleQuery={"e.g. ctIs40"}
                             />
                         </Panel.Body>
                     </Panel>
@@ -113,7 +113,7 @@ class Reagent extends React.Component {
                                             tableChangedCallback={this.props.stateVarModifiedCallback}
                                             stateVarName={"otherTransgenes"}
                                             products={this.state.otherTransgenes}
-                                            sampleText={"e.g. ctIs40"}
+                                            sampleText={"e.g. ctIs40  or ycEx60"}
                                             ref={instance => { this.otherTransgenesTable = instance; }}
                                         />
                                     </div>
