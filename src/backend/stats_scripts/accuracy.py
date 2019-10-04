@@ -40,6 +40,16 @@ def main():
     accuracy_allelepheno = []
     accuracy_rnaipheno = []
     accuracy_transgeneoverexprpheno = []
+    num_added_genes = []
+    num_added_species = []
+    num_added_alleles = []
+    num_added_strains = []
+    num_added_transgenes = []
+    num_removed_genes = []
+    num_removed_species = []
+    num_removed_alleles = []
+    num_removed_strains = []
+    num_removed_transgenes = []
 
     for paper_id in list_ids:
         tfp_genestudied = [gene_str.split(";%;")[0] for gene_str in
@@ -48,26 +58,40 @@ def main():
                            db_manager.get_feature("afp_genestudied", paper_id).split("|")]
         jaccard_genes.append(len(set(tfp_genestudied) & set(afp_genestudied)) / len(set(tfp_genestudied) |
                                                                                     set(afp_genestudied)))
+        num_removed_genes.append(len(set(tfp_genestudied) - set(afp_genestudied)))
+        num_added_genes.append(len(set(afp_genestudied) - set(tfp_genestudied)))
+
         tfp_species = [species_str.split(";%;")[0] for species_str in
                        db_manager.get_feature("tfp_species", paper_id).split("|")]
         afp_species = [species_str.split(";%;")[0] for species_str in
                        db_manager.get_feature("afp_species", paper_id).split("|")]
         jaccard_species.append(len(set(tfp_species) & set(afp_species)) / len(set(tfp_species) | set(afp_species)))
+        num_removed_species.append(len(set(tfp_species) - set(afp_species)))
+        num_added_species.append(len(set(afp_species) - set(tfp_species)))
+
         tfp_alleles = [alleles_str.split(";%;")[0] for alleles_str in
                        db_manager.get_feature("tfp_variation", paper_id).split("|")]
         afp_alleles = [alleles_str.split(";%;")[0] for alleles_str in
                        db_manager.get_feature("afp_variation", paper_id).split("|")]
         jaccard_alleles.append(len(set(tfp_alleles) & set(afp_alleles)) / len(set(tfp_alleles) | set(afp_alleles)))
+        num_removed_alleles.append(len(set(tfp_alleles) - set(afp_alleles)))
+        num_added_alleles.append(len(set(afp_alleles) - set(tfp_alleles)))
+
         tfp_strains = [strains_str.split(";%;")[0] for strains_str in
                        db_manager.get_feature("tfp_strain", paper_id).split("|")]
         afp_strains = [strains_str.split(";%;")[0] for strains_str in
                        db_manager.get_feature("afp_strain", paper_id).split("|")]
         jaccard_strains.append(len(set(tfp_strains) & set(afp_strains)) / len(set(tfp_strains) | set(afp_strains)))
+        num_removed_strains.append(len(set(tfp_strains) - set(afp_strains)))
+        num_added_strains.append(len(set(afp_strains) - set(tfp_strains)))
+
         tfp_transgenes = [transgenes_str.split(";%;")[0] for transgenes_str in
                        db_manager.get_feature("tfp_transgene", paper_id).split("|")]
         afp_transgenes = [transgenes_str.split(";%;")[0] for transgenes_str in
                        db_manager.get_feature("afp_transgene", paper_id).split("|")]
         jaccard_transgenes.append(len(set(tfp_transgenes) & set(afp_transgenes)) / len(set(tfp_transgenes) | set(afp_transgenes)))
+        num_removed_transgenes.append(len(set(tfp_transgenes) - set(afp_transgenes)))
+        num_added_transgenes.append(len(set(afp_transgenes) - set(tfp_transgenes)))
 
         svm_seqchange = db_manager.get_svm_value("seqchange", paper_id)
         afp_seqchange = db_manager.get_feature("afp_seqchange", paper_id)
@@ -108,6 +132,20 @@ def main():
     print("alleles", str(np.average(jaccard_alleles)))
     print("strains", str(np.average(jaccard_strains)))
     print("transgenes", str(np.average(jaccard_transgenes)))
+
+    print("Number of added entities")
+    print("genes", str(np.average(num_added_genes)))
+    print("species", str(np.average(num_added_species)))
+    print("alleles", str(np.average(num_added_alleles)))
+    print("strains", str(np.average(num_added_strains)))
+    print("transgenes", str(np.average(num_added_transgenes)))
+
+    print("Number of removed entities")
+    print("genes", str(np.average(num_removed_genes)))
+    print("species", str(np.average(num_removed_species)))
+    print("alleles", str(np.average(num_removed_alleles)))
+    print("strains", str(np.average(num_removed_strains)))
+    print("transgenes", str(np.average(num_removed_transgenes)))
 
     print("Accuracy indices:")
     print("Allele sequence change", str(np.average(accuracy_alleleseqchange)))

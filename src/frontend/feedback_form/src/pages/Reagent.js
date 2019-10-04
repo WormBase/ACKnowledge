@@ -96,7 +96,7 @@ class Reagent extends React.Component {
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedTransgenes"}
                                 searchType={"transgene"}
-                                sampleQuery={"e.g. ctIs40"}
+                                sampleQuery={"e.g. ctIs40 or ycEx60"}
                             />
                         </Panel.Body>
                     </Panel>
