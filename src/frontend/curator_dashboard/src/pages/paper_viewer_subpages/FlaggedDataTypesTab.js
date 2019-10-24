@@ -142,8 +142,8 @@ class FlaggedDataTypesTab extends React.Component {
                             <hr/>
                         </div>
                     </div>
-                    <FlaggedDiffRow title="Anatomic expression data in WT condition" afpChecked={this.state.afp_seqchange_checked}
-                                    tfpChecked={this.state.svm_seqchange_checked} afpDetails={this.state.afp_seqchange_details}/>
+                    <FlaggedDiffRow title="Anatomic expression data in WT condition" afpChecked={this.state.afp_otherexpr_checked}
+                                    tfpChecked={this.state.svm_otherexpr_checked} afpDetails={this.state.afp_otherexpr_details}/>
                     <FlaggedDiffRow title="Allele sequence change" afpChecked={this.state.afp_seqchange_checked}
                                     tfpChecked={this.state.svm_seqchange_checked} afpDetails={this.state.afp_seqchange_details}/>
                     <FlaggedDiffRow title="Genetic interactions" afpChecked={this.state.afp_geneint_checked}
