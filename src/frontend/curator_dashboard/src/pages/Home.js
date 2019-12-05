@@ -2,10 +2,9 @@ import React from 'react';
 import {
     Button, Col, Container,
     Form,
-    FormControl, Row
+    FormControl, Row, Card
 } from "react-bootstrap";
 import {Link, withRouter} from "react-router-dom";
-import Card from "react-bootstrap/es/Card";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faChartBar, faList } from '@fortawesome/free-solid-svg-icons'
 
