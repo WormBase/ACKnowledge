@@ -87,7 +87,7 @@ export function extractEntitiesFromTfpString(entitiesString, prefix) {
  * @returns {string} a string containing the list of entities in AFP format, ready to be stored in the DB
  */
 export function transformEntitiesIntoAfpString(entitiesList, prefix) {
-    const addInfoRegex = / \( ([^ ]+) \)$/;
+    const addInfoRegex = / \( ([^ ]+) \)( \[[^ ]+\])?$/;
     let entity;
     let addInfo = "";
     let results = [];
