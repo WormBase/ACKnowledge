@@ -1,8 +1,6 @@
 import React from 'react';
-import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
-import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
+import {Card, Col, Container, Row,} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
-import Collapse from "react-bootstrap/Collapse";
 import PaginatedAuthorsList from "../page_components/paginated_lists/PaginatedAuthorsList";
 
 
