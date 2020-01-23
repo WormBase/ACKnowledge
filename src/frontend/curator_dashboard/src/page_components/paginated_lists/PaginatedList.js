@@ -7,9 +7,8 @@ import {
     ListGroupItem,
     Pagination, Row
 } from "react-bootstrap";
-import {Link} from "react-router-dom";
 
-function withPaginatedList(WrappedComponent, DataManager) {
+function withPaginatedList(WrappedComponent) {
 
     return class extends React.Component {
         constructor(props, context) {
@@ -22,7 +21,7 @@ function withPaginatedList(WrappedComponent, DataManager) {
                 cx: 0,
                 isLoading: false,
                 refresh_list: this.props.refreshList,
-                pageValidationState: false
+                pageValidationState: false,
             };
             this.refreshData = this.refreshData.bind(this);
             this.refreshList = this.refreshList.bind(this);
@@ -60,18 +59,49 @@ function withPaginatedList(WrappedComponent, DataManager) {
 
         refreshData() {
             this.setState({isLoading: true});
+            let svmFilters = "";
+            if (this.props.svmFilters !== undefined) {
+                svmFilters = [...this.props.svmFilters].join(',');
+            }
+            let manualFilters = "";
+            if (this.props.manualFilters !== undefined) {
+                manualFilters = [...this.props.manualFilters].join(',');
+            }
+            let listType = "";
+            if (this.props.listType !== undefined) {
+                listType = this.props.listType;
+            }
             let payload = {
                 from: this.state.from_offset,
-                count: this.props.papersPerPage,
-                list_type: this.props.listType,
-                svm_filters: [...this.props.svmFilters].join(','),
-                manual_filters: [...this.props.manualFilters].join(',')
+                count: this.props.elemPerPage,
+                list_type: listType,
+                svm_filters: svmFilters,
+                manual_filters: manualFilters
             };
-            DataManager.loadDataFromAPI();
-            this.setState({
-                list_elements: DataManager.getListFromAPI(),
-                num_elements: DataManager.getNumFromAPI(),
-                isLoading: false
+            fetch(this.props.endpoint, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'text/html',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                        alert("Error")
+                }
+            }).then(data => {
+                if (data === undefined) {
+                    alert("Empty response")
+                }
+                this.setState({
+                    list_elements: data["list_elements"],
+                    num_elements: data["total_num_elements"],
+                    isLoading: false
+                });
+            }).catch((err) => {
+                alert(err);
             });
         }
 
@@ -122,7 +152,7 @@ function withPaginatedList(WrappedComponent, DataManager) {
                     <LoadingOverlay
                         active={this.state.isLoading}
                         spinner
-                        text='Loading paper data...'
+                        text='Loading data...'
                         styles={{
                             overlay: (base) => ({
                                 ...base,
@@ -132,7 +162,7 @@ function withPaginatedList(WrappedComponent, DataManager) {
                     >
                         <Row>
                             <Col sm="12">
-                                <Form.Label># of papers in this list:</Form.Label> <Badge
+                                <Form.Label># of elements in this list:</Form.Label> <Badge
                                 variant="secondary">{this.state.num_elements}</Badge>
                             </Col>
                         </Row>
@@ -229,9 +259,9 @@ function withPaginatedList(WrappedComponent, DataManager) {
                         <Row>
                             <Col sm="12">
                                 <ListGroup>
-                                    {[...this.state.list_elements].map(item =>
+                                    {[...this.state.list_elements].map(element =>
                                         <ListGroupItem>
-                                            <WrappedComponent item={item}/>
+                                            <WrappedComponent element={element}/>
                                         </ListGroupItem>)
                                     }
                                 </ListGroup>
@@ -243,3 +273,5 @@ function withPaginatedList(WrappedComponent, DataManager) {
         }
     }
 }
+
+export default withPaginatedList;

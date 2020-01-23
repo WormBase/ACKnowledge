@@ -202,3 +202,13 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
 
     def get_list_papers_no_entities(self, from_offset, count):
         return self.db_manager.get_list_papers_no_entities(from_offset, count)
+
+    def get_num_contributors(self):
+        return self.db_manager.get_num_contributors()
+
+    def get_list_contributors_with_numbers(self, from_offset, count):
+        return self.db_manager.get_list_contributors_with_numbers(from_offset, count)
+
+    def get_user_fullname_from_email(self, email):
+        return self.db_manager.get_user_name_from_email(email)
+

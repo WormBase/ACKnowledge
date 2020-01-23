@@ -1462,3 +1462,28 @@ class DBManager(object):
         else:
             return 0
 
+    def get_num_contributors(self):
+        self.cur.execute("select count(distinct afp_email.afp_email) from afp_email join afp_lasttouched on "
+                         "afp_email.joinkey = afp_lasttouched.joinkey join afp_version on "
+                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_list_contributors_with_numbers(self, from_offset, count):
+        self.cur.execute("select afp_email.afp_email, count(afp_email.afp_email) from afp_email join afp_lasttouched on"
+                         " afp_email.joinkey = afp_lasttouched.joinkey join afp_version on "
+                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2' "
+                         "group by afp_email.afp_email order by count(afp_email.afp_email) "
+                         "desc OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        if res:
+            return [(row[0], row[1]) for row in res]
+        else:
+            return []
+
+    def get_user_name_from_email(self, email_address):
+        person_id = self.get_person_id_from_email_address(email_address)
+        return self.get_user_fullname_from_personid(person_id)

@@ -15,7 +15,7 @@ class CuratorDashboardReader:
 
     def on_post(self, req, resp, req_type):
         with self.db:
-            if req_type != "stats" and req_type != "papers":
+            if req_type != "stats" and req_type != "papers" and req_type != "contributors":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -158,5 +158,17 @@ class CuratorDashboardReader:
                                              self.db.get_list_papers_no_entities(from_offset, count)])
                     else:
                         raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
-                    resp.body = '{{"list_ids": [{}], "total_num_ids": {}}}'.format(list_ids, num_papers)
+                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_ids, num_papers)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "contributors":
+                    from_offset = req.media["from"]
+                    count = req.media["count"]
+                    num_contrib = self.db.get_num_contributors()
+                    list_contrib = ",".join(["{\"name\":\"" + self.db.get_user_fullname_from_email(contrib[0]) +
+                                             "\",\"email\":\"" + contrib[0] +
+                                             "\",\"count\":\"" + str(contrib[1]) + "\"}"
+                                             for contrib in self.db.get_list_contributors_with_numbers(from_offset,
+                                                                                                       count)])
+                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_contrib, num_contrib)
                     resp.status = falcon.HTTP_200

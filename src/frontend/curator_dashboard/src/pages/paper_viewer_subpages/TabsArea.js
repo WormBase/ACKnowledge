@@ -15,7 +15,7 @@ class TabsArea extends React.Component {
                     <Card.Header>Data extracted by AFP and data submitted by author</Card.Header>
                 <Card.Body>
                     <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-                        <Tab eventKey={1} title="Lists of entities">
+                        <Tab eventKey={1} title="PaperLists of entities">
                             <EntitiesListsComparisonTab/>
                         </Tab>
                         <Tab eventKey={2} title="Automatically flagged data types">

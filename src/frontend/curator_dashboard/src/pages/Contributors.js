@@ -3,13 +3,14 @@ import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar,
 import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
+import PaginatedAuthorsList from "../page_components/paginated_lists/PaginatedAuthorsList";
 
 
 
 class Contributors extends React.Component {
     constructor(props, context) {
         super(props, context);
-        const defNumPapersPerPage = 10;
+        const defNumElemPerPage = 10;
         this.state = {
             list_best_contributors: [],
             num_best_contributors: 0,
@@ -18,8 +19,8 @@ class Contributors extends React.Component {
             active_page_best_contributors: 1,
             cx: 0,
             isLoading: false,
-            papersPerPage: defNumPapersPerPage,
-            tmp_count: defNumPapersPerPage,
+            elemPerPage: defNumElemPerPage,
+            tmp_count: defNumElemPerPage,
         };
 
     }
@@ -41,13 +42,14 @@ class Contributors extends React.Component {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col sm="4">
+                                <Col sm="6">
                                     <Card className="listPanel">
                                         <Card.Header>List of best contributors</Card.Header>
                                         <Card.Body>
-                                            <PaginatedPapersList listType="processed"
-                                                                 papersPerPage={this.state.papersPerPage}
-                                                                 ref={instance => {this.bestContribList = instance}}
+                                            <PaginatedAuthorsList
+                                                endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/contributors"}
+                                                elemPerPage={this.state.elemPerPage}
+                                                ref={instance => {this.bestContribList = instance}}
                                             />
                                         </Card.Body>
                                     </Card>

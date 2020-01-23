@@ -2,7 +2,7 @@ import React from 'react';
 import {Redirect, Route, withRouter} from "react-router-dom";
 import PaperViewer from "../pages/PaperViewer";
 import Statistics from "../pages/Statistics";
-import Lists from "../pages/Lists";
+import Lists from "../pages/PaperLists";
 import Home from "../pages/Home";
 import Contributors from "../pages/Contributors";
 

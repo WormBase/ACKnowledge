@@ -1,12 +1,11 @@
 import React from 'react';
 import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
-import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
+import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
 
 
-
-class Lists extends React.Component {
+class PaperLists extends React.Component {
     constructor(props, context) {
         super(props, context);
         let url = document.location.toString();
@@ -70,7 +69,6 @@ class Lists extends React.Component {
     }
 
     render() {
-        let papersProcessedDataManager = new DataManager()
         return(
             <Container fluid>
                 <Row>
@@ -269,11 +267,13 @@ class Lists extends React.Component {
                                             <Card className="listPanel">
                                                 <Card.Header>Papers waiting for data submission</Card.Header>
                                                 <Card.Body>
-                                                    <PaginatedPapersList listType="processed"
-                                                                         papersPerPage={this.state.papersPerPage}
-                                                                         ref={instance => {this.processedList = instance}}
-                                                                         svmFilters={this.state.svmFilter}
-                                                                         manualFilters={this.state.manualFilter}
+                                                    <PaginatedPapersList
+                                                        endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
+                                                        listType="processed"
+                                                        elemPerPage={this.state.papersPerPage}
+                                                        ref={instance => {this.processedList = instance}}
+                                                        svmFilters={this.state.svmFilter}
+                                                        manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -282,11 +282,13 @@ class Lists extends React.Component {
                                             <Card className="listPanel">
                                                 <Card.Header>Papers with final data submitted by authors</Card.Header>
                                                 <Card.Body>
-                                                    <PaginatedPapersList listType="submitted"
-                                                                         papersPerPage={this.state.papersPerPage}
-                                                                         ref={instance => {this.submittedList = instance}}
-                                                                         svmFilters={this.state.svmFilter}
-                                                                         manualFilters={this.state.manualFilter}
+                                                    <PaginatedPapersList
+                                                        endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
+                                                        listType="submitted"
+                                                        elemPerPage={this.state.papersPerPage}
+                                                        ref={instance => {this.submittedList = instance}}
+                                                        svmFilters={this.state.svmFilter}
+                                                        manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -295,11 +297,13 @@ class Lists extends React.Component {
                                             <Card className="listPanel">
                                                 <Card.Header>Papers with partially submitted data</Card.Header>
                                                 <Card.Body>
-                                                    <PaginatedPapersList listType="partial"
-                                                                         papersPerPage={this.state.papersPerPage}
-                                                                         ref={instance => {this.partialList = instance}}
-                                                                         svmFilters={this.state.svmFilter}
-                                                                         manualFilters={this.state.manualFilter}
+                                                    <PaginatedPapersList
+                                                        endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
+                                                        listType="partial"
+                                                        elemPerPage={this.state.papersPerPage}
+                                                        ref={instance => {this.partialList = instance}}
+                                                        svmFilters={this.state.svmFilter}
+                                                        manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -319,11 +323,13 @@ class Lists extends React.Component {
                                             <Card className="listPanel">
                                                 <Card.Header>Papers with empty entity lists</Card.Header>
                                                 <Card.Body>
-                                                    <PaginatedPapersList listType="empty"
-                                                                         papersPerPage={this.state.papersPerPage}
-                                                                         ref={instance => {this.emptyList = instance}}
-                                                                         svmFilters={this.state.svmFilter}
-                                                                         manualFilters={this.state.manualFilter}
+                                                    <PaginatedPapersList
+                                                        endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
+                                                        listType="empty"
+                                                        elemPerPage={this.state.papersPerPage}
+                                                        ref={instance => {this.emptyList = instance}}
+                                                        svmFilters={this.state.svmFilter}
+                                                        manualFilters={this.state.manualFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -339,4 +345,4 @@ class Lists extends React.Component {
     }
 }
 
-export default withRouter(Lists);
+export default withRouter(PaperLists);
