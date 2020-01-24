@@ -23,7 +23,6 @@ http {
 
     server {
         listen 3001;
-        allow 131.215.0.0/16;
         deny all;
         # save logs here
         access_log /var/log/nginx/access.log compression;
