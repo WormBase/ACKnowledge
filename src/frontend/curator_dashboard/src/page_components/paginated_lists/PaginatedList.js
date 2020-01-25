@@ -67,6 +67,10 @@ function withPaginatedList(WrappedComponent) {
             if (this.props.manualFilters !== undefined) {
                 manualFilters = [...this.props.manualFilters].join(',');
             }
+            let curationFilters = "";
+            if (this.props.curationFilters !== undefined) {
+                curationFilters = [...this.props.curationFilters].join(',');
+            }
             let listType = "";
             if (this.props.listType !== undefined) {
                 listType = this.props.listType;
@@ -76,7 +80,8 @@ function withPaginatedList(WrappedComponent) {
                 count: this.props.elemPerPage,
                 list_type: listType,
                 svm_filters: svmFilters,
-                manual_filters: manualFilters
+                manual_filters: manualFilters,
+                curation_filters: curationFilters
             };
             fetch(this.props.endpoint, {
                 method: 'POST',

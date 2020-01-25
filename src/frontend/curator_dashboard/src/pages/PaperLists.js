@@ -35,6 +35,7 @@ class PaperLists extends React.Component {
             filterOpen: false,
             svmFilter: new Set(),
             manualFilter: new Set(),
+            curationFilter: new Set()
         };
 
         this.toggleFilter = this.toggleFilter.bind(this);
@@ -54,6 +55,8 @@ class PaperLists extends React.Component {
             tempSet = this.state.svmFilter;
         } else if (filterType === "manual") {
             tempSet = this.state.manualFilter;
+        } else if (filterType === "curation") {
+            tempSet = this.state.curationFilter;
         }
         if (tempSet.has(Datatype)) {
             tempSet.delete(Datatype);
@@ -64,8 +67,9 @@ class PaperLists extends React.Component {
             this.setState({svmFilter: tempSet})
         } else if (filterType === "manual") {
             this.setState({manualFilter: tempSet})
+        } else if (filterType === "curation") {
+            this.setState({curationFilter: tempSet})
         }
-
     }
 
     render() {
@@ -134,11 +138,14 @@ class PaperLists extends React.Component {
                                                             </Col>
                                                         </Row>
                                                         <Row>
-                                                            <Col sm="6">
+                                                            <Col sm="4">
                                                                 <strong>Automatically flagged data types (SVMs)</strong>
                                                             </Col>
-                                                            <Col sm="6">
+                                                            <Col sm="4">
                                                                 <strong>Manually flagged data types</strong>
+                                                            </Col>
+                                                            <Col sm="4">
+                                                                <strong>Exclude papers already curated for the following data types</strong>
                                                             </Col>
                                                         </Row>
                                                         <Row>
@@ -147,7 +154,7 @@ class PaperLists extends React.Component {
                                                             </Col>
                                                         </Row>
                                                         <Row>
-                                                            <Col sm="6">
+                                                            <Col sm="4">
                                                                 <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemFilter("otherexpr", "svm")}/>
                                                                 <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemFilter("seqchange", "svm")}/>
                                                                 <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemFilter("geneint", "svm")}/>
@@ -157,7 +164,7 @@ class PaperLists extends React.Component {
                                                                 <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemFilter("rnai", "svm")}/>
                                                                 <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemFilter("overexpr", "svm")}/>
                                                             </Col>
-                                                            <Col sm="6">
+                                                            <Col sm="4">
                                                                 <Form.Check type="checkbox" label="Gene model correction/update" onChange={() => this.addRemFilter("structcorr", "manual")}/>
                                                                 <Form.Check type="checkbox" label="Newly generated antibody" onChange={() => this.addRemFilter("antibody", "manual")}/>
                                                                 <Form.Check type="checkbox" label="Site of action data" onChange={() => this.addRemFilter("siteaction", "manual")}/>
@@ -168,6 +175,26 @@ class PaperLists extends React.Component {
                                                                 <Form.Check type="checkbox" label="Enzymatic activity" onChange={() => this.addRemFilter("catalyticact", "manual")}/>
                                                                 <Form.Check type="checkbox" label="Human disease model" onChange={() => this.addRemFilter("humdis", "manual")}/>
                                                                 <Form.Check type="checkbox" label="Additional type of expression data" onChange={() => this.addRemFilter("additionalexpr", "manual")}/>
+                                                            </Col>
+                                                            <Col sm="4">
+                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemFilter("otherexpr", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemFilter("seqchange", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemFilter("geneint", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemFilter("geneprod", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemFilter("genereg", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemFilter("newmutant", "curation")}/>
+                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemFilter("rnai", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemFilter("overexpr", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Gene model correction/update" onChange={() => this.addRemFilter("structcorr", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Newly generated antibody" onChange={() => this.addRemFilter("antibody", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Site of action data" onChange={() => this.addRemFilter("siteaction", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Time of action data" onChange={() => this.addRemFilter("timeaction", "curation")}/>
+                                                                <Form.Check type="checkbox" label="RNAseq data" onChange={() => this.addRemFilter("rnaseq", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Chemically induced phenotype" onChange={() => this.addRemFilter("chemphen", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Environmental induced phenotype" onChange={() => this.addRemFilter("envpheno", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Enzymatic activity" onChange={() => this.addRemFilter("catalyticact", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Human disease model" onChange={() => this.addRemFilter("humdis", "curation")}/>
+                                                                <Form.Check type="checkbox" label="Additional type of expression data" onChange={() => this.addRemFilter("additionalexpr", "curation")}/>
                                                             </Col>
                                                         </Row>
                                                     </Container>
@@ -274,6 +301,7 @@ class PaperLists extends React.Component {
                                                         ref={instance => {this.processedList = instance}}
                                                         svmFilters={this.state.svmFilter}
                                                         manualFilters={this.state.manualFilter}
+                                                        curationFilters={this.state.curationFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -289,6 +317,7 @@ class PaperLists extends React.Component {
                                                         ref={instance => {this.submittedList = instance}}
                                                         svmFilters={this.state.svmFilter}
                                                         manualFilters={this.state.manualFilter}
+                                                        curationFilters={this.state.curationFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -304,6 +333,7 @@ class PaperLists extends React.Component {
                                                         ref={instance => {this.partialList = instance}}
                                                         svmFilters={this.state.svmFilter}
                                                         manualFilters={this.state.manualFilter}
+                                                        curationFilters={this.state.curationFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -330,6 +360,7 @@ class PaperLists extends React.Component {
                                                         ref={instance => {this.emptyList = instance}}
                                                         svmFilters={this.state.svmFilter}
                                                         manualFilters={this.state.manualFilter}
+                                                        curationFilters={this.state.curationFilter}
                                                     />
                                                 </Card.Body>
                                             </Card>

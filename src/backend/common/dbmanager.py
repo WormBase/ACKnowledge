@@ -792,7 +792,7 @@ class DBManager(object):
             url = ""
         return url
 
-    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None):
+    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None, curation_filters=None):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
@@ -806,6 +806,10 @@ class DBManager(object):
         if manual_filters and manual_filters[0] != '':
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve "
                          "ON afp_email.joinkey = afp_ve.joinkey "
@@ -862,7 +866,7 @@ class DBManager(object):
         else:
             return 0
 
-    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None):
+    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None, curation_filters=None):
         additional_joins = ""
         additional_where_clause = ""
         if svm_filters and svm_filters[0] != '':
@@ -875,6 +879,10 @@ class DBManager(object):
                                          ".joinkey " for table_name in manual_filters])
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_version.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT count(*) FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
                          " WHERE afp_version.afp_version = '2' " + additional_where_clause)
@@ -912,7 +920,7 @@ class DBManager(object):
         else:
             return ""
 
-    def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filters, manual_filters):
+    def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filters, manual_filters, curation_filters):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
@@ -926,6 +934,10 @@ class DBManager(object):
         if manual_filters and manual_filters[0] != '':
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve "
                          "ON afp_email.joinkey = afp_ve.joinkey "
@@ -1072,7 +1084,8 @@ class DBManager(object):
         res = self.cur.fetchone()
         return res[0] - self.get_num_papers_new_afp_partial_submissions_by_author(author_email)
 
-    def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters=None, manual_filters=None):
+    def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters=None, manual_filters=None,
+                                         curation_filters=None):
         additional_joins = ""
         additional_where_clause = ""
         if svm_filters and svm_filters[0] != '':
@@ -1085,6 +1098,10 @@ class DBManager(object):
                                           ".joinkey " for table_name in manual_filters])
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_version.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
                          " WHERE afp_version.afp_version = '2' " + additional_where_clause +
@@ -1124,7 +1141,8 @@ class DBManager(object):
         res = self.cur.fetchone()
         return res[0]
 
-    def get_num_papers_new_afp_partial_submissions(self, svm_filters=None, manual_filters=None):
+    def get_num_papers_new_afp_partial_submissions(self, svm_filters=None, manual_filters=None,
+                                                   curation_filters=None):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
@@ -1138,6 +1156,10 @@ class DBManager(object):
         if manual_filters and manual_filters[0] != '':
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field + " FROM "
                          "afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
@@ -1184,7 +1206,8 @@ class DBManager(object):
         else:
             return 0
 
-    def get_list_papers_new_afp_partial_submissions(self, from_offset, count, svm_filters=None, manual_filters=None):
+    def get_list_papers_new_afp_partial_submissions(self, from_offset, count, svm_filters=None, manual_filters=None,
+                                                    curation_filters=None):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
@@ -1198,6 +1221,10 @@ class DBManager(object):
         if manual_filters and manual_filters[0] != '':
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
+                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
+                                                                       curation_filter in curation_filters]) + "))"
         self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "

@@ -137,18 +137,24 @@ class CuratorDashboardReader:
                     list_type = req.media["list_type"]
                     svm_filters = req.media["svm_filters"].split(",")
                     manual_filters = req.media["manual_filters"].split(",")
+                    curation_filters = req.media["curation_filters"].split(",")
                     if list_type == "processed":
-                        num_papers = self.db.get_num_papers_new_afp_processed(svm_filters, manual_filters)
+                        num_papers = self.db.get_num_papers_new_afp_processed(svm_filters, manual_filters,
+                                                                              curation_filters)
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_paper_ids_afp_processed(from_offset, count, svm_filters,
-                                                                                      manual_filters)])
+                                                                                      manual_filters,
+                                                                                      curation_filters)])
                     elif list_type == "submitted":
-                        num_papers = self.db.get_num_papers_new_afp_author_submitted(svm_filters, manual_filters)
+                        num_papers = self.db.get_num_papers_new_afp_author_submitted(svm_filters, manual_filters,
+                                                                                     curation_filters)
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_paper_ids_afp_submitted(from_offset, count, svm_filters,
-                                                                                      manual_filters)])
+                                                                                      manual_filters,
+                                                                                      curation_filters)])
                     elif list_type == "partial":
-                        num_papers = self.db.get_num_papers_new_afp_partial_submissions(svm_filters, manual_filters)
+                        num_papers = self.db.get_num_papers_new_afp_partial_submissions(svm_filters, manual_filters,
+                                                                                        curation_filters)
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_papers_new_afp_partial_submissions(
                                                  from_offset, count, svm_filters, manual_filters)])
