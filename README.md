@@ -1,4 +1,4 @@
-#WormBase Author First Pass system (AFP)
+# WormBase Author First Pass system (AFP)
 
 AFP is a semi-automated curation tool that periodically extracts biological entities from newly published research articles on *C. elegans* and emails out corresponding authors, who can review and modify/confirm the extracted information and submit curated data to WormBase through a dedicated web interface.
 
