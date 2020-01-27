@@ -157,7 +157,7 @@ class CuratorDashboardReader:
                                                                                         curation_filters)
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                              self.db.get_list_papers_new_afp_partial_submissions(
-                                                 from_offset, count, svm_filters, manual_filters)])
+                                                 from_offset, count, svm_filters, manual_filters, curation_filters)])
                     elif list_type == "empty":
                         num_papers = self.db.get_num_papers_no_entities()
                         list_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
