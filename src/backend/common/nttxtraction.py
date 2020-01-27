@@ -126,8 +126,7 @@ def get_fulltext_from_pdfs(pdfs_urls):
         text = re.sub("\\s+", " ", text)
         return text
 
-    complete_fulltext = ""
-    for pdf_url in pdfs_urls:
+    def convert_pdf2text(pdf_url):
         pdf_fulltext = ""
         with urllib.request.urlopen(pdf_url) as response:
             with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
@@ -142,8 +141,20 @@ def get_fulltext_from_pdfs(pdfs_urls):
             pass
         sentences = pdf_fulltext.split("\n")
         if not any(["reviewer" in sentence and "comment" in sentence for sentence in sentences]):
-            complete_fulltext += pdf_fulltext
+            return pdf_fulltext
         else:
             logger.info("Skipping response to reviewers")
-    complete_fulltext = complete_fulltext.replace("\n", " ")
-    return complete_fulltext
+            return ""
+
+    if pdfs_urls:
+        complete_fulltext = ""
+        for pdfurl in pdfs_urls[0:-1]:
+            complete_fulltext += convert_pdf2text(pdfurl)
+        main_text = convert_pdf2text(pdfs_urls[-1])
+        if main_text:
+            complete_fulltext += main_text
+            complete_fulltext = complete_fulltext.replace("\n", " ")
+            return complete_fulltext
+        else:
+            logger.info("Paper with main pdf that cannot be converted: " + pdfs_urls[-1])
+    return ""
