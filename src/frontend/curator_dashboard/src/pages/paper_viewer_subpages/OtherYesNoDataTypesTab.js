@@ -1,9 +1,9 @@
 import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
-import FlaggedDiffRow from "../../page_components/FlaggedDiffRow";
+import FlaggedDiffRow from "../../components/FlaggedDiffRow";
 import {withRouter} from "react-router-dom";
 import queryString from "query-string/index";
-import FlaggedInfoRow from "../../page_components/FlaggedInfoRow";
+import FlaggedInfoRow from "../../components/FlaggedInfoRow";
 
 class OtherYesNoDataTypesTab extends React.Component {
     constructor(props, context) {

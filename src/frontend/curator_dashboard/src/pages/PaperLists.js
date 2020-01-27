@@ -2,7 +2,9 @@ import React from 'react';
 import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
-import PaginatedPapersList from "../page_components/paginated_lists/PaginatedPapersList";
+import PaginatedPapersList from "../components/paginated_lists/PaginatedPapersList";
+import PapersFilters from "./paper_lists_subpages/PapersFilters";
+
 
 
 class PaperLists extends React.Component {
@@ -16,21 +18,10 @@ class PaperLists extends React.Component {
         const defNumPapersPerPage = 10;
 
         this.state = {
-            list_papers_processed: [],
-            list_papers_submitted: [],
-            num_papers_processed: 0,
-            num_papers_submitted: 0,
-            processed_from_offset: 0,
-            processed_count: 5,
-            submitted_from_offset: 0,
-            submitted_count: defNumPapersPerPage,
-            active_page_processed: 1,
-            active_page_submitted: 1,
             cx: 0,
             isLoading: false,
             activeTabKey: activeTabKey,
             papersPerPage: defNumPapersPerPage,
-            tmp_count: defNumPapersPerPage,
             paper_id: undefined,
             filterOpen: false,
             svmFilter: new Set(),
@@ -39,14 +30,12 @@ class PaperLists extends React.Component {
         };
 
         this.toggleFilter = this.toggleFilter.bind(this);
+        this.addRemFilter = this.addRemFilter.bind(this);
+        this.setNumPapersPerPage = this.setNumPapersPerPage.bind(this);
     }
 
     toggleFilter() {
         this.setState({filterOpen: !this.state.filterOpen})
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-
     }
 
     addRemFilter(Datatype, filterType) {
@@ -70,6 +59,16 @@ class PaperLists extends React.Component {
         } else if (filterType === "curation") {
             this.setState({curationFilter: tempSet})
         }
+    }
+
+    setNumPapersPerPage(numPapersPerPage) {
+        this.setState({
+            papersPerPage: numPapersPerPage
+        });
+        this.processedList.refreshList();
+        this.submittedList.refreshList();
+        this.partialList.refreshList();
+        this.emptyList.refreshList();
     }
 
     render() {
@@ -97,179 +96,10 @@ class PaperLists extends React.Component {
                     <Col sm="12">
                         <Collapse in={this.state.filterOpen}>
                             <Card border="secondary">
-                                <Container fluid>
-                                    <Row>
-                                        <Col sm="12">
-                                            &nbsp;
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            <Card>
-                                                <Card.Header>Data Extraction Info</Card.Header>
-                                                <Card.Body>
-                                                    <h5>Datatype: threshold (CURRENT)</h5>
-                                                    <h6>gene: 2, protein: 2, allele: 2, strain: 1, species: 10, transgene: 1</h6>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            &nbsp;
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            <Card>
-                                                <Card.Header>Filter paper lists by flagged data types</Card.Header>
-                                                <Card.Body>
-                                                    <Container fluid>
-                                                        <Row>
-                                                            <Col sm="12">
-                                                                <ul>
-                                                                    <li>
-                                                                        SVM filters are applied to EXTRACTED data for 'waiting for submissions' and 'partial submissions', and to SUBMITTED data for full submissions
-                                                                    </li>
-                                                                    <li>
-                                                                        Manual filters are applied to SUBMITTED data
-                                                                    </li>
-                                                                </ul>
-                                                            </Col>
-                                                        </Row>
-                                                        <Row>
-                                                            <Col sm="4">
-                                                                <strong>Automatically flagged data types (SVMs)</strong>
-                                                            </Col>
-                                                            <Col sm="4">
-                                                                <strong>Manually flagged data types</strong>
-                                                            </Col>
-                                                            <Col sm="4">
-                                                                <strong>Exclude papers already curated for the following data types</strong>
-                                                            </Col>
-                                                        </Row>
-                                                        <Row>
-                                                            <Col sm="12">
-                                                                &nbsp;
-                                                            </Col>
-                                                        </Row>
-                                                        <Row>
-                                                            <Col sm="4">
-                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemFilter("otherexpr", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemFilter("seqchange", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemFilter("geneint", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemFilter("geneprod", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemFilter("genereg", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemFilter("newmutant", "svm")}/>
-                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemFilter("rnai", "svm")}/>
-                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemFilter("overexpr", "svm")}/>
-                                                            </Col>
-                                                            <Col sm="4">
-                                                                <Form.Check type="checkbox" label="Gene model correction/update" onChange={() => this.addRemFilter("structcorr", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Newly generated antibody" onChange={() => this.addRemFilter("antibody", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Site of action data" onChange={() => this.addRemFilter("siteaction", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Time of action data" onChange={() => this.addRemFilter("timeaction", "manual")}/>
-                                                                <Form.Check type="checkbox" label="RNAseq data" onChange={() => this.addRemFilter("rnaseq", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Chemically induced phenotype" onChange={() => this.addRemFilter("chemphen", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Environmental induced phenotype" onChange={() => this.addRemFilter("envpheno", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Enzymatic activity" onChange={() => this.addRemFilter("catalyticact", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Human disease model" onChange={() => this.addRemFilter("humdis", "manual")}/>
-                                                                <Form.Check type="checkbox" label="Additional type of expression data" onChange={() => this.addRemFilter("additionalexpr", "manual")}/>
-                                                            </Col>
-                                                            <Col sm="4">
-                                                                <Form.Check type="checkbox" label="Anatomic expression data in WT condition" onChange={() => this.addRemFilter("otherexpr", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Allele sequence change" onChange={() => this.addRemFilter("seqchange", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Genetic interactions" onChange={() => this.addRemFilter("geneint", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Physical interactions" onChange={() => this.addRemFilter("geneprod", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Regulatory interactions" onChange={() => this.addRemFilter("genereg", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Allele phenotype" onChange={() => this.addRemFilter("newmutant", "curation")}/>
-                                                                <Form.Check type="checkbox" label="RNAi phenotype" onChange={() => this.addRemFilter("rnai", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Transgene overexpression phenotype" onChange={() => this.addRemFilter("overexpr", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Gene model correction/update" onChange={() => this.addRemFilter("structcorr", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Newly generated antibody" onChange={() => this.addRemFilter("antibody", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Site of action data" onChange={() => this.addRemFilter("siteaction", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Time of action data" onChange={() => this.addRemFilter("timeaction", "curation")}/>
-                                                                <Form.Check type="checkbox" label="RNAseq data" onChange={() => this.addRemFilter("rnaseq", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Chemically induced phenotype" onChange={() => this.addRemFilter("chemphen", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Environmental induced phenotype" onChange={() => this.addRemFilter("envpheno", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Enzymatic activity" onChange={() => this.addRemFilter("catalyticact", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Human disease model" onChange={() => this.addRemFilter("humdis", "curation")}/>
-                                                                <Form.Check type="checkbox" label="Additional type of expression data" onChange={() => this.addRemFilter("additionalexpr", "curation")}/>
-                                                            </Col>
-                                                        </Row>
-                                                    </Container>
-
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            &nbsp;
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            <Card>
-                                                <Card.Header>Page Options</Card.Header>
-                                                <Card.Body>
-                                                    <Form onSubmit={e => e.preventDefault()} inline>
-                                                        <FormGroup controlId="formValidationError2"
-                                                                   validationState={this.state.countValidationState}>
-                                                            <Form.Label>Papers per page: &nbsp;</Form.Label>
-                                                            <FormControl
-                                                                type="text" autoComplete="off" maxLength="3" size="sm"
-                                                                placeholder={this.state.papersPerPage}
-                                                                onInput={(event) => {
-                                                                    if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) &&
-                                                                        isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
-                                                                        this.setState({
-                                                                            tmp_count: event.target.value,
-                                                                            countValidationState: null
-                                                                        })
-                                                                    } else if (event.target.value !== "") {
-                                                                        this.setState({
-                                                                            countValidationState: "error"
-                                                                        })
-                                                                    } else {
-                                                                        this.setState({
-                                                                            countValidationState: null
-                                                                        })
-                                                                    }
-                                                                }}
-                                                                onKeyPress={(target) => {if (target.key === 'Enter' &&
-                                                                    this.state.tmp_count > 0) {
-                                                                    this.setState({
-                                                                        papersPerPage: this.state.tmp_count,
-                                                                    });
-                                                                    this.processedList.refreshList();
-                                                                    this.submittedList.refreshList();
-                                                                    this.partialList.refreshList();
-                                                                    this.emptyList.refreshList();
-                                                                }}}
-                                                            />
-                                                            <Button variant="outline-primary" size="sm" onClick={() => { if (
-                                                                this.state.tmp_count > 0) {
-                                                                this.setState({
-                                                                    papersPerPage: this.state.tmp_count,
-                                                                });
-                                                                this.processedList.refreshList();
-                                                                this.submittedList.refreshList();
-                                                                this.partialList.refreshList();
-                                                                this.emptyList.refreshList();
-                                                            }}}>Refresh</Button>
-                                                        </FormGroup>
-                                                    </Form>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col sm="12">
-                                            &nbsp;
-                                        </Col>
-                                    </Row>
-                                </Container>
+                                <PapersFilters addRemFilterCallback={this.addRemFilter}
+                                               setNumPapersPerPageCallback={this.setNumPapersPerPage}
+                                               papersPerPage={this.state.papersPerPage}
+                                />
                             </Card>
                         </Collapse>
                     </Col>

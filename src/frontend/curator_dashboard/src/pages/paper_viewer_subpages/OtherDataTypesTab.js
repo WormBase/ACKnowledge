@@ -3,7 +3,7 @@ import {withRouter} from "react-router-dom";
 import queryString from 'query-string/index';
 import {extractEntitiesFromTfpString} from "../../AFPValues";
 import LoadingOverlay from 'react-loading-overlay';
-import ManualEntityRow from "../../page_components/ManualEntityRow";
+import ManualEntityRow from "../../components/ManualEntityRow";
 
 class OtherDataTypesTab extends React.Component {
     constructor(props, context) {
