@@ -1464,3 +1464,6 @@ class DBManager(object):
         else:
             return 0
 
+    def set_contributor(self, paper_id, person_id):
+        self.cur.execute("INSERT INTO afp_contributor (joinkey, afp_contributor) VALUES('{}', '{}')"
+                         .format(paper_id, self.get_current_email_address_for_person(person_id)))
