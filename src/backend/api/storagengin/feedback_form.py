@@ -112,6 +112,7 @@ class FeedbackFormStorageEngine(AFPStorageBaseEngine):
         self.db_manager.set_comments(comments=comments, paper_id=paper_id)
         self.db_manager.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
         self.db_manager.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+        self.db_manager.set_contributor(paper_id=paper_id, person_id=person_id)
         self.db_manager.set_version(paper_id=paper_id)
         self.db_manager.set_last_touched(paper_id=paper_id)
 
