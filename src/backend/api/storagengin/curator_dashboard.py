@@ -219,3 +219,11 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_user_fullname_from_email(self, email):
         return self.db_manager.get_user_name_from_email(email)
 
+    def get_num_emailed(self):
+        return self.db_manager.get_num_emailed()
+
+    def get_list_emailed_with_numbers(self, from_offset, count):
+        return self.db_manager.get_list_emailed_with_numbers(from_offset, count)
+
+
+

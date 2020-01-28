@@ -1492,9 +1492,9 @@ class DBManager(object):
             return 0
 
     def get_num_contributors(self):
-        self.cur.execute("select count(distinct afp_email.afp_email) from afp_email join afp_lasttouched on "
-                         "afp_email.joinkey = afp_lasttouched.joinkey join afp_version on "
-                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2'")
+        self.cur.execute("select count(distinct afp_contributor.afp_contributor) from afp_contributor join "
+                         "afp_lasttouched on afp_contributor.joinkey = afp_lasttouched.joinkey join afp_version on "
+                         "afp_contributor.joinkey = afp_version.joinkey where afp_version.afp_version = '2'")
         res = self.cur.fetchone()
         if res:
             return int(res[0])
@@ -1502,10 +1502,11 @@ class DBManager(object):
             return 0
 
     def get_list_contributors_with_numbers(self, from_offset, count):
-        self.cur.execute("select afp_email.afp_email, count(afp_email.afp_email) from afp_email join afp_lasttouched on"
-                         " afp_email.joinkey = afp_lasttouched.joinkey join afp_version on "
-                         "afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2' "
-                         "group by afp_email.afp_email order by count(afp_email.afp_email) "
+        self.cur.execute("select afp_contributor.afp_contributor, count(afp_contributor.afp_contributor) from "
+                         "afp_contributor join afp_lasttouched on afp_contributor.joinkey = afp_lasttouched.joinkey "
+                         "join afp_version on afp_contributor.joinkey = afp_version.joinkey "
+                         "where afp_version.afp_version = '2' "
+                         "group by afp_contributor.afp_contributor order by count(afp_contributor.afp_contributor) "
                          "desc OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         if res:
@@ -1520,3 +1521,24 @@ class DBManager(object):
     def set_contributor(self, paper_id, person_id):
         self.cur.execute("INSERT INTO afp_contributor (joinkey, afp_contributor) VALUES('{}', '{}')"
                          .format(paper_id, self.get_current_email_address_for_person(person_id)))
+
+    def get_num_emailed(self):
+        self.cur.execute("select count(distinct afp_email.afp_email) from afp_email join "
+                         "afp_version on afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_list_emailed_with_numbers(self, from_offset, count):
+        self.cur.execute("select afp_email.afp_email, count(afp_email.afp_email) from "
+                         "afp_email join afp_version on afp_email.joinkey = afp_version.joinkey "
+                         "where afp_version.afp_version = '2' "
+                         "group by afp_email.afp_email order by count(afp_email.afp_email) "
+                         "desc OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        if res:
+            return [(row[0], row[1]) for row in res]
+        else:
+            return []

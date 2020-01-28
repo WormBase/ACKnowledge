@@ -42,12 +42,22 @@ class Contributors extends React.Component {
                             <Row>
                                 <Col sm="6">
                                     <Card className="listPanel">
-                                        <Card.Header>List of best contributors</Card.Header>
+                                        <Card.Header>Best contributors</Card.Header>
                                         <Card.Body>
                                             <PaginatedAuthorsList
                                                 endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/contributors"}
                                                 elemPerPage={this.state.elemPerPage}
-                                                ref={instance => {this.bestContribList = instance}}
+                                            />
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                                <Col sm="6">
+                                    <Card className="listPanel">
+                                        <Card.Header>Most emailed</Card.Header>
+                                        <Card.Body>
+                                            <PaginatedAuthorsList
+                                                endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/most_emailed"}
+                                                elemPerPage={this.state.elemPerPage}
                                             />
                                         </Card.Body>
                                     </Card>
