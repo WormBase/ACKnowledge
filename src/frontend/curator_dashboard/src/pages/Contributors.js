@@ -2,6 +2,7 @@ import React from 'react';
 import {Card, Col, Container, Row,} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import PaginatedAuthorsList from "./contributors/PaginatedAuthorsList";
+import NumElemPerPageSelector from "../components/paginated_lists/NumElemPerPageSelector";
 
 
 
@@ -64,6 +65,16 @@ class Contributors extends React.Component {
                                 </Col>
                             </Row>
                         </Container>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        &nbsp;
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <NumElemPerPageSelector />
                     </Col>
                 </Row>
             </Container>

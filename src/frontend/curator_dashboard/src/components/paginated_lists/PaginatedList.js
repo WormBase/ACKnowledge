@@ -8,6 +8,7 @@ import {
     Pagination, Row
 } from "react-bootstrap";
 import {getListElements} from "./DataManager";
+import NumElemPerPageSelector from "./NumElemPerPageSelector";
 
 function withPaginatedList(WrappedComponent) {
 
@@ -31,7 +32,7 @@ function withPaginatedList(WrappedComponent) {
         }
 
         componentDidUpdate(prevProps) {
-            if (this.props.elemPerPage !== prevProps.elemPerPage) {
+            if (this.props !== prevProps) {
                 this.resetList();
             }
         }
@@ -57,6 +58,22 @@ function withPaginatedList(WrappedComponent) {
         }
 
         render() {
+            let numElemPerPageSelector = "";
+            if (this.props.showNumElemPerPageSelector === true) {
+                numElemPerPageSelector = (
+                    <Container fluid>
+                        <Row>
+                            <Col>
+                                &nbsp;
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col sm="12">
+                                <NumElemPerPageSelector elemPerPage={this.props.elemPerPage} setNumElemPerPageCallback={this.props.setNumElemPerPageCallback}/>
+                            </Col>
+                        </Row>
+                    </Container>);
+            }
             const maxNumPagesToDisplay = 5;
             const totNumPages = Math.ceil(this.state.totNumElements / this.props.elemPerPage);
             const firstDisplayedPage = Math.max(Math.min(this.state.activePage -
@@ -205,6 +222,7 @@ function withPaginatedList(WrappedComponent) {
                                 </ListGroup>
                             </Col>
                         </Row>
+                        {numElemPerPageSelector}
                     </LoadingOverlay>
                 </Container>
             );

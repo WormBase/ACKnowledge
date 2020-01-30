@@ -7,6 +7,7 @@ import Form from "react-bootstrap/Form";
 import FormGroup from "react-bootstrap/FormGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
+import NumElemPerPageSelector from "../../components/paginated_lists/NumElemPerPageSelector";
 class PapersFilters extends React.Component {
 
     constructor(props, context) {
@@ -38,45 +39,7 @@ class PapersFilters extends React.Component {
                         <Card>
                             <Card.Header>Page Options</Card.Header>
                             <Card.Body>
-                                <Form onSubmit={e => e.preventDefault()} inline>
-                                    <FormGroup controlId="formValidationError2"
-                                               validationState={this.state.countValidationState}>
-                                        <Form.Label>Papers per page: &nbsp;</Form.Label>
-                                        <FormControl
-                                            type="text" autoComplete="off" maxLength="3" size="sm"
-                                            placeholder={this.state.papersPerPage}
-                                            onInput={(event) => {
-                                                if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) &&
-                                                    isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
-                                                    this.setState({
-                                                        papersPerPage: event.target.value,
-                                                        countValidationState: null
-                                                    })
-                                                } else if (event.target.value !== "") {
-                                                    this.setState({
-                                                        countValidationState: "error"
-                                                    })
-                                                } else {
-                                                    this.setState({
-                                                        countValidationState: null
-                                                    })
-                                                }
-                                            }}
-                                            onKeyPress={(target) => {
-                                                if (target.key === 'Enter' &&
-                                                    this.state.papersPerPage > 0) {
-                                                    this.props.setNumPapersPerPageCallback(this.state.papersPerPage);
-                                                }
-                                            }}
-                                        />
-                                        <Button variant="outline-primary" size="sm" onClick={() => {
-                                            if (
-                                                this.state.papersPerPage > 0) {
-                                                this.props.setNumPapersPerPageCallback(this.state.papersPerPage);
-                                            }
-                                        }}>Refresh</Button>
-                                    </FormGroup>
-                                </Form>
+                                <NumElemPerPageSelector papersPerPage={this.props.papersPerPage} setNumElemPerPageCallback={this.props.setNumPapersPerPageCallback}/>
                             </Card.Body>
                         </Card>
                     </Col>
