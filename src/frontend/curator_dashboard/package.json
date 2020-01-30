@@ -7,13 +7,15 @@
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "d3": "latest",
+    "html-react-parser": "^0.10.0",
     "query-string": "^6.4.2",
     "react": "^16.8.6",
     "react-bootstrap": "^1.0.0-beta.6",
     "react-dom": "^16.8.6",
     "react-loading-overlay": "^1.0.1",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8"
+    "react-scripts": "2.1.8",
+    "string-strip-html": "^4.3.15"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -2,6 +2,7 @@ import React from 'react';
 import LoadingOverlay from 'react-loading-overlay';
 import {Badge, Card, Col, Container, Jumbotron, Row} from "react-bootstrap";
 import TabsArea from "./TabsArea";
+import ReactHtmlParser from "html-react-parser";
 
 
 class StatusArea extends React.Component {
@@ -9,11 +10,7 @@ class StatusArea extends React.Component {
     render() {
         let link_to_afp_form = "";
         if (this.props.link_to_afp_form !== "") {
-            link_to_afp_form =
-                <Card>
-                    <Card.Header>Link to AFP submission form</Card.Header>
-                    <Card.Body><a href={this.props.link_to_afp_form} target="_blank">{this.props.link_to_afp_form}</a></Card.Body>
-                </Card>
+            link_to_afp_form = <div><br/><a href={this.props.link_to_afp_form} target="_blank"><strong>Link to AFP feedback form</strong></a></div>
         }
         if (this.props.paper_id !== undefined && this.props.paper_id !== "undefined") {
             return (
@@ -38,11 +35,12 @@ class StatusArea extends React.Component {
                             <Col sm="12">
                                 <Card>
                                     <Card.Header>Paper Info</Card.Header>
-                                    <Card.Body><strong>Title:</strong> &nbsp; {this.props.paper_title}<br/>
+                                    <Card.Body><strong>Title:</strong> &nbsp; {ReactHtmlParser(this.props.paper_title)}<br/>
                                         <strong>Journal:</strong> &nbsp; {this.props.paper_journal}<br/>
                                         <strong>Email:</strong> &nbsp; {this.props.email} <br/>
                                         <strong>Link to pubmed source:</strong> &nbsp; <a href={"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props.pmid} target="blank_">{"https://www.ncbi.nlm.nih.gov/pubmed/" + this.props.pmid}</a> <br/>
-                                        <strong>Link to doi source:</strong> &nbsp; <a href={"https://doi.org/" + this.props.doi} target="blank_">{"https://doi.org/" + this.props.doi}</a>
+                                        <strong>Link to doi source:</strong> &nbsp; <a href={"https://doi.org/" + this.props.doi} target="blank_">{"https://doi.org/" + this.props.doi}</a><br/>
+                                        {link_to_afp_form}
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -61,16 +59,6 @@ class StatusArea extends React.Component {
                                         Author has modified any data (including partial submissions): &nbsp; <Badge variant="secondary">{this.props.paper_author_modified}</Badge>
                                     </Card.Body>
                                 </Card>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col sm="12">
-                                &nbsp;
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col sm="12">
-                                {link_to_afp_form}
                             </Col>
                         </Row>
                     </LoadingOverlay>
