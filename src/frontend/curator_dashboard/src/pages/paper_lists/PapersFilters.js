@@ -79,7 +79,7 @@ class PapersFilters extends React.Component {
                                             <Container fluid>
                                                 <Row>
                                                     <Col>
-                                                        <strong>Combine filters by:</strong>&nbsp; <Form.Check inline disabled type="radio" name="filtersLogic" label="OR" defaultChecked/> <Form.Check inline type="radio" disabled name="filtersLogic" label="AND" />
+                                                        <strong>Combine filters by:</strong>&nbsp; <Form.Check inline disabled type="radio" name="filtersLogic" label="OR"/> <Form.Check inline type="radio" disabled name="filtersLogic" label="AND" defaultChecked/>
                                                     </Col>
                                                 </Row>
                                                 <Row>
