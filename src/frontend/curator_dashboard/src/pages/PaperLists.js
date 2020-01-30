@@ -15,13 +15,11 @@ class PaperLists extends React.Component {
         if (url.match('#')) {
             activeTabKey = parseInt(url.split('#')[1])
         }
-        const defNumPapersPerPage = 10;
-
         this.state = {
             cx: 0,
             isLoading: false,
             activeTabKey: activeTabKey,
-            papersPerPage: defNumPapersPerPage,
+            papersPerPage: 10,
             paper_id: undefined,
             filterOpen: false,
             svmFilter: new Set(),
@@ -65,10 +63,6 @@ class PaperLists extends React.Component {
         this.setState({
             papersPerPage: numPapersPerPage
         });
-        this.processedList.resetList();
-        this.submittedList.resetList();
-        this.partialList.resetList();
-        this.emptyList.resetList();
     }
 
     render() {
@@ -128,10 +122,7 @@ class PaperLists extends React.Component {
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
                                                         listType="processed"
                                                         elemPerPage={this.state.papersPerPage}
-                                                        ref={instance => {this.processedList = instance}}
-                                                        svmFilters={this.state.svmFilter}
-                                                        manualFilters={this.state.manualFilter}
-                                                        curationFilters={this.state.curationFilter}
+                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter}}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -144,10 +135,7 @@ class PaperLists extends React.Component {
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
                                                         listType="submitted"
                                                         elemPerPage={this.state.papersPerPage}
-                                                        ref={instance => {this.submittedList = instance}}
-                                                        svmFilters={this.state.svmFilter}
-                                                        manualFilters={this.state.manualFilter}
-                                                        curationFilters={this.state.curationFilter}
+                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter}}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -160,10 +148,7 @@ class PaperLists extends React.Component {
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
                                                         listType="partial"
                                                         elemPerPage={this.state.papersPerPage}
-                                                        ref={instance => {this.partialList = instance}}
-                                                        svmFilters={this.state.svmFilter}
-                                                        manualFilters={this.state.manualFilter}
-                                                        curationFilters={this.state.curationFilter}
+                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter}}
                                                     />
                                                 </Card.Body>
                                             </Card>
@@ -187,10 +172,7 @@ class PaperLists extends React.Component {
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
                                                         listType="empty"
                                                         elemPerPage={this.state.papersPerPage}
-                                                        ref={instance => {this.emptyList = instance}}
-                                                        svmFilters={this.state.svmFilter}
-                                                        manualFilters={this.state.manualFilter}
-                                                        curationFilters={this.state.curationFilter}
+                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter}}
                                                     />
                                                 </Card.Body>
                                             </Card>

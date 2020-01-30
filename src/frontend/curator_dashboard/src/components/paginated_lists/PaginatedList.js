@@ -7,6 +7,7 @@ import {
     ListGroupItem,
     Pagination, Row
 } from "react-bootstrap";
+import {getListElements} from "./DataManager";
 
 function withPaginatedList(WrappedComponent) {
 
@@ -16,7 +17,6 @@ function withPaginatedList(WrappedComponent) {
             this.state = {
                 elements: [],
                 totNumElements: 0,
-                cx: 0,
                 isLoading: false,
                 pageValidationState: false,
                 activePage: 1
@@ -30,8 +30,10 @@ function withPaginatedList(WrappedComponent) {
             this.loadData(0);
         }
 
-        componentWillReceiveProps(nextProps, nextContext) {
-            this.resetList();
+        componentDidUpdate(prevProps) {
+            if (this.props.elemPerPage !== prevProps.elemPerPage) {
+                this.resetList();
+            }
         }
 
         resetList() {
@@ -49,55 +51,9 @@ function withPaginatedList(WrappedComponent) {
 
         loadData(offset) {
             this.setState({isLoading: true});
-            let svmFilters = "";
-            if (this.props.svmFilters !== undefined) {
-                svmFilters = [...this.props.svmFilters].join(',');
-            }
-            let manualFilters = "";
-            if (this.props.manualFilters !== undefined) {
-                manualFilters = [...this.props.manualFilters].join(',');
-            }
-            let curationFilters = "";
-            if (this.props.curationFilters !== undefined) {
-                curationFilters = [...this.props.curationFilters].join(',');
-            }
-            let listType = "";
-            if (this.props.listType !== undefined) {
-                listType = this.props.listType;
-            }
-            let payload = {
-                from: offset,
-                count: this.props.elemPerPage,
-                list_type: listType,
-                svm_filters: svmFilters,
-                manual_filters: manualFilters,
-                curation_filters: curationFilters
-            };
-            fetch(this.props.endpoint, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'text/html',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            }).then(res => {
-                if (res.status === 200) {
-                    return res.json();
-                } else {
-                        alert("Error")
-                }
-            }).then(data => {
-                if (data === undefined) {
-                    alert("Empty response")
-                }
-                this.setState({
-                    elements: data["list_elements"],
-                    totNumElements: data["total_num_elements"],
-                    isLoading: false
-                });
-            }).catch((err) => {
-                alert(err);
-            });
+            getListElements(this.props.filters, this.props.listType, offset, this.props.elemPerPage, this.props.endpoint)
+                .then(result => this.setState({elements: result.elements, totNumElements: result.totNumElements, isLoading: false}))
+                .catch(error=> {this.setState({isLoading: false}); alert(error)});
         }
 
         render() {
@@ -173,7 +129,7 @@ function withPaginatedList(WrappedComponent) {
                                         if (this.state.activePage > 1) {
                                             this.setState({
                                                 activePage: this.state.activePage - 1});
-                                            this.loadData(parseInt(this.state.offset) - parseInt(this.props.elemPerPage));
+                                            this.loadData((parseInt(this.state.activePage) - 2) * parseInt(this.props.elemPerPage));
                                         }
                                     }}/>
                                     {items}
@@ -181,7 +137,7 @@ function withPaginatedList(WrappedComponent) {
                                         if (this.state.activePage < Math.ceil(this.state.totNumElements / this.props.elemPerPage)) {
                                             this.setState({
                                                 activePage: this.state.activePage + 1});
-                                            this.loadData(parseInt(this.state.offset) + parseInt(this.props.elemPerPage));
+                                            this.loadData(parseInt(this.state.activePage) * parseInt(this.props.elemPerPage));
                                         }
                                     }}/>
                                     <Pagination.Last onClick={() => {
