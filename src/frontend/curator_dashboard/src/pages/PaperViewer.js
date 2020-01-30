@@ -6,7 +6,7 @@ import {
 } from "react-bootstrap";
 import {Link, withRouter} from "react-router-dom";
 import queryString from "query-string";
-import StatusArea from "./paper_viewer_subpages/StatusArea";
+import StatusArea from "./paper_viewer/StatusArea";
 
 
 class PaperViewer extends React.Component {

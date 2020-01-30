@@ -2,8 +2,8 @@ import React from 'react';
 import {Button, Card, Col, Container, Form, FormControl, FormGroup, Nav, Navbar, Row, Tab, Tabs} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
-import PaginatedPapersList from "../components/paginated_lists/PaginatedPapersList";
-import PapersFilters from "./paper_lists_subpages/PapersFilters";
+import PaginatedPapersList from "./paper_lists/PaginatedPapersList";
+import PapersFilters from "./paper_lists/PapersFilters";
 
 
 
@@ -65,10 +65,10 @@ class PaperLists extends React.Component {
         this.setState({
             papersPerPage: numPapersPerPage
         });
-        this.processedList.refreshList();
-        this.submittedList.refreshList();
-        this.partialList.refreshList();
-        this.emptyList.refreshList();
+        this.processedList.resetList();
+        this.submittedList.resetList();
+        this.partialList.resetList();
+        this.emptyList.resetList();
     }
 
     render() {

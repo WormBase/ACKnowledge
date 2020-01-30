@@ -14,50 +14,40 @@ function withPaginatedList(WrappedComponent) {
         constructor(props, context) {
             super(props, context);
             this.state = {
-                list_elements: [],
-                num_elements: 0,
-                from_offset: 0,
-                active_page: 1,
+                elements: [],
+                totNumElements: 0,
                 cx: 0,
                 isLoading: false,
-                refresh_list: this.props.refreshList,
                 pageValidationState: false,
+                activePage: 1
             };
-            this.refreshData = this.refreshData.bind(this);
-            this.refreshList = this.refreshList.bind(this);
+            this.loadData = this.loadData.bind(this);
+            this.resetList = this.resetList.bind(this);
             this.goToPage = this.goToPage.bind(this);
         }
 
         componentDidMount() {
-            this.refreshData();
-        }
-
-        componentDidUpdate() {
-            if (this.state.refresh_list === true) {
-                this.refreshData();
-                this.setState({refresh_list: false});
-            }
+            this.loadData(0);
         }
 
         componentWillReceiveProps(nextProps, nextContext) {
-            this.refreshData();
+            this.resetList();
         }
 
-        refreshList() {
-            this.setState({active_page: 1, from_offset: 0, refresh_list: true});
+        resetList() {
+            this.setState({activePage: 1});
+            this.loadData(0);
         }
 
-        goToPage() {
+        goToPage(pageNum) {
             if (this.state.pageValidationState) {
                 this.setState({
-                    active_page: this.state.active_page_tmp,
-                    from_offset: (this.state.active_page_tmp - 1) * this.props.elemPerPage,
-                    refresh_list: true
-                });
+                    activePage: pageNum});
+                this.loadData((pageNum - 1) * this.props.elemPerPage);
             }
         }
 
-        refreshData() {
+        loadData(offset) {
             this.setState({isLoading: true});
             let svmFilters = "";
             if (this.props.svmFilters !== undefined) {
@@ -76,7 +66,7 @@ function withPaginatedList(WrappedComponent) {
                 listType = this.props.listType;
             }
             let payload = {
-                from: this.state.from_offset,
+                from: offset,
                 count: this.props.elemPerPage,
                 list_type: listType,
                 svm_filters: svmFilters,
@@ -101,8 +91,8 @@ function withPaginatedList(WrappedComponent) {
                     alert("Empty response")
                 }
                 this.setState({
-                    list_elements: data["list_elements"],
-                    num_elements: data["total_num_elements"],
+                    elements: data["list_elements"],
+                    totNumElements: data["total_num_elements"],
                     isLoading: false
                 });
             }).catch((err) => {
@@ -112,8 +102,8 @@ function withPaginatedList(WrappedComponent) {
 
         render() {
             const maxNumPagesToDisplay = 5;
-            const totNumPages = Math.ceil(this.state.num_elements / this.props.elemPerPage);
-            const firstDisplayedPage = Math.max(Math.min(this.state.active_page -
+            const totNumPages = Math.ceil(this.state.totNumElements / this.props.elemPerPage);
+            const firstDisplayedPage = Math.max(Math.min(this.state.activePage -
                 Math.floor(maxNumPagesToDisplay / 2), totNumPages - maxNumPagesToDisplay + 1), 1);
             const lastDisplayedPage = Math.min(totNumPages, firstDisplayedPage + maxNumPagesToDisplay - 1);
             let items = [];
@@ -121,22 +111,20 @@ function withPaginatedList(WrappedComponent) {
                 items.push(
                     <Pagination.Ellipsis onClick={() => {
                         this.setState({
-                            active_page: firstDisplayedPage - 1,
-                            from_offset: (firstDisplayedPage - 2) * this.props.elemPerPage,
-                            refresh_list: true
+                            activePage: firstDisplayedPage - 1,
                         });
+                        this.loadData((firstDisplayedPage - 2) * this.props.elemPerPage);
                     }}/>);
             }
 
             for (let number = firstDisplayedPage; number <= lastDisplayedPage; number++) {
                 items.push(
-                    <Pagination.Item key={number} active={number === this.state.active_page}
+                    <Pagination.Item key={number} active={number === this.state.activePage}
                                      onClick={() => {
                                          this.setState({
-                                             active_page: number,
-                                             from_offset: (number - 1) * this.props.elemPerPage,
-                                             refresh_list: true
+                                             activePage: number
                                          });
+                                         this.loadData((number - 1) * this.props.elemPerPage);
                                      }}>
                         {number}
                     </Pagination.Item>,
@@ -146,10 +134,9 @@ function withPaginatedList(WrappedComponent) {
                 items.push(
                     <Pagination.Ellipsis onClick={() => {
                         this.setState({
-                            active_page: lastDisplayedPage + 1,
-                            from_offset: (lastDisplayedPage) * this.props.elemPerPage,
-                            refresh_list: true
+                            activePage: lastDisplayedPage + 1
                         });
+                        this.loadData((lastDisplayedPage) * this.props.elemPerPage);
                     }}/>);
             }
             return (
@@ -168,7 +155,7 @@ function withPaginatedList(WrappedComponent) {
                         <Row>
                             <Col sm="12">
                                 <Form.Label># of elements in this list:</Form.Label> <Badge
-                                variant="secondary">{this.state.num_elements}</Badge>
+                                variant="secondary">{this.state.totNumElements}</Badge>
                             </Col>
                         </Row>
                         <Row>
@@ -180,37 +167,27 @@ function withPaginatedList(WrappedComponent) {
                             <Col sm="12">
                                 <Pagination size="sm">
                                     <Pagination.First onClick={() => {
-                                        this.setState({
-                                            active_page: 1,
-                                            from_offset: 0,
-                                            refresh_list: true
-                                        })
+                                        this.resetList();
                                     }}/>
                                     <Pagination.Prev onClick={() => {
-                                        if (this.state.active_page > 1) {
+                                        if (this.state.activePage > 1) {
                                             this.setState({
-                                                active_page: this.state.active_page - 1,
-                                                from_offset: parseInt(this.state.from_offset) - parseInt(this.props.elemPerPage),
-                                                refresh_list: true
-                                            })
+                                                activePage: this.state.activePage - 1});
+                                            this.loadData(parseInt(this.state.offset) - parseInt(this.props.elemPerPage));
                                         }
                                     }}/>
                                     {items}
                                     <Pagination.Next onClick={() => {
-                                        if (this.state.active_page < Math.ceil(this.state.num_elements / this.props.elemPerPage)) {
+                                        if (this.state.activePage < Math.ceil(this.state.totNumElements / this.props.elemPerPage)) {
                                             this.setState({
-                                                active_page: this.state.active_page + 1,
-                                                from_offset: parseInt(this.state.from_offset) + parseInt(this.props.elemPerPage),
-                                                refresh_list: true
-                                            });
+                                                activePage: this.state.activePage + 1});
+                                            this.loadData(parseInt(this.state.offset) + parseInt(this.props.elemPerPage));
                                         }
                                     }}/>
                                     <Pagination.Last onClick={() => {
                                         this.setState({
-                                            active_page: Math.ceil(this.state.num_elements / this.props.elemPerPage),
-                                            from_offset: (Math.ceil(this.state.num_elements / this.props.elemPerPage) - 1) * this.props.elemPerPage,
-                                            refresh_list: true
-                                        })
+                                            activePage: Math.ceil(this.state.totNumElements / this.props.elemPerPage)});
+                                        this.loadData((Math.ceil(this.state.totNumElements / this.props.elemPerPage) - 1) * this.props.elemPerPage);
                                     }}/>
                                 </Pagination>
                             </Col>
@@ -229,7 +206,7 @@ function withPaginatedList(WrappedComponent) {
                                                     if (!event.target.value.includes(",") && !event.target.value.includes(".") &&
                                                         !isNaN(pageNum) && isFinite(pageNum) && pageNum > 0 && pageNum <= totNumPages) {
                                                         this.setState({
-                                                            active_page_tmp: parseFloat(event.target.value),
+                                                            activePageTmp: parseFloat(event.target.value),
                                                             pageValidationState: true
                                                         })
                                                     } else {
@@ -245,12 +222,12 @@ function withPaginatedList(WrappedComponent) {
                                             }}
                                             onKeyPress={(target) => {
                                                 if (target.key === 'Enter') {
-                                                    this.goToPage()
+                                                    this.goToPage(this.state.activePageTmp)
                                                 }
                                             }}
                                         />
                                         <Button variant="outline-primary" size="sm" onClick={() => {
-                                            this.goToPage()
+                                            this.goToPage(this.state.activePageTmp)
                                         }}>Go</Button>
                                     </Form.Group>
                                 </Form>
@@ -264,7 +241,7 @@ function withPaginatedList(WrappedComponent) {
                         <Row>
                             <Col sm="12">
                                 <ListGroup>
-                                    {[...this.state.list_elements].map(element =>
+                                    {[...this.state.elements].map(element =>
                                         <ListGroupItem>
                                             <WrappedComponent element={element}/>
                                         </ListGroupItem>)

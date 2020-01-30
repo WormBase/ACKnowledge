@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card, Col, Container, Row,} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
-import PaginatedAuthorsList from "../components/paginated_lists/PaginatedAuthorsList";
+import PaginatedAuthorsList from "./contributors/PaginatedAuthorsList";
 
 
 
