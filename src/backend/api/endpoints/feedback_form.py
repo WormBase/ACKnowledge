@@ -20,7 +20,7 @@ class FeedbackFormReader:
 
     def on_post(self, req, resp):
         with self.db:
-            paper_id = self.db.get_paper_id_from_passwd(req.media["passwd"])
+            paper_id = self.db.get_paper_id_from_passwd(req.media["passwd"]) if "passwd" in req.media else None
             if paper_id:
                 logger.info("paper found")
 
@@ -44,7 +44,7 @@ class FeedbackFormWriter:
 
     def on_post(self, req, resp):
         with self.db:
-            paper_id = self.db.get_paper_id_from_passwd(req.media["passwd"])
+            paper_id = self.db.get_paper_id_from_passwd(req.media["passwd"]) if "passwd" in req.media else None
             if paper_id:
                 self.logger.info("paper found")
 
