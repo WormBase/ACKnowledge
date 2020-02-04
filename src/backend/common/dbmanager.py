@@ -809,9 +809,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve "
                          "ON afp_email.joinkey = afp_ve.joinkey "
@@ -882,9 +881,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_version.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT count(*) FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
                          " WHERE afp_version.afp_version = '2' " + additional_where_clause)
@@ -937,9 +935,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve "
                          "ON afp_email.joinkey = afp_ve.joinkey "
@@ -1101,9 +1098,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_version.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
                          " WHERE afp_version.afp_version = '2' " + additional_where_clause +
@@ -1159,9 +1155,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field + " FROM "
                          "afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
@@ -1224,9 +1219,8 @@ class DBManager(object):
             additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
                                                                manual_filters])
         if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN (SELECT cur_paper FROM cur_curdata WHERE " \
-                                       "cur_datatype IN (" + ",".join(["'" + curation_filter + "'" for
-                                                                       curation_filter in curation_filters]) + "))"
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
         self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
                          " FROM afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
                          "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
@@ -1542,3 +1536,13 @@ class DBManager(object):
             return [(row[0], row[1]) for row in res]
         else:
             return []
+
+    @staticmethod
+    def get_curated_papers(datatype):
+        with urllib.request.urlopen("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCura"
+                                    "tionStatisticsPapersPage&select_curator=two1823&method=allcur&listDatatype=" +
+                                    datatype) as response:
+            res = response.read().decode("utf8")
+            m = re.match('.*<textarea rows="4" cols="80" name="specific_papers">(.*)</textarea>.*',
+                         res.replace('\n', ''))
+            return m.group(1).split() if m else []
