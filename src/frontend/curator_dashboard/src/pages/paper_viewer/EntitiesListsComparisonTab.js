@@ -1,5 +1,5 @@
 import React from 'react';
-import EntityDiffRow from "../../components/EntityDiffRow";
+import EntityDiffRow from "./tabs_area_components/EntityDiffRow";
 import {withRouter} from "react-router-dom";
 import queryString from 'query-string/index';
 import {extractEntitiesFromTfpString} from "../../AFPValues";
