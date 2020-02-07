@@ -140,6 +140,7 @@ class MenuAndWidgets extends React.Component {
         this.setWidgetSaved = this.setWidgetSaved.bind(this);
         this.goToNextSection = this.goToNextSection.bind(this);
         this.setPersonIdCallback = this.setPersonIdCallback.bind(this);
+        this.enableEntityListVisibility = this.enableEntityListVisibility.bind(this);
     }
 
     /**
@@ -367,6 +368,17 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
+    enableEntityListVisibility(entityType) {
+        let curParams = queryString.parse(this.props.location.search);
+        curParams[entityType] = "false";
+        this.props.history.push(this.state.pages[this.state.selectedMenu - 1] + "?" + queryString.stringify(curParams));
+        this.setState({
+            hideGenes: curParams["hide_genes"] === "true",
+            hideAlleles: curParams["hide_alleles"] === "true",
+            hideStrains: curParams["hide_strains"] === "true"
+        });
+    }
+
     componentDidMount() {
         fetch(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + this.state.paper_id + '&passwd=' + this.state.passwd)
             .then(res => {
@@ -379,27 +391,12 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            let genesList;
-            if (this.state.hideGenes) {
-                genesList = new EntityList(new Set(), true);
-            } else {
-                genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
-            }
+            let genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
             let speciesList = getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined);
             let structCorrcb = getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined);
             this.setOverviewData(genesList, speciesList, structCorrcb);
-            let variationsList;
-            if (this.state.hideAlleles) {
-                variationsList = new EntityList(new Set(), true);
-            } else {
-                variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
-            }
-            let strainsList;
-            if (this.state.hideStrains) {
-                strainsList = new EntityList(new Set(), true);
-            } else {
-                strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
-            }
+            let variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
+            let strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
             let seqChange = getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange);
             let otherVariations = getTableValuesFromWBAPIData(data.othervariation, false);
             let otherStrains = getTableValuesFromWBAPIData(data.otherstrain, false);
@@ -732,6 +729,7 @@ class MenuAndWidgets extends React.Component {
                                                                            toggleCb={this.toggle_cb}
                                                                            checkCb={this.check_cb}
                                                                            hideGenes={this.state.hideGenes}
+                                                                           toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.GENETICS}
@@ -748,6 +746,7 @@ class MenuAndWidgets extends React.Component {
                                                                             checkCb={this.check_cb}
                                                                             hideAlleles={this.state.hideAlleles}
                                                                             hideStrains={this.state.hideStrains}
+                                                                            toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.REAGENT}

@@ -7,14 +7,14 @@ import {
 import MultipleSelect from "../page_components/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {WIDGET} from "../main_layout/MenuAndWidgets"
+import queryString from 'query-string';
+import withRouter from "react-router/withRouter";
 
 class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             saved: props["saved"],
-            selectedGenes: props["selectedGenes"],
-            selectedSpecies: props["selectedSpecies"],
             cb_gmcorr: props["geneModCorr"],
             cb_gmcorr_details: props["geneModCorrDetails"],
             show_fetch_data_error: false,
@@ -61,19 +61,21 @@ class Overview extends React.Component {
         );
         let geneListComponent;
         if (this.props.hideGenes) {
-            geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of genes in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
+            geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of genes click <a onClick={() => {
+                this.props.toggleEntityVisibilityCallback("hide_genes")
+            }}>here</a>. If you prefer not to, all the genes extracted will be associated to this paper in WormBase</Alert>);
         } else {
             geneListComponent = (
-                <MultipleSelect
-                    itemsNameSingular={"gene"}
-                    itemsNamePlural={"genes"}
-                    selectedItems={this.state.selectedGenes}
-                    ref={instance => { this.geneSelect = instance; }}
-                    selectedItemsCallback={this.props.stateVarModifiedCallback}
-                    stateVarName={"selectedGenes"}
-                    searchType={"gene"}
-                    sampleQuery={"e.g. dbl-1"}
-                />);
+            <MultipleSelect
+                itemsNameSingular={"gene"}
+                itemsNamePlural={"genes"}
+                selectedItems={this.props.selectedGenes}
+                ref={instance => { this.geneSelect = instance; }}
+                selectedItemsCallback={this.props.stateVarModifiedCallback}
+                stateVarName={"selectedGenes"}
+                searchType={"gene"}
+                sampleQuery={"e.g. dbl-1"}
+            />);
         }
         return (
             <div>
@@ -167,7 +169,7 @@ class Overview extends React.Component {
                             <MultipleSelect
                                 itemsNameSingular={"species"}
                                 itemsNamePlural={"species"}
-                                selectedItems={this.state.selectedSpecies}
+                                selectedItems={this.props.selectedSpecies}
                                 ref={instance => { this.speciesSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedSpecies"}

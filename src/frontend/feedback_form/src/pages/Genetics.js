@@ -13,8 +13,6 @@ class Genetics extends React.Component {
         super(props, context);
         this.state = {
             saved: props["saved"],
-            selectedAlleles: props["selectedAlleles"],
-            selectedStrains: props["selectedStrains"],
             cb_allele: props["alleleSeqChange"],
             alleleSelect: undefined,
             strainSelect: undefined,
@@ -76,13 +74,15 @@ class Genetics extends React.Component {
         );
         let allelesListComponent;
         if (this.props.hideAlleles) {
-            allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of alleles in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
+            allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of alleles click <a onClick={() => {
+                this.props.toggleEntityVisibilityCallback("hide_alleles")
+            }}>here</a>. If you prefer not to, all the alleles extracted will be associated to this paper in WormBase</Alert>);
         } else {
             allelesListComponent = (
                 <MultipleSelect
                     itemsNameSingular={"allele"}
                     itemsNamePlural={"alleles"}
-                    selectedItems={this.state.selectedAlleles}
+                    selectedItems={this.props.selectedAlleles}
                     ref={instance => { this.alleleSelect = instance; }}
                     selectedItemsCallback={this.props.stateVarModifiedCallback}
                     stateVarName={"selectedAlleles"}
@@ -92,13 +92,15 @@ class Genetics extends React.Component {
         }
         let strainsListComponent;
         if (this.props.hideStrains) {
-            strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface. If you want to submit a file with the list of strains in your paper, please <a href="mailto:outreach@wormbase.org">contact us</a></Alert>);
+            strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of strains click <a onClick={() => {
+                this.props.toggleEntityVisibilityCallback("hide_strains")
+            }}>here</a>. If you prefer not to, all the strains extracted will be associated to this paper in WormBase</Alert>);
         } else {
             strainsListComponent = (
                 <MultipleSelect
                     itemsNameSingular={"strain"}
                     itemsNamePlural={"strains"}
-                    selectedItems={this.state.selectedStrains}
+                    selectedItems={this.props.selectedStrains}
                     ref={instance => { this.strainSelect = instance; }}
                     selectedItemsCallback={this.props.stateVarModifiedCallback}
                     stateVarName={"selectedStrains"}
