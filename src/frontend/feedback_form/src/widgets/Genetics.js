@@ -4,8 +4,8 @@ import {
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../page_components/MultiSelect";
-import OneColumnEditableTable from "../page_components/EditableOneColsTable";
+import MultipleSelect from "../components/multiselect/MultiSelect";
+import OneColumnEditableTable from "../components/EditableOneColsTable";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 
 class Genetics extends React.Component {

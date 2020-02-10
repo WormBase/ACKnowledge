@@ -16,9 +16,7 @@ class MultipleSelect extends Component {
         super(props, context);
         let selected = new Set(props["selectedItems"]);
         this.state = {
-            itemsNameSingular: props["itemsNameSingular"],
-            itemsNamePlural: props["itemsNamePlural"],
-            show: false,
+            showModal: false,
             selectedItemsToDisplay: selected,
             selectedItemsAll: selected,
             availableItems: new Set(),
@@ -27,10 +25,8 @@ class MultipleSelect extends Component {
             tmpSelectedItems: new Set(),
             show_fetch_data_error: false,
             showMore: false,
-            sampleQuery: props["sampleQuery"]
         };
 
-        this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleChangeWBListSelection = this.handleChangeWBListSelection.bind(this);
         this.handleChangeIdentifiedListSelection = this.handleChangeIdentifiedListSelection.bind(this);
@@ -54,7 +50,7 @@ class MultipleSelect extends Component {
             this.props.selectedItemsCallback(selectedMerged, this.props["stateVarName"]);
         }
         else {
-            this.setState({show: false});
+            this.setState({show_modal: false});
         }
     }
 
@@ -90,7 +86,7 @@ class MultipleSelect extends Component {
 
     handleClose() {
         this.setState({
-            show: false,
+            showModal: false,
             tmpSelectedItems: new Set(),
             show_fetch_data_error: false
         });
@@ -112,10 +108,6 @@ class MultipleSelect extends Component {
     handleFilterIdChange(e) {
         this.setState({selectedItemsToDisplay: [...this.state.selectedItemsAll].filter((item) =>
                 item.startsWith(e.target.value))});
-    }
-
-    handleShow() {
-        this.setState({ show: true });
     }
 
     setAvailableItems(wbItems, removeAddInfo = false) {
@@ -202,7 +194,7 @@ class MultipleSelect extends Component {
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <label>List of {this.state.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
+                        <label>List of {this.props.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
                                                                                                                     overlay={tpcTooltip}>
                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                     </div>
@@ -236,9 +228,9 @@ class MultipleSelect extends Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={this.handleShow}>
+                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {this.setState({showModal: true})}}>
                                         <Glyphicon glyph="plus-sign"/>
-                                        &nbsp; Add from WB {this.state.itemsNameSingular} list
+                                        &nbsp; Add from WB {this.props.itemsNameSingular} list
                                     </Button>
                                 </div>
                             </div>
@@ -258,7 +250,7 @@ class MultipleSelect extends Component {
                 <div className="row">
                     <div className="col-sm-6">
                         <input className="form-control" onChange={this.handleFilterIdChange}
-                               placeholder={"Start typing to filter " + this.state.itemsNamePlural + " list"}/>
+                               placeholder={"Start typing to filter " + this.props.itemsNamePlural + " list"}/>
                     </div>
                 </div>
                 <div className="row">
@@ -268,7 +260,7 @@ class MultipleSelect extends Component {
                             const file = new Blob([[... this.state.selectedItemsToDisplay].sort().join("\n")],
                                 {type: 'text/plain'});
                             element.href = URL.createObjectURL(file);
-                            element.download = this.state.itemsNamePlural + ".txt";
+                            element.download = this.props.itemsNamePlural + ".txt";
                             document.body.appendChild(element); // Required for this to work in FireFox
                             element.click();
                         }}>Export .txt</Button>
@@ -276,7 +268,7 @@ class MultipleSelect extends Component {
                 </div>
                 <Modal show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Select from Wormbase {this.state.itemsNameSingular} list</Modal.Title>
+                        <Modal.Title>Select from Wormbase {this.props.itemsNameSingular} list</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {data_fetch_err_alert}
@@ -284,7 +276,7 @@ class MultipleSelect extends Component {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <input className="form-control"
-                                           placeholder={this.state.sampleQuery}
+                                           placeholder={this.props.sampleQuery}
                                            ref={instance => { this.searchInput = instance; }}
                                            onChange={(e) => {this.searchWB(e.target.value, this.props["searchType"])}}
                                     />

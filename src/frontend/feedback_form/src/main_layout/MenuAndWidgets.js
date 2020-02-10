@@ -1,18 +1,18 @@
 import React from 'react';
 import {Redirect, Route, withRouter} from "react-router-dom";
-import Overview from "../pages/Overview";
-import Expression from "../pages/Expression";
+import Overview from "../widgets/Overview";
+import Expression from "../widgets/Expression";
 import {Alert, Nav, NavItem} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
-import Reagent from "../pages/Reagent";
-import Phenotypes from "../pages/Phenotypes";
-import Interactions from "../pages/Interactions";
-import Genetics from "../pages/Genetics";
+import Reagent from "../widgets/Reagent";
+import Phenotypes from "../widgets/Phenotypes";
+import Interactions from "../widgets/Interactions";
+import Genetics from "../widgets/Genetics";
 import Glyphicon from "react-bootstrap/es/Glyphicon";
-import ContactInfo from "../pages/Comments";
+import ContactInfo from "../widgets/Comments";
 import queryString from 'query-string';
 import Title from "./Title";
-import Disease from "../pages/Disease";
+import Disease from "../widgets/Disease";
 import Header from "./Header";
 import {
     AFPValues, EntityList,

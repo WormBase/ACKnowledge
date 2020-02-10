@@ -1405,7 +1405,7 @@ Add the following scripts in your `package.json`:
   "scripts": {
     // ...
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-widgets -d build"
   }
 ```
 
