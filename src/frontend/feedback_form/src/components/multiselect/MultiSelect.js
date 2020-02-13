@@ -10,11 +10,12 @@ import {
     OverlayTrigger,
     Tooltip
 } from "react-bootstrap";
+import {connect} from "react-redux";
 
 class MultipleSelect extends Component {
     constructor(props, context) {
         super(props, context);
-        let selected = new Set(props["selectedItems"]);
+        let selected = props.items;
         this.state = {
             showModal: false,
             selectedItemsToDisplay: selected,
@@ -38,22 +39,16 @@ class MultipleSelect extends Component {
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.selectedItems !== this.props.selectedItems) {
-            this.setState({selectedItemsToDisplay: new Set(this.props.selectedItems)})
+        if (prevProps.items !== this.props.items) {
+            this.setState({selectedItemsToDisplay: new Set(this.props.items.elements)})
         }
     }
 
     handleAddSelectedToList() {
         if (this.state.tmpSelectedItems.size > 0) {
-            let selectedMerged = new Set([...this.state.selectedItemsAll, ...this.state.tmpSelectedItems]);
-            selectedMerged.delete("more ...");
-            this.setState({
-                showModal: false,
-                selectedItemsToDisplay: selectedMerged,
-                selectedItemsAll: selectedMerged,
-                tmpSelectedItems: new Set()
+            [...this.state.tmpSelectedItems].forEach((item) => {
+               this.props.addItemFunction(item);
             });
-            this.props.selectedItemsCallback(selectedMerged, this.props["stateVarName"]);
         }
         else {
             this.setState({showModal: false});
@@ -70,24 +65,10 @@ class MultipleSelect extends Component {
             }
         }
         if (this.state.tmpDeselectedItems.size > 0) {
-            let selectedNew = new Set([...this.state.selectedItemsAll].filter(x =>
-                !this.state.tmpDeselectedItems.has(x)));
-            this.setState({
-                showModal: false,
-                selectedItemsToDisplay: selectedNew,
-                selectedItemsAll: selectedNew,
-                tmpDeselectedItems: new Set()
+            [...this.state.tmpDeselectedItems].forEach((item) => {
+               this.props.remItemFunction(item);
             });
-            this.props.selectedItemsCallback(selectedNew, this.props["stateVarName"]);
         }
-    }
-
-    setSelectedItems(selectedItems) {
-        let selected = new Set(selectedItems);
-        this.setState({
-            selectedItemsToDisplay: selected,
-            selectedItemsAll: selected
-        });
     }
 
     handleClose() {
@@ -102,7 +83,6 @@ class MultipleSelect extends Component {
         let selectedOptions = new Set();
         [...e.target].forEach(function(option){if (option.selected){ selectedOptions.add(option.value) }});
         this.setState({tmpSelectedItems: selectedOptions});
-
     }
 
     handleChangeIdentifiedListSelection(e) {
@@ -317,6 +297,10 @@ class MultipleSelect extends Component {
     }
 }
 
-export default MultipleSelect;
+function mapStateToProps(state, ownProps) {
+    return {items: ownProps.dataReaderFunction(state)}
+}
+
+export default connect(mapStateToProps)(MultipleSelect);
 
 

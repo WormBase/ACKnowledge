@@ -1,12 +1,12 @@
-import {
-    SET_GENES,
-    ADD_GENE,
-    REMOVE_GENE,
-    SET_SPECIES,
-    ADD_SPECIES,
-    REMOVE_SPECIES,
-    SET_GENE_MODEL
-} from "./overviewActionTypes";
+export const SET_GENES = "SET_GENES";
+export const ADD_GENE = "ADD_GENE";
+export const REMOVE_GENE = "REMOVE_GENE";
+export const SET_SPECIES = "SET_SPECIES";
+export const ADD_SPECIES = "ADD_GENE";
+export const REMOVE_SPECIES = "REMOVE_GENE";
+export const SET_GENE_MODEL = "SET_GENE_MODEL";
+export const TOGGLE_GENE_MODEL = "TOGGLE_GENE_MODEL";
+export const SET_IS_SAVED_TO_DB = "SET_IS_SAVED_TO_DB";
 
 export function setGenes(elements, saved) {
     return {
@@ -25,12 +25,14 @@ export const addGene = gene => ({
     }
 });
 
-export const removeGene = gene => ({
-    type: REMOVE_GENE,
-    payload: {
-        gene
+export function removeGene(gene) {
+    return {
+        type: REMOVE_GENE,
+        payload: {
+            gene
+        }
     }
-});
+}
 
 export function setSpecies(elements, saved) {
    return {
@@ -65,3 +67,15 @@ export function setGeneModel(checked, details) {
         }
     };
 }
+
+export function toggleGeneModel() {
+    return {
+        type: TOGGLE_GENE_MODEL,
+        payload: {}
+    };
+}
+
+export const setIsSavedToDB = {
+    type: SET_IS_SAVED_TO_DB,
+    payload: {}
+};

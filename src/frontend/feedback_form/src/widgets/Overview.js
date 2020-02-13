@@ -7,8 +7,15 @@ import {
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {WIDGET} from "../main_layout/menu_and_widgets/constants"
-import {addGene, addSpecies, removeGene, removeSpecies} from "../redux/overviewActions";
-import {getGeneModel, getGenes, getSpecies} from "../redux/overviewSelectors";
+import {
+    addGene,
+    addSpecies,
+    removeGene,
+    removeSpecies,
+    setGeneModel,
+    toggleGeneModel
+} from "../redux/actions/overviewActions";
+import {getGeneModel, getGenes, getSpecies} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
 
 class Overview extends React.Component {
@@ -20,20 +27,22 @@ class Overview extends React.Component {
             show_fetch_data_error: false,
         };
 
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
+        this.addGeneFunction = this.addGeneFunction.bind(this);
+        this.remGeneFunction = this.remGeneFunction.bind(this);
     }
 
     setSuccessAlertMessage() {
         this.alertDismissable.setSaved(true);
     }
+
+    addGeneFunction(gene) {
+        this.props.addGene(gene);
+    }
+
+    remGeneFunction(gene) {
+        this.props.removeGene(gene);
+    }
+
 
     render() {
         const geneTooltip = (
@@ -57,13 +66,11 @@ class Overview extends React.Component {
             <MultipleSelect
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
-                selectedItems={this.props.genes.elements}
-                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                stateVarName={"selectedGenes"}
+                dataReaderFunction={getGenes}
+                addItemFunction={this.addGeneFunction}
+                remItemFunction={this.remGeneFunction}
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
-                addItemCallback={this.props.addGene}
-                removeItemCallback={this.props.removeGene}
             />);
         }
         return (
@@ -116,7 +123,7 @@ class Overview extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                            this.check_cb("cb_gmcorr", "geneModCorrection");
+                                            this.props.setGeneModel();
                                             window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                         }}>
                                             Report Gene-Sequence
@@ -125,8 +132,8 @@ class Overview extends React.Component {
                                 </div>
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <Checkbox checked={this.state.cb_gmcorr}
-                                                  onClick={() => this.toggle_cb("cb_gmcorr", "geneModCorrection")}>
+                                        <Checkbox checked={this.props.geneModel.checked}
+                                                  onClick={() => this.props.toggleGeneModel()}>
                                             <strong>Gene model correction/update</strong></Checkbox>
                                     </div>
                                 </div>
@@ -134,10 +141,9 @@ class Overview extends React.Component {
                                     <div className="col-sm-12">
                                         <FormControl type="text" placeholder="Add details here"
                                                      value={this.state.cb_gmcorr_details}
-                                                     onClick={() => this.check_cb("cb_gmcorr", "geneModCorrection")}
+                                                     onClick={() => this.props.setGeneModel(true, '')}
                                                      onChange={(event) => {
-                                                         this.props.stateVarModifiedCallback(event.target.value, "geneModCorrectionDetails");
-                                                         this.selfStateVarModifiedFunction(event.target.value, "cb_gmcorr_details")
+                                                         this.props.setGeneModel(true, event.target.value)
                                                      }}
                                         />
                                     </div>
@@ -158,10 +164,9 @@ class Overview extends React.Component {
                             <MultipleSelect
                                 itemsNameSingular={"species"}
                                 itemsNamePlural={"species"}
-                                selectedItems={this.props.species.elements}
-                                ref={instance => { this.speciesSelect = instance; }}
-                                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                                stateVarName={"selectedSpecies"}
+                                dataReaderFunction={getSpecies}
+                                addItemFunction={addSpecies}
+                                remItemFunction={removeSpecies}
                                 searchType={"species"}
                                 sampleQuery={"e.g. Caenorhabditis"}
                             />
@@ -183,4 +188,4 @@ const mapStateToProps = state => ({
     species: getSpecies(state)
 });
 
-export default connect(mapStateToProps, { addGene, removeGene, addSpecies, removeSpecies })(Overview);
+export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel})(Overview);

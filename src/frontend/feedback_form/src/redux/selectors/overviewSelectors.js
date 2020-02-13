@@ -14,11 +14,3 @@ export const getSpecies = store => getOverviewState(store) ? getOverviewState(st
 
 export const getGeneModel = store => getOverviewState(store) ? getOverviewState(store).geneModel :
     {checked: false, details: ''};
-
-export const getGenesMatchingString = (store, searchString) => {
-  return getGenes(store).filter(element => element.content.startsWith(searchString));
-};
-
-export const getSpeciesMatchingString = (store, searchString) => {
-  return getSpecies(store).filter(element => element.content.startsWith(searchString));
-};

@@ -5,13 +5,14 @@ import {
 } from "../AFPValues";
 
 export class DataManager {
-    constructor(apiEndpoint) {
+    constructor(apiPostgresEndpoint, apiDBEndpoint) {
         if (!!DataManager.instance) {
             return DataManager.instance;
         }
 
         DataManager.instance = this;
-        this.apiEndpoint = apiEndpoint;
+        this.apiPostgresEndpoint = apiPostgresEndpoint;
+        this.apiDBEndpoint = apiDBEndpoint;
         let emptyVal = [ { id: 1, name: "" } ];
         this.genesList = new EntityList(new Set(), false);
         this.speciesList = new EntityList(new Set(), false);
@@ -21,11 +22,12 @@ export class DataManager {
         this.seqChange = new CheckboxWithDetails(false, "", false);
         this.otherVariations = new EntityList(emptyVal, false);
         this.otherStrains = new EntityList(emptyVal, false);
+        this.person = {name: '', personId: undefined};
     }
 
     getPaperData() {
         return new Promise((resolve, reject ) => {
-            this.fetchGETData(this.apiEndpoint)
+            this.fetchGETData(this.apiPostgresEndpoint)
                 .then(result => {
                     this.genesList = getSetOfEntitiesFromWBAPIData(result.genestudied, result.genestudied, "WBGene");
                     this.speciesList = getSetOfEntitiesFromWBAPIData(result.species, result.species, undefined);
@@ -43,7 +45,24 @@ export class DataManager {
         });
     }
 
-    static fetchPOSTData(endpoint, payload) {
+    getPersonData(passwd, personId) {
+        let payload = {};
+        payload.passwd = passwd;
+        payload.person_id = personId;
+        return new Promise((resolve, reject ) => {
+            this.fetchPOSTData(this.apiDBEndpoint, payload)
+                .then(result => {
+                    this.person.name = result.fullname;
+                    this.person.personId = personId;
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        })
+    }
+
+    fetchPOSTData(endpoint, payload) {
         return new Promise((resolve, reject ) => {
             fetch(endpoint, {
                 method: 'POST',

@@ -5,31 +5,31 @@ import {
     Button,
     FormControl,
     Glyphicon,
-    Image,
-    Modal,
-    OverlayTrigger,
-    Tooltip
+    Modal
 } from "react-bootstrap";
+import {getPerson} from "../redux/selectors/personSelectors";
+import {connect} from "react-redux";
+import {setPerson} from "../redux/actions/personActions";
 
 class PersonSelector extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            fullname: props.fullname,
-            personid: props.personid,
+            person: props.person,
             show_fetch_data_error: false,
             show: false,
             sampleQuery: "Type your name",
             availableItems: new Set(),
             showMore: false
         };
-        this.setPersonFullname = this.setPersonFullname.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
     }
 
-    setPersonFullname(name) {
-        this.setState({ fullname: name});
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.person !== this.props.person) {
+            this.setState({person: this.props.person});
+        }
     }
 
     handleClose() {
@@ -114,7 +114,7 @@ class PersonSelector extends Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-sm-12">
-                        WormBase User: <strong>{this.state.fullname}</strong> (WBPerson{this.state.personid})
+                        WormBase User: <strong>{this.state.person.name}</strong> (WBPerson{this.state.person.personId})
                         &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={this.handleShow}>Change user</Button>
                     </div>
                 </div>
@@ -134,7 +134,6 @@ class PersonSelector extends Component {
                                 <div className="col-sm-12">
                                     <input className="form-control"
                                            placeholder={this.state.sampleQuery}
-                                           ref={instance => { this.searchInput = instance; }}
                                            onChange={(e) => {this.searchWB(e.target.value, "person")}}
                                     />
                                 </div>
@@ -154,9 +153,7 @@ class PersonSelector extends Component {
                                                      let wbRx = / \( WBPerson([0-9]+) \)/;
                                                      let arr = wbRx.exec(fullData);
                                                      fullData = fullData.replace(wbRx, "");
-                                                     this.setState({fullname: fullData, personid: arr[1]});
-
-                                                     this.props.setPersonIdCallback(arr[1]);
+                                                     this.props.setPerson(fullData, arr[1]);
                                                      this.handleClose();
                                                  }}>
                                         {[...this.state.availableItems].map(item =>
@@ -173,6 +170,10 @@ class PersonSelector extends Component {
     }
 }
 
-export default PersonSelector;
+const mapStateToProps = state => ({
+    person: getPerson(state)
+});
+
+export default connect(mapStateToProps, {getPerson, setPerson})(PersonSelector);
 
 
