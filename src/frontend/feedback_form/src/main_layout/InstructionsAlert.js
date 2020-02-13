@@ -5,7 +5,6 @@ class InstructionsAlert extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            saved: props["saved"],
             alertTextNotSaved: props["alertTextNotSaved"],
             alertTextSaved: props["alertTextSaved"],
             alertTitleNotSaved: props["alertTitleNotSaved"],
@@ -31,7 +30,7 @@ class InstructionsAlert extends React.Component {
         let title = this.state.alertTitleNotSaved;
         let text = this.state.alertTextNotSaved;
         let bsstyle = this.state.alertBsStyleNotSaved;
-        if (this.state.saved) {
+        if (this.props.saved) {
             title = this.state.alertTitleSaved;
             text = this.state.alertTextSaved;
             bsstyle = this.state.alertBsStyleSaved;

@@ -1,59 +1,32 @@
 import React from 'react';
 import {Redirect, Route, withRouter} from "react-router-dom";
-import Overview from "../widgets/Overview";
-import Expression from "../widgets/Expression";
+import Overview from "../../widgets/Overview";
+import Expression from "../../widgets/Expression";
 import {Alert, Nav, NavItem} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
-import Reagent from "../widgets/Reagent";
-import Phenotypes from "../widgets/Phenotypes";
-import Interactions from "../widgets/Interactions";
-import Genetics from "../widgets/Genetics";
+import Reagent from "../../widgets/Reagent";
+import Phenotypes from "../../widgets/Phenotypes";
+import Interactions from "../../widgets/Interactions";
+import Genetics from "../../widgets/Genetics";
 import Glyphicon from "react-bootstrap/es/Glyphicon";
-import ContactInfo from "../widgets/Comments";
+import ContactInfo from "../../widgets/Comments";
 import queryString from 'query-string';
-import Title from "./Title";
-import Disease from "../widgets/Disease";
-import Header from "./Header";
+import Title from "../Title";
+import Disease from "../../widgets/Disease";
+import Header from "../Header";
 import {
     AFPValues, EntityList,
     getCheckboxDBVal,
     getCheckbxOrSingleFieldFromWBAPIData,
     getSetOfEntitiesFromWBAPIData, getTableValuesFromWBAPIData, transformEntitiesIntoAfpString
-} from "../AFPValues";
-import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "./MainModals";
-import PersonSelector from "./PersonSelector";
+} from "../../AFPValues";
+import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "../MainModals";
+import PersonSelector from "../PersonSelector";
 import LoadingOverlay from 'react-loading-overlay';
-
-export const WIDGET = Object.freeze({
-    OVERVIEW: "overview",
-    GENETICS: "genetics",
-    REAGENT: "reagent",
-    EXPRESSION: "expression",
-    INTERACTIONS: "interactions",
-    PHENOTYPES: "phenotypes",
-    DISEASE: "disease",
-    COMMENTS: "comments"
-});
-
-let MENU_INDEX = {};
-MENU_INDEX[WIDGET.OVERVIEW] = 1;
-MENU_INDEX[WIDGET.GENETICS] = 2;
-MENU_INDEX[WIDGET.REAGENT] = 3;
-MENU_INDEX[WIDGET.EXPRESSION] = 4;
-MENU_INDEX[WIDGET.INTERACTIONS] = 5;
-MENU_INDEX[WIDGET.PHENOTYPES] = 6;
-MENU_INDEX[WIDGET.DISEASE] = 7;
-MENU_INDEX[WIDGET.COMMENTS] = 8;
-
-let WIDGET_TITLE = {};
-WIDGET_TITLE[WIDGET.OVERVIEW] = "Overview (genes and species)";
-WIDGET_TITLE[WIDGET.GENETICS] = "Genetics";
-WIDGET_TITLE[WIDGET.REAGENT] = "Reagent";
-WIDGET_TITLE[WIDGET.EXPRESSION] = "Expression";
-WIDGET_TITLE[WIDGET.INTERACTIONS] = "Interactions";
-WIDGET_TITLE[WIDGET.PHENOTYPES] = "Phenotypes and function";
-WIDGET_TITLE[WIDGET.DISEASE] = "Disease";
-WIDGET_TITLE[WIDGET.COMMENTS] = "Comments and submit";
+import {DataManager} from "../../lib/DataManager";
+import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "./constants";
+import {connect} from "react-redux";
+import {setGeneModel, setGenes, setSpecies} from "../../redux/overviewActions";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -67,6 +40,7 @@ class MenuAndWidgets extends React.Component {
         let completedSections = {};
         Object.values(WIDGET).forEach((key) => {completedSections[key] = false;});
         this.state = {
+            dataManager: new DataManager(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + parameters.paper + '&passwd=' + parameters.passwd),
             pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
                 WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
@@ -129,7 +103,6 @@ class MenuAndWidgets extends React.Component {
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
         this.stateVarModifiedCallback = this.stateVarModifiedCallback.bind(this);
-        this.setOverviewData = this.setOverviewData.bind(this);
         this.setGeneticsData = this.setGeneticsData.bind(this);
         this.setReagentData = this.setReagentData.bind(this);
         this.setExpressionData = this.setExpressionData.bind(this);
@@ -165,28 +138,6 @@ class MenuAndWidgets extends React.Component {
         this.setState({
             completedSections: newCompletedSections
         });
-    }
-
-    /**
-     * set the data in the overview widget
-     *
-     * @param {EntityList} genesList list of genes
-     * @param {EntityList} speciesList list of species
-     * @param {CheckboxWithDetails} genemodCb genemod correction update checkbox
-     */
-    setOverviewData(genesList, speciesList, genemodCb) {
-        if (this.overview !== undefined) {
-            this.overview.setSelectedGenes(genesList.entities());
-            this.overview.setSelectedSpecies(speciesList.entities());
-            this.overview.selfStateVarModifiedFunction(genemodCb.isChecked(), "cb_gmcorr");
-            this.overview.selfStateVarModifiedFunction(genemodCb.details(), "cb_gmcorr_details");
-        }
-        this.setWidgetSaved(this.overview, "overview", ...arguments);
-        this.setState({
-            selectedGenes: genesList.entities(),
-            selectedSpecies: speciesList.entities(),
-            geneModCorrection: genemodCb.isChecked(),
-            geneModCorrectionDetails: genemodCb.details()});
     }
 
     /**
@@ -380,6 +331,20 @@ class MenuAndWidgets extends React.Component {
     }
 
     componentDidMount() {
+        this.state.dataManager.getPaperData()
+            .then(() => {
+                console.log("Data successfully loaded from WB API (postgres)");
+                this.props.setGenes(this.state.dataManager.genesList.entities(),
+                    this.state.dataManager.genesList.prevSaved());
+                this.props.setSpecies(this.state.dataManager.speciesList.entities(),
+                    this.state.dataManager.speciesList.prevSaved());
+                this.props.setGeneModel(this.state.dataManager.structCorrcb.isChecked(),
+                    this.state.dataManager.structCorrcb.details());
+            })
+            .catch((error) => {
+                this.setState({show_fetch_data_error: true})
+            });
+
         fetch(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + this.state.paper_id + '&passwd=' + this.state.passwd)
             .then(res => {
                 if (res.status === 200) {
@@ -391,10 +356,6 @@ class MenuAndWidgets extends React.Component {
             if (data === undefined) {
                 this.setState({show_fetch_data_error: true})
             }
-            let genesList = getSetOfEntitiesFromWBAPIData(data.genestudied, data.genestudied, "WBGene");
-            let speciesList = getSetOfEntitiesFromWBAPIData(data.species, data.species, undefined);
-            let structCorrcb = getCheckbxOrSingleFieldFromWBAPIData(data.structcorr, undefined);
-            this.setOverviewData(genesList, speciesList, structCorrcb);
             let variationsList = getSetOfEntitiesFromWBAPIData(data.variation, data.variation, "");
             let strainsList = getSetOfEntitiesFromWBAPIData(data.strain, data.strain, undefined);
             let seqChange = getCheckbxOrSingleFieldFromWBAPIData(data.seqchange, data.seqchange);
@@ -720,11 +681,10 @@ class MenuAndWidgets extends React.Component {
                                             <Route path={"/" + WIDGET.OVERVIEW}
                                                    render={() => <Overview callback={this.handleFinishedSection}
                                                                            saved={this.state.completedSections[WIDGET.OVERVIEW]}
-                                                                           ref={instance => { this.overview = instance; }}
-                                                                           selectedGenes={this.state.selectedGenes}
+                                                                           //selectedGenes={this.state.dataManager.genesList.entities()}
                                                                            geneModCorr={this.state.geneModCorrection}
                                                                            geneModCorrDetails={this.state.geneModCorrectionDetails}
-                                                                           selectedSpecies={this.state.selectedSpecies}
+                                                                           selectedSpecies={this.state.dataManager.speciesList}
                                                                            stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                            toggleCb={this.toggle_cb}
                                                                            checkCb={this.check_cb}
@@ -853,4 +813,4 @@ class MenuAndWidgets extends React.Component {
     }
 }
 
-export default withRouter(MenuAndWidgets);
+export default connect(null, {setGenes, setSpecies, setGeneModel})(withRouter(MenuAndWidgets));

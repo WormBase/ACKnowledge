@@ -6,35 +6,23 @@ import {
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
-import {WIDGET} from "../main_layout/MenuAndWidgets"
-import queryString from 'query-string';
-import withRouter from "react-router/withRouter";
+import {WIDGET} from "../main_layout/menu_and_widgets/constants"
+import {addGene, addSpecies, removeGene, removeSpecies} from "../redux/overviewActions";
+import {getGeneModel, getGenes, getSpecies} from "../redux/overviewSelectors";
+import {connect} from "react-redux";
 
 class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            saved: props["saved"],
-            cb_gmcorr: props["geneModCorr"],
-            cb_gmcorr_details: props["geneModCorrDetails"],
+            cb_gmcorr: props.geneModel.checked,
+            cb_gmcorr_details: props.geneModel.details,
             show_fetch_data_error: false,
-            geneSelect: undefined,
-            speciesSelect: undefined
         };
 
         this.check_cb = props["checkCb"].bind(this);
         this.toggle_cb = props["toggleCb"].bind(this);
         this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-    }
-
-    setSelectedGenes(genelist) {
-        if (this.geneSelect !== undefined) {
-            this.geneSelect.setSelectedItems(genelist);
-        }
-    }
-
-    setSelectedSpecies(species) {
-        this.speciesSelect.setSelectedItems(species, true);
     }
 
     selfStateVarModifiedFunction(value, stateVarName) {
@@ -69,12 +57,13 @@ class Overview extends React.Component {
             <MultipleSelect
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
-                selectedItems={this.props.selectedGenes}
-                ref={instance => { this.geneSelect = instance; }}
+                selectedItems={this.props.genes.elements}
                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                 stateVarName={"selectedGenes"}
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
+                addItemCallback={this.props.addGene}
+                removeItemCallback={this.props.removeGene}
             />);
         }
         return (
@@ -86,7 +75,7 @@ class Overview extends React.Component {
                     paper. Please validate the list by adding/removing entries in the identified lists. You can also
                     notify us for gene model updates."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.genes.saved && this.props.species.saved}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
@@ -169,7 +158,7 @@ class Overview extends React.Component {
                             <MultipleSelect
                                 itemsNameSingular={"species"}
                                 itemsNamePlural={"species"}
-                                selectedItems={this.props.selectedSpecies}
+                                selectedItems={this.props.species.elements}
                                 ref={instance => { this.speciesSelect = instance; }}
                                 selectedItemsCallback={this.props.stateVarModifiedCallback}
                                 stateVarName={"selectedSpecies"}
@@ -188,4 +177,10 @@ class Overview extends React.Component {
     }
 }
 
-export default Overview;
+const mapStateToProps = state => ({
+    genes: getGenes(state),
+    geneModel: getGeneModel(state),
+    species: getSpecies(state)
+});
+
+export default connect(mapStateToProps, { addGene, removeGene, addSpecies, removeSpecies })(Overview);

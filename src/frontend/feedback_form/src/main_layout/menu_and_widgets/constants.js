@@ -1,0 +1,30 @@
+export const WIDGET = Object.freeze({
+    OVERVIEW: "overview",
+    GENETICS: "genetics",
+    REAGENT: "reagent",
+    EXPRESSION: "expression",
+    INTERACTIONS: "interactions",
+    PHENOTYPES: "phenotypes",
+    DISEASE: "disease",
+    COMMENTS: "comments"
+});
+
+export const MENU_INDEX = {};
+MENU_INDEX[WIDGET.OVERVIEW] = 1;
+MENU_INDEX[WIDGET.GENETICS] = 2;
+MENU_INDEX[WIDGET.REAGENT] = 3;
+MENU_INDEX[WIDGET.EXPRESSION] = 4;
+MENU_INDEX[WIDGET.INTERACTIONS] = 5;
+MENU_INDEX[WIDGET.PHENOTYPES] = 6;
+MENU_INDEX[WIDGET.DISEASE] = 7;
+MENU_INDEX[WIDGET.COMMENTS] = 8;
+
+export const WIDGET_TITLE = {};
+WIDGET_TITLE[WIDGET.OVERVIEW] = "Overview (genes and species)";
+WIDGET_TITLE[WIDGET.GENETICS] = "Genetics";
+WIDGET_TITLE[WIDGET.REAGENT] = "Reagent";
+WIDGET_TITLE[WIDGET.EXPRESSION] = "Expression";
+WIDGET_TITLE[WIDGET.INTERACTIONS] = "Interactions";
+WIDGET_TITLE[WIDGET.PHENOTYPES] = "Phenotypes and function";
+WIDGET_TITLE[WIDGET.DISEASE] = "Disease";
+WIDGET_TITLE[WIDGET.COMMENTS] = "Comments and submit";

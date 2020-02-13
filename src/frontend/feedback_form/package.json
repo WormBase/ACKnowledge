@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "history": "^4.7.2",
+    "immutable": "^4.0.0-rc.12",
     "prop-types": "latest",
     "query-string": "4.3.4",
     "react": "^16.5.2",

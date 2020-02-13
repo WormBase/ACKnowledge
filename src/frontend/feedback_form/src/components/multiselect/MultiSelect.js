@@ -37,12 +37,18 @@ class MultipleSelect extends Component {
         this.searchWB = this.searchWB.bind(this);
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.selectedItems !== this.props.selectedItems) {
+            this.setState({selectedItemsToDisplay: new Set(this.props.selectedItems)})
+        }
+    }
+
     handleAddSelectedToList() {
         if (this.state.tmpSelectedItems.size > 0) {
             let selectedMerged = new Set([...this.state.selectedItemsAll, ...this.state.tmpSelectedItems]);
             selectedMerged.delete("more ...");
             this.setState({
-                show: false,
+                showModal: false,
                 selectedItemsToDisplay: selectedMerged,
                 selectedItemsAll: selectedMerged,
                 tmpSelectedItems: new Set()
@@ -50,7 +56,7 @@ class MultipleSelect extends Component {
             this.props.selectedItemsCallback(selectedMerged, this.props["stateVarName"]);
         }
         else {
-            this.setState({show_modal: false});
+            this.setState({showModal: false});
         }
     }
 
@@ -67,7 +73,7 @@ class MultipleSelect extends Component {
             let selectedNew = new Set([...this.state.selectedItemsAll].filter(x =>
                 !this.state.tmpDeselectedItems.has(x)));
             this.setState({
-                show: false,
+                showModal: false,
                 selectedItemsToDisplay: selectedNew,
                 selectedItemsAll: selectedNew,
                 tmpDeselectedItems: new Set()
@@ -266,7 +272,7 @@ class MultipleSelect extends Component {
                         }}>Export .txt</Button>
                     </div>
                 </div>
-                <Modal show={this.state.show} onHide={this.handleClose}>
+                <Modal show={this.state.showModal} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Select from Wormbase {this.props.itemsNameSingular} list</Modal.Title>
                     </Modal.Header>
