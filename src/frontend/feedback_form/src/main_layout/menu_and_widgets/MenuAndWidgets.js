@@ -252,47 +252,25 @@ class MenuAndWidgets extends React.Component {
                     break;
             }
             payload.passwd = this.state.passwd;
-            fetch(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'text/html',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            }).then(res => {
-                if (res.status === 200) {
-                    return res.text();
-                } else {
+            this.state.dataManager.fetchPOSTData(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, payload)
+                .then(() => {
+                    this.setState({
+                        show_data_saved: true,
+                        data_saved_success: true,
+                        isLoading: false,
+                        data_saved_last_widget: widget === WIDGET.COMMENTS
+                    });
+                    const newCompletedSections = this.state.completedSections;
+                    newCompletedSections[widget] = true;
+                    this.setState({completedSections: newCompletedSections});
+                })
+                .catch(() => {
                     this.setState({
                         show_data_saved: true,
                         data_saved_success: false,
                         isLoading: false
                     });
-                }
-            }).then(data => {
-                if (data === undefined) {
-                    this.setState({
-                        show_data_saved: true,
-                        data_saved_success: false,
-                        isLoading: false
-                    });
-                }
-                this.setState({
-                    show_data_saved: true,
-                    data_saved_success: true,
-                    isLoading: false,
-                    data_saved_last_widget: widget === WIDGET.COMMENTS
                 });
-                const newCompletedSections = this.state.completedSections;
-                newCompletedSections[widget] = true;
-                this.setState({completedSections: newCompletedSections});
-            }).catch((err) => {
-                this.setState({
-                    show_data_saved: true,
-                    data_saved_success: false,
-                    isLoading: false
-                });
-            });
         } else {
             this.setState({
                 show_sections_not_completed: true
@@ -429,14 +407,6 @@ class MenuAndWidgets extends React.Component {
                                             <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
                                             <Route path={"/" + WIDGET.OVERVIEW}
                                                    render={() => <Overview callback={this.handleFinishedSection}
-                                                                           saved={this.state.completedSections[WIDGET.OVERVIEW]}
-                                                                           //selectedGenes={this.state.dataManager.genesList.entities()}
-                                                                           geneModCorr={this.state.geneModCorrection}
-                                                                           geneModCorrDetails={this.state.geneModCorrectionDetails}
-                                                                           selectedSpecies={this.state.dataManager.speciesList}
-                                                                           stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                           toggleCb={this.toggle_cb}
-                                                                           checkCb={this.check_cb}
                                                                            hideGenes={this.state.hideGenes}
                                                                            toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}

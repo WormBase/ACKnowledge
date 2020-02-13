@@ -22,8 +22,6 @@ class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            cb_gmcorr: props.geneModel.checked,
-            cb_gmcorr_details: props.geneModel.details,
             show_fetch_data_error: false,
         };
 
@@ -104,7 +102,7 @@ class Overview extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                            this.check_cb("cb_gmcorr", "geneModCorrection");
+                                            this.props.setGeneModel();
                                             window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                         }}>
                                             Request New Gene Name
@@ -140,7 +138,7 @@ class Overview extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <FormControl type="text" placeholder="Add details here"
-                                                     value={this.state.cb_gmcorr_details}
+                                                     value={this.props.geneModel.details}
                                                      onClick={() => this.props.setGeneModel(true, '')}
                                                      onChange={(event) => {
                                                          this.props.setGeneModel(true, event.target.value)
