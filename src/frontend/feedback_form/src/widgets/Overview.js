@@ -15,7 +15,7 @@ import {
     setGeneModel,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
-import {getGeneModel, getGenes, getSpecies} from "../redux/selectors/overviewSelectors";
+import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
 
 class Overview extends React.Component {
@@ -27,6 +27,8 @@ class Overview extends React.Component {
 
         this.addGeneFunction = this.addGeneFunction.bind(this);
         this.remGeneFunction = this.remGeneFunction.bind(this);
+        this.addSpeciesFunction = this.addSpeciesFunction.bind(this);
+        this.remSpeciesFunction = this.remSpeciesFunction.bind(this);
     }
 
     setSuccessAlertMessage() {
@@ -39,6 +41,14 @@ class Overview extends React.Component {
 
     remGeneFunction(gene) {
         this.props.removeGene(gene);
+    }
+
+    addSpeciesFunction(gene) {
+        this.props.addSpecies(gene);
+    }
+
+    remSpeciesFunction(gene) {
+        this.props.removeSpecies(gene);
     }
 
 
@@ -80,7 +90,7 @@ class Overview extends React.Component {
                     paper. Please validate the list by adding/removing entries in the identified lists. You can also
                     notify us for gene model updates."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.props.genes.saved && this.props.species.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
@@ -163,8 +173,8 @@ class Overview extends React.Component {
                                 itemsNameSingular={"species"}
                                 itemsNamePlural={"species"}
                                 dataReaderFunction={getSpecies}
-                                addItemFunction={addSpecies}
-                                remItemFunction={removeSpecies}
+                                addItemFunction={this.addSpeciesFunction}
+                                remItemFunction={this.remSpeciesFunction}
                                 searchType={"species"}
                                 sampleQuery={"e.g. Caenorhabditis"}
                             />
@@ -183,7 +193,8 @@ class Overview extends React.Component {
 const mapStateToProps = state => ({
     genes: getGenes(state),
     geneModel: getGeneModel(state),
-    species: getSpecies(state)
+    species: getSpecies(state),
+    isSavedToDB: isOverviewSavedToDB(state)
 });
 
 export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel})(Overview);

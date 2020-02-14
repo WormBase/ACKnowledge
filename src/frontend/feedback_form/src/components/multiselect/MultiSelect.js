@@ -15,7 +15,7 @@ import {connect} from "react-redux";
 class MultipleSelect extends Component {
     constructor(props, context) {
         super(props, context);
-        let selected = props.items;
+        let selected = new Set(props.items.elements);
         this.state = {
             showModal: false,
             selectedItemsToDisplay: selected,

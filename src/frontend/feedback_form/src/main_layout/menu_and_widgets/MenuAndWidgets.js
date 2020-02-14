@@ -25,8 +25,17 @@ import LoadingOverlay from 'react-loading-overlay';
 import {DataManager} from "../../lib/DataManager";
 import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "./constants";
 import {connect} from "react-redux";
-import {setGeneModel, setGenes, setSpecies} from "../../redux/actions/overviewActions";
+import {setGeneModel, setGenes, setSpecies, setIsOverviewSavedToDB} from "../../redux/actions/overviewActions";
 import {setPerson} from "../../redux/actions/personActions";
+import {isOverviewSavedToDB} from "../../redux/selectors/overviewSelectors";
+import {
+    setAlleles, setIsGeneticsSavedToDB,
+    setOtherAlleles,
+    setOtherStrains,
+    setSequenceChange,
+    setStrains
+} from "../../redux/actions/geneticsActions";
+import {isGeneticsSavedToDB} from "../../redux/selectors/geneticsSelectors";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -50,23 +59,14 @@ class MenuAndWidgets extends React.Component {
             paper_id: parameters.paper,
             passwd: parameters.passwd,
             personid: parameters.personid,
-            personFullname: undefined,
             show_fetch_data_error: false,
             show_data_saved: false,
             data_saved_success: true,
             data_saved_last_widget: false,
-            selectedGenes: new Set(),
-            geneModCorrection: false,
-            geneModCorrectionDetails: "",
-            selectedSpecies: new Set(),
-            selectedAlleles: new Set(),
-            alleleSeqChange: false,
             selectedStrains: new Set(),
             selectedTransgenes: new Set(),
             newAntib: false,
             otherAntibs: [ { id: 1, name: "", publicationId: "" } ],
-            otherAlleles: [ { id: 1, name: "" } ],
-            otherStrains: [ { id: 1, name: "" } ],
             otherTransgenes: [ { id: 1, name: "" } ],
             newAntibDetails: "",
             anatomicExpr: false,
@@ -103,10 +103,8 @@ class MenuAndWidgets extends React.Component {
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleFinishedSection = this.handleFinishedSection.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
-        this.stateVarModifiedCallback = this.stateVarModifiedCallback.bind(this);
         this.setWidgetSaved = this.setWidgetSaved.bind(this);
         this.goToNextSection = this.goToNextSection.bind(this);
-        this.setPersonIdCallback = this.setPersonIdCallback.bind(this);
         this.enableEntityListVisibility = this.enableEntityListVisibility.bind(this);
     }
 
@@ -149,12 +147,31 @@ class MenuAndWidgets extends React.Component {
         this.state.dataManager.getPaperData()
             .then(() => {
                 console.log("Data successfully loaded from WB API (postgres)");
+                // overview
                 this.props.setGenes(this.state.dataManager.genesList.entities(),
                     this.state.dataManager.genesList.prevSaved());
                 this.props.setSpecies(this.state.dataManager.speciesList.entities(),
                     this.state.dataManager.speciesList.prevSaved());
                 this.props.setGeneModel(this.state.dataManager.structCorrcb.isChecked(),
                     this.state.dataManager.structCorrcb.details());
+                if (this.state.dataManager.genesList.prevSaved() && this.state.dataManager.speciesList.prevSaved()) {
+                    this.props.setIsOverviewSavedToDB();
+                }
+
+                // genetics
+                this.props.setAlleles(this.state.dataManager.variationsList.entities(),
+                    this.state.dataManager.variationsList.prevSaved());
+                this.props.setStrains(this.state.dataManager.strainsList.entities(),
+                    this.state.dataManager.strainsList.prevSaved());
+                this.props.setSequenceChange(this.state.dataManager.seqChange.isChecked(),
+                    this.state.dataManager.seqChange.details());
+                this.props.setOtherAlleles(this.state.dataManager.otherVariations.entities(),
+                    this.state.dataManager.otherVariations.prevSaved());
+                this.props.setOtherStrains(this.state.dataManager.otherStrains.entities(),
+                    this.state.dataManager.otherStrains.prevSaved());
+                if (this.state.dataManager.variationsList.prevSaved() && this.state.dataManager.strainsList.prevSaved()) {
+                    this.props.setIsGeneticsSavedToDB();
+                }
             })
             .catch(() => {this.setState({show_fetch_data_error: true})});
 
@@ -162,7 +179,7 @@ class MenuAndWidgets extends React.Component {
             .then(() => {
                 this.props.setPerson(this.state.dataManager.person.name, this.state.dataManager.person.personId);
             })
-            .catch((error) => {
+            .catch(() => {
                 this.setState({show_fetch_data_error: true})
             });
 
@@ -289,25 +306,12 @@ class MenuAndWidgets extends React.Component {
         this.setState({showPopup: false})
     }
 
-    stateVarModifiedCallback(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
-    }
-
     toggle_cb(cbName, mainCompVarName) {
         let newVal = !this.state[cbName];
         let newStateElem = {};
         newStateElem[cbName] = newVal;
         this.setState(newStateElem);
         this.props.stateVarModifiedCallback(newVal, mainCompVarName);
-    }
-
-    setPersonIdCallback(newPersonId) {
-        this.setState({personid: newPersonId});
-        if (this.other !== undefined) {
-            this.other.selfStateVarModifiedFunction(newPersonId, "personid");
-        }
     }
 
     check_cb(cbName, mainCompVarName) {
@@ -318,9 +322,7 @@ class MenuAndWidgets extends React.Component {
     }
 
     render() {
-        let overviewOk = this.state.completedSections[WIDGET.OVERVIEW] ? <Glyphicon glyph="ok"/> : false;
         let expressionOk = this.state.completedSections[WIDGET.EXPRESSION] ? <Glyphicon glyph="ok"/> : false;
-        let geneticsOk = this.state.completedSections[WIDGET.GENETICS] ? <Glyphicon glyph="ok"/>: false;
         let interactionsOk = this.state.completedSections[WIDGET.INTERACTIONS] ? <Glyphicon glyph="ok"/> : false;
         let phenotypesOk = this.state.completedSections[WIDGET.PHENOTYPES] ? <Glyphicon glyph="ok"/> : false;
         let reagentOk = this.state.completedSections[WIDGET.REAGENT] ? <Glyphicon glyph="ok"/> : false;
@@ -353,11 +355,13 @@ class MenuAndWidgets extends React.Component {
                                             <IndexLinkContainer to={WIDGET.OVERVIEW + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.OVERVIEW]}>
                                                 <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
-                                                    &nbsp;{overviewOk}
+                                                    &nbsp;{this.props.isOverviewSavedToDB ? <Glyphicon glyph="ok"/> : false}
                                                 </NavItem></IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.GENETICS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.GENETICS]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}&nbsp;{geneticsOk}</NavItem>
+                                                <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
+                                                &nbsp;{this.props.isGeneticsSavedToDB ? <Glyphicon glyph="ok"/> : false}
+                                                </NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.REAGENT + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.REAGENT]}>
@@ -390,11 +394,7 @@ class MenuAndWidgets extends React.Component {
                             <div className="col-sm-8">
                                 <div className="panel panel-default">
                                     <div className="panel-body">
-                                        <PersonSelector fullname={this.state.dataManager.personFullName}
-                                                        personid={this.state.personid}
-                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                        setPersonIdCallback={this.setPersonIdCallback}
-                                        />
+                                        <PersonSelector/>
                                     </div>
                                 </div>
                                 <div className="panel panel-default">
@@ -413,16 +413,6 @@ class MenuAndWidgets extends React.Component {
                                             />
                                             <Route path={"/" + WIDGET.GENETICS}
                                                    render={() => <Genetics  callback={this.handleFinishedSection}
-                                                                            saved={this.state.completedSections[WIDGET.GENETICS]}
-                                                                            ref={instance => { this.genetics = instance; }}
-                                                                            selectedAlleles={this.state.selectedAlleles}
-                                                                            selectedStrains={this.state.selectedStrains}
-                                                                            stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                            alleleSeqChange={this.state.alleleSeqChange}
-                                                                            otherAlleles={this.state.otherAlleles}
-                                                                            otherStrains={this.state.otherStrains}
-                                                                            toggleCb={this.toggle_cb}
-                                                                            checkCb={this.check_cb}
                                                                             hideAlleles={this.state.hideAlleles}
                                                                             hideStrains={this.state.hideStrains}
                                                                             toggleEntityVisibilityCallback={this.enableEntityListVisibility}
@@ -532,4 +522,10 @@ class MenuAndWidgets extends React.Component {
     }
 }
 
-export default connect(null, {setGenes, setSpecies, setGeneModel, setPerson})(withRouter(MenuAndWidgets));
+const mapStateToProps = state => ({
+    isOverviewSavedToDB: isOverviewSavedToDB(state),
+    isGeneticsSavedToDB: isGeneticsSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {setGenes, setSpecies, setGeneModel, setPerson, setIsOverviewSavedToDB,
+    setAlleles, setStrains, setSequenceChange, setOtherAlleles, setOtherStrains, setIsGeneticsSavedToDB})(withRouter(MenuAndWidgets));

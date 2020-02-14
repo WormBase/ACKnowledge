@@ -5,13 +5,13 @@ import {
   REMOVE_SPECIES,
   SET_GENE_MODEL,
   SET_SPECIES,
-  SET_GENES, SET_IS_SAVED_TO_DB, TOGGLE_GENE_MODEL
+  SET_GENES, SET_IS_OVERVIEW_SAVED_TO_DB, TOGGLE_GENE_MODEL
 } from "../actions/overviewActions";
 
 
 const initialState = {
   genes: {
-    entities: [],
+    elements: [],
     saved: false
   },
   geneModel: {
@@ -19,7 +19,7 @@ const initialState = {
     details: ''
   },
   species: {
-    entities: [],
+    elements: [],
     saved: false
   },
   isSavedToDB: false
@@ -33,7 +33,7 @@ export default function(state = initialState, action) {
         genes: action.payload,
         geneModel: state.geneModel,
         species: state.species,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case ADD_GENE: {
@@ -41,11 +41,11 @@ export default function(state = initialState, action) {
         ...state,
         genes: {
           elements: [...state.genes, action.payload.gene],
-          saved: state.genes.saved
+          saved: false
         },
         geneModel: state.geneModel,
         species: state.species,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case REMOVE_GENE: {
@@ -53,11 +53,11 @@ export default function(state = initialState, action) {
         ...state,
         genes: {
           elements: state.genes.elements.filter(element => element !== action.payload.gene),
-          saved: state.genes.saved
+          saved: false
         },
         geneModel: state.geneModel,
         species: state.species,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case SET_SPECIES: {
@@ -66,7 +66,7 @@ export default function(state = initialState, action) {
         genes: state.genes,
         geneModel: state.geneModel,
         species: action.payload,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case ADD_SPECIES: {
@@ -76,9 +76,9 @@ export default function(state = initialState, action) {
         geneModel: state.geneModel,
         species: {
           elements: [...state.species, action.payload.species],
-          saved: state.species.saved
+          saved: false
         },
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case REMOVE_SPECIES: {
@@ -88,9 +88,9 @@ export default function(state = initialState, action) {
         geneModel: state.geneModel,
         species: {
           elements: state.species.elements.filter(element => element !== action.payload.species),
-          saved: state.species.saved
+          saved: false
         },
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case SET_GENE_MODEL: {
@@ -99,7 +99,7 @@ export default function(state = initialState, action) {
         genes: state.genes,
         geneModel: {checked: action.payload.checked, details: action.payload.details},
         species: state.species,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
     case TOGGLE_GENE_MODEL: {
@@ -108,10 +108,10 @@ export default function(state = initialState, action) {
         genes: state.genes,
         geneModel: {checked: !state.geneModel.checked, details: ''},
         species: state.species,
-        isSavedToDB: state.isSavedToDB
+        isSavedToDB: false
       };
     }
-    case SET_IS_SAVED_TO_DB: {
+    case SET_IS_OVERVIEW_SAVED_TO_DB: {
       return {
         ...state,
         genes: state.genes,

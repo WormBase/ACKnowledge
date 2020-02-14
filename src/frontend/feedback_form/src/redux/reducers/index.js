@@ -1,5 +1,6 @@
 import { combineReducers } from "redux";
-import overview from "./overviewReducer";
 import person from "./personReducer";
+import overview from "./overviewReducer";
+import genetics from "./geneticsReducer";
 
-export default combineReducers({overview, person});
+export default combineReducers({person, overview, genetics});

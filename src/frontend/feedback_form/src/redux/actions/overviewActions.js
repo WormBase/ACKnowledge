@@ -2,11 +2,11 @@ export const SET_GENES = "SET_GENES";
 export const ADD_GENE = "ADD_GENE";
 export const REMOVE_GENE = "REMOVE_GENE";
 export const SET_SPECIES = "SET_SPECIES";
-export const ADD_SPECIES = "ADD_GENE";
-export const REMOVE_SPECIES = "REMOVE_GENE";
+export const ADD_SPECIES = "ADD_SPECIES";
+export const REMOVE_SPECIES = "REMOVE_SPECIES";
 export const SET_GENE_MODEL = "SET_GENE_MODEL";
 export const TOGGLE_GENE_MODEL = "TOGGLE_GENE_MODEL";
-export const SET_IS_SAVED_TO_DB = "SET_IS_SAVED_TO_DB";
+export const SET_IS_OVERVIEW_SAVED_TO_DB = "SET_IS_SAVED_TO_DB";
 
 export function setGenes(elements, saved) {
     return {
@@ -75,7 +75,7 @@ export function toggleGeneModel() {
     };
 }
 
-export const setIsSavedToDB = {
-    type: SET_IS_SAVED_TO_DB,
+export const setIsOverviewSavedToDB = () => ({
+    type: SET_IS_OVERVIEW_SAVED_TO_DB,
     payload: {}
-};
+});

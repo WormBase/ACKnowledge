@@ -8,11 +8,17 @@ class OneColumnEditableTable extends Component {
 
         //  this.state.products = [];
         this.state = {};
-        this.state.products = props["products"];
+        this.state.products = props.products;
 
         this.handleProductTable = this.handleProductTable.bind(this);
         this.updateProducts = this.updateProducts.bind(this);
     }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.state.products !== this.props.products) {
+            this.setState({products: this.props.products})
+        }
+    }
+
     handleRowDel(product) {
         var index = this.state.products.indexOf(product);
         this.state.products.splice(index, 1);
@@ -89,7 +95,7 @@ class ProductTable extends React.Component {
                     </thead>
 
                     <tbody>
-                    {this.props.products.map(function(product) {
+                    {this.props.products.elements.map(function(product) {
                         return (<ProductRow onProductTableUpdate={onProductTableUpdate} product={product} onDelEvent={rowDel.bind(this)} key={product.id} sampleText={sampleText}/>)
                     })}
 
