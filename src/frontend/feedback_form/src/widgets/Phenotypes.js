@@ -2,31 +2,29 @@ import React from 'react';
 import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {
+    getAllelePhenotype,
+    getChemicalPhenotype, getEnvironmentalPhenotype, getEnzymaticActivity, getOverexprPhenotype,
+    getRnaiPhenotype,
+    isPhenotypesSavedToDB
+} from "../redux/selectors/phenotypesSelectors";
+import {
+    setAllelePhenotype,
+    setChemicalPhenotype,
+    setEnvironmentalPhenotype,
+    setEnzymaticActivity,
+    setOverexprPhenotype,
+    setRnaiPhenotype,
+    toggleAllelePhenotype,
+    toggleChemicalPhenotype,
+    toggleEnvironmentalPhenotype,
+    toggleEnzymaticActivity,
+    toggleOverexprPhenotype,
+    toggleRnaiPhenotype
+} from "../redux/actions/phenotypesActions";
+import {connect} from "react-redux";
 
 class Phenotypes extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            saved: props["saved"],
-            cb_allele: props["cb_allele"],
-            cb_rnai: props["cb_rnai"],
-            cb_transgene: props["cb_transgene"],
-            cb_protein: props["cb_protein"],
-            cb_protein_details: props["cb_protein_details"],
-            cb_chemical: props["cb_chemical"],
-            cb_env: props["cb_env"]
-        };
-
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
-    }
 
     setSuccessAlertMessage() {
         this.alertDismissable.setSaved(true);
@@ -46,7 +44,7 @@ class Phenotypes extends React.Component {
                     alertTextNotSaved="Here you can find phenotype and functional data that have been identified in
                     your paper. Please select/deselect the appropriate checkboxes and add any additional information."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
@@ -57,15 +55,15 @@ class Phenotypes extends React.Component {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={this.state.cb_allele}
-                                              onClick={() => this.toggle_cb("cb_allele", "svmAllele")}>
+                                    <Checkbox checked={this.props.allelePheno.checked}
+                                              onClick={() => this.props.toggleAllelePhenotype()}>
                                         <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
                                                                                           overlay={svmTooltip}>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        this.check_cb("cb_allele", "svmAllele");
+                                        this.props.setAllelePhenotype(true, '');
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>
                                         Add details in online form
@@ -74,15 +72,15 @@ class Phenotypes extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={this.state.cb_rnai}
-                                              onClick={() => this.toggle_cb("cb_rnai", "svmRNAi")}>
+                                    <Checkbox checked={this.props.rnaiPheno.checked}
+                                              onClick={() => this.props.toggleRnaiPhenotype()}>
                                         <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
                                                                                         overlay={svmTooltip}>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        this.check_cb("cb_rnai", "svmRNAi");
+                                        this.props.setRnaiPhenotype(true, '');
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>
                                         Add details in online form
@@ -91,15 +89,15 @@ class Phenotypes extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={this.state.cb_transgene}
-                                              onClick={() => this.toggle_cb("cb_transgene", "svmTransgene")}>
+                                    <Checkbox checked={this.props.overexprPheno.checked}
+                                              onClick={() => this.props.toggleOverexprPhenotype()}>
                                         <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
                                                                                                             overlay={svmTooltip}>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        this.check_cb("cb_transgene", "svmTransgene");
+                                        this.props.setOverexprPhenotype(true, '')
                                         window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                     }}>
                                         Add details in online form
@@ -108,16 +106,16 @@ class Phenotypes extends React.Component {
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={this.state.cb_chemical}
-                                              onClick={() => this.toggle_cb("cb_chemical", "chemical")}><strong>Chemical Induced Phenotype</strong></Checkbox>
+                                    <Checkbox checked={this.props.chemPheno.checked}
+                                              onClick={() => this.props.toggleChemicalPhenotype()}><strong>Chemical Induced Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={this.state.cb_env}
-                                              onClick={() => this.toggle_cb("cb_env", "env")}><strong>Environmental Induced Phenotype</strong></Checkbox>
+                                    <Checkbox checked={this.props.envPheno.checked}
+                                              onClick={() => this.props.toggleEnvironmentalPhenotype()}><strong>Environmental Induced Phenotype</strong></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                 </div>
@@ -132,15 +130,14 @@ class Phenotypes extends React.Component {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox checked={this.state.cb_protein} onClick={() => this.toggle_cb("cb_protein", "svmProtein")}>
+                                <Checkbox checked={this.props.enzymaticAct.checked} onClick={() => this.props.toggleEnzymaticActivity()}>
                                     <strong>Enzymatic Activity</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
                                              onClick={() => this.check_cb("cb_protein", "svmProtein")}
-                                             value={this.state.cb_protein_details}
+                                             value={this.props.enzymaticAct.details}
                                              onChange={(event) => {
-                                                 this.props.stateVarModifiedCallback(event.target.value, "svmProteinDetails");
-                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_protein_details");
+                                                 this.props.setEnzymaticActivity(true, event.target.value);
                                              }}
                                 />
                                 <FormControl.Feedback />
@@ -157,4 +154,17 @@ class Phenotypes extends React.Component {
     }
 }
 
-export default Phenotypes;
+const mapStateToProps = state => ({
+    allelePheno: getAllelePhenotype(state),
+    rnaiPheno: getRnaiPhenotype(state),
+    overexprPheno: getOverexprPhenotype(state),
+    chemPheno: getChemicalPhenotype(state),
+    envPheno: getEnvironmentalPhenotype(state),
+    enzymaticAct: getEnzymaticActivity(state),
+    isSavedToDB: isPhenotypesSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {setAllelePhenotype,
+    toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
+    setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
+    setEnzymaticActivity, toggleEnzymaticActivity})(Phenotypes);

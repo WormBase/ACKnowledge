@@ -2,18 +2,11 @@ import React from 'react';
 import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {WIDGET} from "../main_layout/menu_and_widgets/constants";
+import {connect} from "react-redux";
+import {setComments} from "../redux/actions/commentsActions";
+import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
 
 class Other extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            saved: props["saved"],
-            other: props["other"],
-            personid: props.personId
-        };
-
-        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-    }
 
     selfStateVarModifiedFunction(value, stateVarName) {
         let stateElem = {};
@@ -34,7 +27,7 @@ class Other extends React.Component {
                     alertTextNotSaved="In this page you can update your contact info, submit your unpublished data to
                     microPublication, send comments to the WormBase team and finalize the data submission process."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
@@ -55,7 +48,7 @@ class Other extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + this.state.personid}
+                                                href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + this.props.personId}
                                                 target={"_blank"}>
                                             Update contact info</Button>
                                     </div>
@@ -80,7 +73,7 @@ class Other extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-5">
                                         <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + this.state.personid}
+                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + this.props.personId}
                                                 target={"_blank"}>
                                             Update lineage</Button>
                                     </div>
@@ -125,11 +118,8 @@ class Other extends React.Component {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <FormControl componentClass="textarea" multiple
-                                                     value={this.state.other}
-                                                     onChange={(event) => {
-                                                         this.props.stateVarModifiedCallback(event.target.value, "other");
-                                                         this.selfStateVarModifiedFunction(event.target.value, "other");
-                                                     }}
+                                                     value={this.props.comments}
+                                                     onChange={(event) => {this.props.setComments(event.target.value)}}
                                         />
                                     </div>
                                 </div>
@@ -146,4 +136,9 @@ class Other extends React.Component {
     }
 }
 
-export default Other;
+const mapStateToProps = state => ({
+    commetns: getComments(state),
+    isSavedToDB: isCommentsSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {setComments})(Other);

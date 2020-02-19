@@ -58,6 +58,25 @@ import {
     setRegulatoryInteractions
 } from "../../redux/actions/interactionsActions";
 import {isInteractionsSavedToDB} from "../../redux/selectors/interactionsSelectors";
+import {
+    setAllelePhenotype,
+    setChemicalPhenotype,
+    setEnvironmentalPhenotype,
+    setEnzymaticActivity,
+    setIsPhenotypesSavedToDB,
+    setOverexprPhenotype,
+    setRnaiPhenotype,
+    toggleAllelePhenotype,
+    toggleChemicalPhenotype,
+    toggleEnvironmentalPhenotype,
+    toggleEnzymaticActivity,
+    toggleRnaiPhenotype
+} from "../../redux/actions/phenotypesActions";
+import {isPhenotypesSavedToDB} from "../../redux/selectors/phenotypesSelectors";
+import {setDisease, setIsDiseaseSavedToDB} from "../../redux/actions/diseaseActions";
+import {isDiseaseSavedToDB} from "../../redux/selectors/diseaseSelectors";
+import {isCommentsSavedToDB} from "../../redux/selectors/commentsSelectors";
+import {setComments, setIsCommentsSavedToDB} from "../../redux/actions/commentsActions";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -83,7 +102,6 @@ class MenuAndWidgets extends React.Component {
             paper_id: parameters.paper,
             passwd: parameters.passwd,
             personid: parameters.personid,
-            show_fetch_data_error: false,
             show_data_saved: false,
             data_saved_success: true,
             data_saved_last_widget: false,
@@ -202,8 +220,34 @@ class MenuAndWidgets extends React.Component {
                     this.state.dataManager.genereg.prevSaved()) {
                     this.props.setIsInteractionsSavedToDB();
                 }
+
+                // phenotypes
+                this.props.setAllelePhenotype(this.state.dataManager.newmutant.isChecked(), this.state.dataManager.newmutant.details());
+                this.props.setRnaiPhenotype(this.state.dataManager.rnai.isChecked(), this.state.dataManager.rnai.details());
+                this.props.setOverexprPhenotype(this.state.dataManager.overexpr.isChecked(), this.state.dataManager.overexpr.details());
+                this.props.setChemicalPhenotype(this.state.dataManager.chemphen.isChecked(), this.state.dataManager.chemphen.details());
+                this.props.setEnvironmentalPhenotype(this.state.dataManager.envpheno.isChecked(), this.state.dataManager.envpheno.details());
+                this.props.setEnzymaticActivity(this.state.dataManager.catalyticact.isChecked(), this.state.dataManager.catalyticact.details());
+                if (this.state.dataManager.newmutant.prevSaved() && this.state.dataManager.rnai.prevSaved() &&
+                    this.state.dataManager.overexpr.prevSaved() && this.state.dataManager.chemphen.prevSaved() &&
+                    this.state.dataManager.envpheno.prevSaved() && this.state.dataManager.catalyticact.prevSaved()) {
+                    this.props.setIsPhenotypesSavedToDB();
+                }
+
+                // disease
+                this.props.setDisease(this.state.dataManager.disease.isChecked(), this.state.dataManager.disease.details());
+                if (this.state.dataManager.disease.prevSaved()) {
+                    this.props.setIsDiseaseSavedToDB();
+                }
+
+                // comments
+                this.props.setComments(this.state.dataManager.comments.details());
+                if (this.state.dataManager.comments.prevSaved()) {
+                    this.props.setIsCommentsSavedToDB();
+                }
             })
-            .catch(() => {
+            .catch((error) => {
+                console.log(error);
                 this.setState({show_fetch_data_error: true})
             });
 
@@ -354,9 +398,6 @@ class MenuAndWidgets extends React.Component {
     }
 
     render() {
-        let phenotypesOk = this.state.completedSections[WIDGET.PHENOTYPES] ? <Glyphicon glyph="ok"/> : false;
-        let diseaseOk = this.state.completedSections[WIDGET.DISEASE] ? <Glyphicon glyph="ok"/> : false;
-        let contact_infoOk = this.state.completedSections[WIDGET.COMMENTS] ? <Glyphicon glyph="ok"/> : false;
         let data_fetch_err_alert = this.state.show_fetch_data_error ?
             <Alert bsStyle="danger">
                 <Glyphicon glyph="warning-sign"/>
@@ -420,17 +461,23 @@ class MenuAndWidgets extends React.Component {
                                             <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
                                                 <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}&nbsp;{phenotypesOk}</NavItem>
+                                                    eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}
+                                                    &nbsp;{this.props.isPhenotypesSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.DISEASE + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.DISEASE]}>
                                                 <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;{diseaseOk}</NavItem>
+                                                    eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;
+                                                    {this.props.isDiseaseSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.COMMENTS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.COMMENTS]}>
                                                 <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}&nbsp;{contact_infoOk}</NavItem>
+                                                    eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}
+                                                    &nbsp;{this.props.isCommentsSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                         </Nav>
                                     </div>
@@ -476,47 +523,12 @@ class MenuAndWidgets extends React.Component {
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.PHENOTYPES}
-                                                   render={() => <Phenotypes
-                                                       callback={this.handleFinishedSection}
-                                                       saved={this.state.completedSections[WIDGET.PHENOTYPES]}
-                                                       cb_allele={this.state.svmAllele}
-                                                       cb_rnai={this.state.svmRNAi}
-                                                       cb_transgene={this.state.svmTransgene}
-                                                       cb_protein={this.state.svmProtein}
-                                                       cb_transgene_details={this.state.svmTransgeneDetails}
-                                                       cb_protein_details={this.state.svmProteinDetails}
-                                                       cb_chemical={this.state.chemical}
-                                                       cb_env={this.state.env}
-                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                       ref={instance => {
-                                                           this.phenotype = instance;
-                                                       }}
-                                                       toggleCb={this.toggle_cb}
-                                                       checkCb={this.check_cb}
-                                                   />}
-                                            />
+                                                   render={() => <Phenotypes callback={this.handleFinishedSection}/>}/>
                                             <Route path={"/" + WIDGET.DISEASE}
-                                                   render={() => <Disease callback={this.handleFinishedSection}
-                                                                          saved={this.state.completedSections[WIDGET.DISEASE]}
-                                                                          humDis={this.state.humDis}
-                                                                          comments={this.state.disComments}
-                                                                          stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                          toggleCb={this.toggle_cb}
-                                                                          checkCb={this.check_cb}
-                                                                          ref={instance => {
-                                                                              this.disease = instance;
-                                                                          }}
-                                                   />}
-                                            />
+                                                   render={() => <Disease callback={this.handleFinishedSection}/>}/>
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
                                                 callback={this.handleFinishedSection}
-                                                saved={this.state.completedSections[WIDGET.COMMENTS]}
-                                                other={this.state.other}
-                                                stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                 personId={this.state.personid}
-                                                ref={instance => {
-                                                    this.other = instance;
-                                                }}
                                             />}/>
                                         </LoadingOverlay>
                                     </div>
@@ -542,7 +554,10 @@ const mapStateToProps = state => ({
     isGeneticsSavedToDB: isGeneticsSavedToDB(state),
     isReagentSavedToDB: isReagentSavedToDB(state),
     isExpressionSavedToDB: isExpressionSavedToDB(state),
-    isInteractionsSavedToDB: isInteractionsSavedToDB(state)
+    isInteractionsSavedToDB: isInteractionsSavedToDB(state),
+    isPhenotypesSavedToDB: isPhenotypesSavedToDB(state),
+    isDiseaseSavedToDB: isDiseaseSavedToDB(state),
+    isCommentsSavedToDB: isCommentsSavedToDB(state)
 });
 
 export default connect(mapStateToProps, {
@@ -550,5 +565,7 @@ export default connect(mapStateToProps, {
     setAlleles, setStrains, setSequenceChange, setOtherAlleles, setOtherStrains, setIsGeneticsSavedToDB, setTransgenes,
     setOtherTransgenes, setOtherAntibodies, setNewAntibodies, setIsReagentSavedToDB, setExpression, setSiteOfAction,
     setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB, setGeneticInteractions,
-    setPhysicalInteractions, setRegulatoryInteractions, setIsInteractionsSavedToDB
+    setPhysicalInteractions, setRegulatoryInteractions, setIsInteractionsSavedToDB, setAllelePhenotype,
+    toggleAllelePhenotype, setRnaiPhenotype, setOverexprPhenotype, setChemicalPhenotype, setEnvironmentalPhenotype,
+    setEnzymaticActivity, setIsPhenotypesSavedToDB, setDisease, setIsDiseaseSavedToDB, setComments, setIsCommentsSavedToDB
 })(withRouter(MenuAndWidgets));

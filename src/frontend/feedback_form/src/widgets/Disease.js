@@ -4,26 +4,11 @@ import {
     Checkbox, Form, FormControl, Panel
 } from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
+import {setDisease, toggleDisease} from "../redux/actions/diseaseActions";
+import {connect} from "react-redux";
 
 class Disease extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            saved: props["saved"],
-            active: false,
-            humDis: props["humDis"],
-            comments: props["comments"]
-        };
-
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
-    }
 
     setSuccessAlertMessage() {
         this.alertDismissable.setSaved(true);
@@ -38,7 +23,7 @@ class Disease extends React.Component {
                     alertTitleSaved="Well done!"
                     alertTextNotSaved="If this paper reports a disease model, please choose one or more that it describes."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
@@ -47,7 +32,7 @@ class Disease extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.state.humDis} onClick={() => this.toggle_cb("humDis", "humDis")}>
+                            <Checkbox checked={this.props.disease.checked} onClick={() => this.toggle_cb("humDis", "humDis")}>
                                 <strong>The paper contains at least one of the following:</strong>
                             </Checkbox>
                             <ul>
@@ -76,11 +61,10 @@ class Disease extends React.Component {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
-                                                 value={this.state.comments}
-                                                 onClick={() => this.check_cb("humDis", "humDis")}
+                                                 value={this.props.disease.details}
+                                                 onClick={() => this.props.toggleDisease()}
                                                  onChange={(event) => {
-                                                     this.props.stateVarModifiedCallback(event.target.value, "disComments");
-                                                     this.selfStateVarModifiedFunction(event.target.value, "comments");
+                                                     this.props.setDisease(true, event.target.value);
                                                  }}
                                     />
                                 </div>
@@ -97,4 +81,9 @@ class Disease extends React.Component {
     }
 }
 
-export default Disease;
+const mapStateToProps = state => ({
+    disease: getDisease(state),
+    isSavedToDB: isDiseaseSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {setDisease, toggleDisease})(Disease);
