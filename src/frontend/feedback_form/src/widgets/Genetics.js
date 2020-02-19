@@ -96,7 +96,6 @@ class Genetics extends React.Component {
                     change and submit a new allele name."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
                     saved={this.props.isSavedToDB}
-                    ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
                     <Panel>

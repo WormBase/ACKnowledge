@@ -99,7 +99,8 @@ class MenuAndWidgets extends React.Component {
             hideGenes: parameters.hide_genes === "true",
             hideAlleles: parameters.hide_alleles === "true",
             hideStrains: parameters.hide_strains === "true",
-            isLoading: false
+            isLoading: false,
+            show_data_fetch_error: false
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
@@ -219,7 +220,8 @@ class MenuAndWidgets extends React.Component {
             .then(() => {
                 this.props.setPerson(this.state.dataManager.person.name, this.state.dataManager.person.personId);
             })
-            .catch(() => {
+            .catch((error) => {
+                console.log(error);
                 this.setState({show_fetch_data_error: true})
             });
 
@@ -348,35 +350,31 @@ class MenuAndWidgets extends React.Component {
                                             <Route exact path="/" render={() => (
                                                 <Redirect to={"/overview" + this.props.location.search}/>)}/>
                                             <Route path={"/" + WIDGET.OVERVIEW}
-                                                   render={() => <Overview callback={this.handleFinishedSection}
-                                                                           hideGenes={this.state.hideGenes}
+                                                   render={() => <Overview hideGenes={this.state.hideGenes}
                                                                            toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.GENETICS}
-                                                   render={() => <Genetics callback={this.handleFinishedSection}
-                                                                           hideAlleles={this.state.hideAlleles}
+                                                   render={() => <Genetics hideAlleles={this.state.hideAlleles}
                                                                            hideStrains={this.state.hideStrains}
                                                                            toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.REAGENT}
-                                                   render={() => <Reagent callback={this.handleFinishedSection}/>}
+                                                   render={() => <Reagent />}
                                             />
                                             <Route path={"/" + WIDGET.EXPRESSION}
-                                                   render={() => <Expression callback={this.handleFinishedSection}/>}
+                                                   render={() => <Expression />}
                                             />
                                             <Route path={"/" + WIDGET.INTERACTIONS}
                                                    render={() => <Interactions
-                                                       callback={this.handleFinishedSection}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.PHENOTYPES}
-                                                   render={() => <Phenotypes callback={this.handleFinishedSection}/>}/>
+                                                   render={() => <Phenotypes />}/>
                                             <Route path={"/" + WIDGET.DISEASE}
-                                                   render={() => <Disease callback={this.handleFinishedSection}/>}/>
+                                                   render={() => <Disease />}/>
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
-                                                callback={this.handleFinishedSection}
                                                 personId={this.state.personid}
                                             />}/>
                                         </LoadingOverlay>

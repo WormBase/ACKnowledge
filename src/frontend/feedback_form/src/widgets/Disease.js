@@ -12,10 +12,6 @@ import {showDataSaved} from "../redux/actions/displayActions";
 
 class Disease extends React.Component {
 
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
-    }
-
     render() {
 
         return (
@@ -26,7 +22,6 @@ class Disease extends React.Component {
                     alertTextNotSaved="If this paper reports a disease model, please choose one or more that it describes."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
                     saved={this.props.isSavedToDB}
-                    ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
                     <Panel.Heading>

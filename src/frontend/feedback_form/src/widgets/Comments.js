@@ -34,7 +34,6 @@ class Other extends React.Component {
                     microPublication, send comments to the WormBase team and finalize the data submission process."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
                     saved={this.props.isSavedToDB}
-                    ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
                     <Panel>

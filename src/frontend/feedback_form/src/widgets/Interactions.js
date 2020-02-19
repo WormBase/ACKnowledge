@@ -23,10 +23,6 @@ class Interactions extends React.Component {
         super(props, context);
     }
 
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
-    }
-
     render() {
         const svmTooltip = (
             <Tooltip id="tooltip">
@@ -42,7 +38,6 @@ class Interactions extends React.Component {
                     Please select/deselect the appropriate checkboxes and add any additional information."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
                     saved={this.props.isSavedToDB}
-                    ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
                     <Panel.Heading>

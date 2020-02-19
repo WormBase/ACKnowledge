@@ -45,10 +45,6 @@ class Expression extends React.Component {
         }
     }
 
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
-    }
-
     render() {
         const tooltip = (
             <Tooltip id="tooltip">
@@ -91,7 +87,6 @@ class Expression extends React.Component {
                     select/deselect the appropriate checkboxes and add any additional information."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
                     saved={this.props.isSavedToDB}
-                    ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
                     <Panel.Heading>

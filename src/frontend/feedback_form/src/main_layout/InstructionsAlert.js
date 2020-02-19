@@ -14,12 +14,7 @@ class InstructionsAlert extends React.Component {
             show: true
         };
 
-        this.setSaved = this.setSaved.bind(this);
         this.handleDismiss = this.handleDismiss.bind(this);
-    }
-
-    setSaved(saved) {
-        this.setState({saved: saved});
     }
 
     handleDismiss() {
