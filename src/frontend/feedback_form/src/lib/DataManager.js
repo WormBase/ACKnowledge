@@ -32,6 +32,9 @@ export class DataManager {
         this.timeOfAction = new CheckboxWithDetails(false, "", false);
         this.rnaSeq = new CheckboxWithDetails(false, "", false);
         this.additionalExpr = '';
+        this.geneint = new CheckboxWithDetails(false, "", false);
+        this.geneprod = new CheckboxWithDetails(false, "", false);
+        this.genereg = new CheckboxWithDetails(false, "", false);
     }
 
     getPaperData() {
@@ -55,6 +58,9 @@ export class DataManager {
                     this.timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.timeaction, undefined);
                     this.rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.rnaseq, result.rnaseq);
                     this.additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.additionalexpr, undefined);
+                    this.geneint = getCheckbxOrSingleFieldFromWBAPIData(result.geneint, result.geneint);
+                    this.geneprod = getCheckbxOrSingleFieldFromWBAPIData(result.geneprod, result.geneprod);
+                    this.genereg = getCheckbxOrSingleFieldFromWBAPIData(result.genereg, result.genereg);
                     resolve();
                 })
                 .catch(error => {

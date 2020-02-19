@@ -4,28 +4,21 @@ import {
     Panel, Tooltip, Image, OverlayTrigger
 } from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {
+    getGeneticInteractions,
+    getPhysicalInteractions,
+    getRegulatoryInteractions, isInteractionsSavedToDB
+} from "../redux/selectors/interactionsSelectors";
+import {
+    setGeneticInteractions,
+    setPhysicalInteractions, setRegulatoryInteractions,
+    toggleGeneticInteractions, togglePhysicalInteractions, toggleRegulatoryInteractions
+} from "../redux/actions/interactionsActions";
+import {connect} from "react-redux";
 
 class Interactions extends React.Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            saved: props["saved"],
-            cb_genetic: props["cb_genetic"],
-            cb_genetic_details: props['cb_genetic_details'],
-            cb_physical: props["cb_physical"],
-            cb_physical_details: props['cb_physical_details'],
-            cb_regulatory: props["cb_regulatory"],
-            cb_regulatory_details: props['cb_regulatory_details']
-        };
-
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
     }
 
     setSuccessAlertMessage() {
@@ -46,7 +39,7 @@ class Interactions extends React.Component {
                     alertTextNotSaved="Here you can find interaction data that have been identified in your paper.
                     Please select/deselect the appropriate checkboxes and add any additional information."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
@@ -56,41 +49,38 @@ class Interactions extends React.Component {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox checked={this.state.cb_genetic} onClick={() => this.toggle_cb("cb_genetic", "svmGeneInt")}>
+                                <Checkbox checked={this.props.geneint.checked} onClick={() => this.props.toggleGeneticInteractions()}>
                                     <strong>Genetic Interactions</strong> <OverlayTrigger placement="top"
                                                                                           overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.check_cb("cb_genetic", "svmGeneInt")}
-                                             value={this.state.cb_genetic_details}
+                                             onClick={() => this.props.setGeneticInteractions(true, '')}
+                                             value={this.props.geneint.details}
                                              onChange={(event) => {
-                                                 this.props.stateVarModifiedCallback(event.target.value, "svmGeneIntDetails");
-                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_genetic_details");
+                                                 this.props.setGeneticInteractions(true, event.target.value);
                                              }}/>
-                                <Checkbox checked={this.state.cb_physical} onClick={() => this.toggle_cb("cb_physical", "svmPhysInt")}>
+                                <Checkbox checked={this.props.geneprod.checked} onClick={() => this.props.togglePhysicalInteractions()}>
                                     <strong>Physical Interactions</strong> <OverlayTrigger placement="top"
                                                                                            overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.check_cb("cb_physical", "svmPhysInt")}
-                                             value={this.state.cb_physical_details}
+                                             onClick={() => this.props.setPhysicalInteractions(true, '')}
+                                             value={this.props.geneprod.details}
                                              onChange={(event) => {
-                                                 this.props.stateVarModifiedCallback(event.target.value, "svmPhysIntDetails");
-                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_physical_details");
+                                                 this.props.setPhysicalInteractions(true, event.target.value);
                                              }}/>
-                                <Checkbox checked={this.state.cb_regulatory} onClick={() => this.toggle_cb("cb_regulatory", "svmGeneReg")}>
+                                <Checkbox checked={this.props.genereg.checked} onClick={() => this.props.toggleGeneticInteractions()}>
                                     <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top"
                                                                                              overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.check_cb("cb_regulatory", "svmGeneReg")}
-                                             value={this.state.cb_regulatory_details}
+                                             onClick={() => this.props.setRegulatoryInteractions(true, '')}
+                                             value={this.props.genereg.details}
                                              onChange={(event) => {
-                                                 this.props.stateVarModifiedCallback(event.target.value, "svmGeneRegDetails");
-                                                 this.selfStateVarModifiedFunction(event.target.value, "cb_regulatory_details");
+                                                 this.props.setRegulatoryInteractions(true, event.target.value);
                                              }}/>
                                 <FormControl.Feedback />
                             </FormGroup>
@@ -106,4 +96,12 @@ class Interactions extends React.Component {
     }
 }
 
-export default Interactions;
+const mapStateToProps = state => ({
+    geneint: getGeneticInteractions(state),
+    geneprod: getPhysicalInteractions(state),
+    genereg: getRegulatoryInteractions(state),
+    isSavedToDB: isInteractionsSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {setGeneticInteractions, toggleGeneticInteractions, setPhysicalInteractions,
+    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions})(Interactions);

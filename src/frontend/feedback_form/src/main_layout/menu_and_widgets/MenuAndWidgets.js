@@ -52,6 +52,12 @@ import {
     setTimeOfAction
 } from "../../redux/actions/expressionActions";
 import {isExpressionSavedToDB} from "../../redux/selectors/expressionSelectors";
+import {
+    setGeneticInteractions, setIsInteractionsSavedToDB,
+    setPhysicalInteractions,
+    setRegulatoryInteractions
+} from "../../redux/actions/interactionsActions";
+import {isInteractionsSavedToDB} from "../../redux/selectors/interactionsSelectors";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -186,6 +192,15 @@ class MenuAndWidgets extends React.Component {
                     this.state.dataManager.timeOfAction.prevSaved() && this.state.dataManager.rnaSeq.prevSaved() &&
                     this.state.dataManager.additionalExpr.prevSaved()) {
                     this.props.setIsExpressionSavedToDB();
+                }
+
+                // interactions
+                this.props.setGeneticInteractions(this.state.dataManager.geneint.isChecked(), this.state.dataManager.geneint.details());
+                this.props.setPhysicalInteractions(this.state.dataManager.geneprod.isChecked(), this.state.dataManager.geneprod.details());
+                this.props.setRegulatoryInteractions(this.state.dataManager.genereg.isChecked(), this.state.dataManager.genereg.details());
+                if (this.state.dataManager.geneint.prevSaved() && this.state.dataManager.geneprod.prevSaved() &&
+                    this.state.dataManager.genereg.prevSaved()) {
+                    this.props.setIsInteractionsSavedToDB();
                 }
             })
             .catch(() => {
@@ -339,10 +354,7 @@ class MenuAndWidgets extends React.Component {
     }
 
     render() {
-        let expressionOk = this.state.completedSections[WIDGET.EXPRESSION] ? <Glyphicon glyph="ok"/> : false;
-        let interactionsOk = this.state.completedSections[WIDGET.INTERACTIONS] ? <Glyphicon glyph="ok"/> : false;
         let phenotypesOk = this.state.completedSections[WIDGET.PHENOTYPES] ? <Glyphicon glyph="ok"/> : false;
-        let reagentOk = this.state.completedSections[WIDGET.REAGENT] ? <Glyphicon glyph="ok"/> : false;
         let diseaseOk = this.state.completedSections[WIDGET.DISEASE] ? <Glyphicon glyph="ok"/> : false;
         let contact_infoOk = this.state.completedSections[WIDGET.COMMENTS] ? <Glyphicon glyph="ok"/> : false;
         let data_fetch_err_alert = this.state.show_fetch_data_error ?
@@ -401,7 +413,9 @@ class MenuAndWidgets extends React.Component {
                                             <IndexLinkContainer to={WIDGET.INTERACTIONS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.INTERACTIONS]}>
                                                 <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}&nbsp;{interactionsOk}</NavItem>
+                                                    eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}
+                                                    &nbsp;{this.props.isInteractionsSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
@@ -459,19 +473,6 @@ class MenuAndWidgets extends React.Component {
                                             <Route path={"/" + WIDGET.INTERACTIONS}
                                                    render={() => <Interactions
                                                        callback={this.handleFinishedSection}
-                                                       saved={this.state.completedSections[WIDGET.INTERACTIONS]}
-                                                       ref={instance => {
-                                                           this.interactions = instance;
-                                                       }}
-                                                       cb_genetic={this.state.svmGeneInt}
-                                                       cb_physical={this.state.svmPhysInt}
-                                                       cb_regulatory={this.state.svmGeneReg}
-                                                       cb_genetic_details={this.state.svmGeneIntDetails}
-                                                       cb_physical_details={this.state.svmPhysIntDetails}
-                                                       cb_regulatory_details={this.state.svmGeneRegDetails}
-                                                       stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                       toggleCb={this.toggle_cb}
-                                                       checkCb={this.check_cb}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.PHENOTYPES}
@@ -540,12 +541,14 @@ const mapStateToProps = state => ({
     isOverviewSavedToDB: isOverviewSavedToDB(state),
     isGeneticsSavedToDB: isGeneticsSavedToDB(state),
     isReagentSavedToDB: isReagentSavedToDB(state),
-    isExpressionSavedToDB: isExpressionSavedToDB(state)
+    isExpressionSavedToDB: isExpressionSavedToDB(state),
+    isInteractionsSavedToDB: isInteractionsSavedToDB(state)
 });
 
 export default connect(mapStateToProps, {
     setGenes, setSpecies, setGeneModel, setPerson, setIsOverviewSavedToDB,
     setAlleles, setStrains, setSequenceChange, setOtherAlleles, setOtherStrains, setIsGeneticsSavedToDB, setTransgenes,
     setOtherTransgenes, setOtherAntibodies, setNewAntibodies, setIsReagentSavedToDB, setExpression, setSiteOfAction,
-    setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB
+    setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB, setGeneticInteractions,
+    setPhysicalInteractions, setRegulatoryInteractions, setIsInteractionsSavedToDB
 })(withRouter(MenuAndWidgets));
