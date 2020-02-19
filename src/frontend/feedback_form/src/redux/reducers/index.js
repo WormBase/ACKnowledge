@@ -8,5 +8,6 @@ import interactions from "./interactionsReducer";
 import phenotypes from "./phenotypesReducer";
 import disease from "./diseaseReducer";
 import comments from "./commentsReducer";
+import display from "./displayReducer";
 
-export default combineReducers({person, overview, genetics, reagent, expression, interactions, phenotypes, disease, comments});
+export default combineReducers({person, overview, genetics, reagent, expression, interactions, phenotypes, disease, comments, display});

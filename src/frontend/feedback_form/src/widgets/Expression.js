@@ -21,6 +21,8 @@ import {
     toggleExpression, toggleRnaseq,
     toggleSiteOfAction, toggleTimeOfAction
 } from "../redux/actions/expressionActions";
+import {showDataSaved} from "../redux/actions/displayActions";
+import {getCheckboxDBVal} from "../AFPValues";
 
 class Expression extends React.Component {
     constructor(props, context) {
@@ -186,7 +188,18 @@ class Expression extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "expression")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        let payload = {
+                            anatomic_expr: getCheckboxDBVal(this.props.expression.checked, this.props.expression.details),
+                            site_action: getCheckboxDBVal(this.props.siteOfAction.checked, this.props.siteOfAction.details),
+                            time_action: getCheckboxDBVal(this.props.timeOfAction, this.props.timeOfAction.details),
+                            rnaseq: getCheckboxDBVal(this.state.rnaSeq.checked, this.state.rnaSeq.details),
+                            additional_expr: this.props.additionalExpr
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -203,4 +216,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {setExpression, toggleExpression, setSiteOfAction, toggleSiteOfAction,
-    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr})(Expression);
+    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr, showDataSaved})(Expression);

@@ -23,6 +23,8 @@ import {
     toggleRnaiPhenotype
 } from "../redux/actions/phenotypesActions";
 import {connect} from "react-redux";
+import {getCheckboxDBVal} from "../AFPValues";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Phenotypes extends React.Component {
 
@@ -146,7 +148,19 @@ class Phenotypes extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "phenotypes")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        let payload = {
+                            allele_pheno: getCheckboxDBVal(this.props.allelePheno.checked),
+                            rnai_pheno: getCheckboxDBVal(this.props.rnaiPheno.checked),
+                            transover_pheno: getCheckboxDBVal(this.props.overexprPheno.checked),
+                            chemical: getCheckboxDBVal(this.props.chemPheno.checked),
+                            env: getCheckboxDBVal(this.props.envPheno.checked),
+                            protein: getCheckboxDBVal(this.props.enzymaticAct.checked, this.props.enzymaticAct.details),
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -167,4 +181,4 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
     setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
-    setEnzymaticActivity, toggleEnzymaticActivity})(Phenotypes);
+    setEnzymaticActivity, toggleEnzymaticActivity, showDataSaved})(Phenotypes);

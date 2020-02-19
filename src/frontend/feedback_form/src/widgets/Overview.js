@@ -6,27 +6,27 @@ import {
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
-import {WIDGET} from "../main_layout/menu_and_widgets/constants"
 import {
     addGene,
     addSpecies,
     removeGene,
     removeSpecies,
-    setGeneModel,
+    setGeneModel, setIsOverviewSavedToDB,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
 import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
+import {DataManager} from "../lib/DataManager";
+import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Overview extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            show_fetch_data_error: false,
+            dataManager: new DataManager()
         };
     }
-
-    setSuccessAlertMessage = () => this.alertDismissable.setSaved(true);
 
     render() {
         const geneTooltip = (
@@ -158,7 +158,17 @@ class Overview extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, WIDGET.OVERVIEW)}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+
+                        const payload = {
+                            gene_list: transformEntitiesIntoAfpString(this.props.genes, "WBGene"),
+                            gene_model_update: getCheckboxDBVal(this.props.geneModel.checked, this.props.geneModel.details),
+                            species_list: transformEntitiesIntoAfpString(this.props.species, ""),
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -167,8 +177,11 @@ class Overview extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    genes: getGenes(state).elements,
     geneModel: getGeneModel(state),
+    species: getSpecies(state).elements,
     isSavedToDB: isOverviewSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel})(Overview);
+export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel,
+    setIsOverviewSavedToDB, showDataSaved})(Overview);

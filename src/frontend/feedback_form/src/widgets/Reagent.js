@@ -28,6 +28,8 @@ import {
     getTransgenes
 } from "../redux/selectors/reagentSelectors";
 import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
+import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Reagent extends React.Component {
      constructor(props, context) {
@@ -124,7 +126,7 @@ class Reagent extends React.Component {
                                     <EditableTable title={"Other Antibodies used"}
                                                    products={this.props.otherAntibodies}
                                                    addProductFunction={(antibody) => this.props.addOtherTransgene(antibody)}
-                                                   remProductFunction={(antibody) => this.props.remOtherTransgene(antibody)}
+                                                   remProductFunction={(antibody) => this.props.removeOtherTransgene(antibody)}
                                                    setProductsFunction={(antibodies) => this.props.setOtherTransgenes(antibodies)}
                                     />
                                     <FormControl.Feedback />
@@ -134,7 +136,17 @@ class Reagent extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "reagent")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        const payload = {
+                            transgenes_list: transformEntitiesIntoAfpString(this.props.transgenes, ""),
+                            new_transgenes: JSON.stringify(this.props.otherTransgenes),
+                            new_antibody: getCheckboxDBVal(this.props.newAntibodies.checked, this.state.newAntibodies.details),
+                            other_antibodies: JSON.stringify(this.props.otherAntibodies)
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -143,6 +155,7 @@ class Reagent extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    transgenes: getTransgenes(state).elements,
     otherTransgenes: getOtherTransgenes(state).elements,
     newAntibodies: getNewAntibodies(state),
     otherAntibodies: getOtherAntibodies(state).elements,
@@ -151,4 +164,4 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
     addOtherTransgene, removeOtherTransgene, setOtherTransgenes, addOtherAntibody, removeOtherAntibody,
-    setOtherAntibodies})(Reagent);
+    setOtherAntibodies, showDataSaved})(Reagent);

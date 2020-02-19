@@ -14,11 +14,6 @@ import queryString from 'query-string';
 import Title from "../Title";
 import Disease from "../../widgets/Disease";
 import Header from "../Header";
-import {
-    AFPValues,
-    getCheckboxDBVal,
-    transformEntitiesIntoAfpString
-} from "../../AFPValues";
 import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "../MainModals";
 import PersonSelector from "../PersonSelector";
 import LoadingOverlay from 'react-loading-overlay';
@@ -67,16 +62,14 @@ import {
     setOverexprPhenotype,
     setRnaiPhenotype,
     toggleAllelePhenotype,
-    toggleChemicalPhenotype,
-    toggleEnvironmentalPhenotype,
-    toggleEnzymaticActivity,
-    toggleRnaiPhenotype
 } from "../../redux/actions/phenotypesActions";
 import {isPhenotypesSavedToDB} from "../../redux/selectors/phenotypesSelectors";
 import {setDisease, setIsDiseaseSavedToDB} from "../../redux/actions/diseaseActions";
 import {isDiseaseSavedToDB} from "../../redux/selectors/diseaseSelectors";
 import {isCommentsSavedToDB} from "../../redux/selectors/commentsSelectors";
 import {setComments, setIsCommentsSavedToDB} from "../../redux/actions/commentsActions";
+import {getDataSaved, getSectionsNotCompleted} from "../../redux/selectors/displaySelectors";
+import {hideDataSaved, hideSectionsNotCompleted} from "../../redux/actions/displayActions";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -93,7 +86,8 @@ class MenuAndWidgets extends React.Component {
         });
         this.state = {
             dataManager: new DataManager(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' +
-                parameters.paper + '&passwd=' + parameters.passwd, process.env.REACT_APP_API_DB_READ_ENDPOINT),
+                parameters.paper + '&passwd=' + parameters.passwd, process.env.REACT_APP_API_DB_READ_ENDPOINT,
+                parameters.passwd),
             pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
                 WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
@@ -102,45 +96,15 @@ class MenuAndWidgets extends React.Component {
             paper_id: parameters.paper,
             passwd: parameters.passwd,
             personid: parameters.personid,
-            show_data_saved: false,
-            data_saved_success: true,
-            data_saved_last_widget: false,
-            show_sections_not_completed: false,
             hideGenes: parameters.hide_genes === "true",
             hideAlleles: parameters.hide_alleles === "true",
             hideStrains: parameters.hide_strains === "true",
             isLoading: false
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
-        this.handleFinishedSection = this.handleFinishedSection.bind(this);
         this.handleClosePopup = this.handleClosePopup.bind(this);
-        this.setWidgetSaved = this.setWidgetSaved.bind(this);
         this.goToNextSection = this.goToNextSection.bind(this);
         this.enableEntityListVisibility = this.enableEntityListVisibility.bind(this);
-    }
-
-    /**
-     * change a widget state to saved and modify its alert message depending on the status of the passed arguments
-     * @param widget the widget to modify
-     * @param {string} sectionName
-     * @param {AFPValues} params a list of arguments
-     */
-    setWidgetSaved(widget, sectionName, ...params) {
-        let saved = params[0].prevSaved();
-        for (let i = 1; i < params.length; i++) {
-            saved = saved && params[i].prevSaved();
-        }
-        if (widget !== undefined) {
-            widget.selfStateVarModifiedFunction(saved, "saved");
-            if (saved) {
-                widget.setSuccessAlertMessage();
-            }
-        }
-        const newCompletedSections = this.state.completedSections;
-        newCompletedSections[sectionName] = saved;
-        this.setState({
-            completedSections: newCompletedSections
-        });
     }
 
     enableEntityListVisibility(entityType) {
@@ -271,106 +235,6 @@ class MenuAndWidgets extends React.Component {
         return Object.keys(this.state.completedSections).filter((item) => item !== WIDGET.COMMENTS).every(item => this.state.completedSections[item]);
     }
 
-    handleFinishedSection(widget) {
-        this.setState({isLoading: true});
-        if (widget !== WIDGET.COMMENTS || this.allSectionsFinished()) {
-            if (widget === WIDGET.COMMENTS) {
-                // manually change alert for last widget
-                this.other.setSuccessAlertMessage();
-            }
-            let payload = {};
-            switch (widget) {
-                case WIDGET.OVERVIEW:
-                    payload = {
-                        gene_list: transformEntitiesIntoAfpString(this.state.selectedGenes, "WBGene"),
-                        gene_model_update: getCheckboxDBVal(this.state.geneModCorrection,
-                            this.state.geneModCorrectionDetails),
-                        species_list: transformEntitiesIntoAfpString(this.state.selectedSpecies, ""),
-                    };
-                    break;
-                case WIDGET.GENETICS:
-                    payload = {
-                        alleles_list: transformEntitiesIntoAfpString(this.state.selectedAlleles, ""),
-                        allele_seq_change: getCheckboxDBVal(this.state.alleleSeqChange),
-                        other_alleles: JSON.stringify(this.state.otherAlleles),
-                        strains_list: transformEntitiesIntoAfpString(this.state.selectedStrains, ""),
-                        other_strains: JSON.stringify(this.state.otherStrains)
-                    };
-                    break;
-                case WIDGET.REAGENT:
-                    payload = {
-                        transgenes_list: transformEntitiesIntoAfpString(this.state.selectedTransgenes, ""),
-                        new_transgenes: JSON.stringify(this.state.otherTransgenes),
-                        new_antibody: getCheckboxDBVal(this.state.newAntib, this.state.newAntibDetails),
-                        other_antibodies: JSON.stringify(this.state.otherAntibs)
-                    };
-                    break;
-                case WIDGET.EXPRESSION:
-                    payload = {
-                        anatomic_expr: getCheckboxDBVal(this.state.anatomicExpr,
-                            this.state.anatomicExprDetails),
-                        site_action: getCheckboxDBVal(this.state.siteAction, this.state.siteActionDetails),
-                        time_action: getCheckboxDBVal(this.state.timeAction, this.state.timeActionDetails),
-                        rnaseq: getCheckboxDBVal(this.state.rnaSeq, this.state.rnaSeqDetails),
-                        additional_expr: this.state.additionalExpr
-                    };
-                    break;
-                case WIDGET.INTERACTIONS:
-                    payload = {
-                        gene_int: getCheckboxDBVal(this.state.svmGeneInt, this.state.svmGeneIntDetails),
-                        phys_int: getCheckboxDBVal(this.state.svmPhysInt, this.state.svmPhysIntDetails),
-                        gene_reg: getCheckboxDBVal(this.state.svmGeneReg, this.state.svmGeneRegDetails),
-                    };
-                    break;
-                case WIDGET.PHENOTYPES:
-                    payload = {
-                        allele_pheno: getCheckboxDBVal(this.state.svmAllele),
-                        rnai_pheno: getCheckboxDBVal(this.state.svmRNAi),
-                        transover_pheno: getCheckboxDBVal(this.state.svmTransgene),
-                        chemical: getCheckboxDBVal(this.state.chemical),
-                        env: getCheckboxDBVal(this.state.env),
-                        protein: getCheckboxDBVal(this.state.svmProtein, this.state.svmProteinDetails),
-                    };
-                    break;
-                case WIDGET.DISEASE:
-                    payload = {
-                        disease: getCheckboxDBVal(this.state.humDis, this.state.disComments),
-                    };
-                    break;
-                case WIDGET.COMMENTS:
-                    payload = {
-                        comments: this.state.other,
-                        person_id: "two" + this.state.personid
-                    };
-                    break;
-            }
-            payload.passwd = this.state.passwd;
-            this.state.dataManager.fetchPOSTData(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, payload)
-                .then(() => {
-                    this.setState({
-                        show_data_saved: true,
-                        data_saved_success: true,
-                        isLoading: false,
-                        data_saved_last_widget: widget === WIDGET.COMMENTS
-                    });
-                    const newCompletedSections = this.state.completedSections;
-                    newCompletedSections[widget] = true;
-                    this.setState({completedSections: newCompletedSections});
-                })
-                .catch(() => {
-                    this.setState({
-                        show_data_saved: true,
-                        data_saved_success: false,
-                        isLoading: false
-                    });
-                });
-        } else {
-            this.setState({
-                show_sections_not_completed: true
-            });
-        }
-    }
-
     goToNextSection() {
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
         this.setState({selectedMenu: newSelectedMenu, show_data_saved: false});
@@ -380,21 +244,6 @@ class MenuAndWidgets extends React.Component {
 
     handleClosePopup() {
         this.setState({showPopup: false})
-    }
-
-    toggle_cb(cbName, mainCompVarName) {
-        let newVal = !this.state[cbName];
-        let newStateElem = {};
-        newStateElem[cbName] = newVal;
-        this.setState(newStateElem);
-        this.props.stateVarModifiedCallback(newVal, mainCompVarName);
-    }
-
-    check_cb(cbName, mainCompVarName) {
-        let newStateElem = {};
-        newStateElem[cbName] = true;
-        this.setState(newStateElem);
-        this.props.stateVarModifiedCallback(true, mainCompVarName);
     }
 
     render() {
@@ -537,11 +386,11 @@ class MenuAndWidgets extends React.Component {
                         </div>
                     </div>
                     <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup}/>
-                    <DataSavedModal show={this.state.show_data_saved} onHide={this.goToNextSection}
-                                    success={this.state.data_saved_success}
-                                    last_widget={this.state.data_saved_last_widget}/>
-                    <SectionsNotCompletedModal show={this.state.show_sections_not_completed}
-                                               onHide={() => this.setState({show_sections_not_completed: false})}
+                    <DataSavedModal show={this.props.dataSaved.showMessage} onHide={this.goToNextSection}
+                                    success={this.props.dataSaved.success}
+                                    last_widget={this.props.dataSaved.lastWidget}/>
+                    <SectionsNotCompletedModal show={this.props.sectionsNotCompleted}
+                                               onHide={() => this.props.hideSectionsNotCompleted()}
                                                sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec] && sec !== WIDGET.COMMENTS).map((sec) => WIDGET_TITLE[sec])}/>
                 </div>
             </div>
@@ -557,7 +406,9 @@ const mapStateToProps = state => ({
     isInteractionsSavedToDB: isInteractionsSavedToDB(state),
     isPhenotypesSavedToDB: isPhenotypesSavedToDB(state),
     isDiseaseSavedToDB: isDiseaseSavedToDB(state),
-    isCommentsSavedToDB: isCommentsSavedToDB(state)
+    isCommentsSavedToDB: isCommentsSavedToDB(state),
+    sectionsNotCompleted: getSectionsNotCompleted(state),
+    dataSaved: getDataSaved(state)
 });
 
 export default connect(mapStateToProps, {
@@ -567,5 +418,5 @@ export default connect(mapStateToProps, {
     setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB, setGeneticInteractions,
     setPhysicalInteractions, setRegulatoryInteractions, setIsInteractionsSavedToDB, setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, setOverexprPhenotype, setChemicalPhenotype, setEnvironmentalPhenotype,
-    setEnzymaticActivity, setIsPhenotypesSavedToDB, setDisease, setIsDiseaseSavedToDB, setComments, setIsCommentsSavedToDB
-})(withRouter(MenuAndWidgets));
+    setEnzymaticActivity, setIsPhenotypesSavedToDB, setDisease, setIsDiseaseSavedToDB, setComments,
+    setIsCommentsSavedToDB, hideSectionsNotCompleted, hideDataSaved})(withRouter(MenuAndWidgets));

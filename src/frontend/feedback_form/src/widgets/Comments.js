@@ -5,17 +5,23 @@ import {WIDGET} from "../main_layout/menu_and_widgets/constants";
 import {connect} from "react-redux";
 import {setComments} from "../redux/actions/commentsActions";
 import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
+import {showDataSaved, showSectionsNotCompleted} from "../redux/actions/displayActions";
+import {DataManager} from "../lib/DataManager";
+import {isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
+import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
+import {isReagentSavedToDB} from "../redux/selectors/reagentSelectors";
+import {isExpressionSavedToDB} from "../redux/selectors/expressionSelectors";
+import {isInteractionsSavedToDB} from "../redux/selectors/interactionsSelectors";
+import {isPhenotypesSavedToDB} from "../redux/selectors/phenotypesSelectors";
+import {isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
 
 class Other extends React.Component {
 
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
-    }
-
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            dataManager: new DataManager()
+        };
     }
 
     render() {
@@ -128,7 +134,19 @@ class Other extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={() => {this.props.callback(WIDGET.COMMENTS)}}>Finish and submit
+                    <Button bsStyle="success" onClick={() => {
+                        if (this.props.allOtherWidgetsSavedToDB) {
+                            const payload = {
+                                comments: this.props.comments,
+                                person_id: "two" + this.props.personid
+                            };
+                            this.state.dataManager.postWidgetData(payload)
+                                .then(this.props.showDataSaved(true, true))
+                                .catch(this.props.showDataSaved(false, true));
+                        } else {
+                            this.props.showSectionsNotCompleted()
+                        }
+                    }}>Finish and submit
                     </Button>
                 </div>
             </div>
@@ -138,7 +156,10 @@ class Other extends React.Component {
 
 const mapStateToProps = state => ({
     commetns: getComments(state),
-    isSavedToDB: isCommentsSavedToDB(state)
+    isSavedToDB: isCommentsSavedToDB(state),
+    allOtherWidgetsSavedToDB: isOverviewSavedToDB(state) && isGeneticsSavedToDB(state) && isReagentSavedToDB(state) &&
+        isExpressionSavedToDB(state) && isInteractionsSavedToDB(state) && isPhenotypesSavedToDB(state) &&
+        isDiseaseSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {setComments})(Other);
+export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted})(Other);

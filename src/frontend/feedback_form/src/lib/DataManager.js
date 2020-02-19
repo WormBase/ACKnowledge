@@ -5,12 +5,14 @@ import {
 } from "../AFPValues";
 
 export class DataManager {
-    constructor(apiPostgresEndpoint, apiDBEndpoint) {
+    constructor(apiPostgresEndpoint, apiDBEndpoint, apiWriteEndpoint, writePasswd) {
         if (!!DataManager.instance) {
             return DataManager.instance;
         }
 
         DataManager.instance = this;
+        this.writePasswd = writePasswd;
+        this.apiWriteEndpoint = apiWriteEndpoint;
         this.apiPostgresEndpoint = apiPostgresEndpoint;
         this.apiDBEndpoint = apiDBEndpoint;
         let emptyVal = [ { id: 1, name: "" } ];
@@ -100,6 +102,11 @@ export class DataManager {
                     reject(error);
                 })
         })
+    }
+
+    postWidgetData(payload) {
+        payload.passwd = this.writePasswd;
+        return this.fetchPOSTData(this.apiWriteEndpoint, payload);
     }
 
     fetchPOSTData(endpoint, payload) {

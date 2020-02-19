@@ -15,6 +15,8 @@ import {
     toggleGeneticInteractions, togglePhysicalInteractions, toggleRegulatoryInteractions
 } from "../redux/actions/interactionsActions";
 import {connect} from "react-redux";
+import {getCheckboxDBVal} from "../AFPValues";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Interactions extends React.Component {
     constructor(props, context) {
@@ -88,7 +90,16 @@ class Interactions extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "interactions")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        let payload = {
+                            gene_int: getCheckboxDBVal(this.props.geneint.checked, this.props.geneint.details),
+                            phys_int: getCheckboxDBVal(this.props.geneprod.checked, this.props.geneprod.details),
+                            gene_reg: getCheckboxDBVal(this.props.genereg.checked, this.props.genereg.details)
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                        }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -104,4 +115,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {setGeneticInteractions, toggleGeneticInteractions, setPhysicalInteractions,
-    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions})(Interactions);
+    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions, showDataSaved})(Interactions);

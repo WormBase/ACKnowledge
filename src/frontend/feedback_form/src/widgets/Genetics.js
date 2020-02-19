@@ -23,14 +23,16 @@ import {
     getSequenceChange,
     getStrains, isGeneticsSavedToDB
 } from "../redux/selectors/geneticsSelectors";
+import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
+import {DataManager} from "../lib/DataManager";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Genetics extends React.Component {
     constructor(props, context) {
         super(props, context);
-    }
-
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
+        this.state = {
+            dataManager: new DataManager()
+        };
     }
 
     render() {
@@ -189,7 +191,18 @@ class Genetics extends React.Component {
                     </Panel>
                 </form>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "genetics")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        let payload = {
+                            alleles_list: transformEntitiesIntoAfpString(this.props.alleles, ""),
+                            allele_seq_change: getCheckboxDBVal(this.props.sequenceChange),
+                            other_alleles: JSON.stringify(this.props.otherAlleles),
+                            strains_list: transformEntitiesIntoAfpString(this.props.strains, ""),
+                            other_strains: JSON.stringify(this.props.otherStrains)
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -199,10 +212,14 @@ class Genetics extends React.Component {
 
 
 const mapStateToProps = state => ({
+    alleles: getAlleles(state).elements,
     sequenceChange: getSequenceChange(state),
     otherAlleles: getOtherAlleles(state).elements,
+    strains: getStrains(state).elements,
     otherStrains: getOtherStrains(state).elements,
     isSavedToDB: isGeneticsSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange, toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles, setOtherStrains})(Genetics);
+export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,
+    toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles,
+    setOtherStrains,showDataSaved})(Genetics);

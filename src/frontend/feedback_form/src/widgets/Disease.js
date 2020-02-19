@@ -7,6 +7,8 @@ import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
 import {setDisease, toggleDisease} from "../redux/actions/diseaseActions";
 import {connect} from "react-redux";
+import {getCheckboxDBVal} from "../AFPValues";
+import {showDataSaved} from "../redux/actions/displayActions";
 
 class Disease extends React.Component {
 
@@ -73,7 +75,14 @@ class Disease extends React.Component {
                     </Panel.Body>
                 </Panel>
                 <div align="right">
-                    <Button bsStyle="success" onClick={this.props.callback.bind(this, "disease")}>Save and continue
+                    <Button bsStyle="success" onClick={() => {
+                        let payload = {
+                            disease: getCheckboxDBVal(this.props.disease.checked, this.props.disease.details),
+                        };
+                        this.state.dataManager.postWidgetData(payload)
+                            .then(this.props.showDataSaved(true, false))
+                            .catch(this.props.showDataSaved(false, false));
+                    }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -86,4 +95,4 @@ const mapStateToProps = state => ({
     isSavedToDB: isDiseaseSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {setDisease, toggleDisease})(Disease);
+export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved})(Disease);
