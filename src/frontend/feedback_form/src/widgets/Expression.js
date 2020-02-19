@@ -5,34 +5,29 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {
+    getAdditionalExpr,
+    getExpression,
+    getRnaseq,
+    getSiteOfAction,
+    getTimeOfAction, isExpressionSavedToDB
+} from "../redux/selectors/expressionSelectors";
+import {connect} from "react-redux";
+import {
+    setAdditionalExpr,
+    setExpression, setRnaseq,
+    setSiteOfAction,
+    setTimeOfAction,
+    toggleExpression, toggleRnaseq,
+    toggleSiteOfAction, toggleTimeOfAction
+} from "../redux/actions/expressionActions";
 
 class Expression extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            saved: props["saved"],
             active: false,
-            cb_anatomic: props["anatomicExpr"],
-            cb_anatomic_details: props["anatomicExprDetails"],
-            cb_site: props["siteAction"],
-            cb_site_details: props["siteActionDetails"],
-            cb_time: props["timeAction"],
-            cb_time_details: props["timeActionDetails"],
-            cb_rna: props["rnaSeq"],
-            cb_rna_details: props["rnaSeqDetails"],
-            additionalExpr: props["additionalExpr"]
         };
-
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-        this.handleOtherCheckChange = this.handleOtherCheckChange.bind(this);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
     }
 
     getValidationState() {
@@ -46,10 +41,6 @@ class Expression extends React.Component {
         } else {
             return '';
         }
-    }
-
-    handleOtherCheckChange(e) {
-        this.setState({ active: e.target.checked });
     }
 
     setSuccessAlertMessage() {
@@ -97,7 +88,7 @@ class Expression extends React.Component {
                     alertTextNotSaved="Here you can find expression data that have been identified in your paper. Please
                     select/deselect the appropriate checkboxes and add any additional information."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <Panel>
@@ -106,7 +97,7 @@ class Expression extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.state.cb_anatomic} onClick={() => this.toggle_cb("cb_anatomic", "anatomicExpr")}>
+                            <Checkbox checked={this.props.expression.checked} onClick={() => this.props.toggleExpression()}>
                                 <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                          overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top"
@@ -114,48 +105,44 @@ class Expression extends React.Component {
                                 <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.check_cb("cb_anatomic", "anatomicExpr")}
-                                         value={this.state.cb_anatomic_details}
+                                         onClick={() => this.props.setExpression(true, '')}
+                                         value={this.props.expression.details}
                                          onChange={(event) => {
-                                             this.selfStateVarModifiedFunction(event.target.value, "cb_anatomic_details");
-                                             this.props.stateVarModifiedCallback(event.target.value, "anatomicExprDetails");
+                                             this.props.setExpression(true, event.target.value);
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_site} onClick={() => this.toggle_cb("cb_site", "siteAction")}>
+                            <Checkbox checked={this.props.siteOfAction.checked} onClick={() => this.props.toggleSiteOfAction()}>
                                 <strong>Site of action data</strong> <OverlayTrigger placement="top"
                                                                                      overlay={siteTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.check_cb("cb_site", "siteAction")}
-                                         value={this.state.cb_site_details}
+                                         onClick={() => this.props.setSiteOfAction(true, '')}
+                                         value={this.props.siteOfAction.details}
                                          onChange={(event) => {
-                                             this.props.stateVarModifiedCallback(event.target.value, "siteActionDetails");
-                                             this.selfStateVarModifiedFunction(event.target.value, "cb_site_details");
+                                             this.props.setSiteOfAction(true, event.target.value);
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_time} onClick={() => this.toggle_cb("cb_time", "timeAction")}>
+                            <Checkbox checked={this.props.timeOfAction.checked} onClick={() => this.props.toggleTimeOfAction()}>
                                 <strong>Time of action data</strong> <OverlayTrigger placement="top"
                                                                                      overlay={timeTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.check_cb("cb_time", "timeAction")}
-                                         value={this.state.cb_time_details}
+                                         onClick={() => this.props.setTimeOfAction(true, '')}
+                                         value={this.props.timeOfAction.details}
                                          onChange={(event) => {
-                                             this.props.stateVarModifiedCallback(event.target.value, "timeActionDetails");
-                                             this.selfStateVarModifiedFunction(event.target.value, "cb_time_details");
+                                             this.setTimeOfAction(true, event.target.value);
                                          }}
                             />
-                            <Checkbox checked={this.state.cb_rna} onClick={() => this.toggle_cb("cb_rna", "rnaSeq")}>
+                            <Checkbox checked={this.props.rnaSeq.checked} onClick={() => this.props.toggleRnaseq()}>
                                 <strong>RNAseq data</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.check_cb("cb_rna", "rnaSeq")}
-                                         value={this.state.cb_rna_details}
+                                         onClick={() => this.props.setRnaseq(true, '')}
+                                         value={this.props.rnaSeq.details}
                                          onChange={(event) => {
-                                             this.props.stateVarModifiedCallback(event.target.value, "rnaSeqDetails");
-                                             this.selfStateVarModifiedFunction(event.target.value, "cb_rna_details");
+                                             this.props.setRnaseq(true, event.target.value);
                                          }}
                             />
                         </Form>
@@ -186,11 +173,10 @@ class Expression extends React.Component {
                                 <Col componentClass={ControlLabel} sm={7}>
                                     <FormControl
                                         type="text"
-                                        value={this.state.additionalExpr}
+                                        value={this.props.additionalExpr}
                                         placeholder="Add details here (e.g., qPCR, Proteomics)"
                                         onChange={(event) => {
-                                            this.props.stateVarModifiedCallback(event.target.value, "additionalExpr");
-                                            this.selfStateVarModifiedFunction(event.target.value, "additionalExpr");
+                                            this.props.setAdditionalExpr(event.target.value);
                                         }}
                                     />
                                     <FormControl.Feedback />
@@ -207,5 +193,14 @@ class Expression extends React.Component {
         );
     }
 }
+const mapStateToProps = state => ({
+    expression: getExpression(state),
+    siteOfAction: getSiteOfAction(state),
+    timeOfAction: getTimeOfAction(state),
+    rnaSeq: getRnaseq(state),
+    additionalExpr: getAdditionalExpr(state),
+    isSavedToDB: isExpressionSavedToDB(state)
+});
 
-export default Expression;
+export default connect(mapStateToProps, {setExpression, toggleExpression, setSiteOfAction, toggleSiteOfAction,
+    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr})(Expression);

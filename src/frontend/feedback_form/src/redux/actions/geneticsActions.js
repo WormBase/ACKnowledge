@@ -15,15 +15,13 @@ export const ADD_OTHER_STRAIN = "ADD_OTHER_STRAIN";
 export const REMOVE_OTHER_STRAIN = "REMOVE_OTHER_STRAIN";
 
 
-export function setAlleles(elements, saved) {
-    return {
-        type: SET_ALLELES,
-        payload: {
-            elements: elements,
-            saved: saved
-        }
+export const setAlleles = (elements, saved) => ({
+    type: SET_ALLELES,
+    payload: {
+        elements: elements,
+        saved: saved
     }
-}
+});
 
 export const addAllele = allele => ({
     type: ADD_ALLELE,
@@ -32,24 +30,20 @@ export const addAllele = allele => ({
     }
 });
 
-export function removeAllele(allele) {
-    return {
-        type: REMOVE_ALLELE,
-        payload: {
-            allele
-        }
+export const removeAllele = allele => ({
+    type: REMOVE_ALLELE,
+    payload: {
+        allele
     }
-}
+});
 
-export function setStrains(elements, saved) {
-   return {
-       type: SET_STRAINS,
-       payload: {
-           elements: elements,
-           saved: saved
-       }
-   }
-}
+export const setStrains = (elements, saved) => ({
+    type: SET_STRAINS,
+    payload: {
+        elements: elements,
+        saved: saved
+    }
+});
 
 export const addStrain = strain => ({
     type: ADD_STRAIN,
@@ -65,37 +59,31 @@ export const removeStrain = strain => ({
     }
 });
 
-export function setSequenceChange(checked, details) {
-    return {
-        type: SET_SEQUENCE_CHANGE,
-        payload: {
-            checked: checked,
-            details: details
-        }
-    };
-}
+export const setSequenceChange = (checked, details) => ({
+    type: SET_SEQUENCE_CHANGE,
+    payload: {
+        checked: checked,
+        details: details
+    }
+});
 
-export function toggleSequenceChange() {
-    return {
-        type: TOGGLE_SEQUENCE_CHANGE,
-        payload: {}
-    };
-}
+export const toggleSequenceChange = () => ({
+    type: TOGGLE_SEQUENCE_CHANGE,
+    payload: {}
+});
 
 export const setIsGeneticsSavedToDB = () => ({
     type: SET_IS_GENETICS_SAVED_TO_DB,
     payload: {}
 });
 
-export function setOtherAlleles(elements, saved) {
-   return {
-       type: SET_OTHER_ALLELES,
-       payload: {
-           elements: elements,
-           saved: saved
-       }
-   }
-}
+export const setOtherAlleles = (elements, saved) => ({
+    type: SET_OTHER_ALLELES,
+    payload: {
+        elements: elements,
+        saved: saved
+    }
+});
 
 export const addOtherAllele = allele => ({
     type: ADD_OTHER_ALLELE,
@@ -111,15 +99,13 @@ export const removeOtherAllele = allele => ({
     }
 });
 
-export function setOtherStrains(elements, saved) {
-   return {
-       type: SET_OTHER_STRAINS,
-       payload: {
-           elements: elements,
-           saved: saved
-       }
-   }
-}
+export const setOtherStrains = (elements, saved) => ({
+    type: SET_OTHER_STRAINS,
+    payload: {
+        elements: elements,
+        saved: saved
+    }
+});
 
 export const addOtherStrain = strain => ({
     type: ADD_OTHER_STRAIN,

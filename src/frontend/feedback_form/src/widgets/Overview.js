@@ -24,33 +24,9 @@ class Overview extends React.Component {
         this.state = {
             show_fetch_data_error: false,
         };
-
-        this.addGeneFunction = this.addGeneFunction.bind(this);
-        this.remGeneFunction = this.remGeneFunction.bind(this);
-        this.addSpeciesFunction = this.addSpeciesFunction.bind(this);
-        this.remSpeciesFunction = this.remSpeciesFunction.bind(this);
     }
 
-    setSuccessAlertMessage() {
-        this.alertDismissable.setSaved(true);
-    }
-
-    addGeneFunction(gene) {
-        this.props.addGene(gene);
-    }
-
-    remGeneFunction(gene) {
-        this.props.removeGene(gene);
-    }
-
-    addSpeciesFunction(gene) {
-        this.props.addSpecies(gene);
-    }
-
-    remSpeciesFunction(gene) {
-        this.props.removeSpecies(gene);
-    }
-
+    setSuccessAlertMessage = () => this.alertDismissable.setSaved(true);
 
     render() {
         const geneTooltip = (
@@ -75,8 +51,8 @@ class Overview extends React.Component {
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
                 dataReaderFunction={getGenes}
-                addItemFunction={this.addGeneFunction}
-                remItemFunction={this.remGeneFunction}
+                addItemFunction={(gene) => this.props.addGene(gene)}
+                remItemFunction={(gene) => this.props.removeGene(gene)}
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
             />);
@@ -173,8 +149,8 @@ class Overview extends React.Component {
                                 itemsNameSingular={"species"}
                                 itemsNamePlural={"species"}
                                 dataReaderFunction={getSpecies}
-                                addItemFunction={this.addSpeciesFunction}
-                                remItemFunction={this.remSpeciesFunction}
+                                addItemFunction={(species) => this.props.addSpecies(species)}
+                                remItemFunction={(species) => this.props.removeSpecies(species)}
                                 searchType={"species"}
                                 sampleQuery={"e.g. Caenorhabditis"}
                             />
@@ -191,9 +167,7 @@ class Overview extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    genes: getGenes(state),
     geneModel: getGeneModel(state),
-    species: getSpecies(state),
     isSavedToDB: isOverviewSavedToDB(state)
 });
 

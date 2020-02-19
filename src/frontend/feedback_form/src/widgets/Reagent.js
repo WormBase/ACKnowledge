@@ -13,41 +13,25 @@ import MultipleSelect from "../components/multiselect/MultiSelect";
 import EditableTable from "../components/EditableTwoColsTable";
 import OneColumnEditableTable from "../components/EditableOneColsTable";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
+import {connect} from "react-redux";
+import {
+    addOtherAntibody, addOtherTransgene,
+    addTransgene, removeOtherAntibody, removeOtherTransgene,
+    removeTransgene,
+    setNewAntibodies, setOtherAntibodies, setOtherTransgenes,
+    toggleNewAntibodies
+} from "../redux/actions/reagentActions";
+import {
+    getNewAntibodies,
+    getOtherAntibodies,
+    getOtherTransgenes,
+    getTransgenes
+} from "../redux/selectors/reagentSelectors";
+import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
 
 class Reagent extends React.Component {
-    constructor(props, context) {
+     constructor(props, context) {
         super(props, context);
-        this.state = {
-            saved: props["saved"],
-            selectedTransgenes: props["selectedTransgenes"],
-            cb_newantib: props["newAntib"],
-            cb_newantib_details: props["newAntibDetails"],
-            other_antib: props["otherAntibs"],
-            transgeneSelect: undefined,
-            otherTransgenes: props["otherTransgenes"]
-        };
-
-        this.check_cb = props["checkCb"].bind(this);
-        this.toggle_cb = props["toggleCb"].bind(this);
-        this.selfStateVarModifiedFunction = this.selfStateVarModifiedFunction.bind(this);
-    }
-
-    setSelectedTransgenes(transgenes) {
-        this.transgeneSelect.setSelectedItems(transgenes);
-    }
-
-    selfStateVarModifiedFunction(value, stateVarName) {
-        let stateElem = {};
-        stateElem[stateVarName] = value;
-        this.setState(stateElem);
-    }
-
-    setOtherAntibodies(otherAntibodies) {
-        this.otherAntibodiesTable.updateProducts(otherAntibodies);
-    }
-
-    setOtherTransgenes(otherTransgenes) {
-        this.otherTransgenesTable.updateProducts(otherTransgenes);
     }
 
     setSuccessAlertMessage() {
@@ -77,7 +61,7 @@ class Reagent extends React.Component {
                     validate the list as for the previous section. You can also submit information about antibodies
                     mentioned or generated in the study."
                     alertTextSaved="The data for this page has been saved, you can modify it any time."
-                    saved={this.state.saved}
+                    saved={this.props.isSavedToDB}
                     ref={instance => { this.alertDismissable = instance; }}
                 />
                 <form>
@@ -91,10 +75,9 @@ class Reagent extends React.Component {
                             <MultipleSelect
                                 itemsNameSingular={"transgene"}
                                 itemsNamePlural={"transgenes"}
-                                selectedItems={this.state.selectedTransgenes}
-                                ref={instance => { this.transgeneSelect = instance; }}
-                                selectedItemsCallback={this.props.stateVarModifiedCallback}
-                                stateVarName={"selectedTransgenes"}
+                                dataReaderFunction={getTransgenes}
+                                addItemFunction={(transgene) => this.props.addTransgene(transgene)}
+                                remItemFunction={(transgene) => this.props.removeTransgene(transgene)}
                                 searchType={"transgene"}
                                 sampleQuery={"e.g. ctIs40"}
                             />
@@ -110,11 +93,11 @@ class Reagent extends React.Component {
                                     <div className="col-sm-12">
                                         <OneColumnEditableTable
                                             title={""}
-                                            tableChangedCallback={this.props.stateVarModifiedCallback}
-                                            stateVarName={"otherTransgenes"}
-                                            products={this.state.otherTransgenes}
+                                            products={this.props.otherTransgenes}
+                                            addProductFunction={(transgene) => this.props.addOtherTransgene(transgene)}
+                                            remProductFunction={(transgene) => this.props.remOtherTransgene(transgene)}
+                                            setProductsFunction={(transgenes) => this.props.setOtherTransgenes(transgenes)}
                                             sampleText={"e.g. ctIs40  or ycEx60"}
-                                            ref={instance => { this.otherTransgenesTable = instance; }}
                                         />
                                     </div>
                                 </div>
@@ -130,20 +113,19 @@ class Reagent extends React.Component {
                         <Panel.Body>
                             <Form>
                                 <FormGroup>
-                                    <Checkbox checked={this.state.cb_newantib} onClick={() => this.toggle_cb("cb_newantib", "newAntib")}>
+                                    <Checkbox checked={this.props.newAntibodies.checked} onClick={this.props.toggleNewAntibodies}>
                                         <strong>Newly generated antibodies</strong>
                                     </Checkbox>
                                     <FormControl type="text" placeholder="Enter antibody name and details here"
-                                                 onClick={() => this.check_cb("cb_newantib", "newAntib")}
-                                                 value={this.state.cb_newantib_details}
-                                                 onChange={(event) => {this.selfStateVarModifiedFunction(event.target.value, "cb_newantib_details");
-                                                 this.props.stateVarModifiedCallback(event.target.value, "newAntibDetails")}}/>
+                                                 onClick={this.props.setNewAntibodies}
+                                                 value={this.props.newAntibodies.details}
+                                                 onChange={(event) => {this.props.setNewAntibodies(true, event.target.value);}}/>
                                     <br/>
                                     <EditableTable title={"Other Antibodies used"}
-                                                   tableChangedCallback={this.props.stateVarModifiedCallback}
-                                                   stateVarName={"otherAntibs"}
-                                                   products={this.state.other_antib}
-                                                   ref={instance => { this.otherAntibodiesTable = instance; }}
+                                                   products={this.props.otherAntibodies}
+                                                   addProductFunction={(antibody) => this.props.addOtherTransgene(antibody)}
+                                                   remProductFunction={(antibody) => this.props.remOtherTransgene(antibody)}
+                                                   setProductsFunction={(antibodies) => this.props.setOtherTransgenes(antibodies)}
                                     />
                                     <FormControl.Feedback />
                                 </FormGroup>
@@ -160,4 +142,13 @@ class Reagent extends React.Component {
     }
 }
 
-export default Reagent;
+const mapStateToProps = state => ({
+    otherTransgenes: getOtherTransgenes(state).elements,
+    newAntibodies: getNewAntibodies(state),
+    otherAntibodies: getOtherAntibodies(state).elements,
+    isSavedToDB: isGeneticsSavedToDB(state)
+});
+
+export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
+    addOtherTransgene, removeOtherTransgene, setOtherTransgenes, addOtherAntibody, removeOtherAntibody,
+    setOtherAntibodies})(Reagent);

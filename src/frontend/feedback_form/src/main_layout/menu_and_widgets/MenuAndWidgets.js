@@ -36,6 +36,22 @@ import {
     setStrains
 } from "../../redux/actions/geneticsActions";
 import {isGeneticsSavedToDB} from "../../redux/selectors/geneticsSelectors";
+import {
+    setIsReagentSavedToDB,
+    setNewAntibodies,
+    setOtherAntibodies,
+    setOtherTransgenes,
+    setTransgenes
+} from "../../redux/actions/reagentActions";
+import {isReagentSavedToDB} from "../../redux/selectors/reagentSelectors";
+import {
+    setAdditionalExpr,
+    setExpression, setIsExpressionSavedToDB,
+    setRnaseq,
+    setSiteOfAction,
+    setTimeOfAction
+} from "../../redux/actions/expressionActions";
+import {isExpressionSavedToDB} from "../../redux/selectors/expressionSelectors";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -47,7 +63,9 @@ class MenuAndWidgets extends React.Component {
         }
         let parameters = queryString.parse(this.props.location.search);
         let completedSections = {};
-        Object.values(WIDGET).forEach((key) => {completedSections[key] = false;});
+        Object.values(WIDGET).forEach((key) => {
+            completedSections[key] = false;
+        });
         this.state = {
             dataManager: new DataManager(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' +
                 parameters.paper + '&passwd=' + parameters.passwd, process.env.REACT_APP_API_DB_READ_ENDPOINT),
@@ -63,37 +81,6 @@ class MenuAndWidgets extends React.Component {
             show_data_saved: false,
             data_saved_success: true,
             data_saved_last_widget: false,
-            selectedStrains: new Set(),
-            selectedTransgenes: new Set(),
-            newAntib: false,
-            otherAntibs: [ { id: 1, name: "", publicationId: "" } ],
-            otherTransgenes: [ { id: 1, name: "" } ],
-            newAntibDetails: "",
-            anatomicExpr: false,
-            anatomicExprDetails: "",
-            siteAction: false,
-            siteActionDetails: "",
-            timeAction: false,
-            timeActionDetails: "",
-            rnaSeq: false,
-            rnaSeqDetails: "",
-            additionalExpr: "",
-            svmGeneInt: false,
-            svmGeneIntDetails: "",
-            svmPhysInt: false,
-            svmPhysIntDetails: "",
-            svmGeneReg: false,
-            svmGeneRegDetails: "",
-            svmAllele: false,
-            svmTransgene: false,
-            svmRNAi: false,
-            svmProtein: false,
-            svmProteinDetails: "",
-            chemical:false,
-            env: false,
-            other: "",
-            humDis: false,
-            disComments: "",
             show_sections_not_completed: false,
             hideGenes: parameters.hide_genes === "true",
             hideAlleles: parameters.hide_alleles === "true",
@@ -172,8 +159,38 @@ class MenuAndWidgets extends React.Component {
                 if (this.state.dataManager.variationsList.prevSaved() && this.state.dataManager.strainsList.prevSaved()) {
                     this.props.setIsGeneticsSavedToDB();
                 }
+
+                // reagent
+                this.props.setTransgenes(this.state.dataManager.transgenesList.entities());
+                this.props.setOtherTransgenes(this.state.dataManager.otherTransgenesList.entities());
+                this.props.setOtherAntibodies(this.state.dataManager.otherAntibodiesList.entities());
+                this.props.setNewAntibodies(this.state.dataManager.newAntibodies.isChecked(),
+                    this.state.dataManager.newAntibodies.details());
+                if (this.state.dataManager.transgenesList.prevSaved() &&
+                    this.state.dataManager.otherTransgenesList.prevSaved() &&
+                    this.state.dataManager.otherAntibodiesList.prevSaved()) {
+                    this.props.setIsReagentSavedToDB();
+                }
+
+                // expression
+                this.props.setExpression(this.state.dataManager.expression.isChecked(),
+                    this.state.dataManager.expression.details());
+                this.props.setSiteOfAction(this.state.dataManager.siteOfAction.isChecked(),
+                    this.state.dataManager.siteOfAction.details());
+                this.props.setTimeOfAction(this.state.dataManager.timeOfAction.isChecked(),
+                    this.state.dataManager.timeOfAction.details());
+                this.props.setRnaseq(this.state.dataManager.rnaSeq.isChecked(),
+                    this.state.dataManager.rnaSeq.details());
+                this.props.setAdditionalExpr(this.state.dataManager.additionalExpr);
+                if (this.state.dataManager.expression.prevSaved() && this.state.dataManager.siteOfAction.prevSaved() &&
+                    this.state.dataManager.timeOfAction.prevSaved() && this.state.dataManager.rnaSeq.prevSaved() &&
+                    this.state.dataManager.additionalExpr.prevSaved()) {
+                    this.props.setIsExpressionSavedToDB();
+                }
             })
-            .catch(() => {this.setState({show_fetch_data_error: true})});
+            .catch(() => {
+                this.setState({show_fetch_data_error: true})
+            });
 
         this.state.dataManager.getPersonData(this.state.passwd, this.state.personid)
             .then(() => {
@@ -344,7 +361,7 @@ class MenuAndWidgets extends React.Component {
                 <div className="row">
                     {data_fetch_err_alert}
                     <div id="whiteBanner"/>
-                    <Header />
+                    <Header/>
                     <Title title={title} journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
                     <div>
                         <div>
@@ -354,38 +371,52 @@ class MenuAndWidgets extends React.Component {
                                         <Nav bsStyle="pills" stacked onSelect={this.handleSelectMenu}>
                                             <IndexLinkContainer to={WIDGET.OVERVIEW + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.OVERVIEW]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
-                                                    &nbsp;{this.props.isOverviewSavedToDB ? <Glyphicon glyph="ok"/> : false}
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
+                                                    &nbsp;{this.props.isOverviewSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}
                                                 </NavItem></IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.GENETICS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.GENETICS]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
-                                                &nbsp;{this.props.isGeneticsSavedToDB ? <Glyphicon glyph="ok"/> : false}
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
+                                                    &nbsp;{this.props.isGeneticsSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}
                                                 </NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.REAGENT + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.REAGENT]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}&nbsp;{reagentOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}
+                                                    &nbsp;{this.props.isReagentSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.EXPRESSION + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.EXPRESSION]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}&nbsp;{expressionOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}
+                                                    &nbsp;{this.props.isExpressionSavedToDB ?
+                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.INTERACTIONS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.INTERACTIONS]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}&nbsp;{interactionsOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}&nbsp;{interactionsOk}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}&nbsp;{phenotypesOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}&nbsp;{phenotypesOk}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.DISEASE + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.DISEASE]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;{diseaseOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;{diseaseOk}</NavItem>
                                             </IndexLinkContainer>
                                             <IndexLinkContainer to={WIDGET.COMMENTS + this.props.location.search}
                                                                 active={this.state.selectedMenu === MENU_INDEX[WIDGET.COMMENTS]}>
-                                                <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}&nbsp;{contact_infoOk}</NavItem>
+                                                <NavItem
+                                                    eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}&nbsp;{contact_infoOk}</NavItem>
                                             </IndexLinkContainer>
                                         </Nav>
                                     </div>
@@ -404,7 +435,8 @@ class MenuAndWidgets extends React.Component {
                                             spinner
                                             text='Sending data ...'
                                         >
-                                            <Route exact path="/" render={() => (<Redirect to={"/overview" + this.props.location.search}/>)}/>
+                                            <Route exact path="/" render={() => (
+                                                <Redirect to={"/overview" + this.props.location.search}/>)}/>
                                             <Route path={"/" + WIDGET.OVERVIEW}
                                                    render={() => <Overview callback={this.handleFinishedSection}
                                                                            hideGenes={this.state.hideGenes}
@@ -412,50 +444,25 @@ class MenuAndWidgets extends React.Component {
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.GENETICS}
-                                                   render={() => <Genetics  callback={this.handleFinishedSection}
-                                                                            hideAlleles={this.state.hideAlleles}
-                                                                            hideStrains={this.state.hideStrains}
-                                                                            toggleEntityVisibilityCallback={this.enableEntityListVisibility}
+                                                   render={() => <Genetics callback={this.handleFinishedSection}
+                                                                           hideAlleles={this.state.hideAlleles}
+                                                                           hideStrains={this.state.hideStrains}
+                                                                           toggleEntityVisibilityCallback={this.enableEntityListVisibility}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.REAGENT}
-                                                   render={() => <Reagent callback={this.handleFinishedSection}
-                                                                          saved={this.state.completedSections[WIDGET.REAGENT]}
-                                                                          selectedTransgenes={this.state.selectedTransgenes}
-                                                                          stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                          newAntib={this.state.newAntib}
-                                                                          newAntibDetails={this.state.newAntibDetails}
-                                                                          otherAntibs={this.state.otherAntibs}
-                                                                          otherTransgenes={this.state.otherTransgenes}
-                                                                          toggleCb={this.toggle_cb}
-                                                                          checkCb={this.check_cb}
-                                                                          ref={instance => { this.reagent = instance; }}
-                                                   />}
+                                                   render={() => <Reagent callback={this.handleFinishedSection}/>}
                                             />
                                             <Route path={"/" + WIDGET.EXPRESSION}
-                                                   render={() => <Expression callback={this.handleFinishedSection}
-                                                                             saved={this.state.completedSections[WIDGET.EXPRESSION]}
-                                                                             anatomicExpr={this.state.anatomicExpr}
-                                                                             anatomicExprDetails={this.state.anatomicExprDetails}
-                                                                             siteAction={this.state.siteAction}
-                                                                             siteActionDetails={this.state.siteActionDetails}
-                                                                             timeAction={this.state.timeAction}
-                                                                             timeActionDetails={this.state.timeActionDetails}
-                                                                             rnaSeq={this.state.rnaSeq}
-                                                                             rnaSeqDetails={this.state.rnaSeqDetails}
-                                                                             additionalExpr={this.state.additionalExpr}
-                                                                             stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                                             selfStateVarModifiedFunction={this.stateVarModifiedCallback}
-                                                                             toggleCb={this.toggle_cb}
-                                                                             checkCb={this.check_cb}
-                                                                             ref={instance => { this.expression = instance; }}
-                                                   />}
+                                                   render={() => <Expression callback={this.handleFinishedSection}/>}
                                             />
                                             <Route path={"/" + WIDGET.INTERACTIONS}
                                                    render={() => <Interactions
                                                        callback={this.handleFinishedSection}
                                                        saved={this.state.completedSections[WIDGET.INTERACTIONS]}
-                                                       ref={instance => { this.interactions = instance; }}
+                                                       ref={instance => {
+                                                           this.interactions = instance;
+                                                       }}
                                                        cb_genetic={this.state.svmGeneInt}
                                                        cb_physical={this.state.svmPhysInt}
                                                        cb_regulatory={this.state.svmGeneReg}
@@ -480,7 +487,9 @@ class MenuAndWidgets extends React.Component {
                                                        cb_chemical={this.state.chemical}
                                                        cb_env={this.state.env}
                                                        stateVarModifiedCallback={this.stateVarModifiedCallback}
-                                                       ref={instance => { this.phenotype = instance; }}
+                                                       ref={instance => {
+                                                           this.phenotype = instance;
+                                                       }}
                                                        toggleCb={this.toggle_cb}
                                                        checkCb={this.check_cb}
                                                    />}
@@ -493,7 +502,9 @@ class MenuAndWidgets extends React.Component {
                                                                           stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                                           toggleCb={this.toggle_cb}
                                                                           checkCb={this.check_cb}
-                                                                          ref={instance => { this.disease = instance; }}
+                                                                          ref={instance => {
+                                                                              this.disease = instance;
+                                                                          }}
                                                    />}
                                             />
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
@@ -502,7 +513,9 @@ class MenuAndWidgets extends React.Component {
                                                 other={this.state.other}
                                                 stateVarModifiedCallback={this.stateVarModifiedCallback}
                                                 personId={this.state.personid}
-                                                ref={instance => { this.other = instance; }}
+                                                ref={instance => {
+                                                    this.other = instance;
+                                                }}
                                             />}/>
                                         </LoadingOverlay>
                                     </div>
@@ -510,9 +523,10 @@ class MenuAndWidgets extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup} />
+                    <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup}/>
                     <DataSavedModal show={this.state.show_data_saved} onHide={this.goToNextSection}
-                                    success={this.state.data_saved_success} last_widget={this.state.data_saved_last_widget}/>
+                                    success={this.state.data_saved_success}
+                                    last_widget={this.state.data_saved_last_widget}/>
                     <SectionsNotCompletedModal show={this.state.show_sections_not_completed}
                                                onHide={() => this.setState({show_sections_not_completed: false})}
                                                sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec] && sec !== WIDGET.COMMENTS).map((sec) => WIDGET_TITLE[sec])}/>
@@ -524,8 +538,14 @@ class MenuAndWidgets extends React.Component {
 
 const mapStateToProps = state => ({
     isOverviewSavedToDB: isOverviewSavedToDB(state),
-    isGeneticsSavedToDB: isGeneticsSavedToDB(state)
+    isGeneticsSavedToDB: isGeneticsSavedToDB(state),
+    isReagentSavedToDB: isReagentSavedToDB(state),
+    isExpressionSavedToDB: isExpressionSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {setGenes, setSpecies, setGeneModel, setPerson, setIsOverviewSavedToDB,
-    setAlleles, setStrains, setSequenceChange, setOtherAlleles, setOtherStrains, setIsGeneticsSavedToDB})(withRouter(MenuAndWidgets));
+export default connect(mapStateToProps, {
+    setGenes, setSpecies, setGeneModel, setPerson, setIsOverviewSavedToDB,
+    setAlleles, setStrains, setSequenceChange, setOtherAlleles, setOtherStrains, setIsGeneticsSavedToDB, setTransgenes,
+    setOtherTransgenes, setOtherAntibodies, setNewAntibodies, setIsReagentSavedToDB, setExpression, setSiteOfAction,
+    setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB
+})(withRouter(MenuAndWidgets));

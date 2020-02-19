@@ -12,7 +12,7 @@ import {
     addAllele, addOtherAllele, addOtherStrain,
     addStrain,
     removeAllele, removeOtherAllele, removeOtherStrain,
-    removeStrain,
+    removeStrain, setOtherAlleles, setOtherStrains,
     setSequenceChange,
     toggleSequenceChange
 } from "../redux/actions/geneticsActions";
@@ -27,27 +27,6 @@ import {
 class Genetics extends React.Component {
     constructor(props, context) {
         super(props, context);
-
-        this.addAlleleFunction = this.addAlleleFunction.bind(this);
-        this.remAlleleFunction = this.remAlleleFunction.bind(this);
-        this.addStrainFunction = this.addStrainFunction.bind(this);
-        this.remStrainFunction = this.remStrainFunction.bind(this);
-    }
-
-    addAlleleFunction(allele) {
-        this.props.addAllele(allele);
-    }
-
-    remAlleleFunction(allele) {
-        this.props.removeAllele(allele);
-    }
-
-    addStrainFunction(allele) {
-        this.props.addStrain(allele);
-    }
-
-    remStrainFunction(allele) {
-        this.props.removeStrain(allele);
     }
 
     setSuccessAlertMessage() {
@@ -82,8 +61,8 @@ class Genetics extends React.Component {
                     itemsNameSingular={"allele"}
                     itemsNamePlural={"alleles"}
                     dataReaderFunction={getAlleles}
-                    addItemFunction={this.addAlleleFunction}
-                    remItemFunction={this.remAlleleFunction}
+                    addItemFunction={(allele) => this.props.addAllele(allele)}
+                    remItemFunction={(allele) => this.props.removeAllele(allele)}
                     searchType={"variation"}
                     sampleQuery={"e.g. e1000"}
                 />);
@@ -99,8 +78,8 @@ class Genetics extends React.Component {
                     itemsNameSingular={"strain"}
                     itemsNamePlural={"strains"}
                     dataReaderFunction={getStrains}
-                    addItemFunction={this.addStrainFunction}
-                    remItemFunction={this.remStrainFunction}
+                    addItemFunction={(strain) => this.props.addStrain(strain)}
+                    remItemFunction={(strain) => this.props.removeStrain(strain)}
                     searchType={"strain"}
                     sampleQuery={"e.g. CB4856"}
                 />);
@@ -138,8 +117,10 @@ class Genetics extends React.Component {
                                     <div className="col-sm-12">
                                         <OneColumnEditableTable
                                             title={""}
-                                            stateVarName={"otherAlleles"}
                                             products={this.props.otherAlleles}
+                                            addProductFunction={(allele) => this.props.addOtherAllele(allele)}
+                                            remProductFunction={(allele) => this.props.removeOtherAllele(allele)}
+                                            setProductsFunction={(alleles) => this.props.setOtherAlleles(alleles)}
                                             sampleText={"e.g. e1000"}
                                         />
                                     </div>
@@ -195,8 +176,10 @@ class Genetics extends React.Component {
                                     <div className="col-sm-12">
                                         <OneColumnEditableTable
                                             title={""}
-                                            stateVarName={"otherStrains"}
                                             products={this.props.otherStrains}
+                                            addProductFunction={(strain) => this.props.addOtherStrain(strain)}
+                                            remProductFunction={(strain) => this.props.removeOtherStrain(strain)}
+                                            setProductsFunction={(strains) => this.props.setOtherStrains(strains)}
                                             sampleText={"e.g. CB1001"}
                                         />
                                     </div>
@@ -216,12 +199,10 @@ class Genetics extends React.Component {
 
 
 const mapStateToProps = state => ({
-    alleles: getAlleles(state),
-    strains: getStrains(state),
     sequenceChange: getSequenceChange(state),
-    otherAlleles: getOtherAlleles(state),
-    otherStrains: getOtherStrains(state),
+    otherAlleles: getOtherAlleles(state).elements,
+    otherStrains: getOtherStrains(state).elements,
     isSavedToDB: isGeneticsSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange, toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain})(Genetics);
+export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange, toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles, setOtherStrains})(Genetics);

@@ -6,35 +6,16 @@ class OneColumnEditableTable extends Component {
     constructor(props) {
         super(props);
 
-        //  this.state.products = [];
-        this.state = {};
-        this.state.products = props.products;
-
         this.handleProductTable = this.handleProductTable.bind(this);
         this.updateProducts = this.updateProducts.bind(this);
     }
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.state.products !== this.props.products) {
-            this.setState({products: this.props.products})
-        }
-    }
 
     handleRowDel(product) {
-        var index = this.state.products.indexOf(product);
-        this.state.products.splice(index, 1);
-        this.setState(this.state.products);
-        this.props.tableChangedCallback(this.state.products, this.props["stateVarName"]);
+        this.props.remProductFunction(product)
     };
 
     handleAddEvent(evt) {
-        var id = (+ new Date() + Math.floor(Math.random() * 999999)).toString(36);
-        var product = {
-            id: id,
-            name: ""
-        };
-        this.state.products.push(product);
-        this.setState(this.state.products);
-        this.props.tableChangedCallback(this.state.products, this.props["stateVarName"]);
+        this.props.addProductFunction("");
     }
 
     handleProductTable(evt) {
@@ -43,8 +24,7 @@ class OneColumnEditableTable extends Component {
             name: evt.target.name,
             value: evt.target.value
         };
-        var products = this.state.products.slice();
-        var newProducts = products.map(function(product) {
+        var newProducts = this.props.products.map(function(product) {
             for (var key in product) {
                 if (key === item.name && product.id.toString() === item.id) {
                     product[key] = item.value;
@@ -52,9 +32,7 @@ class OneColumnEditableTable extends Component {
             }
             return product;
         });
-        this.setState({products:newProducts});
-        this.props.tableChangedCallback(newProducts, this.props["stateVarName"]);
-        //  console.log(this.state.products);
+        this.props.setProductsFunction(newProducts);
     };
 
     updateProducts(newProducts) {
@@ -68,8 +46,7 @@ class OneColumnEditableTable extends Component {
                 <ProductTable onProductTableUpdate={this.handleProductTable.bind(this)}
                               onRowAdd={this.handleAddEvent.bind(this)}
                               onRowDel={this.handleRowDel.bind(this)}
-                              products={this.state.products}
-                              filterText={this.state.filterText}
+                              products={this.props.products}
                               sampleText={this.props.sampleText}
                 />
             </div>
@@ -95,7 +72,7 @@ class ProductTable extends React.Component {
                     </thead>
 
                     <tbody>
-                    {this.props.products.elements.map(function(product) {
+                    {this.props.products.map(function(product) {
                         return (<ProductRow onProductTableUpdate={onProductTableUpdate} product={product} onDelEvent={rowDel.bind(this)} key={product.id} sampleText={sampleText}/>)
                     })}
 

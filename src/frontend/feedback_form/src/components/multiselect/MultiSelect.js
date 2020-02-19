@@ -15,7 +15,7 @@ import {connect} from "react-redux";
 class MultipleSelect extends Component {
     constructor(props, context) {
         super(props, context);
-        let selected = new Set(props.items.elements);
+        let selected = new Set(props.items);
         this.state = {
             showModal: false,
             selectedItemsToDisplay: selected,
@@ -40,7 +40,7 @@ class MultipleSelect extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.items !== this.props.items) {
-            this.setState({selectedItemsToDisplay: new Set(this.props.items.elements)})
+            this.setState({selectedItemsToDisplay: new Set(this.props.items)})
         }
     }
 
@@ -50,9 +50,7 @@ class MultipleSelect extends Component {
                this.props.addItemFunction(item);
             });
         }
-        else {
-            this.setState({showModal: false});
-        }
+        this.setState({showModal: false});
     }
 
     handleRemSelectedFromList() {
@@ -298,7 +296,7 @@ class MultipleSelect extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-    return {items: ownProps.dataReaderFunction(state)}
+    return {items: ownProps.dataReaderFunction(state).elements}
 }
 
 export default connect(mapStateToProps)(MultipleSelect);

@@ -58,7 +58,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         alleles: {
-          elements: [...state.alleles, action.payload.allele],
+          elements: [...state.alleles.elements, action.payload.allele],
           saved: false
         },
         strains: state.strains,
@@ -98,7 +98,7 @@ export default function(state = initialState, action) {
         ...state,
         alleles: state.alleles,
         strains: {
-          elements: [...state.strains, action.payload.strain],
+          elements: [...state.strains.elements, action.payload.strain],
           saved: false
         },
         sequenceChange: state.sequenceChange,

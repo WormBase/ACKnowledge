@@ -22,7 +22,16 @@ export class DataManager {
         this.seqChange = new CheckboxWithDetails(false, "", false);
         this.otherVariations = new EntityList(emptyVal, false);
         this.otherStrains = new EntityList(emptyVal, false);
+        this.transgenesList = new EntityList(new Set(), false);
+        this.otherTransgenesList = new EntityList(emptyVal, false);
+        this.otherAntibodiesList = new EntityList({id: 1, name: "", publicationId: ""}, false);
+        this.newAntibodies = new CheckboxWithDetails(false, "", false);
         this.person = {name: '', personId: undefined};
+        this.expression = new CheckboxWithDetails(false, "", false);
+        this.siteOfAction = new CheckboxWithDetails(false, "", false);
+        this.timeOfAction = new CheckboxWithDetails(false, "", false);
+        this.rnaSeq = new CheckboxWithDetails(false, "", false);
+        this.additionalExpr = '';
     }
 
     getPaperData() {
@@ -37,6 +46,15 @@ export class DataManager {
                     this.seqChange = getCheckbxOrSingleFieldFromWBAPIData(result.seqchange, result.seqchange);
                     this.otherVariations = getTableValuesFromWBAPIData(result.othervariation, false);
                     this.otherStrains = getTableValuesFromWBAPIData(result.otherstrain, false);
+                    this.transgenesList = getSetOfEntitiesFromWBAPIData(result.transgene, result.transgene, "");
+                    this.otherTransgenesList = getTableValuesFromWBAPIData(result.othertransgene, false);
+                    this.otherAntibodiesList = getTableValuesFromWBAPIData(result.otherantibody, true);
+                    this.newAntibodies = getCheckbxOrSingleFieldFromWBAPIData(result.antibody, undefined);
+                    this.expression = getCheckbxOrSingleFieldFromWBAPIData(result.otherexpr, result.otherexpr);
+                    this.siteOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.siteaction, undefined);
+                    this.timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.timeaction, undefined);
+                    this.rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.rnaseq, result.rnaseq);
+                    this.additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.additionalexpr, undefined);
                     resolve();
                 })
                 .catch(error => {
