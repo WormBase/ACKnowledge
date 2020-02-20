@@ -40,7 +40,7 @@ class MultipleSelect extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.items !== this.props.items) {
-            this.setState({selectedItemsToDisplay: new Set(this.props.items)})
+            this.setState({selectedItemsToDisplay: new Set(this.props.items), selectedItemsAll: new Set(this.props.items)})
         }
     }
 
