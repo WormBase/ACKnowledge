@@ -136,6 +136,8 @@ class FeedbackFormWriter:
                     send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
                                                                     paper_journal, author_email, self.admin_emails,
                                                                     self.email_passwd, tiny_url)
+                resp.body = '{"result": "success"}'
+                resp.status = falcon.HTTP_200
 
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)

@@ -14,7 +14,8 @@ import queryString from 'query-string';
 import Title from "../Title";
 import Disease from "../../widgets/Disease";
 import Header from "../Header";
-import {DataSavedModal, SectionsNotCompletedModal, WelcomeModal} from "../MainModals";
+import {SectionsNotCompletedModal, WelcomeModal} from "../MainModals";
+import DataSavedModal from "../DataSavedModal";
 import PersonSelector from "../PersonSelector";
 import LoadingOverlay from 'react-loading-overlay';
 import {DataManager} from "../../lib/DataManager";
@@ -87,7 +88,7 @@ class MenuAndWidgets extends React.Component {
         this.state = {
             dataManager: new DataManager(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' +
                 parameters.paper + '&passwd=' + parameters.passwd, process.env.REACT_APP_API_DB_READ_ENDPOINT,
-                parameters.passwd),
+                process.env.REACT_APP_API_DB_WRITE_ENDPOINT, parameters.passwd),
             pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
                 WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
@@ -233,13 +234,10 @@ class MenuAndWidgets extends React.Component {
         });
     }
 
-    allSectionsFinished() {
-        return Object.keys(this.state.completedSections).filter((item) => item !== WIDGET.COMMENTS).every(item => this.state.completedSections[item]);
-    }
-
     goToNextSection() {
         const newSelectedMenu = Math.min(this.state.selectedMenu + 1, this.state.pages.length);
-        this.setState({selectedMenu: newSelectedMenu, show_data_saved: false});
+        this.setState({selectedMenu: newSelectedMenu});
+        this.props.hideDataSaved();
         this.props.history.push(this.state.pages[newSelectedMenu - 1] + this.props.location.search);
         window.scrollTo(0, 0)
     }
@@ -384,7 +382,7 @@ class MenuAndWidgets extends React.Component {
                         </div>
                     </div>
                     <WelcomeModal show={this.state.showPopup} onHide={this.handleClosePopup}/>
-                    <DataSavedModal show={this.props.dataSaved.showMessage} onHide={this.goToNextSection}
+                    <DataSavedModal show={this.props.dataSaved.showMessage} goToNextSection={this.goToNextSection}
                                     success={this.props.dataSaved.success}
                                     last_widget={this.props.dataSaved.lastWidget}/>
                     <SectionsNotCompletedModal show={this.props.sectionsNotCompleted}

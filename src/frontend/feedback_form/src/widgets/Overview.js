@@ -18,7 +18,7 @@ import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/
 import {connect} from "react-redux";
 import {DataManager} from "../lib/DataManager";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {hideDataSaved, showDataSaved} from "../redux/actions/displayActions";
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -165,8 +165,13 @@ class Overview extends React.Component {
                             species_list: transformEntitiesIntoAfpString(this.props.species, ""),
                         };
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsOverviewSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false)
+                            });
                     }}>Save and continue
                     </Button>
                 </div>

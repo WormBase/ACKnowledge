@@ -42,45 +42,6 @@ export class WelcomeModal extends React.Component {
     }
 }
 
-export class DataSavedModal extends React.Component {
-    render() {
-        let btn = <Button bsStyle="danger" onClick={this.props.onHide}>Close</Button>;
-        let title = "Error!";
-        let body = <div><span>Try again later or contact </span><a href="mailto:help@wormbase.org">Wormbase Helpdesk</a></div>;
-        if (this.props.success) {
-            if (this.props.last_widget) {
-                btn = <Button bsStyle="success" onClick={this.props.onHide}>Close</Button>;
-                title =  "Congratulations!";
-                body = "You have successfully submitted all your data to Wormbase. Thank you for your participation.";
-            } else {
-                btn = <Button bsStyle="success" onClick={this.props.onHide}>Go to next section</Button>;
-                title =  "Success!";
-                body = "Data for this section have been successfully saved.";
-            }
-
-        }
-        if (this.props.show) {
-            return (
-                <Modal
-                    {...this.props}
-                    bsSize="medium">
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-lg">{title}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {body}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        {btn}
-                    </Modal.Footer>
-                </Modal>
-            );
-        } else {
-            return ("");
-        }
-    }
-}
-
 export class SectionsNotCompletedModal extends React.Component {
     render() {
         if (this.props.show) {
