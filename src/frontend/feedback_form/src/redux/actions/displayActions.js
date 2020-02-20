@@ -2,6 +2,8 @@ export const SHOW_SECTIONS_NOT_COMPLETED = "SHOW_SECTIONS_NOT_COMPLETED";
 export const HIDE_SECTIONS_NOT_COMPLETED = "HIDE_SECTIONS_NOT_COMPLETED";
 export const SHOW_DATA_SAVED = "SHOW_DATA_SAVED";
 export const HIDE_DATA_SAVED = "HIDE_DATA_SAVED";
+export const SET_LOADING = "SET_LOADING";
+export const UNSET_LOADING = "UNSET_LOADING";
 
 export const showSectionsNotCompleted = () => ({
     type: SHOW_SECTIONS_NOT_COMPLETED,
@@ -23,5 +25,15 @@ export const showDataSaved = (success, lastWidget) => ({
 
 export const hideDataSaved = () => ({
     type: HIDE_DATA_SAVED,
+    payload: {}
+});
+
+export const setLoading = () => ({
+    type: SET_LOADING,
+    payload: {}
+});
+
+export const unsetLoading = () => ({
+    type: UNSET_LOADING,
     payload: {}
 });

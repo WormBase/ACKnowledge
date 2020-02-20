@@ -69,7 +69,7 @@ import {setDisease, setIsDiseaseSavedToDB} from "../../redux/actions/diseaseActi
 import {isDiseaseSavedToDB} from "../../redux/selectors/diseaseSelectors";
 import {isCommentsSavedToDB} from "../../redux/selectors/commentsSelectors";
 import {setComments, setIsCommentsSavedToDB} from "../../redux/actions/commentsActions";
-import {getDataSaved, getSectionsNotCompleted} from "../../redux/selectors/displaySelectors";
+import {getDataSaved, getIsLoading, getSectionsNotCompleted} from "../../redux/selectors/displaySelectors";
 import {hideDataSaved, hideSectionsNotCompleted} from "../../redux/actions/displayActions";
 
 class MenuAndWidgets extends React.Component {
@@ -81,10 +81,6 @@ class MenuAndWidgets extends React.Component {
             currSelectedMenu = MENU_INDEX[currentLocation.substring(1)];
         }
         let parameters = queryString.parse(this.props.location.search);
-        let completedSections = {};
-        Object.values(WIDGET).forEach((key) => {
-            completedSections[key] = false;
-        });
         this.state = {
             dataManager: new DataManager(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' +
                 parameters.paper + '&passwd=' + parameters.passwd, process.env.REACT_APP_API_DB_READ_ENDPOINT,
@@ -92,7 +88,6 @@ class MenuAndWidgets extends React.Component {
             pages: [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION, WIDGET.INTERACTIONS,
                 WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS],
             selectedMenu: currSelectedMenu,
-            completedSections: completedSections,
             showPopup: true,
             paper_id: parameters.paper,
             passwd: parameters.passwd,
@@ -100,7 +95,6 @@ class MenuAndWidgets extends React.Component {
             hideGenes: parameters.hide_genes === "true",
             hideAlleles: parameters.hide_alleles === "true",
             hideStrains: parameters.hide_strains === "true",
-            isLoading: false,
             show_data_fetch_error: false
         };
         this.handleSelectMenu = this.handleSelectMenu.bind(this);
@@ -171,7 +165,7 @@ class MenuAndWidgets extends React.Component {
                     this.state.dataManager.timeOfAction.details());
                 this.props.setRnaseq(this.state.dataManager.rnaSeq.isChecked(),
                     this.state.dataManager.rnaSeq.details());
-                this.props.setAdditionalExpr(this.state.dataManager.additionalExpr);
+                this.props.setAdditionalExpr(this.state.dataManager.additionalExpr.details());
                 if (this.state.dataManager.expression.prevSaved() && this.state.dataManager.siteOfAction.prevSaved() &&
                     this.state.dataManager.timeOfAction.prevSaved() && this.state.dataManager.rnaSeq.prevSaved() &&
                     this.state.dataManager.additionalExpr.prevSaved()) {
@@ -341,7 +335,7 @@ class MenuAndWidgets extends React.Component {
                                 <div className="panel panel-default">
                                     <div className="panel-body">
                                         <LoadingOverlay
-                                            active={this.state.isLoading}
+                                            active={this.props.isLoading}
                                             spinner
                                             text='Sending data ...'
                                         >
@@ -387,7 +381,7 @@ class MenuAndWidgets extends React.Component {
                                     last_widget={this.props.dataSaved.lastWidget}/>
                     <SectionsNotCompletedModal show={this.props.sectionsNotCompleted}
                                                onHide={() => this.props.hideSectionsNotCompleted()}
-                                               sections={Object.keys(this.state.completedSections).filter((sec) => !this.state.completedSections[sec] && sec !== WIDGET.COMMENTS).map((sec) => WIDGET_TITLE[sec])}/>
+                                               sections={[this.props.isOverviewSavedToDB ? -1 : WIDGET.OVERVIEW, this.props.isGeneticsSavedToDB ? -1 : WIDGET.GENETICS, this.props.isReagentSavedToDB ? -1 : WIDGET.REAGENT, this.props.isExpressionSavedToDB ? -1 : WIDGET.EXPRESSION, this.props.isInteractionsSavedToDB ? -1 : WIDGET.INTERACTIONS, this.props.isPhenotypesSavedToDB ? -1 : WIDGET.PHENOTYPES, this.props.isDiseaseSavedToDB ? -1 : WIDGET.DISEASE, this.props.isCommentsSavedToDB ? -1 : WIDGET.COMMENTS].filter((widgetIdx) => widgetIdx !== -1 && widgetIdx !== WIDGET.COMMENTS).map((idx) => WIDGET_TITLE[idx])}/>
                 </div>
             </div>
         );
@@ -404,7 +398,8 @@ const mapStateToProps = state => ({
     isDiseaseSavedToDB: isDiseaseSavedToDB(state),
     isCommentsSavedToDB: isCommentsSavedToDB(state),
     sectionsNotCompleted: getSectionsNotCompleted(state),
-    dataSaved: getDataSaved(state)
+    dataSaved: getDataSaved(state),
+    isLoading: getIsLoading(state)
 });
 
 export default connect(mapStateToProps, {

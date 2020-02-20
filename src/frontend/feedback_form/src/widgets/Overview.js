@@ -18,7 +18,7 @@ import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/
 import {connect} from "react-redux";
 import {DataManager} from "../lib/DataManager";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {hideDataSaved, showDataSaved} from "../redux/actions/displayActions";
+import {hideDataSaved, setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -158,20 +158,20 @@ class Overview extends React.Component {
                 </form>
                 <div align="right">
                     <Button bsStyle="success" onClick={() => {
-
                         const payload = {
                             gene_list: transformEntitiesIntoAfpString(this.props.genes, "WBGene"),
                             gene_model_update: getCheckboxDBVal(this.props.geneModel.checked, this.props.geneModel.details),
                             species_list: transformEntitiesIntoAfpString(this.props.species, ""),
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
                             .then(() => {
                                 this.props.setIsOverviewSavedToDB();
                                 this.props.showDataSaved(true, false);
                             })
                             .catch((error) => {
-                                this.props.showDataSaved(false, false)
-                            });
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
                     }}>Save and continue
                     </Button>
                 </div>
@@ -188,4 +188,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel,
-    setIsOverviewSavedToDB, showDataSaved})(Overview);
+    setIsOverviewSavedToDB, showDataSaved, setLoading, unsetLoading})(Overview);

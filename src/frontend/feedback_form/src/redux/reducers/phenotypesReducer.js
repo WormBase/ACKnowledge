@@ -183,7 +183,7 @@ export default function(state = initialState, action) {
         overexprPheno: state.overexprPheno,
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
-        enzymaticAct: {checked: !state.envPheno.checked, details: ''},
+        enzymaticAct: {checked: !state.enzymaticAct.checked, details: ''},
         isSavedToDB: false
       };
     }

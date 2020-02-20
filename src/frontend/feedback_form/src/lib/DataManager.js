@@ -75,8 +75,8 @@ export class DataManager {
                     this.rnai = getCheckbxOrSingleFieldFromWBAPIData(result.rnai, result.rnai);
                     this.overexpr = getCheckbxOrSingleFieldFromWBAPIData(result.overexpr, result.overexpr);
                     this.chemphen = getCheckbxOrSingleFieldFromWBAPIData(result.chemphen, undefined);
-                    this.envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.genereg, undefined);
-                    this.catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.genereg, undefined);
+                    this.envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.envpheno, undefined);
+                    this.catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.catalyticact, undefined);
                     this.disease = getCheckbxOrSingleFieldFromWBAPIData(result.humdis, undefined);
                     this.comments = getCheckbxOrSingleFieldFromWBAPIData(result.comment, undefined);
                     resolve();

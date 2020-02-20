@@ -12,7 +12,7 @@ import {
     setAllelePhenotype,
     setChemicalPhenotype,
     setEnvironmentalPhenotype,
-    setEnzymaticActivity,
+    setEnzymaticActivity, setIsPhenotypesSavedToDB,
     setOverexprPhenotype,
     setRnaiPhenotype,
     toggleAllelePhenotype,
@@ -24,9 +24,17 @@ import {
 } from "../redux/actions/phenotypesActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {DataManager} from "../lib/DataManager";
 
 class Phenotypes extends React.Component {
+
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            dataManager: new DataManager()
+        };
+    }
 
     render() {
         const svmTooltip = (
@@ -131,7 +139,7 @@ class Phenotypes extends React.Component {
                                     <strong>Enzymatic Activity</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.check_cb("cb_protein", "svmProtein")}
+                                             onClick={() => this.props.setEnzymaticActivity(true, this.props.enzymaticAct.details)}
                                              value={this.props.enzymaticAct.details}
                                              onChange={(event) => {
                                                  this.props.setEnzymaticActivity(true, event.target.value);
@@ -152,9 +160,15 @@ class Phenotypes extends React.Component {
                             env: getCheckboxDBVal(this.props.envPheno.checked),
                             protein: getCheckboxDBVal(this.props.enzymaticAct.checked, this.props.enzymaticAct.details),
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsPhenotypesSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
                     }}>Save and continue
                     </Button>
                 </div>
@@ -176,4 +190,4 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
     setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
-    setEnzymaticActivity, toggleEnzymaticActivity, showDataSaved})(Phenotypes);
+    setEnzymaticActivity, toggleEnzymaticActivity, showDataSaved, setIsPhenotypesSavedToDB, setLoading, unsetLoading})(Phenotypes);

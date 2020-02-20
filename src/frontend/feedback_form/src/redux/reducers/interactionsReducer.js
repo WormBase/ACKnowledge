@@ -39,7 +39,7 @@ export default function(state = initialState, action) {
     case TOGGLE_GENETIC_INTERACTIONS: {
       return {
         ...state,
-        geneint: {checked: !state.expression.checked, details: ''},
+        geneint: {checked: !state.geneint.checked, details: ''},
         geneprod: state.geneprod,
         genereg: state.genereg,
         isSavedToDB: false

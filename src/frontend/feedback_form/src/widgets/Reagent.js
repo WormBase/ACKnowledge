@@ -17,7 +17,7 @@ import {connect} from "react-redux";
 import {
     addOtherAntibody, addOtherTransgene,
     addTransgene, removeOtherAntibody, removeOtherTransgene,
-    removeTransgene,
+    removeTransgene, setIsReagentSavedToDB,
     setNewAntibodies, setOtherAntibodies, setOtherTransgenes,
     toggleNewAntibodies
 } from "../redux/actions/reagentActions";
@@ -29,11 +29,15 @@ import {
 } from "../redux/selectors/reagentSelectors";
 import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {DataManager} from "../lib/DataManager";
 
 class Reagent extends React.Component {
-     constructor(props, context) {
+    constructor(props, context) {
         super(props, context);
+        this.state = {
+            dataManager: new DataManager()
+        };
     }
 
     render() {
@@ -120,9 +124,9 @@ class Reagent extends React.Component {
                                     <br/>
                                     <EditableTable title={"Other Antibodies used"}
                                                    products={this.props.otherAntibodies}
-                                                   addProductFunction={(antibody) => this.props.addOtherTransgene(antibody)}
-                                                   remProductFunction={(antibody) => this.props.removeOtherTransgene(antibody)}
-                                                   setProductsFunction={(antibodies) => this.props.setOtherTransgenes(antibodies)}
+                                                   addProductFunction={(antibody) => this.props.addOtherAntibody(antibody)}
+                                                   remProductFunction={(antibody) => this.props.removeOtherAntibody(antibody)}
+                                                   setProductsFunction={(antibodies) => this.props.setOtherAntibodies(antibodies)}
                                     />
                                     <FormControl.Feedback />
                                 </FormGroup>
@@ -135,12 +139,18 @@ class Reagent extends React.Component {
                         const payload = {
                             transgenes_list: transformEntitiesIntoAfpString(this.props.transgenes, ""),
                             new_transgenes: JSON.stringify(this.props.otherTransgenes),
-                            new_antibody: getCheckboxDBVal(this.props.newAntibodies.checked, this.state.newAntibodies.details),
+                            new_antibody: getCheckboxDBVal(this.props.newAntibodies.checked, this.props.newAntibodies.details),
                             other_antibodies: JSON.stringify(this.props.otherAntibodies)
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsReagentSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false)
+                            }).finally(() => this.props.unsetLoading());
                     }}>Save and continue
                     </Button>
                 </div>
@@ -159,4 +169,4 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
     addOtherTransgene, removeOtherTransgene, setOtherTransgenes, addOtherAntibody, removeOtherAntibody,
-    setOtherAntibodies, showDataSaved})(Reagent);
+    setOtherAntibodies, showDataSaved, setIsReagentSavedToDB, setLoading, unsetLoading})(Reagent);

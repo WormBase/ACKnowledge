@@ -12,7 +12,7 @@ import {
     addAllele, addOtherAllele, addOtherStrain,
     addStrain,
     removeAllele, removeOtherAllele, removeOtherStrain,
-    removeStrain, setOtherAlleles, setOtherStrains,
+    removeStrain, setIsGeneticsSavedToDB, setOtherAlleles, setOtherStrains,
     setSequenceChange,
     toggleSequenceChange
 } from "../redux/actions/geneticsActions";
@@ -25,7 +25,7 @@ import {
 } from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {DataManager} from "../lib/DataManager";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 
 class Genetics extends React.Component {
     constructor(props, context) {
@@ -198,9 +198,15 @@ class Genetics extends React.Component {
                             strains_list: transformEntitiesIntoAfpString(this.props.strains, ""),
                             other_strains: JSON.stringify(this.props.otherStrains)
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsGeneticsSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
                     }}>Save and continue
                     </Button>
                 </div>
@@ -221,4 +227,4 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,
     toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles,
-    setOtherStrains,showDataSaved})(Genetics);
+    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, setLoading, unsetLoading})(Genetics);

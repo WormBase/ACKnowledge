@@ -10,17 +10,21 @@ import {
     getRegulatoryInteractions, isInteractionsSavedToDB
 } from "../redux/selectors/interactionsSelectors";
 import {
-    setGeneticInteractions,
+    setGeneticInteractions, setIsInteractionsSavedToDB,
     setPhysicalInteractions, setRegulatoryInteractions,
     toggleGeneticInteractions, togglePhysicalInteractions, toggleRegulatoryInteractions
 } from "../redux/actions/interactionsActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {DataManager} from "../lib/DataManager";
 
 class Interactions extends React.Component {
     constructor(props, context) {
         super(props, context);
+        this.state = {
+            dataManager: new DataManager()
+        };
     }
 
     render() {
@@ -52,7 +56,7 @@ class Interactions extends React.Component {
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.props.setGeneticInteractions(true, '')}
+                                             onClick={() => this.props.setGeneticInteractions(true, this.props.geneint.details)}
                                              value={this.props.geneint.details}
                                              onChange={(event) => {
                                                  this.props.setGeneticInteractions(true, event.target.value);
@@ -63,18 +67,18 @@ class Interactions extends React.Component {
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.props.setPhysicalInteractions(true, '')}
+                                             onClick={() => this.props.setPhysicalInteractions(true, this.props.geneprod.details)}
                                              value={this.props.geneprod.details}
                                              onChange={(event) => {
                                                  this.props.setPhysicalInteractions(true, event.target.value);
                                              }}/>
-                                <Checkbox checked={this.props.genereg.checked} onClick={() => this.props.toggleGeneticInteractions()}>
+                                <Checkbox checked={this.props.genereg.checked} onClick={() => this.props.toggleRegulatoryInteractions()}>
                                     <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top"
                                                                                              overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
-                                             onClick={() => this.props.setRegulatoryInteractions(true, '')}
+                                             onClick={() => this.props.setRegulatoryInteractions(true, this.props.genereg.details)}
                                              value={this.props.genereg.details}
                                              onChange={(event) => {
                                                  this.props.setRegulatoryInteractions(true, event.target.value);
@@ -91,9 +95,15 @@ class Interactions extends React.Component {
                             phys_int: getCheckboxDBVal(this.props.geneprod.checked, this.props.geneprod.details),
                             gene_reg: getCheckboxDBVal(this.props.genereg.checked, this.props.genereg.details)
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsInteractionsSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
                         }}>Save and continue
                     </Button>
                 </div>
@@ -110,4 +120,5 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {setGeneticInteractions, toggleGeneticInteractions, setPhysicalInteractions,
-    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions, showDataSaved})(Interactions);
+    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions, showDataSaved,
+    setIsInteractionsSavedToDB, setLoading, unsetLoading})(Interactions);

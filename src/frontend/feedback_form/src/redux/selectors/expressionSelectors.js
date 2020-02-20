@@ -8,6 +8,6 @@ export const getTimeOfAction = store => getExpressionState(store) ? getExpressio
 
 export const getRnaseq = store => getExpressionState(store) ? getExpressionState(store).rnaseq : {checked: false, details: ''};
 
-export const getAdditionalExpr = store => getExpressionState(store) ? getExpressionState(store).additional_expr : '';
+export const getAdditionalExpr = store => getExpressionState(store) ? getExpressionState(store).additionalExpr : '';
 
 export const isExpressionSavedToDB = store => getExpressionState(store) ? getExpressionState(store).isSavedToDB : false;

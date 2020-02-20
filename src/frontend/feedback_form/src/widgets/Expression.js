@@ -15,20 +15,21 @@ import {
 import {connect} from "react-redux";
 import {
     setAdditionalExpr,
-    setExpression, setRnaseq,
+    setExpression, setIsExpressionSavedToDB, setRnaseq,
     setSiteOfAction,
     setTimeOfAction,
     toggleExpression, toggleRnaseq,
     toggleSiteOfAction, toggleTimeOfAction
 } from "../redux/actions/expressionActions";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 import {getCheckboxDBVal} from "../AFPValues";
+import {DataManager} from "../lib/DataManager";
 
 class Expression extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            active: false,
+            dataManager: new DataManager()
         };
     }
 
@@ -102,7 +103,7 @@ class Expression extends React.Component {
                                 <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.props.setExpression(true, '')}
+                                         onClick={() => this.props.setExpression(true, this.props.expression.details)}
                                          value={this.props.expression.details}
                                          onChange={(event) => {
                                              this.props.setExpression(true, event.target.value);
@@ -114,7 +115,7 @@ class Expression extends React.Component {
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.props.setSiteOfAction(true, '')}
+                                         onClick={() => this.props.setSiteOfAction(true, this.props.siteOfAction.details)}
                                          value={this.props.siteOfAction.details}
                                          onChange={(event) => {
                                              this.props.setSiteOfAction(true, event.target.value);
@@ -126,17 +127,17 @@ class Expression extends React.Component {
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.props.setTimeOfAction(true, '')}
+                                         onClick={() => this.props.setTimeOfAction(true, this.props.timeOfAction.details)}
                                          value={this.props.timeOfAction.details}
                                          onChange={(event) => {
-                                             this.setTimeOfAction(true, event.target.value);
+                                             this.props.setTimeOfAction(true, event.target.value);
                                          }}
                             />
                             <Checkbox checked={this.props.rnaSeq.checked} onClick={() => this.props.toggleRnaseq()}>
                                 <strong>RNAseq data</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => this.props.setRnaseq(true, '')}
+                                         onClick={() => this.props.setRnaseq(true, this.props.rnaSeq.details)}
                                          value={this.props.rnaSeq.details}
                                          onChange={(event) => {
                                              this.props.setRnaseq(true, event.target.value);
@@ -188,12 +189,18 @@ class Expression extends React.Component {
                             anatomic_expr: getCheckboxDBVal(this.props.expression.checked, this.props.expression.details),
                             site_action: getCheckboxDBVal(this.props.siteOfAction.checked, this.props.siteOfAction.details),
                             time_action: getCheckboxDBVal(this.props.timeOfAction, this.props.timeOfAction.details),
-                            rnaseq: getCheckboxDBVal(this.state.rnaSeq.checked, this.state.rnaSeq.details),
+                            rnaseq: getCheckboxDBVal(this.props.rnaSeq.checked, this.props.rnaSeq.details),
                             additional_expr: this.props.additionalExpr
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
+                            .then(() => {
+                                this.props.setIsExpressionSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
                     }}>Save and continue
                     </Button>
                 </div>
@@ -211,4 +218,5 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, {setExpression, toggleExpression, setSiteOfAction, toggleSiteOfAction,
-    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr, showDataSaved})(Expression);
+    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr, showDataSaved,
+    setIsExpressionSavedToDB, setLoading, unsetLoading})(Expression);

@@ -5,12 +5,20 @@ import {
 } from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
-import {setDisease, toggleDisease} from "../redux/actions/diseaseActions";
+import {setDisease, setIsDiseaseSavedToDB, toggleDisease} from "../redux/actions/diseaseActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {DataManager} from "../lib/DataManager";
 
 class Disease extends React.Component {
+
+    constructor(props, context) {
+        super(props, context);
+        this.state = {
+            dataManager: new DataManager()
+        };
+    }
 
     render() {
 
@@ -29,7 +37,7 @@ class Disease extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form>
-                            <Checkbox checked={this.props.disease.checked} onClick={() => this.toggle_cb("humDis", "humDis")}>
+                            <Checkbox checked={this.props.disease.checked} onClick={() => this.props.toggleDisease()}>
                                 <strong>The paper contains at least one of the following:</strong>
                             </Checkbox>
                             <ul>
@@ -59,7 +67,7 @@ class Disease extends React.Component {
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
                                                  value={this.props.disease.details}
-                                                 onClick={() => this.props.toggleDisease()}
+                                                 onClick={() => this.props.setDisease(true, this.props.disease.details)}
                                                  onChange={(event) => {
                                                      this.props.setDisease(true, event.target.value);
                                                  }}
@@ -74,10 +82,16 @@ class Disease extends React.Component {
                         let payload = {
                             disease: getCheckboxDBVal(this.props.disease.checked, this.props.disease.details),
                         };
+                        this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
-                            .then(this.props.showDataSaved(true, false))
-                            .catch(this.props.showDataSaved(false, false));
-                    }}>Save and continue
+                            .then(() => {
+                                this.props.setIsDiseaseSavedToDB();
+                                this.props.showDataSaved(true, false);
+                            })
+                            .catch((error) => {
+                                this.props.showDataSaved(false, false);
+                            }).finally(() => this.props.unsetLoading());
+                        }}>Save and continue
                     </Button>
                 </div>
             </div>
@@ -90,4 +104,4 @@ const mapStateToProps = state => ({
     isSavedToDB: isDiseaseSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved})(Disease);
+export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved, setIsDiseaseSavedToDB, setLoading, unsetLoading})(Disease);

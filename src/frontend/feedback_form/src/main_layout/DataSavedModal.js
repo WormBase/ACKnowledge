@@ -11,7 +11,7 @@ class DataSavedModal extends React.Component {
         let body = <div><span>Try again later or contact </span><a href="mailto:help@wormbase.org">Wormbase Helpdesk</a></div>;
         if (this.props.success) {
             if (this.props.last_widget) {
-                btn = <Button bsStyle="success" onClick={this.props.hideDataSaved()}>Close</Button>;
+                btn = <Button bsStyle="success" onClick={() => this.props.hideDataSaved()}>Close</Button>;
                 title =  "Congratulations!";
                 body = "You have successfully submitted all your data to Wormbase. Thank you for your participation.";
             } else {
@@ -24,7 +24,6 @@ class DataSavedModal extends React.Component {
         if (this.props.show) {
             return (
                 <Modal show={this.props.show} onHide={() => this.props.hideDataSaved()}
-                    {...this.props}
                     bsSize="medium">
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-lg">{title}</Modal.Title>

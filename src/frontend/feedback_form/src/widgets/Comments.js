@@ -3,9 +3,9 @@ import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {WIDGET} from "../main_layout/menu_and_widgets/constants";
 import {connect} from "react-redux";
-import {setComments} from "../redux/actions/commentsActions";
+import {setComments, setIsCommentsSavedToDB} from "../redux/actions/commentsActions";
 import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
-import {showDataSaved, showSectionsNotCompleted} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, showSectionsNotCompleted, unsetLoading} from "../redux/actions/displayActions";
 import {DataManager} from "../lib/DataManager";
 import {isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
@@ -137,14 +137,21 @@ class Other extends React.Component {
                         if (this.props.allOtherWidgetsSavedToDB) {
                             const payload = {
                                 comments: this.props.comments,
-                                person_id: "two" + this.props.personid
+                                person_id: "two" + this.props.personId
                             };
+                            this.props.setLoading();
                             this.state.dataManager.postWidgetData(payload)
-                                .then(this.props.showDataSaved(true, true))
-                                .catch(this.props.showDataSaved(false, true));
+                                .then(() => {
+                                    this.props.setIsCommentsSavedToDB();
+                                    this.props.showDataSaved(true, true);
+                                })
+                                .catch((error) => {
+                                    this.props.showDataSaved(false, true);
+                                }).finally(() => this.props.unsetLoading());
                         } else {
                             this.props.showSectionsNotCompleted()
                         }
+
                     }}>Finish and submit
                     </Button>
                 </div>
@@ -154,11 +161,11 @@ class Other extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    commetns: getComments(state),
+    comments: getComments(state),
     isSavedToDB: isCommentsSavedToDB(state),
     allOtherWidgetsSavedToDB: isOverviewSavedToDB(state) && isGeneticsSavedToDB(state) && isReagentSavedToDB(state) &&
         isExpressionSavedToDB(state) && isInteractionsSavedToDB(state) && isPhenotypesSavedToDB(state) &&
         isDiseaseSavedToDB(state)
 });
 
-export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted})(Other);
+export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted, setIsCommentsSavedToDB, setLoading, unsetLoading})(Other);
