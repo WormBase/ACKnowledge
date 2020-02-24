@@ -24,9 +24,13 @@ class FeedbackFormReader:
             if paper_id:
                 logger.info("paper found")
 
+                person_id = self.db.get_contributor_id(paper_id=paper_id).replace('two', '')
+                if not person_id:
+                    person_id = req.media["person_id"]
+
                 if "person_id" in req.media:
-                    fullname = self.db.get_user_fullname_from_personid(person_id="two" + req.media["person_id"])
-                    resp.body = '{{"fullname": "{}"}}'.format(fullname)
+                    fullname = self.db.get_user_fullname_from_personid(person_id="two" + person_id)
+                    resp.body = '{{"fullname": "{}", "person_id": "{}"}}'.format(fullname, person_id)
                     resp.status = falcon.HTTP_200
 
             else:

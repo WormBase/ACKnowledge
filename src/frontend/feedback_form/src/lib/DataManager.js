@@ -95,7 +95,7 @@ export class DataManager {
             this.fetchPOSTData(this.apiDBEndpoint, payload)
                 .then(result => {
                     this.person.name = result.fullname;
-                    this.person.personId = personId;
+                    this.person.personId = result.person_id;
                     resolve();
                 })
                 .catch((error) => {

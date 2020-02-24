@@ -1519,6 +1519,11 @@ class DBManager(object):
         self.cur.execute("INSERT INTO afp_contributor_hst (joinkey, afp_contributor_hst) VALUES('{}', '{}')"
                          .format(paper_id, self.get_current_email_address_for_person(person_id)))
 
+    def get_contributor_id(self, paper_id):
+        self.cur.execute("select afp_contributor from afp_contributor WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        return self.get_person_id_from_email_address(res[0]) if res else None
+
     def get_num_emailed(self):
         self.cur.execute("select count(distinct afp_email.afp_email) from afp_email join "
                          "afp_version on afp_email.joinkey = afp_version.joinkey where afp_version.afp_version = '2'")
