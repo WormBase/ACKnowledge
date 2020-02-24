@@ -208,9 +208,7 @@ class MenuAndWidgets extends React.Component {
                                                    render={() => <Phenotypes />}/>
                                             <Route path={"/" + WIDGET.DISEASE}
                                                    render={() => <Disease />}/>
-                                            <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo
-                                                personId={queryString.parse(this.props.location.search).personid}
-                                            />}/>
+                                            <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo/>}/>
                                         </LoadingOverlay>
                                     </div>
                                 </div>

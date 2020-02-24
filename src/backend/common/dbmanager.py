@@ -1513,7 +1513,10 @@ class DBManager(object):
         return self.get_user_fullname_from_personid(person_id)
 
     def set_contributor(self, paper_id, person_id):
+        self.cur.execute("DELETE FROM afp_contributor WHERE joinkey = '{}'".format(paper_id))
         self.cur.execute("INSERT INTO afp_contributor (joinkey, afp_contributor) VALUES('{}', '{}')"
+                         .format(paper_id, self.get_current_email_address_for_person(person_id)))
+        self.cur.execute("INSERT INTO afp_contributor_hst (joinkey, afp_contributor_hst) VALUES('{}', '{}')"
                          .format(paper_id, self.get_current_email_address_for_person(person_id)))
 
     def get_num_emailed(self):

@@ -1,7 +1,6 @@
 import React from 'react';
 import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
-import {WIDGET} from "../constants";
 import {connect} from "react-redux";
 import {setComments, setIsCommentsSavedToDB} from "../redux/actions/commentsActions";
 import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
@@ -14,6 +13,7 @@ import {isExpressionSavedToDB} from "../redux/selectors/expressionSelectors";
 import {isInteractionsSavedToDB} from "../redux/selectors/interactionsSelectors";
 import {isPhenotypesSavedToDB} from "../redux/selectors/phenotypesSelectors";
 import {isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
+import {getPerson} from "../redux/selectors/personSelectors";
 
 class Other extends React.Component {
 
@@ -137,7 +137,7 @@ class Other extends React.Component {
                         if (this.props.allOtherWidgetsSavedToDB) {
                             const payload = {
                                 comments: this.props.comments,
-                                person_id: "two" + this.props.personId
+                                person_id: "two" + this.props.person.personId
                             };
                             this.props.setLoading();
                             this.state.dataManager.postWidgetData(payload)
@@ -163,6 +163,7 @@ class Other extends React.Component {
 const mapStateToProps = state => ({
     comments: getComments(state),
     isSavedToDB: isCommentsSavedToDB(state),
+    person: getPerson(state),
     allOtherWidgetsSavedToDB: isOverviewSavedToDB(state) && isGeneticsSavedToDB(state) && isReagentSavedToDB(state) &&
         isExpressionSavedToDB(state) && isInteractionsSavedToDB(state) && isPhenotypesSavedToDB(state) &&
         isDiseaseSavedToDB(state)
