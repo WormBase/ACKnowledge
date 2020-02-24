@@ -4,6 +4,8 @@ export const SHOW_DATA_SAVED = "SHOW_DATA_SAVED";
 export const HIDE_DATA_SAVED = "HIDE_DATA_SAVED";
 export const SET_LOADING = "SET_LOADING";
 export const UNSET_LOADING = "UNSET_LOADING";
+export const SHOW_DATA_FETCH_ERROR = "SHOW_DATA_FETCH_ERROR";
+export const HIDE_DATA_FETCH_ERROR = "HIDE_DATA_FETCH_ERROR";
 
 export const showSectionsNotCompleted = () => ({
     type: SHOW_SECTIONS_NOT_COMPLETED,
@@ -35,5 +37,15 @@ export const setLoading = () => ({
 
 export const unsetLoading = () => ({
     type: UNSET_LOADING,
+    payload: {}
+});
+
+export const showDataFetchError = () => ({
+    type: SHOW_DATA_FETCH_ERROR,
+    payload: {}
+});
+
+export const hideDataFetchError = () => ({
+    type: HIDE_DATA_FETCH_ERROR,
     payload: {}
 });
