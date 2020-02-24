@@ -266,14 +266,14 @@ class DBManager(object):
             Dict[str, str]: the map between transgene symbol and id
         """
         transgene_name_id_map = {}
+        self.cur.execute("SELECT trp_name.trp_name, trp_synonym.trp_synonym "
+                         "FROM trp_name, trp_synonym "
+                         "WHERE trp_name.joinkey = trp_synonym.joinkey")
+        rows = self.cur.fetchall()
+        transgene_name_id_map.update({row[1]: row[0] for row in rows})
         self.cur.execute("SELECT trp_name.trp_name, trp_publicname.trp_publicname "
                          "FROM trp_name, trp_publicname "
                          "WHERE trp_name.joinkey = trp_publicname.joinkey")
-        rows = self.cur.fetchall()
-        transgene_name_id_map.update({row[1]: row[0] for row in rows})
-        self.cur.execute("SELECT trp_name.trp_name, trp_synonym.trp_synonym "
-                         "FROM trp_name, trp_synonym "
-                         "WHERE trp_name.joinkey = trp_synonym.joinkey;")
         rows = self.cur.fetchall()
         transgene_name_id_map.update({row[1]: row[0] for row in rows})
         return transgene_name_id_map
