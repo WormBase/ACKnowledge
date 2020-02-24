@@ -24,8 +24,10 @@ class FeedbackFormReader:
             if paper_id:
                 logger.info("paper found")
 
-                person_id = self.db.get_contributor_id(paper_id=paper_id).replace('two', '')
-                if not person_id:
+                person_id = self.db.get_contributor_id(paper_id=paper_id)
+                if person_id:
+                    person_id = person_id.replace('two', '')
+                else:
                     person_id = req.media["person_id"]
 
                 if "person_id" in req.media:
