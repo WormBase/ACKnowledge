@@ -1,5 +1,6 @@
 import copy
 import logging
+import math
 import re
 import shutil
 from typing import Dict, Set, List
@@ -11,6 +12,7 @@ from PyPDF2.utils import u_
 import urllib.request
 import tempfile
 
+from src.backend.common.apimanager import APIManager
 from src.backend.common.dbmanager import DBManager
 
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
@@ -28,12 +30,22 @@ SPECIES_BLACKLIST = {"4853", "30023", "8805", "216498", "1420681", "10231", "156
 OPENING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
 CLOSING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
 
+GENES_BLACKLIST = ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
+                   'lin-35', 'lon-2', 'myo-2', 'myo-3', 'pha-1', 'pes-10', 'pie-1', 'rol-6', 'rrf-3', 'spe-11', 'sur-5',
+                   'tbb-2', 'unc-22', 'unc-54', 'unc-119', 'cbr-unc-119']
+
+TF_MAP = {}
+IDF_MAP = {}
+
 
 logger = logging.getLogger(__name__)
 
 
-def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences,
-                            match_uppercase: bool = False):
+def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_num_occurrences: int = 1,
+                            match_uppercase: bool = False, tot_num_papers: int = 0, tfidf: float = 0.0,
+                            api_manager: APIManager = None):
+    if min_num_occurrences < 1:
+        min_num_occurrences = 1
     for keyword in keywords:
         if keyword in fulltext_str or match_uppercase and keyword.upper() in fulltext_str:
             try:
@@ -42,14 +54,21 @@ def get_matches_in_fulltext(fulltext_str, keywords, papers_map, paper_id, min_nu
                 if match_uppercase and keyword.upper() != keyword:
                     match_counter += len(re.findall(OPENING_REGEX_STR + re.escape(keyword.upper()) +
                                                     CLOSING_REGEX_STR, fulltext_str))
-                if match_counter >= min_num_occurrences:
+                if match_counter >= min_num_occurrences and (not tfidf or get_tfidf(keyword, match_counter, api_manager,
+                                                                                    tot_num_papers) >= tfidf):
                     papers_map[paper_id].add(keyword)
             except:
                 pass
 
 
+def get_tfidf(term, tf, api_manager: APIManager, tot_num_papers):
+    idf = math.log(float(tot_num_papers) / api_manager.get_doc_count(term))
+    return tf * idf
+
+
 def get_species_in_fulltext_from_regex(fulltext: str, papers_map: Dict[str, Set[str]], paper_id: str,
-                                       taxon_name_map: Dict[str, List[str]], min_occurrences: int = 1):
+                                       taxon_name_map: Dict[str, List[str]], min_occurrences: int = 0,
+                                       tot_num_papers: int = 0, tfidf: float = 0.0, api_manager: APIManager = None):
     tx_name_map = copy.deepcopy(taxon_name_map)
     for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
         tx_name_map[taxon_id].extend(species_alias_arr)
@@ -65,8 +84,11 @@ def get_species_in_fulltext_from_regex(fulltext: str, papers_map: Dict[str, Set[
                 num_occurrences += len(re.findall(re.compile(OPENING_REGEX_STR + regex_text.lower() +
                                                              CLOSING_REGEX_STR),
                                                   fulltext.lower()))
-            if num_occurrences >= min_occurrences:
+            if num_occurrences >= min_occurrences and (not tfidf or get_tfidf(tx_name_map[species_id][1],
+                                                                              num_occurrences, api_manager,
+                                                                              tot_num_papers) >= tfidf):
                 papers_map[paper_id].add(regex_list_mod[0].replace("\\", ""))
+    papers_map[paper_id].add(tx_name_map['6239'][0].replace("\\", ""))
 
 
 def get_first_valid_email_address_from_paper(fulltext, db_manager: DBManager, paper_id):

@@ -51,6 +51,7 @@ def main():
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
+    parser.add_argument("-t", "--textpresso-apitoken", metavar="tpc_token", dest="tpc_token", type=str)
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
@@ -140,20 +141,42 @@ def main():
         logger.info("Processing paper " + paper_id)
 
         logger.info("Getting list of genes through string matching")
-        get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2, match_uppercase=True)
+        # get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 2, match_uppercase=True)
+        # get_matches_in_fulltext(paper_titles[paper_id], genes_vocabulary, genes_in_papers_dict,
+        #                         paper_id, 1, match_uppercase=True)
+        # logger.info("Getting list of alleles through string matching")
+        # get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
+        # get_matches_in_fulltext(paper_titles[paper_id], alleles_vocabulary, alleles_in_papers_dict, paper_id, 1)
+        # logger.info("Getting list of strains through string matching")
+        # get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 1)
+        # get_matches_in_fulltext(paper_titles[paper_id], strains_vocabulary, strains_in_papers_dict, paper_id, 1)
+        # logger.info("Getting list of transgenes through string matching")
+        # get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
+        # get_matches_in_fulltext(paper_titles[paper_id], transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
+        # logger.info("Getting list of species through string matching")
+        # get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 10)
+        # get_species_in_fulltext_from_regex(paper_titles[paper_id], species_in_papers_dict, paper_id,
+        #                                    taxon_species_map, 1)
+        api_manager = APIManager(args.tpc_token)
+        get_matches_in_fulltext(fulltext, genes_vocabulary, genes_in_papers_dict, paper_id, 0, match_uppercase=True,
+                                tot_num_papers=len(curatable_papers), tfidf=0.1, api_manager=api_manager)
         get_matches_in_fulltext(paper_titles[paper_id], genes_vocabulary, genes_in_papers_dict,
                                 paper_id, 1, match_uppercase=True)
         logger.info("Getting list of alleles through string matching")
-        get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 2)
+        get_matches_in_fulltext(fulltext, alleles_vocabulary, alleles_in_papers_dict, paper_id, 0,
+                                tot_num_papers=len(curatable_papers), tfidf=0.1, api_manager=api_manager)
         get_matches_in_fulltext(paper_titles[paper_id], alleles_vocabulary, alleles_in_papers_dict, paper_id, 1)
         logger.info("Getting list of strains through string matching")
-        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 1)
+        get_matches_in_fulltext(fulltext, strains_vocabulary, strains_in_papers_dict, paper_id, 0,
+                                tot_num_papers=len(curatable_papers), tfidf=0.1, api_manager=api_manager)
         get_matches_in_fulltext(paper_titles[paper_id], strains_vocabulary, strains_in_papers_dict, paper_id, 1)
         logger.info("Getting list of transgenes through string matching")
-        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
+        get_matches_in_fulltext(fulltext, transgene_vocabulary, transgenes_in_papers_dict, paper_id, 0,
+                                tot_num_papers=len(curatable_papers), tfidf=0.1, api_manager=api_manager)
         get_matches_in_fulltext(paper_titles[paper_id], transgene_vocabulary, transgenes_in_papers_dict, paper_id, 1)
         logger.info("Getting list of species through string matching")
-        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 10)
+        get_species_in_fulltext_from_regex(fulltext, species_in_papers_dict, paper_id, taxon_species_map, 0,
+                                           tot_num_papers=len(curatable_papers), tfidf=0.1, api_manager=api_manager)
         get_species_in_fulltext_from_regex(paper_titles[paper_id], species_in_papers_dict, paper_id,
                                            taxon_species_map, 1)
     logger.info("Transforming gene keywords into gene ids")
