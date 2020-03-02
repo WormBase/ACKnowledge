@@ -88,8 +88,9 @@ class NttExtractor(object):
         return raw_count * idf
 
     def extract_keywords(self, keywords: List[str], text: str, match_uppercase: bool = False, min_matches: int = 1,
-                         tfidf_threshold: float = 0.0) -> List[str]:
-        return [keyword for keyword in set(keywords) if self.is_entity_meaningful(
+                         tfidf_threshold: float = 0.0, blacklist: List[str] = None) -> List[str]:
+        blacklist = set(blacklist) if blacklist else set()
+        return [keyword for keyword in set(keywords) if keyword not in blacklist and self.is_entity_meaningful(
             entity_keywords=[keyword], text=text, match_uppercase=match_uppercase, min_num_occurrences=min_matches,
             tfidf_threshold=tfidf_threshold)]
 

@@ -100,7 +100,7 @@ def extract_entities_from_text(genes, alleles, strains, transgenes, gene_symbol_
         logger.info("Processing paper " + paper_info.paper_id)
         logger.info("Getting list of genes through string matching")
         paper_info.genes = list(set(ntt_extractor.extract_keywords(
-            genes, paper_info.fulltext, match_uppercase=True, tfidf_threshold=10)) | set(
+            genes, paper_info.fulltext, match_uppercase=True, tfidf_threshold=10, blacklist=GENES_BLACKLIST)) | set(
             ntt_extractor.extract_keywords(genes, paper_info.title, match_uppercase=True)))
 
         logger.info("Getting list of alleles through string matching")
