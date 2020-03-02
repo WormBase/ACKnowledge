@@ -78,9 +78,9 @@ class NttExtractor(object):
         min_num_occurrences = 1 if min_num_occurrences < 1 else min_num_occurrences
         raw_count = sum(self.count_matches(keyword=keyword, text=text, match_uppercase=match_uppercase) for keyword in
                         entity_keywords)
-        return True if raw_count >= min_num_occurrences and \
-                       (tfidf_threshold <= 0 or tfidf_threshold > 0 and self.tfidf(entity_keywords, raw_count)) \
-                       else False
+        return True if raw_count >= min_num_occurrences and (tfidf_threshold <= 0 or tfidf_threshold > 0 and
+                                                             self.tfidf(entity_keywords, raw_count)) > tfidf_threshold \
+            else False
 
     def tfidf(self, entity_keywords: List[str], raw_count) -> float:
         idf = math.log(float(self.tot_num_documents) / sum(self.api_manager.get_doc_count(keyword) for keyword in
