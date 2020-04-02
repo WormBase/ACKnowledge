@@ -4,3 +4,4 @@ tqdm
 falcon
 requests
 numpy
+dataclasses
