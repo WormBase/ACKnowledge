@@ -30,7 +30,7 @@ journal articles due to space constraints or confirmatory or negative results. I
 unpublished data generated during this study, we encourage you to submit it at 
 http://bit.ly/2BcFas0.
 
-Please contact help@wormbase.org or contact@micropublication.org if you would like more 
+Please contact help.afp@wormbase.org or contact@micropublication.org if you would like more 
 information about flagging your paper for curation or Micropublication.
 Please accept our congratulations on your publication!
 Best Wishes,
