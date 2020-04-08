@@ -40,6 +40,7 @@ WormBase""".format(paper_title, paper_journal, afp_link)
     msg.set_content(email_content)
     msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -72,6 +73,7 @@ This is the link to the form for the paper:
     msg.set_content(email_content)
     msg['Subject'] = "Paper processed by AFP has empty entity lists: WBPaper" + paper_id
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -102,6 +104,7 @@ def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_pa
     msg.set_content(email_content)
     msg['Subject'] = "New papers processed by AFP Pipeline"
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -136,6 +139,7 @@ Link to AFP form for authors: {}
     msg.set_content(email_content)
     msg['Subject'] = "New AFP data submitted by author"
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -165,6 +169,7 @@ def send_new_data_notification_email_to_watcher(data_type_table, paper_ids_val, 
     msg.attach(body)
     msg['Subject'] = "New positive papers flagged by author through AFP for " + data_type_table
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -192,6 +197,7 @@ def send_link_to_author_dashboard(token, recipients, email_passwd):
     msg.attach(body)
     msg['Subject'] = "Author First Pass - access link to author page"
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
@@ -234,6 +240,7 @@ Thank you for helping WormBase!
     msg.set_content(email_content)
     msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
     msg['From'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
+    msg['reply-to'] = "Wormbase AFP<no-reply.afp@wormbase.org>"
     msg['To'] = ", ".join(recipients)
 
     gmail_user = "outreach@wormbase.org"
