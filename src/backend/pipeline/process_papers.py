@@ -89,6 +89,7 @@ def read_and_set_papers_metadata(paper_ids, num_papers, db_manager, ntt_extracto
         paper_info.journal = db_manager.get_paper_journal(paper_id)
         paper_info.pmid = db_manager.get_pmid(paper_id)
         paper_info.doi = db_manager.get_doi_from_paper_id(paper_id)
+        paper_info.abstract = db_manager.get_paper_abstract(paper_id)
         papers_info.append(paper_info)
     return papers_info
 
@@ -101,27 +102,32 @@ def extract_entities_from_text(genes, alleles, strains, transgenes, gene_symbol_
         logger.info("Getting list of genes through string matching")
         paper_info.genes = list(set(ntt_extractor.extract_keywords(
             genes, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
-            ntt_extractor.extract_keywords(genes, paper_info.title, match_uppercase=True)))
+            ntt_extractor.extract_keywords(genes, paper_info.title, match_uppercase=True)) | set(
+            ntt_extractor.extract_keywords(genes, paper_info.abstract, match_uppercase=True)))
 
         logger.info("Getting list of alleles through string matching")
         paper_info.alleles = list(set(ntt_extractor.extract_keywords(
             alleles, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
-            ntt_extractor.extract_keywords(alleles, paper_info.title, match_uppercase=True)))
+            ntt_extractor.extract_keywords(alleles, paper_info.title, match_uppercase=True)) | set(
+            ntt_extractor.extract_keywords(alleles, paper_info.abstract, match_uppercase=True)))
 
         logger.info("Getting list of strains through string matching")
         paper_info.strains = list(set(ntt_extractor.extract_keywords(
             strains, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
-            ntt_extractor.extract_keywords(strains, paper_info.title, match_uppercase=True)))
+            ntt_extractor.extract_keywords(strains, paper_info.title, match_uppercase=True)) | set(
+            ntt_extractor.extract_keywords(strains, paper_info.abstract, match_uppercase=True)))
 
         logger.info("Getting list of transgenes through string matching")
         paper_info.transgenes = list(set(ntt_extractor.extract_keywords(
             transgenes, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
-            ntt_extractor.extract_keywords(transgenes, paper_info.title, match_uppercase=True)))
+            ntt_extractor.extract_keywords(transgenes, paper_info.title, match_uppercase=True)) | set(
+            ntt_extractor.extract_keywords(transgenes, paper_info.abstract, match_uppercase=True)))
 
         logger.info("Getting list of species through string matching")
         paper_info.species = list(set(ntt_extractor.extract_species(
             paper_info.fulltext, min_matches=10)) | set(
-            ntt_extractor.extract_species(paper_info.title)))
+            ntt_extractor.extract_species(paper_info.title)) | set(
+            ntt_extractor.extract_species(paper_info.abstract)))
 
         logger.info("Transforming gene keywords into gene ids")
         paper_info.genes = ntt_extractor.get_entity_ids_from_names(paper_info.genes, gene_symbol_id_map,

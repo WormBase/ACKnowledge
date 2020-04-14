@@ -10,6 +10,7 @@ class PaperInfo:
     journal: str
     pmid: str
     doi: str
+    abstract: str
     corresponding_author_email: str
     corresponding_author_id: str
     genes: List[str]

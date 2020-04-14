@@ -241,6 +241,22 @@ class DBManager(object):
             return res[1].replace("pmid", "")
         else:
             return ""
+
+    def get_paper_abstract(self, paper_id):
+        """
+        get paper abstract
+
+        Args:
+            paper_id: the id of the paper
+        Returns:
+            str: the abstract of the paper
+        """
+        self.cur.execute("SELECT * FROM pap_abstract WHERE joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        if res:
+            return res[1]
+        else:
+            return ""
     
     def get_paper_antibody(self, paper_id):
         """
