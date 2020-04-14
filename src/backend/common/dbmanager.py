@@ -636,7 +636,10 @@ class DBManager(object):
                 if (("_temp" in row[0] or "_ocr" in row[0] or "_lib" in row[0]) and not main_pdf) or \
                         ("_temp" not in row[0] and "_ocr" not in row[0] and "_lib" not in row[0]):
                     main_pdf_addr = quote(row[0])
-                    main_pdf = main_pdf_addr.replace('/home/acedb/daniel/Reference/wb/pdf/', TAZENDRA_PDFS_LOCATION)
+                    main_pdf = main_pdf_addr.replace('/home/acedb/daniel/Reference/wb/pdf/', TAZENDRA_PDFS_LOCATION)\
+                        .replace('/home/acedb/daniel/Reference/pubmed/pdf/', TAZENDRA_PDFS_LOCATION)
+                    if 'Reference/cgc/' in main_pdf:
+                        main_pdf = TAZENDRA_PDFS_LOCATION + '/' + main_pdf.split('/')[-1]
             elif "supplemental" in row[0]:
                 sup_folder = row[0].split("/")[-1]
                 with urllib.request.urlopen(TAZENDRA_PDFS_LOCATION + "/" + sup_folder) as response:
