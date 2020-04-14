@@ -14,6 +14,7 @@ import tempfile
 
 from src.backend.common.apimanager import APIManager
 from src.backend.common.dbmanager import DBManager
+from src.backend.common.paperinfo import PaperInfo
 
 SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "7955": ["zebrafish"],
@@ -43,11 +44,16 @@ logger = logging.getLogger(__name__)
 
 class NttExtractor(object):
 
-    def __init__(self, tpc_token, dbmanager: DBManager):
+    def __init__(self, tpc_token, dbname, user, password, host):
         self.api_manager = APIManager(tpc_token)
-        self.dbmanager = dbmanager
-        self.tot_num_documents = len(dbmanager.get_set_of_curatable_papers())
-        self.taxonid_name_map = dbmanager.get_taxonid_speciesnamearr_map()
+        self.db_name = dbname
+        self.db_user = user
+        self.db_password = password
+        self.db_host = host
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        self.tot_num_documents = len(db_manager.get_set_of_curatable_papers())
+        self.taxonid_name_map = db_manager.get_taxonid_speciesnamearr_map()
+        db_manager.close()
         for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
             self.taxonid_name_map[taxon_id].extend(species_alias_arr)
         self.taxonid_name_map = {species_id: regex_list for species_id, regex_list in self.taxonid_name_map.items() if
@@ -98,6 +104,61 @@ class NttExtractor(object):
                 self.is_entity_meaningful(entity_keywords=regex_list, text=text, match_uppercase=False,
                                           min_num_occurrences=min_matches, tfidf_threshold=tfidf_threshold)]
 
+    def extract_entities_from_text(self, papers_info):
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        genes = db_manager.get_all_genes()
+        alleles = db_manager.get_all_alleles()
+        strains = db_manager.get_all_alleles()
+        transgenes = db_manager.get_all_transgenes()
+        gene_symbol_id_map = db_manager.get_gene_name_id_map()
+        gene_ids_cgc_name = db_manager.get_gene_cgc_name_from_id_map()
+        allele_symbol_id_map = db_manager.get_allele_name_id_map()
+        transgene_symbol_id_map = db_manager.get_transgene_name_id_map()
+        db_manager.close()
+
+        augmented_papers_info = []
+        for paper_info in papers_info:
+            logger.info("Processing paper " + paper_info.paper_id)
+            logger.info("Getting list of genes through string matching")
+            paper_info.genes = list(set(self.extract_keywords(
+                genes, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
+                self.extract_keywords(genes, paper_info.title, match_uppercase=True)) | set(
+                self.extract_keywords(genes, paper_info.abstract, match_uppercase=True)))
+
+            logger.info("Getting list of alleles through string matching")
+            paper_info.alleles = list(set(self.extract_keywords(
+                alleles, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
+                self.extract_keywords(alleles, paper_info.title, match_uppercase=True)) | set(
+                self.extract_keywords(alleles, paper_info.abstract, match_uppercase=True)))
+
+            logger.info("Getting list of strains through string matching")
+            paper_info.strains = list(set(self.extract_keywords(
+                strains, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
+                self.extract_keywords(strains, paper_info.title, match_uppercase=True)) | set(
+                self.extract_keywords(strains, paper_info.abstract, match_uppercase=True)))
+
+            logger.info("Getting list of transgenes through string matching")
+            paper_info.transgenes = list(set(self.extract_keywords(
+                transgenes, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
+                self.extract_keywords(transgenes, paper_info.title, match_uppercase=True)) | set(
+                self.extract_keywords(transgenes, paper_info.abstract, match_uppercase=True)))
+
+            logger.info("Getting list of species through string matching")
+            paper_info.species = list(set(self.extract_species(
+                paper_info.fulltext, min_matches=10)) | set(
+                self.extract_species(paper_info.title)) | set(
+                self.extract_species(paper_info.abstract)))
+
+            logger.info("Transforming gene keywords into gene ids")
+            paper_info.genes = self.get_entity_ids_from_names(paper_info.genes, gene_symbol_id_map,
+                                                                       gene_ids_cgc_name)
+            logger.info("Transforming allele keywords into allele ids")
+            paper_info.alleles = self.get_entity_ids_from_names(paper_info.genes, allele_symbol_id_map)
+            logger.info("Transforming transgene keywords into transgene ids")
+            paper_info.transgenes = self.get_entity_ids_from_names(paper_info.genes, transgene_symbol_id_map)
+            augmented_papers_info.append(paper_info)
+        return augmented_papers_info
+
     @staticmethod
     def get_entity_ids_from_names(entity_names: List[str], entity_name_id_map: Dict[str, str],
                                   canonical_names_for_non_unique: Dict[str, str] = None):
@@ -110,31 +171,79 @@ class NttExtractor(object):
                          entity_name_id_map[entity_name] + ";%;" + canonical_names_for_non_unique[entity_name_id_map[
                              entity_name]] for entity_name in entity_names if entity_name in entity_name_id_map]))
 
-    def get_first_valid_email_address_from_paper(self, fulltext, paper_id):
+    def extract_entities(self, paper_ids, max_num_papers):
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        logger.info("Getting papers fulltext and metadata")
+        papers_info = []
+        for paper_id, fulltext, (person_id, email) in self.get_first_valid_paper_ids_fulltexts_and_emails(
+                paper_ids=paper_ids, max_papers=max_num_papers, db_manager=db_manager):
+            paper_info = PaperInfo()
+            paper_info.paper_id = paper_id
+            paper_info.fulltext = fulltext
+            paper_info.corresponding_author_email = email
+            paper_info.corresponding_author_id = person_id
+            paper_info.title = db_manager.get_paper_title(paper_id=paper_id)
+            paper_info.journal = db_manager.get_paper_journal(paper_id)
+            paper_info.pmid = db_manager.get_pmid(paper_id)
+            paper_info.doi = db_manager.get_doi_from_paper_id(paper_id)
+            paper_info.abstract = db_manager.get_paper_abstract(paper_id)
+            papers_info.append(paper_info)
+        db_manager.close()
+        return self.extract_entities_from_text(papers_info=papers_info)
+
+    def get_processable_papers(self):
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        logger.info("Getting the list of curatable papers from WormBase DB")
+        curatable_papers = db_manager.get_set_of_curatable_papers()
+        logger.debug("Number of curatable papers: " + str(len(curatable_papers)))
+
+        logger.info("Getting the list of papers that have already been processed by AFP - either emailed or not")
+        processed_papers = db_manager.get_set_of_afp_processed_papers()
+        logger.debug("Number of papers that have already been processed by AFP: " + str(len(processed_papers)))
+
+        curatable_papers_not_processed = curatable_papers - processed_papers
+        logger.debug("Number of curatable papers not yet emailed to authors: " +
+                     str(len(curatable_papers_not_processed)))
+
+        logger.info("Getting the list of papers that are flagged by an SVM")
+        papers_svm_flags = db_manager.get_svm_flagged_papers()
+        logger.debug("Number of SVM flagged papers: " + str(len(papers_svm_flags)))
+
+        curatable_papers_not_processed_svm_flagged = sorted(list(curatable_papers_not_processed &
+                                                                 set(papers_svm_flags.keys())),
+                                                            reverse=True)
+        logger.debug("Number of papers curatable, not emailed, and SVM flagged: " +
+                     str(len(curatable_papers_not_processed_svm_flagged)))
+        db_manager.close()
+        return curatable_papers_not_processed_svm_flagged
+
+    @staticmethod
+    def get_first_valid_email_address_from_paper(fulltext, paper_id, db_manager):
         all_addresses = re.findall(r'[\(\[]?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\)\]\.]?', fulltext)
         if not all_addresses:
             fulltext = fulltext.replace(". ", ".")
             all_addresses = re.findall(r'[\(\[]?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\)\]\.]?', fulltext)
         if not all_addresses:
-            all_addresses = self.dbmanager.get_corresponding_email(paper_id=paper_id)
+            all_addresses = db_manager.get_corresponding_email(paper_id=paper_id)
         for address in all_addresses:
             if "'" not in address:
-                person_id = self.dbmanager.get_person_id_from_email_address(address)
+                person_id = db_manager.get_person_id_from_email_address(address)
                 if person_id:
-                    curr_address = self.dbmanager.get_current_email_address_for_person(person_id)
+                    curr_address = db_manager.get_current_email_address_for_person(person_id)
                     return person_id, curr_address if curr_address else person_id, address
         return None
 
-    def get_first_valid_paper_ids_fulltexts_and_emails(self, paper_ids: List[str], max_papers: int = 50):
+    def get_first_valid_paper_ids_fulltexts_and_emails(self, paper_ids: List[str], db_manager: DBManager,
+                                                       max_papers: int = 50):
         converted_papers = []
         while len(converted_papers) < max_papers and len(paper_ids) > 0:
             id_to_process = paper_ids.pop(0)
             logger.info("Extracting fulltext for paper " + id_to_process)
-            paper_fulltext = self.get_fulltext_from_pdfs(paper_id=id_to_process)
+            paper_fulltext = self.get_fulltext_from_pdfs(paper_id=id_to_process, db_manager=db_manager)
             if paper_fulltext != "":
                 logger.info("Extracting email address from paper")
                 email_address = self.get_first_valid_email_address_from_paper(
-                    fulltext=paper_fulltext, paper_id=id_to_process)
+                    fulltext=paper_fulltext, paper_id=id_to_process, db_manager=db_manager)
                 if email_address:
                     converted_papers.append((id_to_process, paper_fulltext, email_address[0:2]))
                 else:
@@ -143,7 +252,7 @@ class NttExtractor(object):
                 logger.warning("Skipping paper with empty text")
         return converted_papers
 
-    def get_fulltext_from_pdfs(self, paper_id):
+    def get_fulltext_from_pdfs(self, paper_id, db_manager: DBManager):
         def customExtractText(self):
             text = u_("")
             content = self["/Contents"].getObject()
@@ -202,7 +311,7 @@ class NttExtractor(object):
             else:
                 logger.info("Skipping response to reviewers")
                 return ""
-        pdfs_urls = self.dbmanager.get_paper_pdf_paths(paper_id)
+        pdfs_urls = db_manager.get_paper_pdf_paths(paper_id)
         if pdfs_urls:
             complete_fulltext = ""
             for pdfurl in pdfs_urls[0:-1]:

@@ -75,96 +75,6 @@ def print_stats(num_papers, papers_info):
         [len(paper_info.strains) if paper_info.strains else 0 for paper_info in papers_info])))
 
 
-def read_and_set_papers_metadata(paper_ids, num_papers, db_manager, ntt_extractor):
-    logger.info("Getting papers fulltext and metadata")
-    papers_info = []
-    for paper_id, fulltext, (person_id, email) in ntt_extractor.get_first_valid_paper_ids_fulltexts_and_emails(
-            paper_ids=paper_ids, max_papers=num_papers):
-        paper_info = PaperInfo()
-        paper_info.paper_id = paper_id
-        paper_info.fulltext = fulltext
-        paper_info.corresponding_author_email = email
-        paper_info.corresponding_author_id = person_id
-        paper_info.title = db_manager.get_paper_title(paper_id=paper_id)
-        paper_info.journal = db_manager.get_paper_journal(paper_id)
-        paper_info.pmid = db_manager.get_pmid(paper_id)
-        paper_info.doi = db_manager.get_doi_from_paper_id(paper_id)
-        paper_info.abstract = db_manager.get_paper_abstract(paper_id)
-        papers_info.append(paper_info)
-    return papers_info
-
-
-def extract_entities_from_text(genes, alleles, strains, transgenes, gene_symbol_id_map, gene_ids_cgc_name,
-                               allele_symbol_id_map, transgene_symbol_id_map, ntt_extractor, papers_info):
-    augmented_papers_info = []
-    for paper_info in tqdm(papers_info):
-        logger.info("Processing paper " + paper_info.paper_id)
-        logger.info("Getting list of genes through string matching")
-        paper_info.genes = list(set(ntt_extractor.extract_keywords(
-            genes, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
-            ntt_extractor.extract_keywords(genes, paper_info.title, match_uppercase=True)) | set(
-            ntt_extractor.extract_keywords(genes, paper_info.abstract, match_uppercase=True)))
-
-        logger.info("Getting list of alleles through string matching")
-        paper_info.alleles = list(set(ntt_extractor.extract_keywords(
-            alleles, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
-            ntt_extractor.extract_keywords(alleles, paper_info.title, match_uppercase=True)) | set(
-            ntt_extractor.extract_keywords(alleles, paper_info.abstract, match_uppercase=True)))
-
-        logger.info("Getting list of strains through string matching")
-        paper_info.strains = list(set(ntt_extractor.extract_keywords(
-            strains, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
-            ntt_extractor.extract_keywords(strains, paper_info.title, match_uppercase=True)) | set(
-            ntt_extractor.extract_keywords(strains, paper_info.abstract, match_uppercase=True)))
-
-        logger.info("Getting list of transgenes through string matching")
-        paper_info.transgenes = list(set(ntt_extractor.extract_keywords(
-            transgenes, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
-            ntt_extractor.extract_keywords(transgenes, paper_info.title, match_uppercase=True)) | set(
-            ntt_extractor.extract_keywords(transgenes, paper_info.abstract, match_uppercase=True)))
-
-        logger.info("Getting list of species through string matching")
-        paper_info.species = list(set(ntt_extractor.extract_species(
-            paper_info.fulltext, min_matches=10)) | set(
-            ntt_extractor.extract_species(paper_info.title)) | set(
-            ntt_extractor.extract_species(paper_info.abstract)))
-
-        logger.info("Transforming gene keywords into gene ids")
-        paper_info.genes = ntt_extractor.get_entity_ids_from_names(paper_info.genes, gene_symbol_id_map,
-                                                                   gene_ids_cgc_name)
-        logger.info("Transforming allele keywords into allele ids")
-        paper_info.alleles = ntt_extractor.get_entity_ids_from_names(paper_info.genes, allele_symbol_id_map)
-        logger.info("Transforming transgene keywords into transgene ids")
-        paper_info.transgenes = ntt_extractor.get_entity_ids_from_names(paper_info.genes, transgene_symbol_id_map)
-        augmented_papers_info.append(paper_info)
-    return augmented_papers_info
-
-
-def get_processable_papers(db_manager):
-    logger.info("Getting the list of curatable papers from WormBase DB")
-    curatable_papers = db_manager.get_set_of_curatable_papers()
-    logger.debug("Number of curatable papers: " + str(len(curatable_papers)))
-
-    logger.info("Getting the list of papers that have already been processed by AFP - either emailed or not")
-    processed_papers = db_manager.get_set_of_afp_processed_papers()
-    logger.debug("Number of papers that have already been processed by AFP: " + str(len(processed_papers)))
-
-    curatable_papers_not_processed = curatable_papers - processed_papers
-    logger.debug("Number of curatable papers not yet emailed to authors: " +
-                 str(len(curatable_papers_not_processed)))
-
-    logger.info("Getting the list of papers that are flagged by an SVM")
-    papers_svm_flags = db_manager.get_svm_flagged_papers()
-    logger.debug("Number of SVM flagged papers: " + str(len(papers_svm_flags)))
-
-    curatable_papers_not_processed_svm_flagged = sorted(list(curatable_papers_not_processed &
-                                                             set(papers_svm_flags.keys())),
-                                                        reverse=True)
-    logger.debug("Number of papers curatable, not emailed, and SVM flagged: " +
-                 str(len(curatable_papers_not_processed_svm_flagged)))
-    return curatable_papers_not_processed_svm_flagged
-
-
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -194,28 +104,11 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
-    ntt_extractor = NttExtractor(args.tpc_token, db_manager)
-    processable_papers = get_processable_papers(db_manager)
+    ntt_extractor = NttExtractor(args.tpc_token, dbname=args.db_name, user=args.db_user, password=args.db_password,
+                                 host=args.db_host)
+    processable_papers = ntt_extractor.get_processable_papers()
     # processable_papers = ["00059183"]
-    papers_info = read_and_set_papers_metadata(paper_ids=processable_papers, num_papers=args.num_papers,
-                                               db_manager=db_manager, ntt_extractor=ntt_extractor)
-    # read entity lists and name-id maps
-    genes = db_manager.get_all_genes()
-    alleles = db_manager.get_all_alleles()
-    strains = db_manager.get_all_alleles()
-    transgenes = db_manager.get_all_transgenes()
-    gene_symbol_id_map = db_manager.get_gene_name_id_map()
-    gene_ids_cgc_name = db_manager.get_gene_cgc_name_from_id_map()
-    allele_symbol_id_map = db_manager.get_allele_name_id_map()
-    transgene_symbol_id_map = db_manager.get_transgene_name_id_map()
-    # close db_manager here to free cursors before extraction
-    db_manager.close()
-    papers_info = extract_entities_from_text(genes=genes, alleles=alleles, strains=strains, transgenes=transgenes,
-                                             gene_symbol_id_map=gene_symbol_id_map, gene_ids_cgc_name=gene_ids_cgc_name,
-                                             allele_symbol_id_map=allele_symbol_id_map,
-                                             transgene_symbol_id_map=transgene_symbol_id_map,
-                                             ntt_extractor=ntt_extractor, papers_info=papers_info)
+    papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
         print_stats(args.num_papers, papers_info)
         exit(0)
