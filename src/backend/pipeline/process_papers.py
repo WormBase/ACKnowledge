@@ -100,27 +100,27 @@ def extract_entities_from_text(genes, alleles, strains, transgenes, gene_symbol_
         logger.info("Processing paper " + paper_info.paper_id)
         logger.info("Getting list of genes through string matching")
         paper_info.genes = list(set(ntt_extractor.extract_keywords(
-            genes, paper_info.fulltext, match_uppercase=True, tfidf_threshold=10)) | set(
+            genes, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
             ntt_extractor.extract_keywords(genes, paper_info.title, match_uppercase=True)))
 
         logger.info("Getting list of alleles through string matching")
         paper_info.alleles = list(set(ntt_extractor.extract_keywords(
-            alleles, paper_info.fulltext, match_uppercase=True, tfidf_threshold=1.5)) | set(
+            alleles, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
             ntt_extractor.extract_keywords(alleles, paper_info.title, match_uppercase=True)))
 
         logger.info("Getting list of strains through string matching")
         paper_info.strains = list(set(ntt_extractor.extract_keywords(
-            strains, paper_info.fulltext, match_uppercase=True, tfidf_threshold=1.5)) | set(
+            strains, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
             ntt_extractor.extract_keywords(strains, paper_info.title, match_uppercase=True)))
 
         logger.info("Getting list of transgenes through string matching")
         paper_info.transgenes = list(set(ntt_extractor.extract_keywords(
-            transgenes, paper_info.fulltext, match_uppercase=True, tfidf_threshold=1.5)) | set(
+            transgenes, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
             ntt_extractor.extract_keywords(transgenes, paper_info.title, match_uppercase=True)))
 
         logger.info("Getting list of species through string matching")
         paper_info.species = list(set(ntt_extractor.extract_species(
-            paper_info.fulltext, tfidf_threshold=1.5)) | set(
+            paper_info.fulltext, min_matches=10)) | set(
             ntt_extractor.extract_species(paper_info.title)))
 
         logger.info("Transforming gene keywords into gene ids")
