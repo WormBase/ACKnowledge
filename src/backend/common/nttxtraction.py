@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 import re
 import shutil
 from collections import defaultdict
@@ -11,6 +12,7 @@ from PyPDF2.pdf import ContentStream, b_, FloatObject, NumberObject
 from PyPDF2.utils import u_
 import urllib.request
 import tempfile
+import yaml
 
 from src.backend.common.apimanager import APIManager
 from src.backend.common.dbmanager import DBManager
@@ -25,18 +27,8 @@ SPECIES_ALIASES = {"9913": ["cow", "bovine", "calf"],
                    "559292": ["budding yeast"],
                    "4896": ["fission yeast"]}
 
-SPECIES_BLACKLIST = {"4853", "30023", "8805", "216498", "1420681", "10231", "156766", "80388", "101142", "31138",
-                     "88086", "34245"}
-
 OPENING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
 CLOSING_REGEX_STR = "[\\.\\n\\t\\'\\/\\(\\)\\[\\]\\{\\}:;\\,\\!\\?> ]"
-
-GENES_BLACKLIST = ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
-                   'lin-35', 'lon-2', 'myo-2', 'myo-3', 'pha-1', 'pes-10', 'pie-1', 'rol-6', 'rrf-3', 'spe-11', 'sur-5',
-                   'tbb-2', 'unc-22', 'unc-54', 'unc-119', 'cbr-unc-119']
-
-TF_MAP = {}
-IDF_MAP = {}
 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 class NttExtractor(object):
 
-    def __init__(self, tpc_token, dbname, user, password, host):
+    def __init__(self, tpc_token, dbname, user, password, host, config_file):
         self.api_manager = APIManager(tpc_token)
         self.db_name = dbname
         self.db_user = user
@@ -56,12 +48,16 @@ class NttExtractor(object):
         db_manager.close()
         for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
             self.taxonid_name_map[taxon_id].extend(species_alias_arr)
-        self.taxonid_name_map = {species_id: regex_list for species_id, regex_list in self.taxonid_name_map.items() if
-                                 species_id not in SPECIES_BLACKLIST}
+        self.taxonid_name_map = {species_id: regex_list for species_id, regex_list in self.taxonid_name_map.items()}
         for species_id, regex_list in self.taxonid_name_map.items():
             if len(regex_list[0].split(" ")) > 1:
                 self.taxonid_name_map[species_id].append(regex_list[0][0] + "\\. " + " ".join(regex_list[0]
                                                                                               .split(" ")[1:]))
+        with open(config_file, 'r') as stream:
+            try:
+                self.config = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                logger.error(exc)
 
     @staticmethod
     def count_matches(keyword, text, case_sensitive: bool = True, match_uppercase: bool = False) -> int:
@@ -99,10 +95,14 @@ class NttExtractor(object):
             entity_keywords=[keyword], text=text, match_uppercase=match_uppercase, min_num_occurrences=min_matches,
             tfidf_threshold=tfidf_threshold)]
 
-    def extract_species(self, text: str, min_matches: int = 1, tfidf_threshold: float = 0.0):
-        return [regex_list[0].replace("\\", "") for regex_list in self.taxonid_name_map.values() if
+    def extract_species(self, text: str, blacklist: List[str] = None, whitelist: List[str] = None, min_matches: int = 1,
+                        tfidf_threshold: float = 0.0):
+        blacklist = set(blacklist) if blacklist else set()
+        whitelist = set(whitelist) if whitelist else set()
+        return [regex_list[0].replace("\\", "") for taxon_id, regex_list in self.taxonid_name_map.items() if
+                taxon_id not in blacklist and (taxon_id in whitelist or
                 self.is_entity_meaningful(entity_keywords=regex_list, text=text, match_uppercase=False,
-                                          min_num_occurrences=min_matches, tfidf_threshold=tfidf_threshold)]
+                                          min_num_occurrences=min_matches, tfidf_threshold=tfidf_threshold))]
 
     def extract_entities_from_text(self, papers_info):
         db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
@@ -121,31 +121,47 @@ class NttExtractor(object):
             logger.info("Processing paper " + paper_info.paper_id)
             logger.info("Getting list of genes through string matching")
             paper_info.genes = list(set(self.extract_keywords(
-                genes, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
+                genes, paper_info.fulltext, match_uppercase=True,
+                min_matches=self.config["ntt_extraction"]["min_occurrences"]["gene"],
+                blacklist=self.config["ntt_extraction"]["exclusion_list"]["gene"],
+                tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["gene"])) | set(
                 self.extract_keywords(genes, paper_info.title, match_uppercase=True)) | set(
                 self.extract_keywords(genes, paper_info.abstract, match_uppercase=True)))
 
             logger.info("Getting list of alleles through string matching")
             paper_info.alleles = list(set(self.extract_keywords(
-                alleles, paper_info.fulltext, match_uppercase=True, min_matches=2)) | set(
+                alleles, paper_info.fulltext, match_uppercase=True,
+                min_matches=self.config["ntt_extraction"]["min_occurrences"]["allele"],
+                blacklist=self.config["ntt_extraction"]["exclusion_list"]["allele"],
+                tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["allele"])) | set(
                 self.extract_keywords(alleles, paper_info.title, match_uppercase=True)) | set(
                 self.extract_keywords(alleles, paper_info.abstract, match_uppercase=True)))
 
             logger.info("Getting list of strains through string matching")
             paper_info.strains = list(set(self.extract_keywords(
-                strains, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
+                strains, paper_info.fulltext, match_uppercase=True,
+                min_matches=self.config["ntt_extraction"]["min_occurrences"]["strain"],
+                blacklist=self.config["ntt_extraction"]["exclusion_list"]["strain"],
+                tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["strain"])) | set(
                 self.extract_keywords(strains, paper_info.title, match_uppercase=True)) | set(
                 self.extract_keywords(strains, paper_info.abstract, match_uppercase=True)))
 
             logger.info("Getting list of transgenes through string matching")
             paper_info.transgenes = list(set(self.extract_keywords(
-                transgenes, paper_info.fulltext, match_uppercase=True, min_matches=1)) | set(
+                transgenes, paper_info.fulltext, match_uppercase=True,
+                min_matches=self.config["ntt_extraction"]["min_occurrences"]["transgene"],
+                blacklist=self.config["ntt_extraction"]["exclusion_list"]["transgene"],
+                tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["transgene"])) | set(
                 self.extract_keywords(transgenes, paper_info.title, match_uppercase=True)) | set(
                 self.extract_keywords(transgenes, paper_info.abstract, match_uppercase=True)))
 
             logger.info("Getting list of species through string matching")
             paper_info.species = list(set(self.extract_species(
-                paper_info.fulltext, min_matches=10)) | set(
+                paper_info.fulltext,
+                min_matches=self.config["ntt_extraction"]["min_occurrences"]["species"],
+                blacklist=self.config["ntt_extraction"]["exclusion_list"]["species"],
+                whitelist=self.config["ntt_extraction"]["inclusion_list"]["species"],
+                tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["species"])) | set(
                 self.extract_species(paper_info.title)) | set(
                 self.extract_species(paper_info.abstract)))
 

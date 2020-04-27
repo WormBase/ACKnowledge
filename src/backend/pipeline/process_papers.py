@@ -105,9 +105,9 @@ def main():
         ssl._create_default_https_context = ssl._create_unverified_context
 
     ntt_extractor = NttExtractor(args.tpc_token, dbname=args.db_name, user=args.db_user, password=args.db_password,
-                                 host=args.db_host)
+                                 host=args.db_host, config_file=os.path.join(os.getcwd(), "src/backend/config.yml"))
     processable_papers = ntt_extractor.get_processable_papers()
-    # processable_papers = ["00059183"]
+    processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
         print_stats(args.num_papers, papers_info)

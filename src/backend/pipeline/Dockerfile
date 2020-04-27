@@ -5,8 +5,7 @@ RUN apt-get update && apt-get install -y cron
 WORKDIR /usr/src/app/
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-COPY src/backend/pipeline src/backend/pipeline
-COPY src/backend/common src/backend/common
+COPY src/backend/ src/backend/
 
 ENV EMAIL_PASSWD=""
 ENV DB_HOST=""
