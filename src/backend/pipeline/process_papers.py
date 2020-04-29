@@ -1,65 +1,14 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import ssl
-import time
-import urllib.parse
-import numpy as np
 
-from urllib.request import urlopen
 from src.backend.common.emailtools import *
 from src.backend.common.nttxtraction import *
 from src.backend.common.dbmanager import DBManager
-from tqdm import tqdm
-from src.backend.common.paperinfo import PaperInfo
-
-
-class TqdmHandler(logging.StreamHandler):
-    def __init__(self):
-        logging.StreamHandler.__init__(self)
-
-    def emit(self, record):
-        msg = self.format(record)
-        tqdm.write(msg)
-
-
-TPC_PAPERS_PER_QUERY = 10
-
+from src.backend.common.paperinfo import print_papers_stats
 
 logger = logging.getLogger(__name__)
-
-
-def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
-    hide_genes = "true" if len(paper_info.genes) > 100 else "false"
-    hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
-    hide_strains = "true" if len(paper_info.strains) > 100 else "false"
-    url = afp_base_url + "?paper=" + paper_id + "&passwd=" + str(passwd) + "&title=" + \
-          urllib.parse.quote(paper_info.title) + "&journal=" + urllib.parse.quote(paper_info.journal) + "&pmid=" + \
-          paper_info.pmid + "&personid=" + paper_info.corresponding_author_id.replace("two", "") + "&hide_genes=" + \
-          hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
-          urllib.parse.quote(paper_info.doi)
-    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
-    return data.read().decode('utf-8')
-
-
-def print_stats(num_papers, papers_info):
-    print("Statistics calculated on the latest set of " + str(num_papers) + " papers that can be processed by AFP")
-    print()
-    print("Number of fulltexts successfully extracted with corresponding author registered at WB: " +
-          str(len(papers_info)))
-    print("Number of papers with non-empty entity lists: " + str(len(
-        [paper_info for paper_info in papers_info if paper_info.entities_not_empty()])))
-    print("Average number of genes extracted: " + str(np.average(
-        [len(paper_info.genes) if paper_info.genes else 0 for paper_info in papers_info])))
-    print("Average number of species extracted: " + str(np.average(
-        [len(paper_info.species) if paper_info.species else 0 for paper_info in papers_info])))
-    print("Average number of alleles extracted: " + str(np.average(
-        [len(paper_info.alleles) if paper_info.alleles else 0 for paper_info in papers_info])))
-    print("Average number of transgenes extracted: " + str(np.average(
-        [len(paper_info.transgenes) if paper_info.transgenes else 0 for paper_info in papers_info])))
-    print("Average number of strains extracted: " + str(np.average(
-        [len(paper_info.strains) if paper_info.strains else 0 for paper_info in papers_info])))
 
 
 def main():
@@ -97,7 +46,7 @@ def main():
     # processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
-        print_stats(args.num_papers, papers_info)
+        print_papers_stats(args.num_papers, papers_info)
         exit(0)
     tinyurls = []
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)

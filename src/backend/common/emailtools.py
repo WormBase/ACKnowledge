@@ -1,10 +1,12 @@
 import logging
 import smtplib
+import urllib.parse
 
 from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import List
+from urllib.request import urlopen
 
 
 def send_email_to_author(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], email_passwd):
@@ -254,3 +256,16 @@ Thank you for helping WormBase!
         server_ssl.quit()
     except:
         logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+
+
+def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
+    hide_genes = "true" if len(paper_info.genes) > 100 else "false"
+    hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
+    hide_strains = "true" if len(paper_info.strains) > 100 else "false"
+    url = afp_base_url + "?paper=" + paper_id + "&passwd=" + str(passwd) + "&title=" + \
+          urllib.parse.quote(paper_info.title) + "&journal=" + urllib.parse.quote(paper_info.journal) + "&pmid=" + \
+          paper_info.pmid + "&personid=" + paper_info.corresponding_author_id.replace("two", "") + "&hide_genes=" + \
+          hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
+          urllib.parse.quote(paper_info.doi)
+    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
+    return data.read().decode('utf-8')
