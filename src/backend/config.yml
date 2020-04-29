@@ -1,16 +1,19 @@
 ntt_extraction:
+
   min_occurrences:
     gene: 2
     strain: 1
     allele: 2
     transgene: 1
     species: 10
+
   min_tfidf:
     gene: 10
     strain: 10
     allele: 10
     transgene: 10
     species: 10
+
   exclusion_list:
     #gene: ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
     #       'lin-35', 'lon-2', 'myo-2', 'myo-3', 'pha-1', 'pes-10', 'pie-1', 'rol-6', 'rrf-3', 'spe-11', 'sur-5',
@@ -21,5 +24,6 @@ ntt_extraction:
     transgene: []
     species: ["4853", "30023", "8805", "216498", "1420681", "10231", "156766", "80388", "101142", "31138",
               "88086", "34245"]
+
   inclusion_list:
     species: ["6239"]
