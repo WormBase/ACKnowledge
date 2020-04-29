@@ -11,6 +11,7 @@ from urllib.parse import quote
 import re
 import time
 
+from src.backend.common.paperinfo import PaperInfo
 
 AFP_ENTITIES_SEPARATOR = " | "
 AFP_IDS_SEPARATOR = ";%;"
@@ -1573,3 +1574,18 @@ class DBManager(object):
             m = re.match('.*<textarea rows="4" cols="80" name="specific_papers">(.*)</textarea>.*',
                          res.replace('\n', ''))
             return m.group(1).split() if m else []
+
+    def save_extracted_data_to_db(self, paper_info: PaperInfo):
+        passwd = self.get_passwd(paper_id=paper_info.paper_id)
+        passwd = time.time() if not passwd else passwd
+        if self.get_paper_antibody(paper_info.paper_id):
+            self.set_antibody(paper_info.paper_id)
+        self.set_extracted_entities_in_paper(paper_info.paper_id, paper_info.genes, "tfp_genestudied")
+        self.set_extracted_entities_in_paper(paper_info.paper_id, paper_info.alleles, "tfp_variation")
+        self.set_extracted_entities_in_paper(paper_info.paper_id, paper_info.species, "tfp_species")
+        self.set_extracted_entities_in_paper(paper_info.paper_id, paper_info.strains, "tfp_strain")
+        self.set_extracted_entities_in_paper(paper_info.paper_id, paper_info.transgenes, "tfp_transgene")
+        self.set_version(paper_info.paper_id)
+        self.set_passwd(paper_info.paper_id, passwd)
+        self.set_email(paper_info.paper_id, [paper_info.corresponding_author_email])
+        return passwd

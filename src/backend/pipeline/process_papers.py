@@ -30,19 +30,6 @@ TPC_PAPERS_PER_QUERY = 10
 logger = logging.getLogger(__name__)
 
 
-def save_extracted_data_to_db(db_manager: DBManager, paper_id, paper_info, passwd):
-    if db_manager.get_paper_antibody(paper_id):
-        db_manager.set_antibody(paper_id)
-    db_manager.set_extracted_entities_in_paper(paper_id, paper_info.genes, "tfp_genestudied")
-    db_manager.set_extracted_entities_in_paper(paper_id, paper_info.alleles, "tfp_variation")
-    db_manager.set_extracted_entities_in_paper(paper_id, paper_info.species, "tfp_species")
-    db_manager.set_extracted_entities_in_paper(paper_id, paper_info.strains, "tfp_strain")
-    db_manager.set_extracted_entities_in_paper(paper_id, paper_info.transgenes, "tfp_transgene")
-    db_manager.set_version(paper_id)
-    db_manager.set_passwd(paper_id, passwd)
-    db_manager.set_email(paper_id, [paper_info.corresponding_author_email])
-
-
 def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
     hide_genes = "true" if len(paper_info.genes) > 100 else "false"
     hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
@@ -107,7 +94,7 @@ def main():
     ntt_extractor = NttExtractor(args.tpc_token, dbname=args.db_name, user=args.db_user, password=args.db_password,
                                  host=args.db_host, config_file=os.path.join(os.getcwd(), "src/backend/config.yml"))
     processable_papers = ntt_extractor.get_processable_papers()
-    processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
+    # processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
         print_stats(args.num_papers, papers_info)
@@ -115,10 +102,9 @@ def main():
     tinyurls = []
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     for paper_info in papers_info:
-        passwd = db_manager.get_passwd(paper_id=paper_info.paper_id)
-        passwd = time.time() if not passwd else passwd
+        passwd = ''
         if not args.dev_mode:
-            save_extracted_data_to_db(db_manager, paper_info.paper_id, paper_info, passwd)
+            passwd = db_manager.save_extracted_data_to_db(paper_info)
         if paper_info.corresponding_author_email:
             feedback_form_tiny_url = get_feedback_form_tiny_url(args.afp_base_url, paper_info.paper_id, paper_info,
                                                                 passwd)
