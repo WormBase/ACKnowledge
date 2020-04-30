@@ -163,14 +163,18 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_comments(self, paper_id):
         return self.db_manager.get_feature("afp_comment", paper_id)
 
-    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None, curation_filters=None):
-        return self.db_manager.get_num_papers_new_afp_processed(svm_filters, manual_filters, curation_filters)
+    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None, curation_filters=None,
+                                         combine_filters='OR'):
+        return self.db_manager.get_num_papers_new_afp_processed(svm_filters, manual_filters, curation_filters,
+                                                                combine_filters)
 
     def get_num_papers_old_afp_processed(self):
         return self.db_manager.get_num_papers_old_afp_processed()
 
-    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None, curation_filters=None):
-        return self.db_manager.get_num_papers_new_afp_author_submitted(svm_filters, manual_filters, curation_filters)
+    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None, curation_filters=None,
+                                                combine_filters='OR'):
+        return self.db_manager.get_num_papers_new_afp_author_submitted(svm_filters, manual_filters, curation_filters,
+                                                                       combine_filters)
 
     def get_num_papers_old_afp_author_submitted(self):
         return self.db_manager.get_num_papers_old_afp_author_submitted()
@@ -179,24 +183,25 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
         return self.db_manager.get_num_entities_extracted_by_afp(entity_label)
 
     def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filter=None, manual_filters=None,
-                                         curation_filters=None):
+                                         curation_filters=None, combine_filters='OR'):
         return self.db_manager.get_list_paper_ids_afp_processed(from_offset, count, svm_filter, manual_filters,
-                                                                curation_filters)
+                                                                curation_filters, combine_filters)
 
     def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters=None, manual_filters=None,
-                                         curation_filters=None):
+                                         curation_filters=None, combine_filters='OR'):
         return self.db_manager.get_list_paper_ids_afp_submitted(from_offset, count, svm_filters, manual_filters,
-                                                                curation_filters)
+                                                                curation_filters, combine_filters)
 
     def get_num_papers_new_afp_partial_submissions(self, svm_filters=None, manual_filters=None,
-                                                   curation_filters=None):
+                                                   curation_filters=None, combine_filters='OR'):
         return self.db_manager.get_num_papers_new_afp_partial_submissions(svm_filters, manual_filters,
-                                                                          curation_filters)
+                                                                          curation_filters, combine_filters)
 
     def get_list_papers_new_afp_partial_submissions(self, from_offset, count, svm_filters=None, manual_filters=None,
-                                                    curation_filters=None):
+                                                    curation_filters=None, combine_filters='OR'):
         return self.db_manager.get_list_papers_new_afp_partial_submissions(from_offset, count, svm_filters,
-                                                                           manual_filters, curation_filters)
+                                                                           manual_filters, curation_filters,
+                                                                           combine_filters)
 
     def get_corresponding_author_email(self, paper_id):
         return self.db_manager.get_afp_email(paper_id)

@@ -22,7 +22,8 @@ export function getListElements(filters, type, offset, count, endpoint) {
             list_type: listType,
             svm_filters: svmFilters,
             manual_filters: manualFilters,
-            curation_filters: curationFilters
+            curation_filters: curationFilters,
+            combine_filters: filters.combineFilters,
         };
         fetch(endpoint, {
             method: 'POST',

@@ -4,9 +4,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import FormGroup from "react-bootstrap/FormGroup";
-import FormControl from "react-bootstrap/FormControl";
-import Button from "react-bootstrap/Button";
 import NumElemPerPageSelector from "../../components/paginated_lists/NumElemPerPageSelector";
 class PapersFilters extends React.Component {
 
@@ -79,7 +76,13 @@ class PapersFilters extends React.Component {
                                             <Container fluid>
                                                 <Row>
                                                     <Col>
-                                                        <strong>Combine filters by:</strong>&nbsp; <Form.Check inline disabled type="radio" name="filtersLogic" label="OR"/> <Form.Check inline type="radio" disabled name="filtersLogic" label="AND" defaultChecked/>
+                                                        <strong>Combine filters by:</strong>&nbsp;
+                                                        <Form.Check inline type="radio" name="filtersLogic"
+                                                                    onChange={() => this.props.combineFiltersCallback('OR')}
+                                                                    label="OR"/>
+                                                        <Form.Check inline type="radio" name="filtersLogic"
+                                                                    onChange={() => this.props.combineFiltersCallback('AND')}
+                                                                    label="AND" defaultChecked/>
                                                     </Col>
                                                 </Row>
                                                 <Row>
