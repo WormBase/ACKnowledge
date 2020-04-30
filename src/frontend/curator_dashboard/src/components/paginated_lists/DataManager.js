@@ -16,6 +16,10 @@ export function getListElements(filters, type, offset, count, endpoint) {
         if (type !== undefined) {
             listType = type;
         }
+        let combineFilters = "AND";
+        if (filters !== undefined && filters.combineFilters !== undefined) {
+            combineFilters = filters.combineFilters;
+        }
         let payload = {
             from: offset,
             count: count,
@@ -23,7 +27,7 @@ export function getListElements(filters, type, offset, count, endpoint) {
             svm_filters: svmFilters,
             manual_filters: manualFilters,
             curation_filters: curationFilters,
-            combine_filters: filters.combineFilters,
+            combine_filters: combineFilters,
         };
         fetch(endpoint, {
             method: 'POST',
