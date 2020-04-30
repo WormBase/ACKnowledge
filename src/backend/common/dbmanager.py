@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timedelta
 import html
 import json
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class DBManager(object):
     
-    def __init__(self, dbname, user, password, host):
+    def __init__(self, dbname, user, password, host, tazendra_user, tazendra_password):
         connection_str = "dbname='" + dbname
         if user:
             connection_str += "' user='" + user
@@ -33,6 +34,8 @@ class DBManager(object):
         connection_str += "' host='" + host + "'"
         self.conn = psycopg2.connect(connection_str)
         self.cur = self.conn.cursor()
+        self.tazendra_user = tazendra_user
+        self.tazendra_password = tazendra_password
 
     def close(self):
         self.conn.commit()
@@ -659,7 +662,10 @@ class DBManager(object):
                         main_pdf = TAZENDRA_PDFS_LOCATION + '/' + main_pdf.split('/')[-1]
             elif "supplemental" in row[0]:
                 sup_folder = row[0].split("/")[-1]
-                with urllib.request.urlopen(TAZENDRA_PDFS_LOCATION + "/" + sup_folder) as response:
+                request = urllib.request.Request(TAZENDRA_PDFS_LOCATION + "/" + sup_folder)
+                base64string = base64.b64encode(bytes('%s:%s' % (self.tazendra_user, self.tazendra_password), 'ascii'))
+                request.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
+                with urllib.request.urlopen(request) as response:
                     html_list = response.read().decode("utf8")
                     sup_pdfs = [html.unescape(sup_pdf) for sup_pdf in re.findall(r">([^><]+\.pdf)<", html_list)]
                     pdfs = [TAZENDRA_PDFS_LOCATION + sup_folder + "/" + quote(sup, safe='&/') for sup in sup_pdfs]
@@ -814,20 +820,25 @@ class DBManager(object):
             url = ""
         return url
 
-    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None, curation_filters=None):
+    def get_num_papers_new_afp_processed(self, svm_filters=None, manual_filters=None, curation_filters=None,
+                                         combine_filters: str = 'OR'):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
         external_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause = "AND "
         if svm_filters and svm_filters[0] != '':
             additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause = "AND (cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_json(array_agg(cur_svmdata.cur_datatype)) AS svm_matched"
-            external_where_clause = "WHERE " + "AND ".join(["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'"
-                                                            for svm_flagged_datatype in svm_filters])
+            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium') "
+            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            external_where_clause = "WHERE " + (combine_filters + " ").join(
+                ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + manual_filter + " <> ''" for manual_filter in manual_filters])
         if curation_filters and curation_filters[0] != "":
             additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
                 [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
@@ -877,83 +888,25 @@ class DBManager(object):
         else:
             return 0
 
-    def get_num_papers_old_afp_processed(self):
-        self.cur.execute("SELECT count(*) FROM afp_email FULL OUTER JOIN afp_version ON afp_email.joinkey = "
-                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1' "
-                         "AND afp_email.afp_email IS NOT NULL")
-        res = self.cur.fetchone()
-        if res:
-            return int(res[0])
-        else:
-            return 0
-
-    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None, curation_filters=None):
-        additional_joins = ""
-        additional_where_clause = ""
-        if svm_filters and svm_filters[0] != '':
-            additional_joins = " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
-                                         ".joinkey " for table_name in svm_filters])
-            additional_where_clause += "AND " + "AND ".join(["afp_" + table_name + ".afp_" + table_name + " <> ''"
-                                                            for table_name in svm_filters])
-        if manual_filters and manual_filters[0] != '':
-            additional_joins += " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
-                                         ".joinkey " for table_name in manual_filters])
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
-        if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
-                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
-        self.cur.execute("SELECT count(*) FROM afp_lasttouched JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
-                         " WHERE afp_version.afp_version = '2' " + additional_where_clause)
-        res = self.cur.fetchone()
-        if res:
-            return int(res[0])
-        else:
-            return 0
-
-    def get_num_papers_old_afp_author_submitted(self):
-        self.cur.execute("SELECT count(*) FROM afp_lasttouched FULL OUTER JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey JOIN afp_email "
-                         "ON afp_lasttouched.joinkey = afp_email.joinkey WHERE afp_version.afp_version IS NULL OR "
-                         "afp_version.afp_version = '1'")
-        res = self.cur.fetchone()
-        if res:
-            return int(res[0])
-        else:
-            return 0
-
-    def get_num_entities_extracted_by_afp(self, enetity_label):
-        self.cur.execute("SELECT tfp_{} FROM tfp_{} FULL OUTER JOIN afp_version ON "
-                         "tfp_{}.joinkey = afp_version.joinkey JOIN afp_email ON "
-                         "afp_version.joinkey = afp_email.joinkey WHERE afp_version.afp_version = '2'"
-                         .format(enetity_label, enetity_label, enetity_label))
-        res = self.cur.fetchall()
-        return [len(row[0].split(" | ")) for row in res]
-
-    def get_doi_from_paper_id(self, paper_id):
-        self.cur.execute("SELECT pap_identifier FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier "
-                         "LIKE 'doi%'".format(paper_id))
-        res = self.cur.fetchone()
-        if res and res[0].startswith("doi"):
-            return res[0][3:]
-        else:
-            return ""
-
-    def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filters, manual_filters, curation_filters):
+    def get_list_paper_ids_afp_processed(self, from_offset, count, svm_filters, manual_filters, curation_filters,
+                                         combine_filters: str = 'OR'):
         additional_joins = ""
         additional_where_clause = ""
         additional_field = ""
         external_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause = "AND "
         if svm_filters and svm_filters[0] != '':
             additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause = "AND (cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_json(array_agg(cur_svmdata.cur_datatype)) AS svm_matched"
-            external_where_clause = "WHERE " + "AND ".join(["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'"
-                                                            for svm_flagged_datatype in svm_filters])
+            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
+            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            external_where_clause = "WHERE " + (combine_filters + " ").join(
+                ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + manual_filter + " <> ''" for manual_filter in manual_filters])
         if curation_filters and curation_filters[0] != "":
             additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
                 [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
@@ -1000,6 +953,236 @@ class DBManager(object):
                          " OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         return [row[0] for row in res]
+
+    def get_num_papers_new_afp_author_submitted(self, svm_filters=None, manual_filters=None, curation_filters=None,
+                                                combine_filters: str = 'OR'):
+        additional_joins = ""
+        additional_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause += "AND "
+        if svm_filters and svm_filters[0] != '':
+            additional_joins = " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
+                                         ".joinkey " for table_name in svm_filters])
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + table_name + ".afp_" + table_name + " <> ''" for table_name in svm_filters])
+        if manual_filters and manual_filters[0] != '':
+            additional_joins += " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
+                                          ".joinkey " for table_name in manual_filters])
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + manual_filter + " <> ''" for manual_filter in manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
+        self.cur.execute("SELECT count(*) FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
+                         " WHERE afp_version.afp_version = '2' " + additional_where_clause)
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters=None, manual_filters=None,
+                                         curation_filters=None, combine_filters: str = 'OR'):
+        additional_joins = ""
+        additional_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause += "AND "
+        if svm_filters and svm_filters[0] != '':
+            additional_joins = " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
+                                         ".joinkey " for table_name in svm_filters])
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + table_name + ".afp_" + table_name + " <> ''" for table_name in svm_filters])
+        if manual_filters and manual_filters[0] != '':
+            additional_joins += " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
+                                          ".joinkey " for table_name in manual_filters])
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + manual_filter + " <> ''" for manual_filter in manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
+        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
+                         " WHERE afp_version.afp_version = '2' " + additional_where_clause +
+                         " ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_num_papers_new_afp_partial_submissions(self, svm_filters=None, manual_filters=None,
+                                                   curation_filters=None, combine_filters: str = 'OR'):
+        additional_joins = ""
+        additional_where_clause = ""
+        additional_field = ""
+        external_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause += "AND "
+        if svm_filters and svm_filters[0] != '':
+            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
+            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
+            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            external_where_clause = "WHERE " + (combine_filters + " ").join(
+                ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
+        if manual_filters and manual_filters[0] != '':
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(
+                ["afp_" + manual_filter + " <> ''" for manual_filter in manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
+        self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field + " FROM "
+                         "afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
+                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
+                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
+                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
+                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
+                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
+                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
+                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
+                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
+                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
+                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
+                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
+                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
+                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
+                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
+                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
+                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
+                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
+                         "FULL OUTER JOIN afp_humdis ON afp_ve.joinkey = afp_humdis.joinkey "
+                         "FULL OUTER JOIN afp_additionalexpr ON afp_ve.joinkey = afp_additionalexpr.joinkey "
+                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey " + additional_joins +
+                         " WHERE afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
+                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
+                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
+                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
+                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
+                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
+                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
+                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
+                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
+                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
+                         "afp_humdis.afp_humdis IS NOT NULL OR afp_additionalexpr.afp_additionalexpr IS NOT NULL OR "
+                         "afp_comment.afp_comment IS NOT NULL) " + additional_where_clause + " GROUP BY "
+                                                                                             "afp_email.joinkey) AS t " + external_where_clause)
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_list_papers_new_afp_partial_submissions(self, from_offset, count, svm_filters=None, manual_filters=None,
+                                                    curation_filters=None, combine_filters: str = 'OR'):
+        additional_joins = ""
+        additional_where_clause = ""
+        additional_field = ""
+        external_where_clause = ""
+        if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
+            additional_where_clause += "AND "
+        if svm_filters and svm_filters[0] != '':
+            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
+            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
+            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            external_where_clause = "WHERE " + (combine_filters + " ").join(
+                ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
+        if manual_filters and manual_filters[0] != '':
+            if additional_where_clause != "AND ":
+                additional_where_clause += " " + combine_filters + " "
+            additional_where_clause += (combine_filters + " ").join(["afp_" + manual_filter + " <> ''" for manual_filter
+                                                                     in manual_filters])
+        if curation_filters and curation_filters[0] != "":
+            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
+                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
+        self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
+                         " FROM afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
+                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
+                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
+                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
+                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
+                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
+                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
+                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
+                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
+                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
+                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
+                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
+                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
+                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
+                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
+                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
+                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
+                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
+                         "FULL OUTER JOIN afp_humdis ON afp_ve.joinkey = afp_humdis.joinkey "
+                         "FULL OUTER JOIN afp_additionalexpr ON afp_ve.joinkey = afp_additionalexpr.joinkey "
+                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey " + additional_joins +
+                         " WHERE afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
+                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
+                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
+                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
+                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
+                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
+                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
+                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
+                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
+                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
+                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
+                         "afp_humdis.afp_humdis IS NOT NULL OR afp_additionalexpr.afp_additionalexpr IS NOT NULL OR "
+                         "afp_comment.afp_comment IS NOT NULL) " + additional_where_clause +
+                         " GROUP BY afp_email.joinkey ORDER BY afp_email.joinkey DESC) AS t " + external_where_clause +
+                         " OFFSET {} LIMIT {}".format(from_offset, count))
+        res = self.cur.fetchall()
+        return [row[0] for row in res]
+
+    def get_num_papers_old_afp_processed(self):
+        self.cur.execute("SELECT count(*) FROM afp_email FULL OUTER JOIN afp_version ON afp_email.joinkey = "
+                         "afp_version.joinkey WHERE afp_version.afp_version IS NULL OR afp_version.afp_version = '1' "
+                         "AND afp_email.afp_email IS NOT NULL")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_num_papers_old_afp_author_submitted(self):
+        self.cur.execute("SELECT count(*) FROM afp_lasttouched FULL OUTER JOIN afp_version ON "
+                         "afp_lasttouched.joinkey = afp_version.joinkey JOIN afp_email "
+                         "ON afp_lasttouched.joinkey = afp_email.joinkey WHERE afp_version.afp_version IS NULL OR "
+                         "afp_version.afp_version = '1'")
+        res = self.cur.fetchone()
+        if res:
+            return int(res[0])
+        else:
+            return 0
+
+    def get_num_entities_extracted_by_afp(self, enetity_label):
+        self.cur.execute("SELECT tfp_{} FROM tfp_{} FULL OUTER JOIN afp_version ON "
+                         "tfp_{}.joinkey = afp_version.joinkey JOIN afp_email ON "
+                         "afp_version.joinkey = afp_email.joinkey WHERE afp_version.afp_version = '2'"
+                         .format(enetity_label, enetity_label, enetity_label))
+        res = self.cur.fetchall()
+        return [len(row[0].split(" | ")) for row in res]
+
+    def get_doi_from_paper_id(self, paper_id):
+        self.cur.execute("SELECT pap_identifier FROM pap_identifier WHERE joinkey = '{}' AND pap_identifier "
+                         "LIKE 'doi%'".format(paper_id))
+        res = self.cur.fetchone()
+        if res and res[0].startswith("doi"):
+            return res[0][3:]
+        else:
+            return ""
 
     def get_list_paper_ids_afp_waiting_submission_for_author(self, author_email, from_offset, count):
         self.cur.execute("SELECT DISTINCT afp_email.joinkey FROM afp_email JOIN afp_version afp_ve "
@@ -1103,30 +1286,6 @@ class DBManager(object):
         res = self.cur.fetchone()
         return res[0] - self.get_num_papers_new_afp_partial_submissions_by_author(author_email)
 
-    def get_list_paper_ids_afp_submitted(self, from_offset, count, svm_filters=None, manual_filters=None,
-                                         curation_filters=None):
-        additional_joins = ""
-        additional_where_clause = ""
-        if svm_filters and svm_filters[0] != '':
-            additional_joins = " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
-                                         ".joinkey " for table_name in svm_filters])
-            additional_where_clause += "AND " + "AND ".join(["afp_" + table_name + ".afp_" + table_name + " <> ''"
-                                                            for table_name in svm_filters])
-        if manual_filters and manual_filters[0] != '':
-            additional_joins += " ".join(["JOIN afp_" + table_name + " ON afp_lasttouched.joinkey = afp_" + table_name +
-                                          ".joinkey " for table_name in manual_filters])
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
-        if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_version.joinkey NOT IN ('" + "', '".join(set(
-                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
-        self.cur.execute("SELECT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
-                         "afp_lasttouched.joinkey = afp_version.joinkey " + additional_joins +
-                         " WHERE afp_version.afp_version = '2' " + additional_where_clause +
-                         " ORDER BY joinkey DESC OFFSET {} LIMIT {}".format(from_offset, count))
-        res = self.cur.fetchall()
-        return [row[0] for row in res]
-
     def get_list_paper_ids_afp_submitted_by_author(self, author_email, from_offset, count):
         self.cur.execute("SELECT DISTINCT afp_lasttouched.joinkey FROM afp_lasttouched JOIN afp_version ON "
                          "afp_lasttouched.joinkey = afp_version.joinkey "
@@ -1158,132 +1317,6 @@ class DBManager(object):
                          "AND afp_version.afp_version = '2'".format(author_email, author_email))
         res = self.cur.fetchone()
         return res[0]
-
-    def get_num_papers_new_afp_partial_submissions(self, svm_filters=None, manual_filters=None,
-                                                   curation_filters=None):
-        additional_joins = ""
-        additional_where_clause = ""
-        additional_field = ""
-        external_where_clause = ""
-        if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause = "AND (cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_json(array_agg(cur_svmdata.cur_datatype)) AS svm_matched"
-            external_where_clause = "WHERE " + "AND ".join(["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'"
-                                                            for svm_flagged_datatype in svm_filters])
-        if manual_filters and manual_filters[0] != '':
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
-        if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
-                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
-        self.cur.execute("SELECT count(*) FROM (SELECT afp_email.joinkey " + additional_field + " FROM "
-                         "afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
-                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
-                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
-                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
-                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
-                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
-                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
-                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
-                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
-                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
-                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
-                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
-                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
-                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
-                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
-                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
-                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
-                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
-                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
-                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
-                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
-                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
-                         "FULL OUTER JOIN afp_humdis ON afp_ve.joinkey = afp_humdis.joinkey "
-                         "FULL OUTER JOIN afp_additionalexpr ON afp_ve.joinkey = afp_additionalexpr.joinkey "
-                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey " + additional_joins +
-                         " WHERE afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
-                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
-                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
-                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
-                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
-                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
-                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
-                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
-                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
-                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
-                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
-                         "afp_humdis.afp_humdis IS NOT NULL OR afp_additionalexpr.afp_additionalexpr IS NOT NULL OR "
-                         "afp_comment.afp_comment IS NOT NULL) " + additional_where_clause + " GROUP BY "
-                         "afp_email.joinkey) AS t " + external_where_clause)
-        res = self.cur.fetchone()
-        if res:
-            return int(res[0])
-        else:
-            return 0
-
-    def get_list_papers_new_afp_partial_submissions(self, from_offset, count, svm_filters=None, manual_filters=None,
-                                                    curation_filters=None):
-        additional_joins = ""
-        additional_where_clause = ""
-        additional_field = ""
-        external_where_clause = ""
-        if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause = "AND (cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_json(array_agg(cur_svmdata.cur_datatype)) AS svm_matched"
-            external_where_clause = "WHERE " + "AND ".join(["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'"
-                                                            for svm_flagged_datatype in svm_filters])
-        if manual_filters and manual_filters[0] != '':
-            additional_where_clause += " AND " + " AND ".join(["afp_" + manual_filter + " <> ''" for manual_filter in
-                                                               manual_filters])
-        if curation_filters and curation_filters[0] != "":
-            additional_where_clause += " AND afp_email.joinkey NOT IN ('" + "', '".join(set(
-                [pap_id for datatype in curation_filters for pap_id in self.get_curated_papers(datatype)])) + "')"
-        self.cur.execute("SELECT joinkey FROM (SELECT afp_email.joinkey AS joinkey " + additional_field +
-                         " FROM afp_email JOIN afp_version afp_ve ON afp_email.joinkey = afp_ve.joinkey "
-                         "FULL OUTER JOIN afp_lasttouched afp_l ON afp_ve.joinkey = afp_l.joinkey "
-                         "FULL OUTER JOIN afp_genestudied afp_g ON afp_ve.joinkey = afp_g.joinkey "
-                         "FULL OUTER JOIN afp_species afp_s ON afp_ve.joinkey = afp_s.joinkey "
-                         "FULL OUTER JOIN afp_variation afp_v ON afp_ve.joinkey = afp_v.joinkey "
-                         "FULL OUTER JOIN afp_strain afp_st ON afp_ve.joinkey = afp_st.joinkey "
-                         "FULL OUTER JOIN afp_transgene afp_t ON afp_ve.joinkey = afp_t.joinkey "
-                         "FULL OUTER JOIN afp_seqchange afp_seq ON afp_ve.joinkey = afp_seq.joinkey "
-                         "FULL OUTER JOIN afp_geneint afp_ge ON afp_ve.joinkey = afp_ge.joinkey "
-                         "FULL OUTER JOIN afp_geneprod afp_gp ON afp_ve.joinkey = afp_gp.joinkey "
-                         "FULL OUTER JOIN afp_genereg afp_gr ON afp_ve.joinkey = afp_gr.joinkey "
-                         "FULL OUTER JOIN afp_newmutant afp_nm ON afp_ve.joinkey = afp_nm.joinkey "
-                         "FULL OUTER JOIN afp_rnai afp_rnai ON afp_ve.joinkey = afp_rnai.joinkey "
-                         "FULL OUTER JOIN afp_overexpr afp_ov ON afp_ve.joinkey = afp_ov.joinkey "
-                         "FULL OUTER JOIN afp_structcorr afp_stc ON afp_ve.joinkey = afp_stc.joinkey "
-                         "FULL OUTER JOIN afp_antibody ON afp_ve.joinkey = afp_antibody.joinkey "
-                         "FULL OUTER JOIN afp_siteaction ON afp_ve.joinkey = afp_siteaction.joinkey "
-                         "FULL OUTER JOIN afp_timeaction ON afp_ve.joinkey = afp_timeaction.joinkey "
-                         "FULL OUTER JOIN afp_rnaseq ON afp_ve.joinkey = afp_rnaseq.joinkey "
-                         "FULL OUTER JOIN afp_chemphen ON afp_ve.joinkey = afp_chemphen.joinkey "
-                         "FULL OUTER JOIN afp_envpheno ON afp_ve.joinkey = afp_envpheno.joinkey "
-                         "FULL OUTER JOIN afp_catalyticact ON afp_ve.joinkey = afp_catalyticact.joinkey "
-                         "FULL OUTER JOIN afp_humdis ON afp_ve.joinkey = afp_humdis.joinkey "
-                         "FULL OUTER JOIN afp_additionalexpr ON afp_ve.joinkey = afp_additionalexpr.joinkey "
-                         "FULL OUTER JOIN afp_comment ON afp_ve.joinkey = afp_comment.joinkey " + additional_joins +
-                         " WHERE afp_ve.afp_version = '2' AND afp_l.afp_lasttouched is NULL "
-                         "AND (afp_g.afp_genestudied IS NOT NULL OR afp_s.afp_species IS NOT NULL OR "
-                         "afp_v.afp_variation IS NOT NULL OR afp_st.afp_strain IS NOT NULL OR "
-                         "afp_t.afp_transgene IS NOT NULL OR afp_seq.afp_seqchange IS NOT NULL OR "
-                         "afp_ge.afp_geneint IS NOT NULL OR afp_gp.afp_geneprod IS NOT NULL OR "
-                         "afp_gr.afp_genereg IS NOT NULL OR afp_nm.afp_newmutant IS NOT NULL OR "
-                         "afp_rnai.afp_rnai IS NOT NULL OR afp_ov.afp_overexpr IS NOT NULL OR "
-                         "afp_stc.afp_structcorr IS NOT NULL OR afp_antibody.afp_antibody IS NOT NULL OR "
-                         "afp_siteaction.afp_siteaction IS NOT NULL OR afp_timeaction.afp_timeaction IS NOT NULL OR "
-                         "afp_rnaseq.afp_rnaseq IS NOT NULL OR afp_chemphen.afp_chemphen IS NOT NULL OR "
-                         "afp_envpheno.afp_envpheno IS NOT NULL OR afp_catalyticact.afp_catalyticact IS NOT NULL OR "
-                         "afp_humdis.afp_humdis IS NOT NULL OR afp_additionalexpr.afp_additionalexpr IS NOT NULL OR "
-                         "afp_comment.afp_comment IS NOT NULL) " + additional_where_clause +
-                         " GROUP BY afp_email.joinkey ORDER BY afp_email.joinkey DESC) AS t " + external_where_clause +
-                         " OFFSET {} LIMIT {}".format(from_offset, count))
-        res = self.cur.fetchall()
-        return [row[0] for row in res]
 
     def get_num_papers_new_afp_partial_submissions_by_author(self, author_email):
         self.cur.execute("SELECT count(DISTINCT afp_ve.joinkey) FROM afp_version afp_ve "
@@ -1565,11 +1598,13 @@ class DBManager(object):
         else:
             return []
 
-    @staticmethod
-    def get_curated_papers(datatype):
-        with urllib.request.urlopen("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action=listCura"
-                                    "tionStatisticsPapersPage&select_curator=two1823&method=allcur&listDatatype=" +
-                                    datatype) as response:
+    def get_curated_papers(self, datatype):
+        request = urllib.request.Request("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action="
+                                         "listCurationStatisticsPapersPage&select_curator=two1823&method=allcur&"
+                                         "listDatatype=" + datatype)
+        base64string = base64.b64encode(bytes('%s:%s' % (self.tazendra_user, self.tazendra_password), 'ascii'))
+        request.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
+        with urllib.request.urlopen(request) as response:
             res = response.read().decode("utf8")
             m = re.match('.*<textarea rows="4" cols="80" name="specific_papers">(.*)</textarea>.*',
                          res.replace('\n', ''))

@@ -1,6 +1,6 @@
+import base64
 import logging
 import math
-import os
 import re
 import shutil
 from collections import defaultdict
@@ -36,13 +36,16 @@ logger = logging.getLogger(__name__)
 
 class NttExtractor(object):
 
-    def __init__(self, tpc_token, dbname, user, password, host, config_file):
+    def __init__(self, tpc_token, dbname, user, password, host, config_file, tazendra_user, tazendra_password):
         self.api_manager = APIManager(tpc_token)
         self.db_name = dbname
         self.db_user = user
         self.db_password = password
         self.db_host = host
-        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        self.tazendra_user = tazendra_user
+        self.tazendra_password = tazendra_password
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host, self.tazendra_user,
+                               self.tazendra_password)
         self.tot_num_documents = len(db_manager.get_set_of_curatable_papers())
         self.taxonid_name_map = db_manager.get_taxonid_speciesnamearr_map()
         db_manager.close()
@@ -105,7 +108,8 @@ class NttExtractor(object):
                                           min_num_occurrences=min_matches, tfidf_threshold=tfidf_threshold))]
 
     def extract_entities_from_text(self, papers_info):
-        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host, self.tazendra_user,
+                               self.tazendra_password)
         genes = db_manager.get_all_genes()
         alleles = db_manager.get_all_alleles()
         strains = db_manager.get_all_alleles()
@@ -188,7 +192,8 @@ class NttExtractor(object):
                              entity_name]] for entity_name in entity_names if entity_name in entity_name_id_map]))
 
     def extract_entities(self, paper_ids, max_num_papers):
-        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host, self.tazendra_user,
+                               self.tazendra_password)
         logger.info("Getting papers fulltext and metadata")
         papers_info = []
         for paper_id, fulltext, (person_id, email) in self.get_first_valid_paper_ids_fulltexts_and_emails(
@@ -208,7 +213,8 @@ class NttExtractor(object):
         return self.extract_entities_from_text(papers_info=papers_info)
 
     def get_processable_papers(self):
-        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host)
+        db_manager = DBManager(self.db_name, self.db_user, self.db_password, self.db_host, self.tazendra_user,
+                               self.tazendra_password)
         logger.info("Getting the list of curatable papers from WormBase DB")
         curatable_papers = db_manager.get_set_of_curatable_papers()
         logger.debug("Number of curatable papers: " + str(len(curatable_papers)))
@@ -310,7 +316,10 @@ class NttExtractor(object):
 
         def convert_pdf2text(pdf_url):
             pdf_fulltext = ""
-            with urllib.request.urlopen(pdf_url) as response:
+            request = urllib.request.Request(pdf_url)
+            base64string = base64.b64encode(bytes('%s:%s' % (self.tazendra_user, self.tazendra_password), 'ascii'))
+            request.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
+            with urllib.request.urlopen(request) as response:
                 with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
                     shutil.copyfileobj(response, tmp_file)
             try:

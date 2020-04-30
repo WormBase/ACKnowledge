@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import ssl
 
 from src.backend.common.emailtools import *
@@ -19,6 +20,8 @@ def main():
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str, default="")
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
+    parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -41,7 +44,8 @@ def main():
         ssl._create_default_https_context = ssl._create_unverified_context
 
     ntt_extractor = NttExtractor(args.tpc_token, dbname=args.db_name, user=args.db_user, password=args.db_password,
-                                 host=args.db_host, config_file=os.path.join(os.getcwd(), "src/backend/config.yml"))
+                                 host=args.db_host, config_file=os.path.join(os.getcwd(), "src/backend/config.yml"),
+                                 tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
     processable_papers = ntt_extractor.get_processable_papers()
     # processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
@@ -49,7 +53,8 @@ def main():
         print_papers_stats(args.num_papers, papers_info)
         exit(0)
     tinyurls = []
-    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
+    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host,
+                           tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
     for paper_info in papers_info:
         passwd = ''
         if not args.dev_mode:
