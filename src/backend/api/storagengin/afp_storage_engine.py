@@ -3,15 +3,18 @@ from src.backend.common.dbmanager import DBManager
 
 class AFPStorageBaseEngine(object):
 
-    def __init__(self, dbname, user, password, host):
+    def __init__(self, dbname, user, password, host, tazendra_user, tazendra_password):
         self.dbname = dbname
         self.user = user
         self.password = password
         self.host = host
         self.db_manager = None
+        self.tazendra_user = tazendra_user
+        self.tazendra_password = tazendra_password
 
     def __enter__(self):
-        self.db_manager = DBManager(self.dbname, self.user, self.password, self.host)
+        self.db_manager = DBManager(self.dbname, self.user, self.password, self.host, self.tazendra_user,
+                                    self.tazendra_password)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.db_manager.close()

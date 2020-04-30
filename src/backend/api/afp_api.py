@@ -31,6 +31,8 @@ def main():
                         help="list of email addresses of administrators")
     parser.add_argument("-e", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
+    parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
+    parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -51,7 +53,8 @@ def main():
 
     app = falcon.API(middleware=[HandleCORS()])
     feedback_form_db = FeedbackFormStorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password,
-                                                 host=args.db_host)
+                                                 host=args.db_host, tazendra_user=args.tazendra_user,
+                                                 tazendra_password=args.tazendra_password)
     feedback_form_writer = FeedbackFormWriter(storage_engine=feedback_form_db, admin_emails=args.admin_emails,
                                               email_passwd=args.email_passwd, afp_base_url=args.afp_base_url)
     app.add_route('/api/write', feedback_form_writer)
@@ -61,13 +64,16 @@ def main():
     app.add_route('/api/read', feedback_form_reader)
 
     curator_dashboard_db = CuratorDashboardStorageEngine(dbname=args.db_name, user=args.db_user,
-                                                         password=args.db_password, host=args.db_host)
+                                                         password=args.db_password, host=args.db_host,
+                                                         tazendra_user=args.tazendra_user,
+                                                         tazendra_password=args.tazendra_password)
     curator_dashboard_reader = CuratorDashboardReader(storage_engine=curator_dashboard_db,
                                                       afp_base_url=args.afp_base_url)
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
 
     author_papers_db = AuthorPapersPageStorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password,
-                                                     host=args.db_host)
+                                                     host=args.db_host, tazendra_user=args.tazendra_user,
+                                                     tazendra_password=args.tazendra_password)
     author_papers_reader = AuthorPapersPageReader(storage_engine=author_papers_db, afp_base_url=args.afp_base_url,
                                                   email_passwd=args.email_passwd)
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)

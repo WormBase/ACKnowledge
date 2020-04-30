@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
 
-    def __init__(self, dbname, user, password, host):
-        super().__init__(dbname, user, password, host)
+    def __init__(self, dbname, user, password, host, tazendra_user, tazendra_password):
+        super().__init__(dbname, user, password, host, tazendra_user, tazendra_password)
 
     def get_all_lists(self, paper_id):
         tfp_genestudied = self.db_manager.get_feature("tfp_genestudied", paper_id)
