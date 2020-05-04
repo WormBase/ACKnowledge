@@ -2,273 +2,114 @@ import logging
 import smtplib
 import urllib.parse
 
-from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from typing import List
 from urllib.request import urlopen
 
-FROM_ADDR = "Wormbase AFP<no-reply.afp@wormbase.org>"
-REPLY_TO_ADDR = "Wormbase AFP<help.afp@wormbase.org>"
+
+logger = logging.getLogger(__name__)
 
 
-def send_email_to_author(paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], email_passwd):
-    email_content = """Dear Author,
-  
-We have identified you as the corresponding author for the recently published paper:
+class EmailManager(object):
 
-\"{}\", {}
+    def __init__(self, config, email_passwd):
+        self.from_addr = config["emails"]["from_address"]
+        self.reply_to_addr = config["emails"]["reply_to_address"]
+        self.content_email_to_author = config["emails"]["content_to_author"]
+        self.subject_email_to_author = config["emails"]["subject_to_author"]
+        self.content_email_empty = config["emails"]["content_empty"]
+        self.subject_email_empty = config["emails"]["subject_empty"]
+        self.content_email_summary = config["emails"]["content_summary"]
+        self.subject_email_summary = config["emails"]["subject_summary"]
+        self.content_email_new_sub = config["emails"]["content_new_sub"]
+        self.subject_email_new_sub = config["emails"]["subject_new_sub"]
+        self.content_email_digest = config["emails"]["content_digest_alert"]
+        self.subject_email_digest = config["emails"]["subject_digest_alert"]
+        self.content_email_author_dash = config["emails"]["content_author_dash"]
+        self.subject_email_author_dash = config["emails"]["subject_author_dash"]
+        self.content_email_reminder = config["emails"]["content_reminder"]
+        self.subject_email_reminder = config["emails"]["subject_reminder"]
+        self.email_user = config["emails"]["email_user"]
+        self.email_user = config["emails"]["email_user"]
+        self.server_host = config["emails"]["server_host"]
+        self.server_port = config["emails"]["server_port"]
+        self.email_passwd = email_passwd
 
-We are contacting you for help in alerting a WormBase curator to data that need to be extracted 
-from your paper and entered into our database.
+    def send_email(self, subject, content, recipients):
+        body = MIMEText(content, "html")
+        msg = MIMEMultipart('alternative')
+        msg.attach(body)
+        msg['Subject'] = subject
+        msg['From'] = self.from_addr
+        msg['reply-to'] = self.reply_to_addr
+        msg['To'] = ", ".join(recipients)
 
-If you would like to flag* your paper for detailed curation, please visit: 
-{}
+        try:
+            server_ssl = smtplib.SMTP_SSL(self.server_host, self.server_port)
+            server_ssl.login(self.email_user, self.email_passwd)
+            server_ssl.send_message(msg)
+            logger.info("Email sent to: " + ", ".join(recipients))
+            server_ssl.quit()
+        except:
+            logger.fatal("Can't connect to smtp server. AFP emails not sent.")
 
-*Flagging your paper involves identifying the types of data present and should take <10 minutes.
+    def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
+        content = self.content_email_to_author.format(paper_title, paper_journal, afp_link)
+        subject = self.subject_email_to_author.format(paper_id)
+        self.send_email(subject=subject, content=content, recipients=recipients)
 
-Please feel free to forward the link to a co-author if you are unable to complete the form at this time.
+    def notify_admin_of_paper_without_entities(self, paper_id, paper_title: str, paper_journal: str, afp_link,
+                                               recipients: List[str]):
+        content = self.content_email_empty.format(paper_title, paper_journal, afp_link)
+        subject = self.subject_email_empty.format(paper_id)
+        self.send_email(subject=subject, content=content, recipients=recipients)
 
-In addition, WormBase has recently launched microPublication Biology, a peer-reviewed journal 
-that publishes citable, single experimental results, such as those often omitted from standard 
-journal articles due to space constraints or confirmatory or negative results. If you have such 
-unpublished data generated during this study, we encourage you to submit it at 
-http://bit.ly/2BcFas0.
+    def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str]):
+        if paper_ids:
+            paperid_list = "<br/>".join([paper_id + " <a href=" + url + ">" + url + "</a>" for paper_id, url in
+                                         zip(paper_ids, urls)])
+        else:
+            paperid_list = "No papers processed this time"
+        content = self.content_email_summary.format(paperid_list)
+        self.send_email(subject=self.subject_email_summary, content=content, recipients=recipients)
 
-Please contact help.afp@wormbase.org or contact@micropublication.org if you would like more 
-information about flagging your paper for curation or Micropublication.
-Please accept our congratulations on your publication!
-Best Wishes,
-WormBase""".format(paper_title, paper_journal, afp_link)
+    def send_new_submission_notification_email_to_admin(self, paper_id, paper_title, paper_journal, paper_email,
+                                                        recipients: List[str], form_url):
+        content = self.content_email_new_sub.format(paper_id, paper_title, paper_journal, paper_email,
+                                                    "http://textpressocentral.org:5001/paper?paper_id=" + paper_id,
+                                                    form_url)
+        self.send_email(subject=self.subject_email_new_sub, content=content, recipients=recipients)
 
-    msg = EmailMessage()
-    msg.set_content(email_content)
-    msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
+    def send_new_data_notification_email_to_watcher(self, data_type_table, paper_ids_val, recipients):
+        content = self.content_email_digest.format(data_type_table, "<br/>".join(
+            ["<a href='http://textpressocentral.org:5001/paper?paper_id=" + paper_id + "'>" + paper_id + "</a>:  " +
+             paper_ids_val[paper_id] for paper_id in paper_ids_val.keys()]))
+        subject = self.subject_email_digest.format(data_type_table)
+        self.send_email(subject=subject, content=content, recipients=recipients)
 
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+    def send_link_to_author_dashboard(self, token, recipients):
+        content = self.content_email_author_dash.format(token, token)
+        self.send_email(subject=self.subject_email_author_dash, content=content, recipients=recipients)
 
+    def send_reminder_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str],
+                                final_call: bool = False):
+        final_text = "Note that after one week’s time, partial submissions will be checked and entered into WormBase " \
+                     "by one of our curators." if final_call else ""
 
-def notify_admin_of_paper_without_entities(paper_id, paper_title: str, paper_journal: str, afp_link,
-                                           recipients: List[str], email_passwd):
-    email_content = """The paper:
+        content = self.content_email_reminder.format(paper_title, paper_journal, afp_link, final_text)
+        subject = self.subject_email_reminder.format(paper_id)
+        self.send_email(subject=subject, content=content, recipients=recipients)
 
-\"{}\", {}
-
-has empty entity lists.
-
-This is the link to the form for the paper: 
-{}
-
-""".format(paper_title, paper_journal, afp_link)
-
-    msg = EmailMessage()
-    msg.set_content(email_content)
-    msg['Subject'] = "Paper processed by AFP has empty entity lists: WBPaper" + paper_id
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def send_summary_email_to_admin(urls, paper_ids, recipients: List[str], email_passwd):
-    if paper_ids:
-        paperid_list = "\n".join([paper_id + " " + url for paper_id, url in zip(paper_ids, urls)])
-    else:
-        paperid_list = "No papers processed this time"
-    email_content = """New papers processed by the Author First Pass Pipeline:
-
-{}
-
-""".format(paperid_list)
-
-    msg = EmailMessage()
-    msg.set_content(email_content)
-    msg['Subject'] = "New papers processed by AFP Pipeline"
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def send_new_submission_notification_email_to_admin(paper_id, paper_passwd, paper_title, paper_journal, paper_email,
-                                                    recipients: List[str], email_passwd, form_url):
-    email_content = """New AFP data submission completed by author for the following paper:
-    
-Paper ID: {}
-Title: {}
-Journal: {}
-Corresponding Author email: {} 
-
-Link to AFP admin dashboard: {}
-Link to AFP form for authors: {}
-
-""".format(paper_id, paper_title, paper_journal, paper_email, "http://textpressocentral.org:5001/paper?paper_id=" +
-           paper_id, form_url)
-
-    msg = EmailMessage()
-    msg.set_content(email_content)
-    msg['Subject'] = "New AFP data submitted by author"
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def send_new_data_notification_email_to_watcher(data_type_table, paper_ids_val, recipients, email_passwd):
-    email_content = """New papers flagged 'positive' during the last month for data type {}: <br/><br>
-    
-{}
-
-""".format(data_type_table, "<br/>".join(["<a href='http://textpressocentral.org:5001/paper?paper_id=" +
-                                          paper_id + "'>" + paper_id + "</a>:  " + paper_ids_val[paper_id] for paper_id
-                                          in paper_ids_val.keys()]))
-
-    body = MIMEText(email_content, "html")
-    msg = MIMEMultipart('alternative')
-    msg.attach(body)
-    msg['Subject'] = "New positive papers flagged by author through AFP for " + data_type_table
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def send_link_to_author_dashboard(token, recipients, email_passwd):
-    email_content = """Click here to retrieve the list of your papers processed by the Author First Pass: <br/><br/>
-    
-<a href='http://textpressocentral.org:5002?token={}'>http://textpressocentral.org:5002?token={}</a>
-
-""".format(token, token)
-
-    body = MIMEText(email_content, "html")
-    msg = MIMEMultipart('alternative')
-    msg.attach(body)
-    msg['Subject'] = "Author First Pass - access link to author page"
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def send_reminder_to_author(paper_id, paper_title: str, paper_journal: str, afp_link,
-                            recipients: List[str], email_passwd, final_call: bool = False):
-    final_text = "Note that after one week’s time, partial submissions will be checked and entered into WormBase by " \
-                 "one of our curators." if final_call else ""
-
-    email_content = """Dear Author,
-
-We recently sent an email asking for your help in flagging entities and data types for WormBase curation for the 
-recently published paper:
-
-\"{}\", {}
-
-We would like to remind you that it is still possible to submit your response by visiting the Author First Pass Form 
-for your paper: {}
-
-If you have started on the form, but not finished, you may resume your submission to complete the process.
-
-If you have questions about completing the form, please feel free to reply to this email and we will be happy to assist 
-you. {}
-
-Thank you for helping WormBase!
-""".format(paper_title, paper_journal, afp_link, final_text)
-
-    msg = EmailMessage()
-    msg.set_content(email_content)
-    msg['Subject'] = "Help Wormbase curate your paper WBPaper" + paper_id
-    msg['From'] = FROM_ADDR
-    msg['reply-to'] = REPLY_TO_ADDR
-    msg['To'] = ", ".join(recipients)
-
-    gmail_user = "outreach@wormbase.org"
-    gmail_password = email_passwd
-    logger = logging.getLogger("AFP Email module")
-    try:
-        server_ssl = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server_ssl.login(gmail_user, gmail_password)
-        server_ssl.send_message(msg)
-        logger.info("Email sent to: " + ", ".join(recipients))
-        server_ssl.quit()
-    except:
-        logger.fatal("Can't connect to smtp server. AFP emails not sent.")
-
-
-def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
-    hide_genes = "true" if len(paper_info.genes) > 100 else "false"
-    hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
-    hide_strains = "true" if len(paper_info.strains) > 100 else "false"
-    url = afp_base_url + "?paper=" + paper_id + "&passwd=" + str(passwd) + "&title=" + \
-          urllib.parse.quote(paper_info.title) + "&journal=" + urllib.parse.quote(paper_info.journal) + "&pmid=" + \
-          paper_info.pmid + "&personid=" + paper_info.corresponding_author_id.replace("two", "") + "&hide_genes=" + \
-          hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
-          urllib.parse.quote(paper_info.doi)
-    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
-    return data.read().decode('utf-8')
+    @staticmethod
+    def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
+        hide_genes = "true" if len(paper_info.genes) > 100 else "false"
+        hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
+        hide_strains = "true" if len(paper_info.strains) > 100 else "false"
+        url = afp_base_url + "?paper=" + paper_id + "&passwd=" + str(passwd) + "&title=" + \
+              urllib.parse.quote(paper_info.title) + "&journal=" + urllib.parse.quote(paper_info.journal) + "&pmid=" + \
+              paper_info.pmid + "&personid=" + paper_info.corresponding_author_id.replace("two", "") + "&hide_genes=" + \
+              hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
+              urllib.parse.quote(paper_info.doi)
+        data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
+        return data.read().decode('utf-8')

@@ -1,11 +1,102 @@
-ntt_extraction:
+emails:
+  from_address: "Wormbase AFP<no-reply.afp@wormbase.org>"
+  reply_to_address: "Wormbase AFP<help.afp@wormbase.org>"
+  email_user: "outreach@wormbase.org"
+  server_host: "smtp.gmail.com"
+  server_port: 465
 
+  subject_to_author: "Help Wormbase curate your paper WBPaper{}"
+  content_to_author: "Dear Author,<br/>
+                      We have identified you as the corresponding author for the recently published paper:<br/>
+                      <br/>
+                      \"{}\", {}<br/>
+                      <br/>
+                      We are contacting you for help in alerting a WormBase curator to data that need to be extracted<br/>
+                      from your paper and entered into our database.<br/>
+                      <br/>
+                      If you would like to flag* your paper for detailed curation, please click <a href={}>here</a><br/>
+                      <br/>
+                      *Flagging your paper involves identifying the types of data present and should take <10 minutes.<br/>
+                      <br/>
+                      Please feel free to forward the link to a co-author if you are unable to complete the form at this time.<br/>
+                      <br/>
+                      In addition, WormBase has recently launched microPublication Biology, a peer-reviewed journal<br/>
+                      that publishes citable, single experimental results, such as those often omitted from standard<br/>
+                      journal articles due to space constraints or confirmatory or negative results. If you have such<br/>
+                      unpublished data generated during this study, we encourage you to submit it
+                      <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
+                      <br/>
+                      Please contact <a href='mailto:help.afp@wormbase.org'>help.afp@wormbase.org</a> or
+                      <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
+                      information about flagging your paper for curation or Micropublication.<br/>
+                      Please accept our congratulations on your publication!<br/>
+                      Best Wishes,<br/>
+                      WormBase"
+
+  subject_empty: "Paper processed by AFP has empty entity lists: WBPaper{}"
+  content_empty: "The paper:<br/>
+                  <br/>
+                  \"{}\", {}<br/>
+                  <br/>
+                  has empty entity lists.<br/>
+                  <br/>
+                  This is the <a href={}>link</a> to the form for the paper.<br/>
+                  <br/>"
+
+  subject_summary: "New papers processed by AFP Pipeline"
+  content_summary: "New papers processed by the Author First Pass Pipeline:<br/>
+                    <br/>
+                    {}<br/>
+                    <br/>"
+
+  subject_new_sub: "New AFP data submitted by author"
+  content_new_sub: "New AFP data submission completed by author for the following paper:<br/>
+                    <br/>
+                    Paper ID: {}<br/>
+                    Title: {}<br/>
+                    Journal: {}<br/>
+                    Corresponding Author email: {}<br/>
+                    <br/>
+                    <a href={}>AFP admin dashboard</a><br/>
+                    <a href={}>AFP form for authors</a><br/>
+                    <br/>"
+
+  subject_digest_alert: "New positive papers flagged by author through AFP for {}"
+  content_digest_alert: "New papers flagged 'positive' during the last month for data type {}: <br/><br><br/>
+                         {}<br/>"
+
+  subject_author_dash: "Author First Pass - access link to author page"
+  content_author_dash: "Click here to retrieve the list of your papers processed by the Author First Pass: <br/><br/><br/>
+                        <br/>
+                        <a href='http://textpressocentral.org:5002?token={}'>http://textpressocentral.org:5002?token={}</a><br/>
+                        "
+
+  subject_reminder: "Help Wormbase curate your paper WBPaper{}"
+  content_reminder: "Dear Author,<br/>
+                     <br/>
+                     We recently sent an email asking for your help in flagging entities and data types for WormBase curation for the<br/>
+                     recently published paper:<br/>
+                     <br/>
+                     \"{}\", {}<br/>
+                     <br/>
+                     We would like to remind you that it is still possible to submit your response by visiting the
+                     <a href={}>Author First Pass Form for your paper</a><br/>
+                     <br/>
+                     If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
+                     <br/>
+                     If you have questions about completing the form, please feel free to reply to this email and we will be happy to assist<br/>
+                     you. {}<br/>
+                     <br/>
+                     Thank you for helping WormBase!<br/>
+                     "
+
+ntt_extraction:
   min_occurrences:
-    gene: 2
+    gene: 1
     strain: 1
-    allele: 2
+    allele: 1
     transgene: 1
-    species: 10
+    species: 1
 
   min_tfidf:
     gene: 10

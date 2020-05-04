@@ -3,9 +3,9 @@
 import argparse
 import logging
 
+from src.backend.common.config import load_config_from_file
 from src.backend.common.dbmanager import DBManager
-from src.backend.common.emailtools import send_new_data_notification_email_to_watcher
-
+from src.backend.common.emailtools import EmailManager
 
 AFP_WATCHERS_TABLES = {
        "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
@@ -42,13 +42,15 @@ def main():
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
+    config = load_config_from_file()
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
         for table_to_watch in tables_to_watch:
             positive_papers_val = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(
                 table_to_watch)
             if len(positive_papers_val) > 0:
-                send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val, [afp_watcher],
-                                                            args.email_passwd)
+                email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
+                                                                          [afp_watcher])
     db_manager.close()
 
 

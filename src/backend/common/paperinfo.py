@@ -23,7 +23,7 @@ class PaperInfo:
     passwd: str
 
     def entities_not_empty(self):
-        return self.genes and self.alleles and self.transgenes and self.strains
+        return self.genes or self.alleles or self.transgenes or self.strains
 
 
 def print_papers_stats(papers_info: List[PaperInfo], num_papers: int):

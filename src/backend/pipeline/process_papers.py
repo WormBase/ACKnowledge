@@ -4,6 +4,7 @@ import argparse
 import os
 import ssl
 
+from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import *
 from src.backend.common.nttxtraction import *
 from src.backend.common.dbmanager import DBManager
@@ -43,11 +44,13 @@ def main():
     if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
         ssl._create_default_https_context = ssl._create_unverified_context
 
+    config = load_config_from_file()
     ntt_extractor = NttExtractor(args.tpc_token, dbname=args.db_name, user=args.db_user, password=args.db_password,
-                                 host=args.db_host, config_file=os.path.join(os.getcwd(), "src/backend/config.yml"),
-                                 tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
+                                 host=args.db_host, config=config, tazendra_user=args.tazendra_user,
+                                 tazendra_password=args.tazendra_password)
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     processable_papers = ntt_extractor.get_processable_papers()
-    # processable_papers = ["00056618", "00056678", "00056814", "00056901", "00056956", "00056988"]
+    # processable_papers = ["00056618"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
         print_papers_stats(args.num_papers, papers_info)
@@ -56,30 +59,28 @@ def main():
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host,
                            tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
     for paper_info in papers_info:
-        passwd = ''
-        if not args.dev_mode:
-            passwd = db_manager.save_extracted_data_to_db(paper_info)
+        passwd = db_manager.save_extracted_data_to_db(paper_info)
         if paper_info.corresponding_author_email:
-            feedback_form_tiny_url = get_feedback_form_tiny_url(args.afp_base_url, paper_info.paper_id, paper_info,
-                                                                passwd)
+            feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(args.afp_base_url, paper_info.paper_id,
+                                                                             paper_info, passwd)
             tinyurls.append(feedback_form_tiny_url)
             if paper_info.entities_not_empty():
                 if args.dev_mode:
-                    send_email_to_author(paper_info.paper_id, paper_info.title, paper_info.journal,
-                                         feedback_form_tiny_url, args.admin_emails, args.email_passwd)
+                    email_manager.send_email_to_author(paper_info.paper_id, paper_info.title, paper_info.journal,
+                                                       feedback_form_tiny_url, args.admin_emails)
                 else:
-                    send_email_to_author(paper_info.paper_id, paper_info.title, paper_info.journal,
-                                         feedback_form_tiny_url, [paper_info.corresponding_author_email],
-                                         args.email_passwd)
+                    email_manager.send_email_to_author(paper_info.paper_id, paper_info.title, paper_info.journal,
+                                                       feedback_form_tiny_url, [paper_info.corresponding_author_email])
             else:
-                notify_admin_of_paper_without_entities(paper_info.paper_id, paper_info.title, paper_info.journal,
-                                                       feedback_form_tiny_url, args.admin_emails, args.email_passwd)
+                email_manager.notify_admin_of_paper_without_entities(paper_info.paper_id, paper_info.title,
+                                                                     paper_info.journal, feedback_form_tiny_url,
+                                                                     args.admin_emails)
 
     # commit and close connection to DB
     logger.info("Committing changes to DB")
     db_manager.close()
-    send_summary_email_to_admin(urls=tinyurls, paper_ids=[pap_info.paper_id for pap_info in papers_info],
-                                recipients=args.admin_emails, email_passwd=args.email_passwd)
+    email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=[pap_info.paper_id for pap_info in papers_info],
+                                              recipients=args.admin_emails)
     logger.info("Finished")
 
 

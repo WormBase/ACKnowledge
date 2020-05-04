@@ -3,7 +3,8 @@ import logging
 import falcon
 
 from src.backend.api.storagengin.author_papers_page import AuthorPapersPageStorageEngine
-from src.backend.common.emailtools import send_link_to_author_dashboard
+from src.backend.common.config import load_config_from_file
+from src.backend.common.emailtools import EmailManager
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,8 @@ class AuthorPapersPageReader:
     def __init__(self, storage_engine: AuthorPapersPageStorageEngine, email_passwd: str, afp_base_url: str):
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API for Author Dashboard")
-        self.email_passwd = email_passwd
+        config = load_config_from_file()
+        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
         self.afp_base_url = afp_base_url
 
     def on_post(self, req, resp, req_type):
@@ -23,7 +25,7 @@ class AuthorPapersPageReader:
                 email = req.media["email"]
                 token = self.db.get_author_token_from_email(email)
                 if token:
-                    send_link_to_author_dashboard(token, [email], self.email_passwd)
+                    self.email_manager.send_link_to_author_dashboard(token, [email])
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)

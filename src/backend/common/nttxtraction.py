@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 class NttExtractor(object):
 
-    def __init__(self, tpc_token, dbname, user, password, host, config_file, tazendra_user, tazendra_password):
+    def __init__(self, tpc_token, dbname, user, password, host, config, tazendra_user, tazendra_password):
         self.api_manager = APIManager(tpc_token)
         self.db_name = dbname
         self.db_user = user
@@ -56,11 +56,7 @@ class NttExtractor(object):
             if len(regex_list[0].split(" ")) > 1:
                 self.taxonid_name_map[species_id].append(regex_list[0][0] + "\\. " + " ".join(regex_list[0]
                                                                                               .split(" ")[1:]))
-        with open(config_file, 'r') as stream:
-            try:
-                self.config = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                logger.error(exc)
+        self.config = config
 
     @staticmethod
     def count_matches(keyword, text, case_sensitive: bool = True, match_uppercase: bool = False) -> int:

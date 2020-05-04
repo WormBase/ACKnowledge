@@ -5,8 +5,8 @@ import urllib.parse
 from typing import List
 from urllib.request import urlopen
 from src.backend.api.storagengin.feedback_form import FeedbackFormStorageEngine
-from src.backend.common.emailtools import send_new_submission_notification_email_to_admin
-
+from src.backend.common.config import load_config_from_file
+from src.backend.common.emailtools import EmailManager
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +45,9 @@ class FeedbackFormWriter:
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API")
         self.admin_emails = admin_emails
-        self.email_passwd = email_passwd
         self.afp_base_url = afp_base_url
+        config = load_config_from_file()
+        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
 
     def on_post(self, req, resp):
         with self.db:
@@ -139,9 +140,9 @@ class FeedbackFormWriter:
                                               urllib.parse.quote(doi)
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
-                    send_new_submission_notification_email_to_admin(paper_id, req.media["passwd"], paper_title,
-                                                                    paper_journal, author_email, self.admin_emails,
-                                                                    self.email_passwd, tiny_url)
+                    self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
+                                                                                       paper_journal, author_email,
+                                                                                       self.admin_emails, tiny_url)
                 resp.body = '{"result": "success"}'
                 resp.status = falcon.HTTP_200
 
