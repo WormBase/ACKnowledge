@@ -132,35 +132,35 @@ class NttExtractor(object):
 
             logger.info("Getting list of alleles through string matching")
             paper_info.alleles = list(set(self.extract_keywords(
-                alleles, paper_info.fulltext, match_uppercase=True,
+                alleles, paper_info.fulltext,
                 min_matches=self.config["ntt_extraction"]["min_occurrences"]["allele"],
                 blacklist=self.config["ntt_extraction"]["exclusion_list"]["allele"],
                 tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["allele"])) | set(
-                self.extract_keywords(alleles, paper_info.title, match_uppercase=True,
+                self.extract_keywords(alleles, paper_info.title,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["allele"])) | set(
-                self.extract_keywords(alleles, paper_info.abstract, match_uppercase=True,
+                self.extract_keywords(alleles, paper_info.abstract,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["allele"])))
 
             logger.info("Getting list of strains through string matching")
             paper_info.strains = list(set(self.extract_keywords(
-                strains, paper_info.fulltext, match_uppercase=True,
+                strains, paper_info.fulltext,
                 min_matches=self.config["ntt_extraction"]["min_occurrences"]["strain"],
                 blacklist=self.config["ntt_extraction"]["exclusion_list"]["strain"],
                 tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["strain"])) | set(
-                self.extract_keywords(strains, paper_info.title, match_uppercase=True,
+                self.extract_keywords(strains, paper_info.title,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["strain"])) | set(
-                self.extract_keywords(strains, paper_info.abstract, match_uppercase=True,
+                self.extract_keywords(strains, paper_info.abstract,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["strain"])))
 
             logger.info("Getting list of transgenes through string matching")
             paper_info.transgenes = list(set(self.extract_keywords(
-                transgenes, paper_info.fulltext, match_uppercase=True,
+                transgenes, paper_info.fulltext,
                 min_matches=self.config["ntt_extraction"]["min_occurrences"]["transgene"],
                 blacklist=self.config["ntt_extraction"]["exclusion_list"]["transgene"],
                 tfidf_threshold=self.config["ntt_extraction"]["min_tfidf"]["transgene"])) | set(
-                self.extract_keywords(transgenes, paper_info.title, match_uppercase=True,
+                self.extract_keywords(transgenes, paper_info.title,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["transgene"])) | set(
-                self.extract_keywords(transgenes, paper_info.abstract, match_uppercase=True,
+                self.extract_keywords(transgenes, paper_info.abstract,
                                       blacklist=self.config["ntt_extraction"]["exclusion_list"]["transgene"])))
 
             logger.info("Getting list of species through string matching")
