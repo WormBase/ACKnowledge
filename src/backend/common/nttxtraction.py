@@ -180,9 +180,9 @@ class NttExtractor(object):
             logger.info("Transforming gene keywords into gene ids")
             paper_info.genes = self.get_entity_ids_from_names(paper_info.genes, gene_symbol_id_map, gene_ids_cgc_name)
             logger.info("Transforming allele keywords into allele ids")
-            paper_info.alleles = self.get_entity_ids_from_names(paper_info.genes, allele_symbol_id_map)
+            paper_info.alleles = self.get_entity_ids_from_names(paper_info.alleles, allele_symbol_id_map)
             logger.info("Transforming transgene keywords into transgene ids")
-            paper_info.transgenes = self.get_entity_ids_from_names(paper_info.genes, transgene_symbol_id_map)
+            paper_info.transgenes = self.get_entity_ids_from_names(paper_info.transgenes, transgene_symbol_id_map)
             augmented_papers_info.append(paper_info)
         return augmented_papers_info
 
