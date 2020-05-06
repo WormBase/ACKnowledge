@@ -12,7 +12,6 @@ from PyPDF2.pdf import ContentStream, b_, FloatObject, NumberObject
 from PyPDF2.utils import u_
 import urllib.request
 import tempfile
-import yaml
 
 from src.backend.common.apimanager import APIManager
 from src.backend.common.dbmanager import DBManager
@@ -108,7 +107,7 @@ class NttExtractor(object):
                                self.tazendra_password)
         genes = db_manager.get_all_genes()
         alleles = db_manager.get_all_alleles()
-        strains = db_manager.get_all_alleles()
+        strains = db_manager.get_all_strains()
         transgenes = db_manager.get_all_transgenes()
         gene_symbol_id_map = db_manager.get_gene_name_id_map()
         gene_ids_cgc_name = db_manager.get_gene_cgc_name_from_id_map()
