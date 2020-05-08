@@ -257,8 +257,8 @@ class NttExtractor(object):
             if "'" not in address:
                 person_id = db_manager.get_person_id_from_email_address(address)
                 if person_id:
-                    curr_address = db_manager.get_current_email_address_for_person(person_id)
-                    return person_id, curr_address if curr_address else person_id, address
+                    # curr_address = db_manager.get_current_email_address_for_person(person_id)
+                    return person_id, address
         return None
 
     def get_first_valid_paper_ids_fulltexts_and_emails(self, paper_ids: List[str], db_manager: DBManager,
