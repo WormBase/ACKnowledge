@@ -100,9 +100,9 @@ ntt_extraction:
 
   min_tfidf:
     gene: 10
-    strain: 10
+    strain: 0.5
     allele: 10
-    transgene: 10
+    transgene: 0.5
     species: 10
 
   exclusion_list:

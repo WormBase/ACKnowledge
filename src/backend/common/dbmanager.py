@@ -1624,3 +1624,11 @@ class DBManager(object):
         self.set_passwd(paper_info.paper_id, passwd)
         self.set_email(paper_info.paper_id, [paper_info.corresponding_author_email])
         return passwd
+
+    def get_blacklisted_email_addresses(self):
+        self.cur.execute("select frm_email_skip from frm_email_skip")
+        res = self.cur.fetchall()
+        if res:
+            return [row[0] for row in res]
+        else:
+            return []

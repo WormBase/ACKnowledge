@@ -47,6 +47,7 @@ class NttExtractor(object):
                                self.tazendra_password)
         self.tot_num_documents = len(db_manager.get_set_of_curatable_papers())
         self.taxonid_name_map = db_manager.get_taxonid_speciesnamearr_map()
+        self.blacklisted_email_addresses = set(db_manager.get_blacklisted_email_addresses())
         db_manager.close()
         for taxon_id, species_alias_arr in SPECIES_ALIASES.items():
             self.taxonid_name_map[taxon_id].extend(species_alias_arr)
@@ -245,8 +246,7 @@ class NttExtractor(object):
         db_manager.close()
         return curatable_papers_not_processed_svm_flagged
 
-    @staticmethod
-    def get_first_valid_email_address_from_paper(fulltext, paper_id, db_manager):
+    def get_first_valid_email_address_from_paper(self, fulltext, paper_id, db_manager):
         all_addresses = re.findall(r'[\(\[]?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[\)\]\.]?', fulltext)
         if not all_addresses:
             fulltext = fulltext.replace(". ", ".")
@@ -254,7 +254,7 @@ class NttExtractor(object):
         if not all_addresses:
             all_addresses = db_manager.get_corresponding_email(paper_id=paper_id)
         for address in all_addresses:
-            if "'" not in address:
+            if "'" not in address and address not in self.blacklisted_email_addresses:
                 person_id = db_manager.get_person_id_from_email_address(address)
                 if person_id:
                     # curr_address = db_manager.get_current_email_address_for_person(person_id)
