@@ -15,8 +15,10 @@ ENV DB_PASSWD=""
 ENV PORT=8000
 ENV ADMINS=""
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
+ENV TAZENDRA_USER=""
+ENV TAZENDRA_PASSWORD=""
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
 EXPOSE ${PORT}
-CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l /var/log/afp_db_api.log -L DEBUG >> /var/log/afp_db_api.info 2>&1
+CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -l -w ${TAZENDRA_USER} -z ${TAZENDRA_PASSWORD} /var/log/afp_db_api.log -L DEBUG >> /var/log/afp_db_api.info 2>&1
