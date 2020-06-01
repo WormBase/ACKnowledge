@@ -18,6 +18,7 @@ import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
 import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 import {DataManager} from "../lib/DataManager";
+import Glyphicon from "react-bootstrap/lib/Glyphicon";
 
 class Interactions extends React.Component {
     constructor(props, context) {
@@ -31,6 +32,26 @@ class Interactions extends React.Component {
         const svmTooltip = (
             <Tooltip id="tooltip">
                 This field is prepopulated by Textpresso Central.
+            </Tooltip>
+        );
+        const geneticIntTooltip = (
+            <Tooltip id="tooltip">
+                Genetic interactions refer to observations of phenotype modifications and/or a double mutant (or
+                double genetic perturbation) phenotype that deviates from the expected phenotype based on single
+                perturbation phenotypes, assuming the genes act independently.
+            </Tooltip>
+        );
+        const regulatoryIntTooltip = (
+            <Tooltip id="tooltip">
+                Regulatory interactions refer to observations of various perturbations (genetic or environmental)
+                affecting the expression of a gene and/or the localization of a gene product.
+            </Tooltip>
+        );
+        const physicalIntTooltip = (
+            <Tooltip id="tooltip">
+                Physical interactions represent molecular associations between C. elegans genes and gene products
+                (protein-protein, DNA-protein, RNA-protein). Please don’t include chemical-gene interactions and
+                inter-species interactions.
             </Tooltip>
         );
         return (
@@ -51,8 +72,8 @@ class Interactions extends React.Component {
                         <Form>
                             <FormGroup>
                                 <Checkbox checked={this.props.geneint.checked} onClick={() => this.props.toggleGeneticInteractions()}>
-                                    <strong>Genetic Interactions</strong> <OverlayTrigger placement="top"
-                                                                                          overlay={svmTooltip}>
+                                    <strong>Genetic Interactions</strong> <OverlayTrigger placement="top" overlay={geneticIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
@@ -62,8 +83,8 @@ class Interactions extends React.Component {
                                                  this.props.setGeneticInteractions(true, event.target.value);
                                              }}/>
                                 <Checkbox checked={this.props.geneprod.checked} onClick={() => this.props.togglePhysicalInteractions()}>
-                                    <strong>Physical Interactions</strong> <OverlayTrigger placement="top"
-                                                                                           overlay={svmTooltip}>
+                                    <strong>Physical Interactions</strong> <OverlayTrigger placement="top" overlay={physicalIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"
@@ -73,8 +94,8 @@ class Interactions extends React.Component {
                                                  this.props.setPhysicalInteractions(true, event.target.value);
                                              }}/>
                                 <Checkbox checked={this.props.genereg.checked} onClick={() => this.props.toggleRegulatoryInteractions()}>
-                                    <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top"
-                                                                                             overlay={svmTooltip}>
+                                    <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top" overlay={regulatoryIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Add details here"

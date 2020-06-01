@@ -38,14 +38,12 @@ class Disease extends React.Component {
                     <Panel.Body>
                         <Form>
                             <Checkbox checked={this.props.disease.checked} onClick={() => this.props.toggleDisease()}>
-                                <strong>The paper contains at least one of the following:</strong>
+                                <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson’s disease) by employing at least one of the following:</strong>
                             </Checkbox>
                             <ul>
-                                <li><strong>Gene/allele or strain that recapitulates disease phenotype and is used in
-                                    this study to gain insight into human disease pathogenesis.</strong> (Note: we can
-                                    only curate strains from the paper if they have official names, eg. CL2006)</li>
-                                <li><strong>Transgenic studies with either human (or worm) disease relevant gene</strong></li>
-                                <li><strong>Modifiers of a new or previously established disease model (eg., drugs, herbals, chemicals, etc)</strong></li>
+                                <li><strong>Gene/allele or strain that recapitulates disease phenotype(s) and provides insight into disease pathogenesis. Please provide official names for strains (e.g., CL2006).</strong></li>
+                                <li><strong>Transgenic studies with human and/or worm disease relevant gene.</strong></li>
+                                <li><strong>Modifiers of a new or previously established disease model (e.g., drugs, herbals, chemicals, etc).</strong></li>
                             </ul>
                         </Form>
                     </Panel.Body>

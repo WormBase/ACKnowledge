@@ -38,13 +38,13 @@ class Genetics extends React.Component {
     render() {
         const allelesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of alleles in your paper in the box below by adding or removing alleles if required. Only alleles mentioned 2 or more times are extracted; note that not all the Million Mutation Project alleles are recognized
+                Please validate the list of alleles in your paper in the box below by adding or removing alleles if required. Note that not all the Million Mutation Project alleles are recognized
             </Tooltip>
         );
 
         const strainsTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of strains in your paper in the box below by adding or removing strains if required. Strains mentioned at least once are extracted
+                Please validate the list of strains in your paper in the box below by adding or removing strains if required.
             </Tooltip>
         );
         const svmTooltip = (

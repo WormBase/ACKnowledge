@@ -43,7 +43,7 @@ class Reagent extends React.Component {
     render() {
         const transgenesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of transgenes in your paper in the box below by adding or removing strains if required. Transgenes mentioned at least once are extracted
+                Please validate the list of transgenes in your paper in the box below by adding or removing strains if required.
             </Tooltip>
         );
         const antibodyTooltip = (

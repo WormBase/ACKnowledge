@@ -18,7 +18,7 @@ import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/
 import {connect} from "react-redux";
 import {DataManager} from "../lib/DataManager";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {hideDataSaved, setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 
 class Overview extends React.Component {
     constructor(props, context) {
@@ -31,13 +31,13 @@ class Overview extends React.Component {
     render() {
         const geneTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of genes in your paper in the box below by adding or removing genes if required. Only genes mentioned 2 or more times are extracted
+                Please validate the list of genes experimentally studied in the paper in the box below by adding or removing genes if required.
             </Tooltip>
         );
 
         const speciesTooltip = (
             <Tooltip id="tooltip">
-                Please validate the list of species in your paper in the box below by adding or removing species if required. Only species mentioned 10 or more times are extracted
+                Please validate the list of species in your paper in the box below by adding or removing species if required.
             </Tooltip>
         );
         let geneListComponent;
@@ -71,7 +71,7 @@ class Overview extends React.Component {
                 <form>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title componentClass="h3">List of WormBase genes identified in the paper <OverlayTrigger placement="top" overlay={geneTooltip}>
+                            <Panel.Title componentClass="h3">List of WormBase genes experimentally studied in the paper <OverlayTrigger placement="top" overlay={geneTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
