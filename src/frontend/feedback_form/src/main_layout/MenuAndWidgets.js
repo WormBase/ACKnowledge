@@ -36,6 +36,7 @@ import {
 } from "../redux/selectors/displaySelectors";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Button from "react-bootstrap/lib/Button";
+import Help from "../widgets/Help";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -106,67 +107,88 @@ class MenuAndWidgets extends React.Component {
                     <div>
                         <div>
                             <div className="col-sm-4">
-                                <div className="panel panel-default">
-                                    <div className="panel-body">
-                                        <Nav bsStyle="pills" stacked onSelect={(sel) => this.setState({selectedMenu: sel})}>
-                                            <IndexLinkContainer to={WIDGET.OVERVIEW + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.OVERVIEW]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
-                                                    &nbsp;{this.props.isOverviewSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}
-                                                </NavItem></IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.GENETICS + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.GENETICS]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
-                                                    &nbsp;{this.props.isGeneticsSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}
-                                                </NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.REAGENT + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.REAGENT]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}
-                                                    &nbsp;{this.props.isReagentSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.EXPRESSION + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.EXPRESSION]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}
-                                                    &nbsp;{this.props.isExpressionSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.INTERACTIONS + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.INTERACTIONS]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}
-                                                    &nbsp;{this.props.isInteractionsSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}
-                                                    &nbsp;{this.props.isPhenotypesSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.DISEASE + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.DISEASE]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;
-                                                    {this.props.isDiseaseSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                            <IndexLinkContainer to={WIDGET.COMMENTS + this.props.location.search}
-                                                                active={this.state.selectedMenu === MENU_INDEX[WIDGET.COMMENTS]}>
-                                                <NavItem
-                                                    eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}
-                                                    &nbsp;{this.props.isCommentsSavedToDB ?
-                                                        <Glyphicon glyph="ok"/> : false}</NavItem>
-                                            </IndexLinkContainer>
-                                        </Nav>
+                                <div className="container">
+                                    <div className="row">
+                                        <div className="col-sm-4">
+                                            <div className="panel panel-default">
+                                                <div className="panel-body">
+                                                    <Nav bsStyle="pills" stacked onSelect={(sel) => this.setState({selectedMenu: sel})}>
+                                                        <IndexLinkContainer to={WIDGET.OVERVIEW + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.OVERVIEW]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
+                                                                &nbsp;{this.props.isOverviewSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}
+                                                            </NavItem></IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.GENETICS + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.GENETICS]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
+                                                                &nbsp;{this.props.isGeneticsSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}
+                                                            </NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.REAGENT + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.REAGENT]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}
+                                                                &nbsp;{this.props.isReagentSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.EXPRESSION + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.EXPRESSION]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}
+                                                                &nbsp;{this.props.isExpressionSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.INTERACTIONS + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.INTERACTIONS]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}
+                                                                &nbsp;{this.props.isInteractionsSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.PHENOTYPES + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.PHENOTYPES]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}
+                                                                &nbsp;{this.props.isPhenotypesSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.DISEASE + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.DISEASE]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;
+                                                                {this.props.isDiseaseSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.COMMENTS + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.COMMENTS]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}
+                                                                &nbsp;{this.props.isCommentsSavedToDB ?
+                                                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                                                        </IndexLinkContainer>
+                                                    </Nav>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-sm-4">
+                                            <div className="panel panel-default">
+                                                <div className="panel-body">
+                                                    <Nav bsStyle="pills" stacked onSelect={(sel) => this.setState({selectedMenu: sel})}>
+                                                        <IndexLinkContainer to={WIDGET.HELP + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.HELP]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.HELP]}>{WIDGET_TITLE[WIDGET.HELP]}
+                                                            </NavItem></IndexLinkContainer>
+                                                    </Nav>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -211,6 +233,7 @@ class MenuAndWidgets extends React.Component {
                                             <Route path={"/" + WIDGET.DISEASE}
                                                    render={() => <Disease />}/>
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo/>}/>
+                                            <Route path={"/" + WIDGET.HELP} render={() => <Help/>}/>
                                         </LoadingOverlay>
                                     </div>
                                 </div>

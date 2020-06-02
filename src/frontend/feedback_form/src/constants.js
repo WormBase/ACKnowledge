@@ -6,7 +6,8 @@ export const WIDGET = Object.freeze({
     INTERACTIONS: "interactions",
     PHENOTYPES: "phenotypes",
     DISEASE: "disease",
-    COMMENTS: "comments"
+    COMMENTS: "comments",
+    HELP: "help"
 });
 
 export const MENU_INDEX = {};
@@ -18,6 +19,7 @@ MENU_INDEX[WIDGET.INTERACTIONS] = 5;
 MENU_INDEX[WIDGET.PHENOTYPES] = 6;
 MENU_INDEX[WIDGET.DISEASE] = 7;
 MENU_INDEX[WIDGET.COMMENTS] = 8;
+MENU_INDEX[WIDGET.HELP] = 9;
 
 export const WIDGET_TITLE = {};
 WIDGET_TITLE[WIDGET.OVERVIEW] = "Overview (genes and species)";
@@ -28,3 +30,4 @@ WIDGET_TITLE[WIDGET.INTERACTIONS] = "Interactions";
 WIDGET_TITLE[WIDGET.PHENOTYPES] = "Phenotypes and function";
 WIDGET_TITLE[WIDGET.DISEASE] = "Disease";
 WIDGET_TITLE[WIDGET.COMMENTS] = "Comments and submit";
+WIDGET_TITLE[WIDGET.HELP] = "Help and more info";
