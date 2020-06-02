@@ -113,10 +113,11 @@ class PersonSelector extends Component {
         return (
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-sm-12">
+                    <div className="col-sm-8">
                         WormBase User: <strong>{this.state.person.name}</strong> (WBPerson{this.state.person.personId})
                         &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={this.handleShow}>Change user</Button>
-                        &nbsp;
+                    </div>
+                    <div className="col-sm-4" align="right">
                         <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
                             <Button bsSize="xsmall" bsStyle="primary">Request new WB Person</Button>
                         </a>
