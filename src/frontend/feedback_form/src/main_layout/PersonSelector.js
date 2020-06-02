@@ -116,6 +116,10 @@ class PersonSelector extends Component {
                     <div className="col-sm-12">
                         WormBase User: <strong>{this.state.person.name}</strong> (WBPerson{this.state.person.personId})
                         &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={this.handleShow}>Change user</Button>
+                        &nbsp;
+                        <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
+                            <Button bsSize="xsmall" bsStyle="primary">Request new WB Person</Button>
+                        </a>
                     </div>
                 </div>
                 <div className="row">
