@@ -3,8 +3,7 @@ FROM python:3.7-slim
 WORKDIR /usr/src/app/
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-COPY src/backend/api src/backend/api
-COPY src/backend/common src/backend/common
+COPY src/backend src/backend
 
 
 ENV EMAIL_PASSWD=""
