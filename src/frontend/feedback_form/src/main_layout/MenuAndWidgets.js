@@ -35,6 +35,7 @@ import {
     getSectionsNotCompleted
 } from "../redux/selectors/displaySelectors";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
+import Button from "react-bootstrap/lib/Button";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -100,6 +101,7 @@ class MenuAndWidgets extends React.Component {
                     {data_fetch_err_alert}
                     <div id="whiteBanner"/>
                     <Header/>
+                    <div align="right"><a href="mailto:help.afp@wormbase.org"><Button bsStyle="secondary">Contact us</Button></a></div>
                     <Title title={title} journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
                     <div>
                         <div>
