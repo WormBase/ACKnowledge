@@ -25,9 +25,8 @@ import {
     getNewAntibodies,
     getOtherAntibodies,
     getOtherTransgenes,
-    getTransgenes
+    getTransgenes, isReagentSavedToDB
 } from "../redux/selectors/reagentSelectors";
-import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 import {DataManager} from "../lib/DataManager";
@@ -164,7 +163,7 @@ const mapStateToProps = state => ({
     otherTransgenes: getOtherTransgenes(state).elements,
     newAntibodies: getNewAntibodies(state),
     otherAntibodies: getOtherAntibodies(state).elements,
-    isSavedToDB: isGeneticsSavedToDB(state)
+    isSavedToDB: isReagentSavedToDB(state)
 });
 
 export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
