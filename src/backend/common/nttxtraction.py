@@ -84,7 +84,7 @@ class NttExtractor(object):
 
     def tfidf(self, entity_keywords: List[str], raw_count) -> float:
         doc_counter = sum(self.api_manager.get_doc_count(keyword) for keyword in entity_keywords)
-        idf = math.log(float(self.tot_num_documents) / doc_counter if doc_counter > 0 else 0.5)
+        idf = math.log(float(self.tot_num_documents) / (doc_counter if doc_counter > 0 else 0.5))
         return raw_count * idf
 
     def extract_keywords(self, keywords: List[str], text: str, match_uppercase: bool = False, min_matches: int = 1,
