@@ -103,7 +103,7 @@ ntt_extraction:
     strain: 0
     allele: 5
     transgene: 0
-    species: 10
+    species: 0.5
 
   exclusion_list:
     #gene: ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
