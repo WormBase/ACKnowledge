@@ -50,9 +50,6 @@ def main():
                                  tazendra_password=args.tazendra_password)
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     processable_papers = ntt_extractor.get_processable_papers()
-    processable_papers = ["00053843", "00054685", "00054726", "00054792", "00055216", "00056554", "00056557",
-                          "00056596", "00056618", "00056678", "00056814", "00056901", "00056956", "00056988",
-                          "00049530", "00058641", "00058758", "00056843", "00058739"]
     papers_info = ntt_extractor.extract_entities(paper_ids=processable_papers, max_num_papers=args.num_papers)
     if args.print_stats:
         print_papers_stats(args.num_papers, papers_info)
