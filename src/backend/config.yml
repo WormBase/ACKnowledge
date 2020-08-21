@@ -96,14 +96,14 @@ ntt_extraction:
     strain: 1
     allele: 1
     transgene: 1
-    species: 1
+    species: 10
 
   min_tfidf:
     gene: 10
     strain: 0
     allele: 5
     transgene: 0
-    species: 0.5
+    species: 0
 
   exclusion_list:
     #gene: ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
