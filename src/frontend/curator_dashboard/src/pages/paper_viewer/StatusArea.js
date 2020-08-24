@@ -55,6 +55,7 @@ class StatusArea extends React.Component {
                                 <Card>
                                     <Card.Header>Paper Status</Card.Header>
                                     <Card.Body>Processed by AFP: &nbsp; <Badge variant="secondary">{this.props.paper_afp_processed}</Badge><br/>
+                                        {this.props.paper_afp_processed === 'TRUE' ? <div>Processed on: {this.props.paper_afp_processed_date}<br/></div> : ''}
                                         Final data submitted by author: &nbsp; <Badge variant="secondary">{this.props.paper_author_submitted}</Badge><br/>
                                         Author has modified any data (including partial submissions): &nbsp; <Badge variant="secondary">{this.props.paper_author_modified}</Badge>
                                     </Card.Body>

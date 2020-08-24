@@ -66,6 +66,7 @@ class PaperViewer extends React.Component {
                 }
                 this.setState({
                     paper_afp_processed: data["afp_processed"] ? "TRUE" : "FALSE",
+                    paper_afp_processed_date: data["afp_processed_date"],
                     paper_author_submitted: data["author_submitted"] ? "TRUE" : "FALSE",
                     paper_author_modified: data["author_modified"] ? "TRUE" : "FALSE",
                     link_to_afp_form: data["afp_form_link"],
@@ -140,6 +141,7 @@ class PaperViewer extends React.Component {
                         <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
                                     isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
                                     paper_afp_processed={this.state.paper_afp_processed}
+                                    paper_afp_processed_date={this.state.paper_afp_processed_date}
                                     paper_author_submitted={this.state.paper_author_submitted}
                                     paper_author_modified={this.state.paper_author_modified}
                                     paper_title={this.state.paper_title}

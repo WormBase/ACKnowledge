@@ -230,5 +230,8 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_list_emailed_with_numbers(self, from_offset, count):
         return self.db_manager.get_list_emailed_with_numbers(from_offset, count)
 
+    def get_processed_date(self, paper_id):
+        return self.db_manager.get_processed_date(paper_id)
+
 
 

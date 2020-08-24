@@ -22,6 +22,7 @@ class CuratorDashboardReader:
                 paper_id = req.media["paper_id"]
                 if req_type == "status":
                     afp_processed = self.db.paper_is_afp_processed(paper_id)
+                    afp_processed_date = self.db.get_processed_date(paper_id)
                     author_submitted = self.db.author_has_submitted(paper_id)
                     author_modified = self.db.author_has_modified(paper_id)
                     afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
@@ -32,10 +33,10 @@ class CuratorDashboardReader:
                     doi = self.db.get_doi_from_paper_id(paper_id)
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
                                 '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}", "pmid": "{}", ' \
-                                '"doi": "{}"}}'.format(
+                                '"doi": "{}", "afp_processed_date": "{}"}}'.format(
                         title, journal, email,
                         "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
-                        author_modified else "false", afp_form_link, pmid, doi)
+                        author_modified else "false", afp_form_link, pmid, doi, afp_processed_date)
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
                     lists_dict = self.db.get_all_lists(paper_id)

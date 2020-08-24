@@ -1632,3 +1632,8 @@ class DBManager(object):
             return [row[0] for row in res]
         else:
             return []
+
+    def get_processed_date(self, paper_id):
+        self.cur.execute("select afp_timestamp from afp_email where joinkey = '{}'".format(paper_id))
+        res = self.cur.fetchone()
+        return res[0] if res else None
