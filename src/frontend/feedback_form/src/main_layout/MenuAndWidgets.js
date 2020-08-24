@@ -36,7 +36,7 @@ import {
 } from "../redux/selectors/displaySelectors";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Button from "react-bootstrap/lib/Button";
-import Help from "../widgets/Help";
+import FAQ from "../widgets/FAQ";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -233,7 +233,7 @@ class MenuAndWidgets extends React.Component {
                                             <Route path={"/" + WIDGET.DISEASE}
                                                    render={() => <Disease />}/>
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo/>}/>
-                                            <Route path={"/" + WIDGET.HELP} render={() => <Help/>}/>
+                                            <Route path={"/" + WIDGET.HELP} render={() => <FAQ/>}/>
                                         </LoadingOverlay>
                                     </div>
                                 </div>
