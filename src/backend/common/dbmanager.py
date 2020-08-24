@@ -1599,6 +1599,7 @@ class DBManager(object):
             return []
 
     def get_curated_papers(self, datatype):
+        curated_papers = set()
         request = urllib.request.Request("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action="
                                          "listCurationStatisticsPapersPage&select_curator=two1823&method=allcur&"
                                          "listDatatype=" + datatype)
@@ -1608,7 +1609,20 @@ class DBManager(object):
             res = response.read().decode("utf8")
             m = re.match('.*<textarea rows="4" cols="80" name="specific_papers">(.*)</textarea>.*',
                          res.replace('\n', ''))
-            return m.group(1).split() if m else []
+            if m:
+                curated_papers = set(m.group(1).split())
+        request = urllib.request.Request("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action="
+                                         "listCurationStatisticsPapersPage&select_curator=two1823&method=allval%20neg&"
+                                         "listDatatype=" + datatype)
+        base64string = base64.b64encode(bytes('%s:%s' % (self.tazendra_user, self.tazendra_password), 'ascii'))
+        request.add_header("Authorization", "Basic %s" % base64string.decode('utf-8'))
+        with urllib.request.urlopen(request) as response:
+            res = response.read().decode("utf8")
+            m = re.match('.*<textarea rows="4" cols="80" name="specific_papers">(.*)</textarea>.*',
+                         res.replace('\n', ''))
+            if m:
+                curated_papers = curated_papers | set(m.group(1).split())
+        return curated_papers
 
     def save_extracted_data_to_db(self, paper_info: PaperInfo):
         passwd = self.get_passwd(paper_id=paper_info.paper_id)
