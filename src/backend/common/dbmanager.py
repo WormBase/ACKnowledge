@@ -687,6 +687,7 @@ class DBManager(object):
                          .format(paper_id, curtime))
 
     def get_positive_paper_ids_sumbitted_last_month_for_data_type(self, data_type_table_name):
+        curated_ids = self.get_curated_papers(data_type_table_name[4:])
         self.cur.execute("SELECT {}.joinkey, {}.{} from {} join afp_lasttouched "
                          "ON {}.joinkey = afp_lasttouched.joinkey JOIN afp_version "
                          "ON afp_lasttouched.joinkey = afp_version.joinkey "
@@ -695,7 +696,8 @@ class DBManager(object):
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name,
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name))
         rows = self.cur.fetchall()
-        return {row[0]: row[1] if row[1] != "Checked" else "" for row in rows if row[1] != "" and
+        return {row[0]: row[1] if row[1] != "Checked" else "" for row in rows if row[0] not in curated_ids and
+                row[1] != "" and
                 row[1] != "[{\"id\":1,\"name\":\"\"}]" and
                 row[1] != "[{\"id\":1,\"name\":\"\",\"publicationId\":\"\"}]"}
 
@@ -1599,6 +1601,8 @@ class DBManager(object):
             return []
 
     def get_curated_papers(self, datatype):
+        if datatype == "humdis":
+            datatype = "humandisease"
         curated_papers = set()
         request = urllib.request.Request("http://tazendra.caltech.edu/~postgres/cgi-bin/curation_status.cgi?action="
                                          "listCurationStatisticsPapersPage&select_curator=two1823&method=allcur&"
