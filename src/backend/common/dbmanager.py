@@ -1557,7 +1557,7 @@ class DBManager(object):
                          "desc OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         if res:
-            return [(row[0], row[1]) for row in res]
+            return [(self.get_current_email_address_for_person(row[0]), row[1]) for row in res]
         else:
             return []
 
@@ -1568,14 +1568,14 @@ class DBManager(object):
     def set_contributor(self, paper_id, person_id):
         self.cur.execute("DELETE FROM afp_contributor WHERE joinkey = '{}'".format(paper_id))
         self.cur.execute("INSERT INTO afp_contributor (joinkey, afp_contributor) VALUES('{}', '{}')"
-                         .format(paper_id, self.get_current_email_address_for_person(person_id)))
+                         .format(paper_id, person_id))
         self.cur.execute("INSERT INTO afp_contributor_hst (joinkey, afp_contributor_hst) VALUES('{}', '{}')"
-                         .format(paper_id, self.get_current_email_address_for_person(person_id)))
+                         .format(paper_id, person_id))
 
     def get_contributor_id(self, paper_id):
         self.cur.execute("select afp_contributor from afp_contributor WHERE joinkey = '{}'".format(paper_id))
         res = self.cur.fetchone()
-        return self.get_person_id_from_email_address(res[0]) if res else None
+        return res[0] if res else None
 
     def get_num_emailed(self):
         self.cur.execute("select count(distinct afp_email.afp_email) from afp_email join "
