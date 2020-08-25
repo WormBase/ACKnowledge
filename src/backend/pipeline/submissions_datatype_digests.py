@@ -25,12 +25,14 @@ AFP_WATCHERS_TABLES = {
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Send monthly digest to curators with submissions from AFP")
+    parser = argparse.ArgumentParser(description="Send digest to curators for data submitted through the AFP")
     parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
     parser.add_argument("-U", "--db-user", metavar="db_user", dest="db_user", type=str)
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
+    parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -41,7 +43,8 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
-    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
+    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host,
+                           tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
