@@ -1549,7 +1549,7 @@ class DBManager(object):
             return 0
 
     def get_list_contributors_with_numbers(self, from_offset, count):
-        self.cur.execute("select afp_contributor.afp_contributor, count(afp_contributor.afp_contributor) from "
+        self.cur.execute("select afp_contributor.afp_contributor, count(DISTINCT afp_contributor.joinkey) from "
                          "afp_contributor join afp_lasttouched on afp_contributor.joinkey = afp_lasttouched.joinkey "
                          "join afp_version on afp_contributor.joinkey = afp_version.joinkey "
                          "where afp_version.afp_version = '2' "
@@ -1566,14 +1566,14 @@ class DBManager(object):
         return self.get_user_fullname_from_personid(person_id)
 
     def set_contributor(self, paper_id, person_id):
-        self.cur.execute("DELETE FROM afp_contributor WHERE joinkey = '{}'".format(paper_id))
         self.cur.execute("INSERT INTO afp_contributor (joinkey, afp_contributor) VALUES('{}', '{}')"
                          .format(paper_id, person_id))
         self.cur.execute("INSERT INTO afp_contributor_hst (joinkey, afp_contributor_hst) VALUES('{}', '{}')"
                          .format(paper_id, person_id))
 
     def get_contributor_id(self, paper_id):
-        self.cur.execute("select afp_contributor from afp_contributor WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("select afp_contributor from afp_contributor WHERE joinkey = '{}' ORDER BY afp_timestamp DESC"
+                         .format(paper_id))
         res = self.cur.fetchone()
         return res[0] if res else None
 
