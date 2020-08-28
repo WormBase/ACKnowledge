@@ -155,10 +155,10 @@ class DBManager(object):
         self.cur.execute("SELECT * FROM trp_publicname")
         rows = self.cur.fetchall()
         transgenes = [row[1] for row in rows]
-        self.cur.execute("SELECT * FROM trp_synonym")
-        rows = self.cur.fetchall()
-        transgenes.extend([synonym for row in rows for synonym in row[1].split(AFP_ENTITIES_SEPARATOR) if synonym and
-                           synonym[0] != "[" and synonym[-1] != "]"])
+        # self.cur.execute("SELECT * FROM trp_synonym")
+        # rows = self.cur.fetchall()
+        # transgenes.extend([synonym for row in rows for synonym in row[1].split(AFP_ENTITIES_SEPARATOR) if synonym and
+        #                    synonym[0] != "[" and synonym[-1] != "]"])
         return transgenes
 
     def get_gene_name_id_map(self):
