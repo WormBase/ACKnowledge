@@ -121,7 +121,7 @@ class PersonSelector extends Component {
                     </div>
                     <div className="col-sm-4" align="right">
                         <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
-                            <Button bsSize="xsmall" bsStyle="primary">Request new WB Person</Button>
+                           Request new WB Person
                         </a>
                     </div>
                 </div>
