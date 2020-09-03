@@ -37,6 +37,7 @@ import {
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Button from "react-bootstrap/lib/Button";
 import FAQ from "../widgets/FAQ";
+import ReleaseNotes from "../widgets/ReleaseNotes";
 
 class MenuAndWidgets extends React.Component {
     constructor(props) {
@@ -101,8 +102,7 @@ class MenuAndWidgets extends React.Component {
                 <div className="row">
                     {data_fetch_err_alert}
                     <div id="whiteBanner"/>
-                    <Header/>
-                    <div align="right"><a href="mailto:help.afp@wormbase.org"><Button bsStyle="secondary">Contact us</Button></a></div>
+                    <Header {...this.props}/>
                     <Title title={title} journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
                     <div>
                         <div>
@@ -185,6 +185,11 @@ class MenuAndWidgets extends React.Component {
                                                             <NavItem
                                                                 eventKey={MENU_INDEX[WIDGET.HELP]}>{WIDGET_TITLE[WIDGET.HELP]}
                                                             </NavItem></IndexLinkContainer>
+                                                        <IndexLinkContainer to={WIDGET.RELEASE_NOTES + this.props.location.search}
+                                                                            active={this.state.selectedMenu === MENU_INDEX[WIDGET.RELEASE_NOTES]}>
+                                                            <NavItem
+                                                                eventKey={MENU_INDEX[WIDGET.RELEASE_NOTES]}>{WIDGET_TITLE[WIDGET.RELEASE_NOTES]}
+                                                            </NavItem></IndexLinkContainer>
                                                     </Nav>
                                                 </div>
                                             </div>
@@ -234,6 +239,7 @@ class MenuAndWidgets extends React.Component {
                                                    render={() => <Disease />}/>
                                             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo/>}/>
                                             <Route path={"/" + WIDGET.HELP} render={() => <FAQ/>}/>
+                                            <Route path={"/" + WIDGET.RELEASE_NOTES} render={() => <ReleaseNotes/>}/>
                                         </LoadingOverlay>
                                     </div>
                                 </div>
