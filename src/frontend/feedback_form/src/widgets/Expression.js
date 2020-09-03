@@ -189,7 +189,7 @@ class Expression extends React.Component {
                         let payload = {
                             anatomic_expr: getCheckboxDBVal(this.props.expression.checked, this.props.expression.details),
                             site_action: getCheckboxDBVal(this.props.siteOfAction.checked, this.props.siteOfAction.details),
-                            time_action: getCheckboxDBVal(this.props.timeOfAction, this.props.timeOfAction.details),
+                            time_action: getCheckboxDBVal(this.props.timeOfAction.checked, this.props.timeOfAction.details),
                             rnaseq: getCheckboxDBVal(this.props.rnaSeq.checked, this.props.rnaSeq.details),
                             additional_expr: this.props.additionalExpr
                         };

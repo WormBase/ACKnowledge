@@ -193,7 +193,7 @@ class Genetics extends React.Component {
                     <Button bsStyle="success" onClick={() => {
                         let payload = {
                             alleles_list: transformEntitiesIntoAfpString(this.props.alleles, ""),
-                            allele_seq_change: getCheckboxDBVal(this.props.sequenceChange),
+                            allele_seq_change: getCheckboxDBVal(this.props.sequenceChange.checked),
                             other_alleles: JSON.stringify(this.props.otherAlleles),
                             strains_list: transformEntitiesIntoAfpString(this.props.strains, ""),
                             other_strains: JSON.stringify(this.props.otherStrains)
