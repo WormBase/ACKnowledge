@@ -13,8 +13,7 @@ class ReleaseNotes extends React.Component {
 
                 <h4>Main Features</h4>
                 <ul>
-                    <li>Implemented <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus." target="_blank">TFIDF</a>
-                        in place of simple thresholds to improve precision of gene and allele recognition</li>
+                    <li>Implemented <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus." target="_blank">TFIDF</a> in place of simple thresholds to improve precision of gene and allele recognition</li>
                     <li>Improved datatype descriptions in <span className="glyphicon glyphicon-question-sign"/> mouse-overs</li>
                     <li>Added FAQs and Release Notes</li>
                 </ul>
