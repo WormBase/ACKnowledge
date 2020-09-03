@@ -35,7 +35,9 @@ class PersonSelector extends Component {
     handleClose() {
         this.setState({
             show: false,
-            show_fetch_data_error: false
+            show_fetch_data_error: false,
+            tmp_person_name: undefined,
+            tmp_person_id: undefined
         });
     }
 
@@ -160,7 +162,15 @@ class PersonSelector extends Component {
                                                      fullData = fullData.replace(wbRx, "");
                                                      this.props.setPerson(fullData, arr[1]);
                                                      this.handleClose();
-                                                 }}>
+                                                 }}
+                                                 onClick={(e) => {
+                                                     let fullData = e.target.label;
+                                                     let wbRx = / \( WBPerson([0-9]+) \)/;
+                                                     let arr = wbRx.exec(fullData);
+                                                     fullData = fullData.replace(wbRx, "");
+                                                     this.setState({tmp_person_name: fullData, tmp_person_id: arr[1]})
+                                                 }}
+                                    >
                                         {[...this.state.availableItems].map(item =>
                                             <option>{item}</option>)}
                                     </FormControl>
@@ -169,6 +179,14 @@ class PersonSelector extends Component {
                             {more}
                         </div>
                     </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={() =>{
+                            if (this.state.tmp_person_id !== undefined && this.state.tmp_person_name !== undefined) {
+                                this.props.setPerson(this.state.tmp_person_name, this.state.tmp_person_id);
+                                this.handleClose();
+                            }
+                        }}>Select</Button>
+                    </Modal.Footer>
                 </Modal>
             </div>
         );
