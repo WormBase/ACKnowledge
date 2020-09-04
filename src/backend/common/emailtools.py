@@ -75,11 +75,14 @@ class EmailManager(object):
         self.send_email(subject=self.subject_email_summary, content=content, recipients=recipients)
 
     def send_new_submission_notification_email_to_admin(self, paper_id, paper_title, paper_journal, paper_email,
-                                                        recipients: List[str], form_url):
+                                                        recipients: List[str], form_url, test: bool = False):
         content = self.content_email_new_sub.format(paper_id, paper_title, paper_journal, paper_email,
                                                     "http://textpressocentral.org:5001/paper?paper_id=" + paper_id,
                                                     form_url)
-        self.send_email(subject=self.subject_email_new_sub, content=content, recipients=recipients)
+        subject = self.subject_email_new_sub
+        if test:
+            subject = "[Dev Test] " + subject
+        self.send_email(subject=subject, content=content, recipients=recipients)
 
     def send_new_data_notification_email_to_watcher(self, data_type_table, paper_ids_val, recipients):
         content = self.content_email_digest.format(data_type_table, "<br/>".join(

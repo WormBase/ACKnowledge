@@ -33,6 +33,7 @@ def main():
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
     parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
+    parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
@@ -56,7 +57,8 @@ def main():
                                                  host=args.db_host, tazendra_user=args.tazendra_user,
                                                  tazendra_password=args.tazendra_password)
     feedback_form_writer = FeedbackFormWriter(storage_engine=feedback_form_db, admin_emails=args.admin_emails,
-                                              email_passwd=args.email_passwd, afp_base_url=args.afp_base_url)
+                                              email_passwd=args.email_passwd, afp_base_url=args.afp_base_url,
+                                              test=args.dev_mode)
     app.add_route('/api/write', feedback_form_writer)
 
     feedback_form_reader = FeedbackFormReader(storage_engine=feedback_form_db, admin_emails=args.admin_emails,

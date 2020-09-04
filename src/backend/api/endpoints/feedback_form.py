@@ -41,13 +41,15 @@ class FeedbackFormReader:
 
 class FeedbackFormWriter:
 
-    def __init__(self, storage_engine: FeedbackFormStorageEngine, admin_emails: List[str], email_passwd: str, afp_base_url: str):
+    def __init__(self, storage_engine: FeedbackFormStorageEngine, admin_emails: List[str], email_passwd: str,
+                 afp_base_url: str, test):
         self.db = storage_engine
         self.logger = logging.getLogger("AFP API")
         self.admin_emails = admin_emails
         self.afp_base_url = afp_base_url
         config = load_config_from_file()
         self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
+        self.test = test
 
     def on_post(self, req, resp):
         with self.db:
@@ -142,7 +144,8 @@ class FeedbackFormWriter:
                     tiny_url = data.read().decode('utf-8')
                     self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
                                                                                        paper_journal, author_email,
-                                                                                       self.admin_emails, tiny_url)
+                                                                                       self.admin_emails, tiny_url,
+                                                                                       self.test)
                 resp.body = '{"result": "success"}'
                 resp.status = falcon.HTTP_200
 
