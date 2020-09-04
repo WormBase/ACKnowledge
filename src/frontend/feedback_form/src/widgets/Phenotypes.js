@@ -4,7 +4,7 @@ import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {
     getAllelePhenotype,
-    getChemicalPhenotype, getEnvironmentalPhenotype, getEnzymaticActivity, getOverexprPhenotype,
+    getChemicalPhenotype, getEnvironmentalPhenotype, getEnzymaticActivity, getOthergenefunc, getOverexprPhenotype,
     getRnaiPhenotype,
     isPhenotypesSavedToDB
 } from "../redux/selectors/phenotypesSelectors";
@@ -12,13 +12,13 @@ import {
     setAllelePhenotype,
     setChemicalPhenotype,
     setEnvironmentalPhenotype,
-    setEnzymaticActivity, setIsPhenotypesSavedToDB,
+    setEnzymaticActivity, setIsPhenotypesSavedToDB, setOthergenefunc,
     setOverexprPhenotype,
     setRnaiPhenotype,
     toggleAllelePhenotype,
     toggleChemicalPhenotype,
     toggleEnvironmentalPhenotype,
-    toggleEnzymaticActivity,
+    toggleEnzymaticActivity, toggleOthergenefunc,
     toggleOverexprPhenotype,
     toggleRnaiPhenotype
 } from "../redux/actions/phenotypesActions";
@@ -147,6 +147,19 @@ class Phenotypes extends React.Component {
                                 />
                                 <FormControl.Feedback />
                             </FormGroup>
+                            <FormGroup>
+                                <Checkbox checked={this.props.othergenefunc.checked} onClick={() => this.props.toggleOthergenefunc()}>
+                                    <strong>Other Gene Function</strong>
+                                </Checkbox>
+                                <FormControl type="text" placeholder="Add details here"
+                                             onClick={() => this.props.setOthergenefunc(true, this.props.othergenefunc.details)}
+                                             value={this.props.othergenefunc.details}
+                                             onChange={(event) => {
+                                                 this.props.setOthergenefunc(true, event.target.value);
+                                             }}
+                                />
+                                <FormControl.Feedback />
+                            </FormGroup>
                         </Form>
                     </Panel.Body>
                 </Panel>
@@ -159,6 +172,7 @@ class Phenotypes extends React.Component {
                             chemical: getCheckboxDBVal(this.props.chemPheno.checked),
                             env: getCheckboxDBVal(this.props.envPheno.checked),
                             protein: getCheckboxDBVal(this.props.enzymaticAct.checked, this.props.enzymaticAct.details),
+                            othergenefunc: getCheckboxDBVal(this.props.othergenefunc.checked, this.props.othergenefunc.details)
                         };
                         this.props.setLoading();
                         this.state.dataManager.postWidgetData(payload)
@@ -184,10 +198,12 @@ const mapStateToProps = state => ({
     chemPheno: getChemicalPhenotype(state),
     envPheno: getEnvironmentalPhenotype(state),
     enzymaticAct: getEnzymaticActivity(state),
+    othergenefunc: getOthergenefunc(state),
     isSavedToDB: isPhenotypesSavedToDB(state)
 });
 
 export default connect(mapStateToProps, {setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
     setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
-    setEnzymaticActivity, toggleEnzymaticActivity, showDataSaved, setIsPhenotypesSavedToDB, setLoading, unsetLoading})(Phenotypes);
+    setEnzymaticActivity, toggleEnzymaticActivity, setOthergenefunc, toggleOthergenefunc, showDataSaved,
+    setIsPhenotypesSavedToDB, setLoading, unsetLoading})(Phenotypes);

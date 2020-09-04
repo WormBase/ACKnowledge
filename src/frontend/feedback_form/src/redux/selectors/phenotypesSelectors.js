@@ -12,4 +12,6 @@ export const getEnvironmentalPhenotype = store => getPhenotypesState(store) ? ge
 
 export const getEnzymaticActivity = store => getPhenotypesState(store) ? getPhenotypesState(store).enzymaticAct : {checked: false, details: ''};
 
+export const getOthergenefunc = store => getPhenotypesState(store) ? getPhenotypesState(store).othergenefunc : {checked: false, details: ''};
+
 export const isPhenotypesSavedToDB = store => getPhenotypesState(store) ? getPhenotypesState(store).isSavedToDB : false;

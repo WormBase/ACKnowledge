@@ -10,6 +10,8 @@ export const SET_ENVIRONMENTAL_PHENOTYPE = "SET_ENVIRONMENTAL_PHENOTYPE";
 export const TOGGLE_ENVIRONMENTAL_PHENOTYPE = "TOGGLE_ENVIRONMENTAL_PHENOTYPE";
 export const SET_ENZYMATIC_ACTIVITY = "SET_ENZYMATIC_ACTIVITY";
 export const TOGGLE_ENZYMATIC_ACTIVITY = "TOGGLE_ENZYMATIC_ACTIVITY";
+export const SET_OTHERGENEFUNC = "SET_OTHERGENEFUNC";
+export const TOGGLE_OTHERGENEFUNC = "TOGGLE_OTHERGENEFUNC";
 export const SET_IS_PHENOTYPES_SAVED_TO_DB = "SET_IS_PHENOTYPES_SAVED_TO_DB";
 
 
@@ -88,6 +90,19 @@ export const setEnzymaticActivity = (checked, details) => ({
 
 export const toggleEnzymaticActivity = () => ({
     type: TOGGLE_ENZYMATIC_ACTIVITY,
+    payload: {}
+});
+
+export const setOthergenefunc = (checked, details) => ({
+    type: SET_OTHERGENEFUNC,
+    payload: {
+        checked: checked,
+        details: details
+    }
+});
+
+export const toggleOthergenefunc = () => ({
+    type: TOGGLE_OTHERGENEFUNC,
     payload: {}
 });
 

@@ -43,6 +43,7 @@ export class DataManager {
         this.chemphen = new CheckboxWithDetails(false, "", false);
         this.envpheno = new CheckboxWithDetails(false, "", false);
         this.catalyticact = new CheckboxWithDetails(false, "", false);
+        this.othergenefunc = new CheckboxWithDetails(false, "", false);
         this.disease = new CheckboxWithDetails(false, "", false);
         this.comments = '';
     }
@@ -77,6 +78,7 @@ export class DataManager {
                     this.chemphen = getCheckbxOrSingleFieldFromWBAPIData(result.chemphen, undefined);
                     this.envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.envpheno, undefined);
                     this.catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.catalyticact, undefined);
+                    this.othergenefunc = getCheckbxOrSingleFieldFromWBAPIData(result.othergenefunc, undefined);
                     this.disease = getCheckbxOrSingleFieldFromWBAPIData(result.humdis, undefined);
                     this.comments = getCheckbxOrSingleFieldFromWBAPIData(result.comment, undefined);
                     resolve();

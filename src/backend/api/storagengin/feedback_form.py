@@ -101,6 +101,9 @@ class FeedbackFormStorageEngine(AFPStorageBaseEngine):
     def store_protein(self, protein, paper_id):
         self.db_manager.set_protein(protein=protein, paper_id=paper_id)
 
+    def store_othergenefunc(self, othergenefunc, paper_id):
+        self.db_manager.set_othergenefunc(othergenefunc=othergenefunc, paper_id=paper_id)
+
     # Disease
 
     def store_disease(self, disease, paper_id):

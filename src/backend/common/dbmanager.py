@@ -546,6 +546,13 @@ class DBManager(object):
         self.cur.execute("INSERT INTO afp_catalyticact_hst (joinkey, afp_catalyticact_hst) VALUES('{}', '{}')"
                          .format(paper_id, protein))
 
+    def set_othergenefunc(self, othergenefunc, paper_id):
+        self.cur.execute("DELETE FROM afp_othergenefunc WHERE joinkey = '{}'".format(paper_id))
+        self.cur.execute("INSERT INTO afp_othergenefunc (joinkey, afp_othergenefunc) VALUES('{}', '{}')"
+                         .format(paper_id, othergenefunc))
+        self.cur.execute("INSERT INTO afp_othergenefunc_hst (joinkey, afp_othergenefunc_hst) VALUES('{}', '{}')"
+                         .format(paper_id, othergenefunc))
+
     def set_disease(self, disease, paper_id):
         self.cur.execute("DELETE FROM afp_humdis WHERE joinkey = '{}'".format(paper_id))
         self.cur.execute("INSERT INTO afp_humdis (joinkey, afp_humdis) VALUES('{}', '{}')"

@@ -31,7 +31,7 @@ import {
     setAllelePhenotype,
     setChemicalPhenotype, setEnvironmentalPhenotype,
     setEnzymaticActivity,
-    setIsPhenotypesSavedToDB, setOverexprPhenotype,
+    setIsPhenotypesSavedToDB, setOthergenefunc, setOverexprPhenotype,
     setRnaiPhenotype,
     toggleAllelePhenotype
 } from "../redux/actions/phenotypesActions";
@@ -129,9 +129,11 @@ class Main extends Component {
                 this.props.setChemicalPhenotype(this.state.dataManager.chemphen.isChecked(), this.state.dataManager.chemphen.details());
                 this.props.setEnvironmentalPhenotype(this.state.dataManager.envpheno.isChecked(), this.state.dataManager.envpheno.details());
                 this.props.setEnzymaticActivity(this.state.dataManager.catalyticact.isChecked(), this.state.dataManager.catalyticact.details());
+                this.props.setOthergenefunc(this.state.dataManager.othergenefunc.isChecked(), this.state.dataManager.othergenefunc.details());
                 if (this.state.dataManager.newmutant.prevSaved() && this.state.dataManager.rnai.prevSaved() &&
                     this.state.dataManager.overexpr.prevSaved() && this.state.dataManager.chemphen.prevSaved() &&
-                    this.state.dataManager.envpheno.prevSaved() && this.state.dataManager.catalyticact.prevSaved()) {
+                    this.state.dataManager.envpheno.prevSaved() && this.state.dataManager.catalyticact.prevSaved() &&
+                    this.state.dataManager.othergenefunc.prevSaved()) {
                     this.props.setIsPhenotypesSavedToDB();
                 }
 
@@ -190,5 +192,5 @@ export default connect(null, {
     setTimeOfAction, setRnaseq, setAdditionalExpr, setIsExpressionSavedToDB, setGeneticInteractions,
     setPhysicalInteractions, setRegulatoryInteractions, setIsInteractionsSavedToDB, setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, setOverexprPhenotype, setChemicalPhenotype, setEnvironmentalPhenotype,
-    setEnzymaticActivity, setIsPhenotypesSavedToDB, setDisease, setIsDiseaseSavedToDB, setComments,
+    setEnzymaticActivity, setOthergenefunc, setIsPhenotypesSavedToDB, setDisease, setIsDiseaseSavedToDB, setComments,
     setIsCommentsSavedToDB, showDataFetchError})(withRouter(Main));

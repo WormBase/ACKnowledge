@@ -9,7 +9,11 @@ import {
   TOGGLE_ENVIRONMENTAL_PHENOTYPE,
   SET_ENZYMATIC_ACTIVITY,
   TOGGLE_ENZYMATIC_ACTIVITY,
-  SET_IS_PHENOTYPES_SAVED_TO_DB, SET_OVEREXPR_PHENOTYPE, TOGGLE_OVEREXPR_PHENOTYPE
+  SET_IS_PHENOTYPES_SAVED_TO_DB,
+  SET_OVEREXPR_PHENOTYPE,
+  TOGGLE_OVEREXPR_PHENOTYPE,
+  TOGGLE_OTHERGENEFUNC,
+  SET_OTHERGENEFUNC
 } from "../actions/phenotypesActions";
 
 
@@ -38,6 +42,10 @@ const initialState = {
     checked: false,
     details: ''
   },
+  othergenefunc: {
+    checked: false,
+    details: ''
+  },
   isSavedToDB: false
 };
 
@@ -52,6 +60,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -64,6 +73,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -76,6 +86,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -88,6 +99,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -100,6 +112,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -112,6 +125,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -124,6 +138,7 @@ export default function(state = initialState, action) {
         chemPheno: action.payload,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -136,6 +151,7 @@ export default function(state = initialState, action) {
         chemPheno: {checked: !state.chemPheno.checked, details: ''},
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -148,6 +164,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: action.payload,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -160,6 +177,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: {checked: !state.envPheno.checked, details: ''},
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -172,6 +190,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: action.payload,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: false
       };
     }
@@ -184,6 +203,33 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: {checked: !state.enzymaticAct.checked, details: ''},
+        othergenefunc: state.othergenefunc,
+        isSavedToDB: false
+      };
+    }
+    case SET_OTHERGENEFUNC: {
+      return {
+        ...state,
+        allelePheno: state.allelePheno,
+        rnaiPheno: state.rnaiPheno,
+        overexprPheno: state.overexprPheno,
+        chemPheno: state.chemPheno,
+        envPheno: state.envPheno,
+        enzymaticAct: state.enzymaticAct,
+        othergenefunc: action.payload,
+        isSavedToDB: false
+      };
+    }
+    case TOGGLE_OTHERGENEFUNC: {
+      return {
+        ...state,
+        allelePheno: state.allelePheno,
+        rnaiPheno: state.rnaiPheno,
+        overexprPheno: state.overexprPheno,
+        chemPheno: state.chemPheno,
+        envPheno: state.envPheno,
+        enzymaticAct: state.enzymaticAct,
+        othergenefunc: {checked: !state.enzymaticAct.checked, details: ''},
         isSavedToDB: false
       };
     }
@@ -196,6 +242,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
+        othergenefunc: state.othergenefunc,
         isSavedToDB: true
       };
     }

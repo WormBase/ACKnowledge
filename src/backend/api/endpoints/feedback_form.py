@@ -120,6 +120,8 @@ class FeedbackFormWriter:
                     self.db.store_env(env=req.media["env"], paper_id=paper_id)
                 if "protein" in req.media:
                     self.db.store_protein(protein=req.media["protein"], paper_id=paper_id)
+                if "othergenefunc" in req.media:
+                    self.db.store_othergenefunc(othergenefunc=req.media["othergenefunc"], paper_id=paper_id)
 
                 # disease
                 if "disease" in req.media:
