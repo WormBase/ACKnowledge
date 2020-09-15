@@ -30,8 +30,16 @@ emails:
                       <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
                       information about flagging your paper for curation or Micropublication.<br/>
                       Please accept our congratulations on your publication!<br/>
+                      <br/>
                       Best Wishes,<br/>
-                      WormBase"
+                      WormBase<br/>
+                      <br/>
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
+                      We are happy to announce that we’ve released a new version of the Author First Pass (AFP) form.<br/>
+                      We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
+                      to help guide you through the process. <br/> Full details are available in the
+                      <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V2 Release Notes</a>.<br/>
+                      Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>"
 
   subject_empty: "Paper processed by AFP has empty entity lists: WBPaper{}"
   content_empty: "The paper:<br/>

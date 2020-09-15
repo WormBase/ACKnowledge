@@ -11,19 +11,39 @@ data.
 
 # Release Notes
 
-## Version 1.0
+## Version 2.0
 
 ### Release Date
+09-14-2020
+           
+### Introduction
+We improved the AFP system based on feedback received from authors and statistics
+collected during one year of AFP v1.0 author submissions. We improved the definition of
+data types in the form and we refined our text mining algorithms to obtain better results.
+
+### Main Features
+- Implemented [TFIDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus.) in place of simple thresholds to improve precision of gene and allele recognition
+- Improved datatype descriptions in "?" mouse-overs
+- Added FAQs and Release Notes
+
+## Version 1.0
+
+### Release date
 06-03-2019
 
-### Main Features:
+### Introduction
+We are proud to introduce our new AFP system, which leverages text mining to help authors curate
+their papers and send data to WormBase! The system replaces the previous form which required authors
+to submit data manually through free-text forms.</p>
+
+### Main Features
 - Automated extraction of biological entities from articles based on text mining
-- Extracted entities presented to author for validation through a newly designed web application
+- Extracted entities presented to author for validation through a newly designed web form
 - Additional data types can be manually entered by authors
 - Dashboard for curators to monitor submissions
 - Monthly notifications to curators with newly submitted data
 - Periodic email reminders to authors
-- More details in our paper published on Database: https://academic.oup.com/database/article/doi/10.1093/database/baaa006/5809234
+- More details in [our paper](https://academic.oup.com/database/article/doi/10.1093/database/baaa006/5809234) published on Database
 
 # References
 
