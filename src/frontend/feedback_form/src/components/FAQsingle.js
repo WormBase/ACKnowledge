@@ -14,7 +14,7 @@ class FAQsingle extends React.Component {
     render(){
         return (
             <div>
-                <a onClick={() => this.setState({ open: !this.state.open })}>{this.props.question}</a>
+                <a onClick={() => this.setState({ open: !this.state.open })}><p dangerouslySetInnerHTML={{__html: this.props.question}}/></a>
                 <Collapse in={this.state.open}>
                     <div>
                         <Well>

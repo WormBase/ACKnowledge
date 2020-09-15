@@ -5,7 +5,7 @@ class ReleaseNotes extends React.Component {
         return (
             <div>
                 <h3>Release 2.0</h3>
-                Release date: 09-07-2020
+                Release date: 09-14-2020
                 <h4>Introduction</h4>
                 <p>We improved the AFP system based on feedback received from authors and statistics
                     collected during one year of AFP v1.0 author submissions. We improved the definition of
