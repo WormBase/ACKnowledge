@@ -17,6 +17,7 @@ ENV NUM_PAPERS_PER_RUN=10
 ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 ENV TAZENDRA_USER=""
 ENV TAZENDRA_PASSWD=""
+ENV TPC_TOKEN=""
 
 ADD src/backend/pipeline/crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
