@@ -36,4 +36,5 @@ CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $AFP_BASE_URL > /etc/afp_base_url && \
     echo $TAZENDRA_USER > /etc/afp_tazendra_user && \
     echo $TAZENDRA_PASSWD > /etc/afp_tazendra_passwd && \
+    echo $TPC_TOKEN > /etc/afp_tpc_token && \
     cron && tail -f /dev/null
