@@ -14,6 +14,20 @@ from src.backend.api.storagengin.curator_dashboard import CuratorDashboardStorag
 from src.backend.api.storagengin.feedback_form import FeedbackFormStorageEngine
 
 
+class HandleCORS(object):
+    def process_request(self, req, resp):
+        allow_headers = req.get_header(
+            'Access-Control-Request-Headers',
+            default='*'
+        )
+        resp.set_header('Access-Control-Allow-Origin', '*')
+        resp.set_header('Access-Control-Allow-Methods', '*')
+        resp.set_header('Access-Control-Allow-Headers', allow_headers)
+        resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
+        if req.method == 'OPTIONS':
+            raise HTTPStatus(falcon.HTTP_200, body='\n')
+
+
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
                                                  "structures for Author First Pass")
@@ -38,19 +52,6 @@ def main():
 
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
-
-    class HandleCORS(object):
-        def process_request(self, req, resp):
-            allow_headers = req.get_header(
-                'Access-Control-Request-Headers',
-                default='*'
-            )
-            resp.set_header('Access-Control-Allow-Origin', '*')
-            resp.set_header('Access-Control-Allow-Methods', '*')
-            resp.set_header('Access-Control-Allow-Headers', allow_headers)
-            resp.set_header('Access-Control-Max-Age', 1728000)  # 20 days
-            if req.method == 'OPTIONS':
-                raise HTTPStatus(falcon.HTTP_200, body='\n')
 
     app = falcon.API(middleware=[HandleCORS()])
     feedback_form_db = FeedbackFormStorageEngine(dbname=args.db_name, user=args.db_user, password=args.db_password,
@@ -86,3 +87,41 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+else:
+    import os
+    app = falcon.API(middleware=[HandleCORS()])
+    feedback_form_db = FeedbackFormStorageEngine(dbname=os.environ['AFP_DB_NAME'], user=os.environ['AFP_DB_USER'],
+                                                 password=os.environ['AFP_DB_PASSWD'], host=os.environ['AFP_DB_HOST'],
+                                                 tazendra_user=os.environ['AFP_TAZENDRA_USER'],
+                                                 tazendra_password=os.environ['AFP_TAZENDRA_PASSWD'])
+    feedback_form_writer = FeedbackFormWriter(storage_engine=feedback_form_db,
+                                              admin_emails=os.environ['AFP_ADMIN_EMAILS'].split(','),
+                                              email_passwd=os.environ['AFP_EMAIL_PASSWD'],
+                                              afp_base_url=os.environ['AFP_BASE_URL'], test=False)
+    app.add_route('/api/write', feedback_form_writer)
+
+    feedback_form_reader = FeedbackFormReader(storage_engine=feedback_form_db,
+                                              admin_emails=os.environ['AFP_ADMIN_EMAILS'].split(','),
+                                              email_passwd=os.environ['AFP_EMAIL_PASSWD'])
+    app.add_route('/api/read', feedback_form_reader)
+
+    curator_dashboard_db = CuratorDashboardStorageEngine(dbname=os.environ['AFP_DB_NAME'],
+                                                         user=os.environ['AFP_DB_USER'],
+                                                         password=os.environ['AFP_DB_PASSWD'],
+                                                         host=os.environ['AFP_DB_HOST'],
+                                                         tazendra_user=os.environ['AFP_TAZENDRA_USER'],
+                                                         tazendra_password=os.environ['AFP_TAZENDRA_PASSWD'])
+    curator_dashboard_reader = CuratorDashboardReader(storage_engine=curator_dashboard_db,
+                                                      afp_base_url=os.environ['AFP_BASE_URL'])
+    app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
+
+    author_papers_db = AuthorPapersPageStorageEngine(dbname=os.environ['AFP_DB_NAME'], user=os.environ['AFP_DB_USER'],
+                                                     password=os.environ['AFP_DB_PASSWD'],
+                                                     host=os.environ['AFP_DB_HOST'],
+                                                     tazendra_user=os.environ['AFP_TAZENDRA_USER'],
+                                                     tazendra_password=os.environ['AFP_TAZENDRA_PASSWD'])
+    author_papers_reader = AuthorPapersPageReader(storage_engine=author_papers_db,
+                                                  afp_base_url=os.environ['AFP_BASE_URL'],
+                                                  email_passwd=os.environ['AFP_EMAIL_PASSWD'])
+    app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
