@@ -1562,7 +1562,7 @@ class DBManager(object):
                          "afp_contributor join afp_lasttouched on afp_contributor.joinkey = afp_lasttouched.joinkey "
                          "join afp_version on afp_contributor.joinkey = afp_version.joinkey "
                          "where afp_version.afp_version = '2' "
-                         "group by afp_contributor.afp_contributor order by count(afp_contributor.afp_contributor) "
+                         "group by afp_contributor.afp_contributor order by count(DISTINCT afp_contributor.joinkey) "
                          "desc OFFSET {} LIMIT {}".format(from_offset, count))
         res = self.cur.fetchall()
         if res:
