@@ -29,6 +29,8 @@ class OtherYesNoDataTypesTab extends React.Component {
             afp_humdis_checked: "",
             afp_humdis_details: "",
             afp_additionalexpr: "",
+            afp_othergenefunc_checked: "",
+            afp_othergenefunc_details: "",
             isLoading: false
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
@@ -89,6 +91,8 @@ class OtherYesNoDataTypesTab extends React.Component {
                     afp_humdis_checked: data["afp_humdis_checked"],
                     afp_humdis_details: data["afp_humdis_details"],
                     afp_additionalexpr: data["afp_additionalexpr"],
+                    afp_othergenefunc_checked: data["afp_othergenefunc_checked"],
+                    afp_othergenefunc_details: data["afp_othergenefunc_details"],
                     isLoading: false
                 });
             }).catch((err) => {
@@ -160,6 +164,10 @@ class OtherYesNoDataTypesTab extends React.Component {
                     <FlaggedInfoRow title="Additional type of expression data"
                                     afpChecked={this.state.afp_additionalexpr !== "''" ? "True" : "False"}
                                     afpDetails={this.state.afp_additionalexpr}
+                    />
+                    <FlaggedInfoRow title="Other gene function"
+                                    afpChecked={this.state.afp_othergenefunc_checked}
+                                    afpDetails={this.state.afp_othergenefunc_details}
                     />
                 </div>
             </LoadingOverlay>

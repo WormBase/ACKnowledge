@@ -121,6 +121,11 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
         afp_humdis_details = afp_humdis if afp_humdis != "Checked" and afp_humdis != "checked" and \
                                            afp_humdis != "" else ""
         afp_additionalexpr = self.db_manager.get_feature("afp_additionalexpr", paper_id)
+        afp_othergenefunc = self.db_manager.get_feature("afp_othergenefunc", paper_id)
+        afp_othergenefunc_checked = afp_othergenefunc != "" and afp_othergenefunc != "null"
+        afp_othergenefunc_details = afp_othergenefunc if afp_othergenefunc != "Checked" and afp_othergenefunc != \
+                                                         "checked" and afp_othergenefunc != "" and \
+                                                         afp_othergenefunc != "null" else ""
         return {"afp_modchange_checked": afp_modchange_checked, "afp_modchange_details": afp_modchange_details,
                 "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
                 "afp_siteaction_checked": afp_siteaction_checked, "afp_siteaction_details": afp_siteaction_details,
@@ -131,7 +136,8 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
                 "afp_catalyticact_checked": afp_catalyticact_checked, "afp_catalyticact_details":
                     afp_catalyticact_details,
                 "afp_humdis_checked": afp_humdis_checked, "afp_humdis_details": afp_humdis_details,
-                "afp_additionalexpr": afp_additionalexpr}
+                "afp_additionalexpr": afp_additionalexpr, "afp_othergenefunc_checked": afp_othergenefunc_checked,
+                "afp_othergenefunc_details": afp_othergenefunc_details}
 
     def get_other_data_types(self, paper_id):
         othervariations = self.db_manager.get_feature("afp_othervariation", paper_id)

@@ -83,7 +83,8 @@ class CuratorDashboardReader:
                                 '"afp_envpheno_checked": "{}", "afp_envpheno_details": "{}", ' \
                                 '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
                                 '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
-                                '"afp_additionalexpr": "{}"}}'.format(
+                                '"afp_additionalexpr": "{}", "afp_othergenefunc_checked": "{}", ' \
+                                '"afp_othergenefunc_details": "{}"}}'.format(
                                             other_yn["afp_modchange_checked"], repr(other_yn["afp_modchange_details"]),
                                             other_yn["afp_newantibody_checked"], repr(other_yn["afp_newantibody_details"]),
                                             other_yn["afp_siteaction_checked"], repr(other_yn["afp_siteaction_details"]),
@@ -93,7 +94,8 @@ class CuratorDashboardReader:
                                             other_yn["afp_envpheno_checked"], repr(other_yn["afp_envpheno_details"]),
                                             other_yn["afp_catalyticact_checked"], repr(other_yn["afp_catalyticact_details"]),
                                             other_yn["afp_humdis_checked"], repr(other_yn["afp_humdis_details"]),
-                                            repr(other_yn["afp_additionalexpr"]))
+                                            repr(other_yn["afp_additionalexpr"]), other_yn["afp_othergenefunc_checked"],
+                                            repr(other_yn["afp_othergenefunc_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
                     others = self.db.get_other_data_types(paper_id)
