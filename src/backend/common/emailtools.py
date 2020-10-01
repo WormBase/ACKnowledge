@@ -75,10 +75,10 @@ class EmailManager(object):
         self.send_email(subject=self.subject_email_summary, content=content, recipients=recipients)
 
     def send_new_submission_notification_email_to_admin(self, paper_id, paper_title, paper_journal, paper_email,
-                                                        recipients: List[str], form_url, test: bool = False):
+                                                        recipients: List[str], dashboard_url, form_url,
+                                                        test: bool = False):
         content = self.content_email_new_sub.format(paper_id, paper_title, paper_journal, paper_email,
-                                                    "http://textpressocentral.org:5001/paper?paper_id=" + paper_id,
-                                                    form_url)
+                                                    dashboard_url, form_url)
         subject = self.subject_email_new_sub
         if test:
             subject = "[Dev Test] " + subject
