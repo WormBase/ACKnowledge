@@ -70,7 +70,7 @@ emails:
                     <br/>"
 
   subject_digest_alert: "New positive papers flagged by author through AFP for {}"
-  content_digest_alert: "New papers flagged 'positive' during the last month for data type {}: <br/><br><br/>
+  content_digest_alert: "New papers flagged 'positive' during the last week for data type {}: <br/><br><br/>
                          {}<br/>"
 
   subject_author_dash: "Author First Pass - access link to author page"
