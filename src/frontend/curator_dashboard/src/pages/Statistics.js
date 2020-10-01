@@ -283,8 +283,8 @@ class Statistics extends React.Component {
                                                     <Row>
                                                         <Col>
                                                             <h5>Response Rate (full submissions)</h5>
-                                                            <strong>Old AFP: </strong> {(parseInt(this.state.num_papers_old_afp_author_submitted) / (parseInt(this.state.num_papers_old_afp_processed))).toFixed(2)}% <br/>
-                                                            <strong>New AFP: </strong> {(parseInt(this.state.num_papers_new_afp_author_submitted) / (parseInt(this.state.num_papers_new_afp_author_submitted) + parseInt(this.state.num_papers_new_afp_partial_sub) + parseInt(this.state.num_papers_new_afp_processed))).toFixed(2)}%
+                                                            <strong>Old AFP: </strong> {(100 * parseInt(this.state.num_papers_old_afp_author_submitted) / (parseInt(this.state.num_papers_old_afp_processed))).toFixed(2)}% <br/>
+                                                            <strong>New AFP: </strong> {(100 * parseInt(this.state.num_papers_new_afp_author_submitted) / (parseInt(this.state.num_papers_new_afp_author_submitted) + parseInt(this.state.num_papers_new_afp_partial_sub) + parseInt(this.state.num_papers_new_afp_processed))).toFixed(2)}%
                                                         </Col>
                                                     </Row>
                                                 </Container>
