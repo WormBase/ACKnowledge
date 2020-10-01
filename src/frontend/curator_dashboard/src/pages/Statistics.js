@@ -270,6 +270,23 @@ class Statistics extends React.Component {
                                                             Partial submission by author
                                                         </Col>
                                                     </Row>
+                                                    <Row>
+                                                        <Col>
+                                                            &nbsp;
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col>
+                                                            &nbsp;
+                                                        </Col>
+                                                    </Row>
+                                                    <Row>
+                                                        <Col>
+                                                            <h5>Response Rate (full submissions)</h5>
+                                                            <strong>Old AFP: </strong> {(parseInt(this.state.num_papers_old_afp_author_submitted) / (parseInt(this.state.num_papers_old_afp_processed))).toFixed(2)}% <br/>
+                                                            <strong>New AFP: </strong> {(parseInt(this.state.num_papers_new_afp_author_submitted) / (parseInt(this.state.num_papers_new_afp_author_submitted) + parseInt(this.state.num_papers_new_afp_partial_sub) + parseInt(this.state.num_papers_new_afp_processed))).toFixed(2)}%
+                                                        </Col>
+                                                    </Row>
                                                 </Container>
                                             </Col>
                                         </Row>
