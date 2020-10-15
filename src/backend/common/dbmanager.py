@@ -698,7 +698,7 @@ class DBManager(object):
         self.cur.execute("SELECT {}.joinkey, {}.{} from {} join afp_lasttouched "
                          "ON {}.joinkey = afp_lasttouched.joinkey JOIN afp_version "
                          "ON afp_lasttouched.joinkey = afp_version.joinkey "
-                         "WHERE afp_version.afp_version = '2' AND {}.afp_timestamp > now() - interval '1 month' AND "
+                         "WHERE afp_version.afp_version = '2' AND {}.afp_timestamp > now() - interval '1 week' AND "
                          "{}.{} IS NOT NULL".format(
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name,
             data_type_table_name, data_type_table_name, data_type_table_name, data_type_table_name))
