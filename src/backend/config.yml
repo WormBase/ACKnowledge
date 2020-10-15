@@ -76,7 +76,7 @@ emails:
   subject_author_dash: "Author First Pass - access link to author page"
   content_author_dash: "Click here to retrieve the list of your papers processed by the Author First Pass: <br/><br/><br/>
                         <br/>
-                        <a href='http://textpressocentral.org:5002?token={}'>http://textpressocentral.org:5002?token={}</a><br/>
+                        <a href='https://mypapers.afp.textpressolab.com?token={}'>https://mypapers.afp.textpressoolab.com?token={}</a><br/>
                         "
 
   subject_reminder: "Help Wormbase curate your paper WBPaper{}"
