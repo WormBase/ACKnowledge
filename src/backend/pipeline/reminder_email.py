@@ -7,9 +7,9 @@ import urllib.parse
 
 from urllib.request import urlopen
 
+from src.backend.common.config import load_config_from_file
 from src.backend.common.dbmanager import DBManager
-from src.backend.common.emailtools import send_reminder_to_author
-
+from src.backend.common.emailtools import EmailManager
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,8 @@ def main():
 
     db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host,
                            tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
+    config = load_config_from_file()
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     # first reminder after one month
     for options in (((1, 2), False), ((2, 3), True)):
         for paper_id_email_arr in db_manager.get_papers_and_emails_without_submission_emailed_between_months(options[0][0], options[0][1]):
@@ -47,8 +49,9 @@ def main():
             afp_link = db_manager.get_afp_form_link(paper_id, args.afp_base_url)
             data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
             tiny_url = data.read().decode('utf-8')
-            send_reminder_to_author(paper_id, paper_title, paper_journal, tiny_url, [author_email], args.email_passwd,
-                                    options[1])
+            email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
+                                                  paper_journal=paper_journal, afp_link=tiny_url,
+                                                  recipients=[author_email], final_call=options[1])
             logger.info("going to sleep for ~15 minutes")
             time.sleep(1000)
     logger.info("finished sending reminder emails")
