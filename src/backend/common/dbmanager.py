@@ -98,17 +98,17 @@ class DBManager(object):
             Dict[Dict[Bool]: a dictionary with papers ids as keys and, as values, dictionaries with data type as key
             and a bool values indicating if the paper is SVM positive or negative for each specific data type
         """
-        self.cur.execute("SELECT A.cur_paper, A.cur_datatype, A.cur_svmdata \n"
-                         "FROM cur_svmdata A \n"
+        self.cur.execute("SELECT A.cur_paper, A.cur_datatype, A.cur_blackbox \n"
+                         "FROM cur_blackbox A \n"
                          "INNER JOIN (\n"
                          "    SELECT cur_paper, cur_datatype, MAX(CAST(cur_date as date)) AS max_date \n"
-                         "    FROM cur_svmdata \n"
+                         "    FROM cur_blackbox \n"
                          "    GROUP BY cur_paper, cur_datatype) B \n"
                          "ON A.cur_paper = B.cur_paper AND A.cur_datatype = B.cur_datatype")
         rows = self.cur.fetchall()
         papers_svm_flags = defaultdict(lambda: defaultdict(bool))
         for row in rows:
-            papers_svm_flags[row[0]][row[1]] = row[2] != "NEG" and row[2] != "low"
+            papers_svm_flags[row[0]][row[1]] = row[2].upper() != "NEG" and row[2].upper() != "LOW"
         return papers_svm_flags
 
     def get_all_genes(self):
@@ -717,11 +717,12 @@ class DBManager(object):
             return 'null'
 
     def get_svm_value(self, svm_type, paper_id):
-        self.cur.execute("SELECT cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
+        self.cur.execute("SELECT cur_blackbox, cur_date from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
             paper_id, svm_type))
-        row = self.cur.fetchone()
-        if row:
-            return row[0] == "high" or row[0] == "medium"
+        rows = self.cur.fetchall()
+        if rows:
+            row = sorted([(row[0], row[1]) for row in rows], key=lambda x: x[1], reverse=True)[0]
+            return row[0].upper() == "HIGH" or row[0].upper() == "MEDIUM"
         else:
             return False
 
@@ -745,14 +746,20 @@ class DBManager(object):
         row = self.cur.fetchone()
         if row and row[0]:
             return True
-        self.cur.execute("SELECT cur_datatype, cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype IN "
+        self.cur.execute("SELECT cur_datatype, cur_blackbox, cur_date from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype IN "
                          "('otherexpr', 'seqchange', 'geneint', 'geneprod', 'genereg', 'newmutant', 'rnai', 'overexpr')"
                          .format(paper_id))
         rows = self.cur.fetchall()
+        datatype_blackboxvalue = {}
         for row in rows:
-            self.cur.execute("SELECT afp_{} = '' AND ('{}' = 'medium' OR '{}' = 'high') OR (afp_{} <> '' AND '{}' <> "
-                             "'medium' AND '{}' <> 'high') from afp_{} WHERE "
-                             "joinkey = '{}'".format(row[0], row[1], row[1], row[0], row[1], row[1], row[0], paper_id))
+            if not datatype_blackboxvalue[row[0]] or row[2] > datatype_blackboxvalue[row[0]][2]:
+                datatype_blackboxvalue[row[0]] = row
+        for row in datatype_blackboxvalue.values():
+            self.cur.execute("SELECT afp_{} = '' AND ('{}' = 'MEDIUM' OR '{}' = 'HIGH' OR '{}' = 'medium' OR '{}' = "
+                             "'high') OR (afp_{} <> '' AND '{}' <> 'MEDIUM' AND '{}' <> 'HIGH' AND '{}' <> 'medium' "
+                             "AND '{}' <> 'high') from afp_{} WHERE joinkey = '{}'".format(row[0], row[1], row[1],
+                                                                                           row[0], row[1], row[1],
+                                                                                           row[0], paper_id))
             row2 = self.cur.fetchone()
             if row2 and row2[0]:
                 return True
@@ -838,9 +845,10 @@ class DBManager(object):
         if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
             additional_where_clause = "AND "
         if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium') "
-            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            additional_joins = " JOIN cur_blackbox ON afp_email.joinkey = cur_blackbox.cur_paper "
+            additional_where_clause += "(cur_blackbox.cur_blackbox = 'HIGH' OR cur_blackbox.cur_blackbox = 'MEDIUM' OR" \
+                                       " cur_blackbox.cur_blackbox = 'high' OR cur_blackbox.cur_blackbox = 'medium') "
+            additional_field = ", array_to_string(array_agg(cur_blackbox.cur_datatype), ' ') AS svm_matched"
             external_where_clause = "WHERE " + (combine_filters + " ").join(
                 ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
@@ -906,9 +914,10 @@ class DBManager(object):
         if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
             additional_where_clause = "AND "
         if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            additional_joins = " JOIN cur_blackbox ON afp_email.joinkey = cur_blackbox.cur_paper "
+            additional_where_clause += "(cur_blackbox.cur_blackbox = 'HIGH' OR cur_blackbox.cur_blackbox = 'MEDIUM' OR " \
+                                       " cur_blackbox.cur_blackbox = 'high' OR cur_blackbox.cur_blackbox = 'medium') "
+            additional_field = ", array_to_string(array_agg(cur_blackbox.cur_datatype), ' ') AS svm_matched"
             external_where_clause = "WHERE " + (combine_filters + " ").join(
                 ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
@@ -1030,9 +1039,10 @@ class DBManager(object):
         if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
             additional_where_clause += "AND "
         if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            additional_joins = " JOIN cur_blackbox ON afp_email.joinkey = cur_blackbox.cur_paper "
+            additional_where_clause += "(cur_blackbox.cur_blackbox = 'HIGH' OR cur_blackbox.cur_blackbox = 'MEDIUM' OR " \
+                                       " cur_blackbox.cur_blackbox = 'high' OR cur_blackbox.cur_blackbox = 'medium') "
+            additional_field = ", array_to_string(array_agg(cur_blackbox.cur_datatype), ' ') AS svm_matched"
             external_where_clause = "WHERE " + (combine_filters + " ").join(
                 ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
@@ -1098,9 +1108,10 @@ class DBManager(object):
         if svm_filters and svm_filters[0] != '' or manual_filters and manual_filters[0] != '':
             additional_where_clause += "AND "
         if svm_filters and svm_filters[0] != '':
-            additional_joins = " JOIN cur_svmdata ON afp_email.joinkey = cur_svmdata.cur_paper "
-            additional_where_clause += "(cur_svmdata.cur_svmdata = 'high' OR cur_svmdata.cur_svmdata = 'medium')"
-            additional_field = ", array_to_string(array_agg(cur_svmdata.cur_datatype), ' ') AS svm_matched"
+            additional_joins = " JOIN cur_blackbox ON afp_email.joinkey = cur_blackbox.cur_paper "
+            additional_where_clause += "(cur_blackbox.cur_blackbox = 'HIGH' OR cur_blackbox.cur_blackbox = 'MEDIUM' OR " \
+                                       " cur_blackbox.cur_blackbox = 'high' OR cur_blackbox.cur_blackbox = 'medium') "
+            additional_field = ", array_to_string(array_agg(cur_blackbox.cur_datatype), ' ') AS svm_matched"
             external_where_clause = "WHERE " + (combine_filters + " ").join(
                 ["svm_matched::text LIKE '%" + svm_flagged_datatype + "%'" for svm_flagged_datatype in svm_filters])
         if manual_filters and manual_filters[0] != '':
