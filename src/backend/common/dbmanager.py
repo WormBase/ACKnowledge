@@ -102,11 +102,11 @@ class DBManager(object):
             Dict[Dict[Bool]: a dictionary with papers ids as keys and, as values, dictionaries with data type as key
             and a bool values indicating if the paper is SVM positive or negative for each specific data type
         """
-        self.cur.execute("SELECT A.cur_paper, A.cur_datatype, A.cur_svmdata \n"
-                         "FROM cur_svmdata A \n"
+        self.cur.execute("SELECT A.cur_paper, A.cur_datatype, A.cur_blackbox \n"
+                         "FROM cur_blackbox A \n"
                          "INNER JOIN (\n"
                          "    SELECT cur_paper, cur_datatype, MAX(CAST(cur_date as date)) AS max_date \n"
-                         "    FROM cur_svmdata \n"
+                         "    FROM cur_blackbox \n"
                          "    GROUP BY cur_paper, cur_datatype) B \n"
                          "ON A.cur_paper = B.cur_paper AND A.cur_datatype = B.cur_datatype")
         rows = self.cur.fetchall()
@@ -721,11 +721,11 @@ class DBManager(object):
             return 'null'
 
     def get_svm_value(self, svm_type, paper_id):
-        self.cur.execute("SELECT cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
+        self.cur.execute("SELECT cur_blackbox from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
             paper_id, svm_type))
         row = self.cur.fetchone()
         if row:
-            return row[0] == "high" or row[0] == "medium"
+            return row[0].upper() == "HIGH" or row[0].upper() == "MEDIUM"
         else:
             return False
 
@@ -749,7 +749,7 @@ class DBManager(object):
         row = self.cur.fetchone()
         if row and row[0]:
             return True
-        self.cur.execute("SELECT cur_datatype, cur_svmdata from cur_svmdata WHERE cur_paper = '{}' AND cur_datatype IN "
+        self.cur.execute("SELECT cur_datatype, cur_blackbox from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype IN "
                          "('otherexpr', 'seqchange', 'geneint', 'geneprod', 'genereg', 'newmutant', 'rnai', 'overexpr')"
                          .format(paper_id))
         rows = self.cur.fetchall()
