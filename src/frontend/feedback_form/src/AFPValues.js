@@ -164,8 +164,8 @@ export function getCheckbxOrSingleFieldFromWBAPIData(afpString, svmString) {
         } else {
             return new CheckboxWithDetails(false, "", true);
         }
-    } else if (svmString !== undefined && svmString !== null && svmString.svm !== null &&
-        svmString.svm !== undefined && (svmString.svm === "high" || svmString.svm === "medium")) {
+    } else if (svmString !== undefined && svmString !== null && svmString.blackbox !== null &&
+        svmString.blackbox !== undefined && (svmString.blackbox.toUpperCase() === "HIGH" || svmString.blackbox.toUpperCase() === "MEDIUM")) {
         return new CheckboxWithDetails(true, "", false);
     } else {
         return new CheckboxWithDetails(false, "", false);
