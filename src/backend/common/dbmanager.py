@@ -832,8 +832,9 @@ class DBManager(object):
         return url
 
     def get_paper_ids_flagged_positive_svm(self, svm_filters, combine_filters: str = 'OR'):
-        self.cur.execute("SELECT cur_paper, cur_datatype, FROM cur_blackbox "
-                         "WHERE cur_datatype IN %s AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')", (svm_filters,))
+        self.cur.execute("SELECT cur_paper, cur_datatype FROM cur_blackbox "
+                         "WHERE cur_datatype IN %s AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')",
+                         (tuple(svm_filters),))
         if combine_filters == 'AND':
             datatype_ids = {svm_filter: set() for svm_filter in svm_filters}
             for row in self.cur.fetchall():
@@ -861,10 +862,10 @@ class DBManager(object):
         res = self.cur.fetchall()
         paper_ids = [row[0] for row in res]
         if svm_filters and svm_filters[0]:
-            paper_ids = list(set(paper_ids) - set(self.get_paper_ids_flagged_positive_svm(svm_filters,
+            paper_ids = list(set(paper_ids) & set(self.get_paper_ids_flagged_positive_svm(svm_filters,
                                                                                           combine_filters)))
         if manual_filters and manual_filters[0] != '':
-            paper_ids = list(set(paper_ids) - set(self.get_paper_ids_flagged_positive_manual(manual_filters,
+            paper_ids = list(set(paper_ids) & set(self.get_paper_ids_flagged_positive_manual(manual_filters,
                                                                                              combine_filters)))
         if count:
             return len(paper_ids)
