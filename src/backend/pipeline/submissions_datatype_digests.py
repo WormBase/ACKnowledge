@@ -2,26 +2,27 @@
 
 import argparse
 import logging
+import json
 
 from src.backend.common.config import load_config_from_file
 from src.backend.common.dbmanager import DBManager
 from src.backend.common.emailtools import EmailManager
 
-AFP_WATCHERS_TABLES = {
-       "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
-                                "afp_otherstrain", "afp_rnaseq"],
-       "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
-       "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
-       "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
-       "jae.cho@wormbase.org": ["afp_geneprod"],
-       "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
-       "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
-       "ranjana@caltech.edu": ["afp_humdis"]
-   }
-
 # AFP_WATCHERS_TABLES = {
-#     "valearna@caltech.edu": ["afp_humdis", "afp_comment", "afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_catalyticact"],
-# }
+#        "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
+#                                 "afp_otherstrain", "afp_rnaseq"],
+#        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
+#        "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+#        "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
+#        "jae.cho@wormbase.org": ["afp_geneprod"],
+#        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
+#        "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
+#        "ranjana@caltech.edu": ["afp_humdis"]
+#    }
+
+AFP_WATCHERS_TABLES = {
+     "valearna@caltech.edu": ["afp_othertransgene"],
+ }
 
 
 def main():
@@ -52,6 +53,9 @@ def main():
             positive_papers_val = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(
                 table_to_watch)
             if len(positive_papers_val) > 0:
+                if table_to_watch == "afp_othertransgene":
+                    positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
+                                           pap_id, val in positive_papers_val.items()}
                 email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                           [afp_watcher])
     db_manager.close()
