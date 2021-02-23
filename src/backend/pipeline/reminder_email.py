@@ -54,8 +54,8 @@ def main():
                                                   recipients=[author_email], final_call=options[1])
             logger.info("going to sleep for ~15 minutes")
             time.sleep(1000)
-    logger.info("finished sending reminder emails")
     db_manager.close()
+    logger.info("Pipeline finished successfully")
 
 
 if __name__ == '__main__':

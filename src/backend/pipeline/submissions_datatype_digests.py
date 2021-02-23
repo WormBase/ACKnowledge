@@ -24,6 +24,8 @@ AFP_WATCHERS_TABLES = {
 #      "valearna@caltech.edu": ["afp_othertransgene"],
 #  }
 
+logger = logging.getLogger(__name__)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Send digest to curators for data submitted through the AFP")
@@ -59,6 +61,7 @@ def main():
                 email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                           [afp_watcher])
     db_manager.close()
+    logger.info("Pipeline finished successfully")
 
 
 if __name__ == '__main__':

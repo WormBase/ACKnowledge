@@ -80,7 +80,7 @@ def main():
     db_manager.close()
     email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=[pap_info.paper_id for pap_info in papers_info],
                                               recipients=args.admin_emails)
-    logger.info("Finished")
+    logger.info("Pipeline finished successfully")
 
 
 if __name__ == '__main__':
