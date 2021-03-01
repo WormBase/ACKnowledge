@@ -846,7 +846,7 @@ class DBManager(object):
             return [row[0] for row in self.cur.fetchall()]
 
     def get_paper_ids_flagged_positive_manual(self, manual_filters, combine_filters: str = 'OR'):
-        self.cur.execute("SELECT afp_email.joinkey " + " ".join(
+        self.cur.execute("SELECT afp_email.joinkey FROM afp_email " + " ".join(
             ["JOIN afp_" + table_name + " ON afp_email.joinkey = afp_" + table_name + ".joinkey " for table_name in
              manual_filters]) + " WHERE " + (combine_filters + " ").join(["afp_" + manual_filter + " <> ''" for
                                                                           manual_filter in manual_filters]))
