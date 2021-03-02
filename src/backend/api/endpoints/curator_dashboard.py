@@ -16,7 +16,7 @@ class CuratorDashboardReader:
     def on_post(self, req, resp, req_type):
         with self.db:
             if req_type != "stats" and req_type != "papers" and req_type != "contributors" \
-                    and req_type != "most_emailed":
+                    and req_type != "most_emailed" and req_type != "all_papers":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -175,7 +175,35 @@ class CuratorDashboardReader:
                                              self.db.get_list_papers_no_entities(from_offset, count)])
                     else:
                         raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
-                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_ids, num_papers)
+                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(
+                        list_ids, num_papers)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "all_papers":
+                    list_type = req.media["list_type"]
+                    svm_filters = req.media["svm_filters"].split(",")
+                    manual_filters = req.media["manual_filters"].split(",")
+                    curation_filters = req.media["curation_filters"].split(",")
+                    combine_filters = req.media["combine_filters"]
+                    if list_type == "processed":
+                        all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                            self.db.get_list_paper_ids_afp_processed(
+                                                0, 0, svm_filters, manual_filters, curation_filters,
+                                                combine_filters)])
+                    elif list_type == "submitted":
+                        all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                            self.db.get_list_paper_ids_afp_submitted(
+                                                0, 0, svm_filters, manual_filters, curation_filters,
+                                                combine_filters)])
+                    elif list_type == "partial":
+                        all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                            self.db.get_list_papers_new_afp_partial_submissions(
+                                                0, 0, svm_filters, manual_filters, curation_filters,
+                                                combine_filters)])
+                    elif list_type == "empty":
+                        all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
+                                            self.db.get_list_papers_no_entities(0, 0)])
+                    resp.body = '{{"all_ids": [{}]}}'.format(all_ids)
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "contributors":

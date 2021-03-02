@@ -4,7 +4,8 @@ import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
 import PaginatedPapersList from "./paper_lists/PaginatedPapersList";
 import PapersFilters from "./paper_lists/PapersFilters";
-
+import axios from 'axios';
+import {downloadFile} from "../lib/file";
 
 
 class PaperLists extends React.Component {
@@ -71,6 +72,13 @@ class PaperLists extends React.Component {
         });
     }
 
+    async downloadCSV(url, list_type, svm_filters, manual_filters, curation_filters, combine_filters) {
+        axios.post(url, {list_type: list_type, svm_filters: svm_filters, manual_filters: manual_filters, curation_filters: curation_filters, combine_filters: combine_filters})
+            .then((data) => {
+                downloadFile(data["data"]["all_ids"].map(e => "WBPaper" + e).join('\n'), "papers", "text/plain", "csv", );
+            })
+    }
+
     render() {
         return(
             <Container fluid>
@@ -131,6 +139,10 @@ class PaperLists extends React.Component {
                                                         elemPerPage={this.state.papersPerPage}
                                                         filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
+                                                    <br/>
+                                                    <Button size="sm" variant="link" onClick={() => {
+                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "processed", [...this.state.svmFilter].join(','), [...this.state.manualFilter].join(','), [...this.state.curationFilter].join(','), this.state.combineFilters)
+                                                    }}>Download CSV</Button>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
@@ -144,6 +156,10 @@ class PaperLists extends React.Component {
                                                         elemPerPage={this.state.papersPerPage}
                                                         filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
+                                                    <br/>
+                                                    <Button size="sm" variant="link" onClick={() => {
+                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "submitted", [...this.state.svmFilter].join(','), [...this.state.manualFilter].join(','), [...this.state.curationFilter].join(','), this.state.combineFilters)
+                                                    }}>Download CSV</Button>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
@@ -157,6 +173,10 @@ class PaperLists extends React.Component {
                                                         elemPerPage={this.state.papersPerPage}
                                                         filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
+                                                    <br/>
+                                                    <Button size="sm" variant="link" onClick={() => {
+                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "partial", [...this.state.svmFilter].join(','), [...this.state.manualFilter].join(','), [...this.state.curationFilter].join(','), this.state.combineFilters)
+                                                    }}>Download CSV</Button>
                                                 </Card.Body>
                                             </Card>
                                         </Col>
@@ -181,6 +201,10 @@ class PaperLists extends React.Component {
                                                         elemPerPage={this.state.papersPerPage}
                                                         filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
+                                                    <br/>
+                                                    <Button size="sm" variant="link" onClick={() => {
+                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "empty", [...this.state.svmFilter].join(','), [...this.state.manualFilter].join(','), [...this.state.curationFilter].join(','), this.state.combineFilters)
+                                                    }}>Download CSV</Button>
                                                 </Card.Body>
                                             </Card>
                                         </Col>

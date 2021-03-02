@@ -869,7 +869,8 @@ class DBManager(object):
         if count:
             return len(paper_ids)
         else:
-            return sorted(paper_ids, reverse=True)[offset : offset+limit]
+            return sorted(paper_ids, reverse=True)[offset: offset+limit] if limit != offset else \
+                sorted(paper_ids, reverse=True)
 
     def get_num_papers_new_afp_processed(self, svm_filters, manual_filters, curation_filters,
                                          combine_filters: str = 'OR'):
