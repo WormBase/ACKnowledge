@@ -740,11 +740,11 @@ class DBManager(object):
                          "afp_v.afp_variation <> tfp_v.tfp_variation OR "
                          "afp_st.afp_strain <> tfp_st.tfp_strain OR "
                          "afp_t.afp_transgene <> tfp_t.tfp_transgene "
-                         "FROM afp_genestudied afp_g JOIN tfp_genestudied tfp_g ON afp_g.joinkey = tfp_g.joinkey "
-                         "JOIN afp_species afp_s ON afp_g.joinkey = afp_s.joinkey JOIN tfp_species tfp_s ON afp_g.joinkey = tfp_s.joinkey "
-                         "JOIN afp_variation afp_v ON afp_g.joinkey = afp_v.joinkey JOIN tfp_variation tfp_v ON afp_g.joinkey = tfp_v.joinkey "
-                         "JOIN afp_strain afp_st ON afp_g.joinkey = afp_st.joinkey JOIN tfp_strain tfp_st ON afp_g.joinkey = tfp_st.joinkey "
-                         "JOIN afp_transgene afp_t ON afp_g.joinkey = afp_t.joinkey JOIN tfp_transgene tfp_t ON afp_g.joinkey = tfp_t.joinkey "
+                         "FROM afp_genestudied afp_g FULL OUTER JOIN tfp_genestudied tfp_g ON afp_g.joinkey = tfp_g.joinkey "
+                         "FULL OUTER JOIN afp_species afp_s ON afp_g.joinkey = afp_s.joinkey FULL OUTER JOIN tfp_species tfp_s ON afp_g.joinkey = tfp_s.joinkey "
+                         "FULL OUTER JOIN afp_variation afp_v ON afp_g.joinkey = afp_v.joinkey FULL OUTER JOIN tfp_variation tfp_v ON afp_g.joinkey = tfp_v.joinkey "
+                         "FULL OUTER JOIN afp_strain afp_st ON afp_g.joinkey = afp_st.joinkey FULL OUTER JOIN tfp_strain tfp_st ON afp_g.joinkey = tfp_st.joinkey "
+                         "FULL OUTER JOIN afp_transgene afp_t ON afp_g.joinkey = afp_t.joinkey FULL OUTER JOIN tfp_transgene tfp_t ON afp_g.joinkey = tfp_t.joinkey "
                          "WHERE afp_g.joinkey = '{}'".format(paper_id))
         row = self.cur.fetchone()
         if row and row[0]:
