@@ -1,6 +1,6 @@
 import React from 'react';
 
-class EntityDiffRow extends React.Component {
+class FlaggedDiffRow extends React.Component {
 
     render() {
         return(
@@ -13,11 +13,11 @@ class EntityDiffRow extends React.Component {
                         Checked: <strong>{this.props.tfpChecked}</strong>
                     </div>
                     <div className="col-sm-3">
-                        Checked: <strong>{this.props.afpDetails !== "null" ? this.props.afpChecked: ""}<br/></strong>
-                        Details: <strong>{this.props.afpDetails !== "null" ? this.props.afpDetails : ""}</strong>
+                        Checked: <strong>{this.props.afpDetails !== "'null'" ? this.props.afpChecked: ""}<br/></strong>
+                        Details: <strong>{this.props.afpDetails !== "'null'" ? this.props.afpDetails : ""}</strong>
                     </div>
                     <div className="col-sm-3">
-                        <strong>{this.props.tfpChecked !== this.props.afpChecked && this.props.afpDetails !== "null" ? "Yes" : "No"}</strong>
+                        <strong>{this.props.afpDetails !== "'null'" ? this.props.tfpChecked !== this.props.afpChecked ? "Yes" : "No" : "No"}</strong>
                     </div>
                 </div>
                 <div className="row">
@@ -30,4 +30,4 @@ class EntityDiffRow extends React.Component {
     }
 }
 
-export default EntityDiffRow;
+export default FlaggedDiffRow;

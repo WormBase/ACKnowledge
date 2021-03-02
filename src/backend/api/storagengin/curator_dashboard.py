@@ -31,42 +31,42 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
     def get_all_flagged_data_types(self, paper_id):
         svm_otherexpr = self.db_manager.get_svm_value("otherexpr", paper_id)
         afp_otherexpr = self.db_manager.get_feature("afp_otherexpr", paper_id)
-        afp_otherexpr_checked = afp_otherexpr != "" and afp_otherexpr != "null"
+        afp_otherexpr_checked = afp_otherexpr != "" if afp_otherexpr != "null" else "null"
         afp_otherexpr_details = afp_otherexpr if afp_otherexpr != "Checked" and afp_otherexpr != "checked" and \
                                                  afp_otherexpr != "" else ""
 
         svm_seqchange = self.db_manager.get_svm_value("seqchange", paper_id)
         afp_seqchange = self.db_manager.get_feature("afp_seqchange", paper_id)
-        afp_seqchange_checked = afp_seqchange != "" and afp_seqchange != "null"
+        afp_seqchange_checked = afp_seqchange != "" if afp_seqchange != "null" else "null"
         afp_seqchange_details = afp_seqchange if afp_seqchange != "Checked" and afp_seqchange != "checked" and \
                                                  afp_seqchange != "" else ""
         svm_geneint = self.db_manager.get_svm_value("geneint", paper_id)
         afp_geneint = self.db_manager.get_feature("afp_geneint", paper_id)
-        afp_geneint_checked = afp_geneint != "" and afp_geneint != "null"
+        afp_geneint_checked = afp_geneint != "" if afp_geneint != "null" else "null"
         afp_geneint_details = afp_geneint if afp_geneint != "Checked" and afp_geneint != "checked" and \
                                              afp_geneint != "" else ""
         svm_geneprod = self.db_manager.get_svm_value("geneprod", paper_id)
         afp_geneprod = self.db_manager.get_feature("afp_geneprod", paper_id)
-        afp_geneprod_checked = afp_geneprod != "" and afp_geneprod != "null"
+        afp_geneprod_checked = afp_geneprod != "" if afp_geneprod != "null" else "null"
         afp_geneprod_details = afp_geneprod if afp_geneprod != "Checked" and afp_geneprod != "checked" and \
                                                afp_geneprod != "" else ""
         svm_genereg = self.db_manager.get_svm_value("genereg", paper_id)
         afp_genereg = self.db_manager.get_feature("afp_genereg", paper_id)
-        afp_genereg_checked = afp_genereg != "" and afp_genereg != "null"
+        afp_genereg_checked = afp_genereg != "" if afp_genereg != "null" else "null"
         afp_genereg_details = afp_genereg if afp_genereg != "Checked" and afp_genereg != "checked" and \
                                              afp_genereg != "" else ""
         svm_newmutant = self.db_manager.get_svm_value("newmutant", paper_id)
         afp_newmutant = self.db_manager.get_feature("afp_newmutant", paper_id)
-        afp_newmutant_checked = afp_newmutant != "" and afp_newmutant != "null"
+        afp_newmutant_checked = afp_newmutant != "" if afp_newmutant != "null" else "null"
         afp_newmutant_details = afp_newmutant if afp_newmutant != "Checked" and afp_newmutant != "checked" and \
                                                  afp_newmutant != "" else ""
         svm_rnai = self.db_manager.get_svm_value("rnai", paper_id)
         afp_rnai = self.db_manager.get_feature("afp_rnai", paper_id)
-        afp_rnai_checked = afp_rnai != "" and afp_rnai != "null"
+        afp_rnai_checked = afp_rnai != "" if afp_rnai != "null" else "null"
         afp_rnai_details = afp_rnai if afp_rnai != "Checked" and afp_rnai != "checked" and afp_rnai != "" else ""
         svm_overexpr = self.db_manager.get_svm_value("overexpr", paper_id)
         afp_overexpr = self.db_manager.get_feature("afp_overexpr", paper_id)
-        afp_overexpr_checked = afp_overexpr != "" and afp_overexpr != "null"
+        afp_overexpr_checked = afp_overexpr != "" if afp_overexpr != "null" else "null"
         afp_overexpr_details = afp_overexpr if afp_overexpr != "Checked" and afp_overexpr != "checked" and \
                                                afp_overexpr != "" else ""
         return {"svm_otherexpr_checked": svm_otherexpr, "afp_otherexpr_checked": afp_otherexpr_checked,
