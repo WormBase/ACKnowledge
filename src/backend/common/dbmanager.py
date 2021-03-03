@@ -721,8 +721,8 @@ class DBManager(object):
             return 'null'
 
     def get_svm_value(self, svm_type, paper_id):
-        self.cur.execute("SELECT cur_blackbox from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype = '{}'".format(
-            paper_id, svm_type))
+        self.cur.execute("SELECT cur_blackbox from cur_blackbox WHERE cur_paper = '{}' AND cur_datatype = '{}' "
+                         "ORDER BY cur_date DESC".format(paper_id, svm_type))
         row = self.cur.fetchone()
         if row:
             return row[0].upper() == "HIGH" or row[0].upper() == "MEDIUM"
