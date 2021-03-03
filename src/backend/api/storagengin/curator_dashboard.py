@@ -121,6 +121,8 @@ class CuratorDashboardStorageEngine(AFPStorageBaseEngine):
         afp_humdis_details = afp_humdis if afp_humdis != "Checked" and afp_humdis != "checked" and \
                                            afp_humdis != "" else ""
         afp_additionalexpr = self.db_manager.get_feature("afp_additionalexpr", paper_id)
+        if afp_additionalexpr == 'null':
+            afp_additionalexpr = ''
         afp_othergenefunc = self.db_manager.get_feature("afp_othergenefunc", paper_id)
         afp_othergenefunc_checked = afp_othergenefunc != "" and afp_othergenefunc != "null"
         afp_othergenefunc_details = afp_othergenefunc if afp_othergenefunc != "Checked" and afp_othergenefunc != \
