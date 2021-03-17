@@ -19,11 +19,15 @@ class FAQ extends React.Component {
                                    answer={"After you submit your AFP data, WormBase curators will be alerted to the information you provide.  They will then curate the data as soon as possible and it will be included in a subsequent WormBase release.  The WormBase release schedule can be found <a target='_blank' href='https://wormbase.org/about/release_schedule'>here</a>."}/></li>
                     <li><FAQsingle question={"How is my curation acknowledged in WB?"}
                                    answer={"We will soon be acknowledging authors who contribute to Author First Pass on the relevant WormBase paper and person pages."}/></li>
-                    <li><FAQsingle question={"Can I submit older papers through the Author First Pass form?"}
-                                   answer={"If you would like to submit an Author First Pass (AFP) form for older papers, please <a target='_blank' href='mailto:help.afp@wormbase.org'>contact us</a> with a list of PubMed identifiers (PMIDs, e.g. PMID:25281934) and/or WormBase paper identifiers (WBPaper IDs, e.g. WBPaper00045833) so we can process them and email you links to the corresponding AFP forms."}/></li>
+                    <li><FAQsingle question={"Can I submit a paper for which I haven't received an Author First Pass link?"}
+                                   answer={"If you would like to submit an Author First Pass (AFP) form for other papers, please <a target='_blank' href='mailto:help.afp@wormbase.org'>contact us</a> with a list of PubMed identifiers (PMIDs, e.g. PMID:25281934) and/or WormBase paper identifiers (WBPaper IDs, e.g. WBPaper00045833) so we can process them and email you links to the corresponding AFP forms."}/></li>
+                    <li><FAQsingle question={"Does AFP process supplementary data and text or only the main paper?"}
+                                   answer={"Supplementary data is processed by AFP, as long as it is in PDF format. Other formats (e.g., images, videos, Excel files) are not included."}/></li>
                 </ol>
                 <h4>Who Can Submit the Author First Pass Form</h4>
                 <ol>
+                    <li><FAQsingle question={"Who are community curators and what do you have to do to become one?"}
+                                   answer={"Any author of the publication can be a community curator. You do not have to do anything specific to become one. If you are not a PI or a corresponding author please ask your PI to forward you the Author First Pass link."}/></li>
                     <li><FAQsingle question={"Can someone other than the original recipient of the Author First Pass email submit the form?"}
                                    answer={"The Author First Pass (AFP) form can be filled out by anyone in your lab. You can forward the email containing the link you receive. The new submitter then just needs to change the submitter name by clicking on ‘Change User’ on the Overview widget and by typing their name in the pop-up window and selecting the correct match from the autocomplete results. If there are multiple matches to your name, please double-check your WormBase person page to make sure you select the correct person from the list. Remember: you need to be a registered WormBase person to see your name on the list. If you don’t have a WBPerson ID, you can request one <a target='_blank' href='https://wormbase.org/submissions/person.cgi'>here</a>."}/></li>
                     <li><FAQsingle question={"How do I get a WBPerson ID?"}
