@@ -185,6 +185,7 @@ class MenuAndWidgets extends React.Component {
                                                             <NavItem
                                                                 eventKey={MENU_INDEX[WIDGET.HELP]}>{WIDGET_TITLE[WIDGET.HELP]}
                                                             </NavItem></IndexLinkContainer>
+                                                        <NavItem href="https://www.youtube.com/embed/ZONK4qe_-w8?start=86&end=1011" target="_blank">WormBase AFP Webinar</NavItem>
                                                         <IndexLinkContainer to={WIDGET.RELEASE_NOTES + this.props.location.search}
                                                                             active={this.state.selectedMenu === MENU_INDEX[WIDGET.RELEASE_NOTES]}>
                                                             <NavItem
