@@ -15,7 +15,7 @@ class OneColumnEditableTable extends Component {
     };
 
     handleAddEvent(evt) {
-        let id = Math.max(this.props.products.map((product) => product.id)) + 1;
+        let id = Math.max(...this.props.products.map((product) => product.id)) + 1;
         this.props.addProductFunction({id: id, name: ''});
     }
 
