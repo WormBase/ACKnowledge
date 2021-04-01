@@ -105,14 +105,15 @@ class EmailManager(object):
         self.send_email(subject=subject, content=content, recipients=recipients)
 
     @staticmethod
-    def get_feedback_form_tiny_url(afp_base_url, paper_id, paper_info, passwd):
-        hide_genes = "true" if len(paper_info.genes) > 100 else "false"
-        hide_alleles = "true" if len(paper_info.alleles) > 100 else "false"
-        hide_strains = "true" if len(paper_info.strains) > 100 else "false"
+    def get_feedback_form_tiny_url(afp_base_url, paper_id, genes, alleles, strains, passwd, title, journal, pmid,
+                                   corresponding_author_id, doi):
+        hide_genes = "true" if len(genes) > 100 else "false"
+        hide_alleles = "true" if len(alleles) > 100 else "false"
+        hide_strains = "true" if len(strains) > 100 else "false"
         url = afp_base_url + "?paper=" + paper_id + "&passwd=" + str(passwd) + "&title=" + \
-              urllib.parse.quote(paper_info.title) + "&journal=" + urllib.parse.quote(paper_info.journal) + "&pmid=" + \
-              paper_info.pmid + "&personid=" + paper_info.corresponding_author_id.replace("two", "") + "&hide_genes=" + \
+              urllib.parse.quote(title) + "&journal=" + urllib.parse.quote(journal) + "&pmid=" + \
+              pmid + "&personid=" + corresponding_author_id.replace("two", "") + "&hide_genes=" + \
               hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
-              urllib.parse.quote(paper_info.doi)
+              urllib.parse.quote(doi)
         data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
         return data.read().decode('utf-8')
