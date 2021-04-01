@@ -55,14 +55,15 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://textpressocentral.org:18080/v1/textpresso/api/get_documents_count", api_token=args.tpc_token,
+        api_url="https://textpressocentral.org:18080/v1/textpresso/api/", api_token=args.tpc_token,
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
     cm.load_from_wb_database(
         args.db_name, args.db_user, args.db_password, args.db_host, tazendra_ssh_user=args.tazendra_ssh_user,
         tazendra_ssh_passwd=args.tazendra_ssh_password, from_date=(datetime.now() - timedelta(days=2*365))
             .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
-        exclude_afp_processed=True, exclude_afp_not_curatable=True)
+        exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
+        exclude_no_author_email=True)
     curated_genes = ntt_extractor.get_curated_entities(EntityType.GENE, exclude_id_used_as_name=False)
     gene_name_id_map = db_manager.generic.get_gene_name_id_map()
     curated_alleles = ntt_extractor.get_curated_entities(EntityType.VARIATION, exclude_id_used_as_name=False)
@@ -72,8 +73,11 @@ def main():
     transgene_name_id_map = db_manager.generic.get_transgene_name_id_map()
     taxon_id_species_name = db_manager.generic.get_taxon_id_names_map()
     tinyurls = []
+    blacklisted_email_addresses = db_manager.generic.get_blacklisted_email_addresses()
     for paper in cm.get_all_papers():
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
+
+        logger.info("Getting list of genes")
 
         meaningful_genes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
             keywords=curated_genes,
@@ -92,7 +96,7 @@ def main():
 
         meaningful_genes = list(set(meaningful_genes_fulltext) | set(meaningful_genes_title_abstract))
 
-        logger.info("Getting list of alleles through string matching")
+        logger.info("Getting list of alleles")
 
         meaningful_alleles_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
             keywords=curated_alleles, text=fulltext,
@@ -107,7 +111,7 @@ def main():
 
         meaningful_alleles = list(set(meaningful_alleles_fulltext) | set(meaningful_alleles_title_abstract))
 
-        logger.info("Getting list of strains through string matching")
+        logger.info("Getting list of strains")
 
         meaningful_strains_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
             keywords=curated_strains, text=fulltext,
@@ -122,7 +126,7 @@ def main():
 
         meaningful_strains = list(set(meaningful_strains_fulltext) | set(meaningful_strains_title_abstract))
 
-        logger.info("Getting list of transgenes through string matching")
+        logger.info("Getting list of transgenes")
 
         meaningful_transgenes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
             keywords=curated_transgenes, text=fulltext,
@@ -180,8 +184,10 @@ def main():
                 email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
                                                    feedback_form_tiny_url, args.admin_emails)
             else:
-                email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
-                                                   feedback_form_tiny_url, [paper.get_corresponding_author().email])
+                email_manager.send_email_to_author(
+                    paper.paper_id, paper.title, paper.journal, feedback_form_tiny_url,
+                    [paper.get_first_author_with_email_address_in_wb(
+                        blacklisted_email_addresses=blacklisted_email_addresses).email])
         else:
             email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
                                                                  paper.journal, feedback_form_tiny_url,
