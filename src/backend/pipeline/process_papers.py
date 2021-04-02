@@ -46,9 +46,6 @@ def main():
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
-
-    if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
-        ssl._create_default_https_context = ssl._create_unverified_context
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
 
