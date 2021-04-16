@@ -158,7 +158,7 @@ def main():
 
         logger.info("Transforming keywords into ids")
 
-        genes_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
+        genes_id_name = [ntt_id.replace("WBGene", "") + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
             meaningful_genes, gene_name_id_map)]
         logger.info("Transforming allele keywords into allele ids")
         alleles_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
