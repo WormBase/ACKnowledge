@@ -118,7 +118,7 @@ ntt_extraction:
     #       'lin-35', 'lon-2', 'myo-2', 'myo-3', 'pha-1', 'pes-10', 'pie-1', 'rol-6', 'rrf-3', 'spe-11', 'sur-5',
     #       'tbb-2', 'unc-22', 'unc-54', 'unc-119', 'cbr-unc-119']
     gene: []
-    strain: []
+    strain: ['M9', 'OH']
     allele: []
     transgene: []
     species: ["4853", "30023", "8805", "216498", "1420681", "10231", "156766", "80388", "101142", "31138",
