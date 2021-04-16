@@ -28,7 +28,7 @@ class PapersFilters extends React.Component {
                         <Card>
                             <Card.Header>Data Extraction Info (thresholds)</Card.Header>
                             <Card.Body>
-                                <strong>gene: 2, protein: 2, allele: 2, strain: 1, species: 10, transgene: 1</strong>
+                                <strong>gene: TFIDF 10, protein: TFIDF 10, allele: TFIDF 5, strain: 1, species: 10, transgene: 1</strong>
                             </Card.Body>
                         </Card>
                     </Col>
