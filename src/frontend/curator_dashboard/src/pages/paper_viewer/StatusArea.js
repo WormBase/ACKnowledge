@@ -10,7 +10,7 @@ class StatusArea extends React.Component {
     render() {
         let link_to_afp_form = "";
         if (this.props.link_to_afp_form !== "") {
-            link_to_afp_form = <div><br/><a href={this.props.link_to_afp_form} target="_blank"><strong>Link to AFP feedback form</strong></a></div>
+            link_to_afp_form = <div><br/><a href={this.props.link_to_afp_form} target="_blank"><strong>Link to AFP form</strong></a></div>
         }
         if (this.props.paper_id !== undefined && this.props.paper_id !== "undefined") {
             return (
