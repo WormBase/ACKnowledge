@@ -10,8 +10,6 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
-import EditableTable from "../components/EditableTwoColsTable";
-import OneColumnEditableTable from "../components/EditableOneColsTable";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {connect} from "react-redux";
 import {
@@ -30,6 +28,7 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 import {DataManager} from "../lib/DataManager";
+import ControlLabel from "react-bootstrap/lib/ControlLabel";
 
 class Reagent extends React.Component {
     constructor(props, context) {
@@ -91,14 +90,10 @@ class Reagent extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <OneColumnEditableTable
-                                            title={""}
-                                            products={this.props.otherTransgenes}
-                                            addProductFunction={(transgene) => this.props.addOtherTransgene(transgene)}
-                                            remProductFunction={(transgene) => this.props.remOtherTransgene(transgene)}
-                                            setProductsFunction={(transgenes) => this.props.setOtherTransgenes(transgenes)}
-                                            sampleText={"e.g. ctIs40  or ycEx60"}
-                                        />
+                                        <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here (e.g. ctls40 or ycEx60), one per line"
+                                                     value={this.props.otherTransgenes.map(a => a.name).join("\n")}
+                                                     onChange={e => this.props.setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a}}))}/>
                                     </div>
                                 </div>
                             </div>
@@ -121,12 +116,17 @@ class Reagent extends React.Component {
                                                  value={this.props.newAntibodies.details}
                                                  onChange={(event) => {this.props.setNewAntibodies(true, event.target.value);}}/>
                                     <br/>
-                                    <EditableTable title={"Other Antibodies used"}
-                                                   products={this.props.otherAntibodies}
-                                                   addProductFunction={(antibody) => this.props.addOtherAntibody(antibody)}
-                                                   remProductFunction={(antibody) => this.props.removeOtherAntibody(antibody)}
-                                                   setProductsFunction={(antibodies) => this.props.setOtherAntibodies(antibodies)}
-                                    />
+                                    <ControlLabel>Other Antibodies Used</ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert antibodies here (optionally followed by PMID: 'antibody_name || PMID'), one per line"
+                                                     value={this.props.otherAntibodies.map(a => {
+                                                         if (a.name) {
+                                                             if (a.publicationId !== undefined) {
+                                                                 return a.name + " || " + a.publicationId
+                                                             } else {
+                                                                 return a.name
+                                                             }}}).join("\n")}
+                                                     onChange={e => this.props.setOtherAntibodies(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a.split(" || ")[0], publicationId: a.split(" || ")[1]}}))}/>
                                     <FormControl.Feedback />
                                 </FormGroup>
                             </Form>
