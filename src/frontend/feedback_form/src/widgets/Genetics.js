@@ -5,7 +5,6 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
-import OneColumnEditableTable from "../components/EditableOneColsTable";
 import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {connect} from "react-redux";
 import {
@@ -26,6 +25,14 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {DataManager} from "../lib/DataManager";
 import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import * as PropTypes from "prop-types";
+import FormControl from "react-bootstrap/lib/FormControl";
+
+function FormLabel(props) {
+    return null;
+}
+
+FormLabel.propTypes = {children: PropTypes.node};
 
 class Genetics extends React.Component {
     constructor(props, context) {
@@ -116,14 +123,10 @@ class Genetics extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <OneColumnEditableTable
-                                            title={""}
-                                            products={this.props.otherAlleles}
-                                            addProductFunction={(allele) => this.props.addOtherAllele(allele)}
-                                            remProductFunction={(allele) => this.props.removeOtherAllele(allele)}
-                                            setProductsFunction={(alleles) => this.props.setOtherAlleles(alleles)}
-                                            sampleText={"e.g. e1000"}
-                                        />
+                                        <FormControl componentClass="textarea" rows="5" placeholder="Insert new alleles here (e.g. e1000), one per line"
+                                                     value={this.props.otherAlleles.map(a => a.name).join("\n")}
+                                                     onChange={e => this.props.setOtherAlleles(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a}}))}/>
                                     </div>
                                 </div>
                             </div>
@@ -175,14 +178,10 @@ class Genetics extends React.Component {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
-                                        <OneColumnEditableTable
-                                            title={""}
-                                            products={this.props.otherStrains}
-                                            addProductFunction={(strain) => this.props.addOtherStrain(strain)}
-                                            remProductFunction={(strain) => this.props.removeOtherStrain(strain)}
-                                            setProductsFunction={(strains) => this.props.setOtherStrains(strains)}
-                                            sampleText={"e.g. CB1001"}
-                                        />
+                                        <FormControl componentClass="textarea" rows="5" placeholder="Insert new strains here (e.g. CB1001), one per line"
+                                                     value={this.props.otherStrains.map(a => a.name).join("\n")}
+                                                     onChange={e => this.props.setOtherStrains(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a}}))}/>
                                     </div>
                                 </div>
                             </div>
