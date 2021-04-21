@@ -1,4 +1,4 @@
-import {Component} from "react";
+import {useEffect, useState} from "react";
 import React from "react";
 import {
     Alert,
@@ -12,89 +12,68 @@ import {
 } from "react-bootstrap";
 import {connect} from "react-redux";
 
-class MultipleSelect extends Component {
-    constructor(props, context) {
-        super(props, context);
-        let selected = new Set(props.items);
-        this.state = {
-            showModal: false,
-            selectedItemsToDisplay: selected,
-            selectedItemsAll: selected,
-            availableItems: new Set(),
-            itemsIdForm: undefined,
-            tmpDeselectedItems: new Set(),
-            tmpSelectedItems: new Set(),
-            show_fetch_data_error: false,
-            showMore: false,
-        };
+const MultipleSelect = (props) => {
 
-        this.handleClose = this.handleClose.bind(this);
-        this.handleChangeWBListSelection = this.handleChangeWBListSelection.bind(this);
-        this.handleChangeIdentifiedListSelection = this.handleChangeIdentifiedListSelection.bind(this);
-        this.handleAddSelectedToList = this.handleAddSelectedToList.bind(this);
-        this.handleRemSelectedFromList = this.handleRemSelectedFromList.bind(this);
-        this.handleFilterIdChange = this.handleFilterIdChange.bind(this);
-        this.setAvailableItems = this.setAvailableItems.bind(this);
-        this.searchWB = this.searchWB.bind(this);
-    }
+    let selected = new Set(props.items);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
+    const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
+    const [availableItems, setAvailableItems] = useState(new Set());
+    const [itemsIdForm, setItemsIdForm] = useState(undefined);
+    const [tmpDeselectedItems, setTmpDeselectedItems] = useState(new Set());
+    const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
+    const [show_fetch_data_error, setShow_fetch_data_error] = useState(false);
+    const [showMore, setShowMore] = useState(false);
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.items !== this.props.items) {
-            this.setState({selectedItemsToDisplay: new Set(this.props.items), selectedItemsAll: new Set(this.props.items)})
-        }
-    }
+    useEffect(() => {
+        setSelectedItemsToDisplay(new Set(props.items));
+        setSelectedItemsAll(new Set(props.items));
 
-    handleAddSelectedToList() {
-        if (this.state.tmpSelectedItems.size > 0) {
-            [...this.state.tmpSelectedItems].forEach((item) => {
-               this.props.addItemFunction(item);
+    }, [props.items]);
+
+    const handleAddSelectedToList = () => {
+        if (tmpSelectedItems.size > 0) {
+            [...tmpSelectedItems].forEach((item) => {
+               props.addItemFunction(item);
             });
         }
-        this.setState({showModal: false});
+        setShowModal(false);
     }
 
-    handleRemSelectedFromList() {
-        if (this.state.itemsIdForm !== undefined) {
+    const handleRemSelectedFromList = () => {
+        if (itemsIdForm !== undefined) {
             let selOpts = [];
-            let options = this.state.itemsIdForm;
+            let options = itemsIdForm;
             [...options].forEach(function(option){if (option.selected){ selOpts.push(option.value) }});
-            if (selOpts.length !== this.state.tmpDeselectedItems.length) {
+            if (selOpts.length !== tmpDeselectedItems.length) {
                 [...options].forEach(function(option){ option.selected = false; });
             }
         }
-        if (this.state.tmpDeselectedItems.size > 0) {
-            [...this.state.tmpDeselectedItems].forEach((item) => {
-               this.props.remItemFunction(item);
+        if (tmpDeselectedItems.size > 0) {
+            [...tmpDeselectedItems].forEach((item) => {
+               props.remItemFunction(item);
             });
         }
     }
 
-    handleClose() {
-        this.setState({
-            showModal: false,
-            tmpSelectedItems: new Set(),
-            show_fetch_data_error: false
-        });
-    }
-
-    handleChangeWBListSelection(e) {
+    const handleChangeWBListSelection = (e) => {
         let selectedOptions = new Set();
         [...e.target].forEach(function(option){if (option.selected){ selectedOptions.add(option.value) }});
-        this.setState({tmpSelectedItems: selectedOptions});
+        setTmpSelectedItems(selectedOptions);
     }
 
-    handleChangeIdentifiedListSelection(e) {
+    const handleChangeIdentifiedListSelection = (e) => {
         let selectedOptions = new Set();
         [...e.target].forEach(function(option){if (option.selected){ selectedOptions.add(option.value) }});
-        this.setState({tmpDeselectedItems: selectedOptions, itemsIdForm: e.target});
+        setTmpDeselectedItems(selectedOptions);
+        setItemsIdForm(e.target);
     }
 
-    handleFilterIdChange(e) {
-        this.setState({selectedItemsToDisplay: [...this.state.selectedItemsAll].filter((item) =>
-                item.startsWith(e.target.value))});
+    const handleFilterIdChange = (e) => {
+        setSelectedItemsToDisplay(new Set([...selectedItemsAll].filter(item => item.startsWith(e.target.value))));
     }
 
-    setAvailableItems(wbItems, removeAddInfo = false) {
+    const changeAvailableItems = (wbItems, removeAddInfo = false) => {
         const addInfoRegex = / \( ([^ ]+) \)[ ]+$/;
         if (wbItems !== undefined && wbItems !== "\n") {
             let newAvailItems = new Set(wbItems.split("\n").filter((item) => item !== ''));
@@ -103,65 +82,56 @@ class MultipleSelect extends Component {
             }
             if (newAvailItems.has("more ...")) {
                 newAvailItems.delete("more ...");
-                this.setState({
-                    showMore: true
-                });
+                setShowMore(true);
             } else {
-                this.setState({
-                    showMore: false
-                });
+                setShowMore(false);
             }
-            this.setState({
-                availableItems: newAvailItems
-            });
+            setAvailableItems(newAvailItems)
         } else {
-            this.setState({
-                availableItems: new Set(),
-                showMore: false
-            });
+            setAvailableItems(new Set());
+            setShowMore(false);
         }
     }
 
-    searchWB(searchString, searchType) {
+    const searchWB = (searchString, searchType) => {
         if (searchString !== "") {
             fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' + searchType + '&userValue=' + searchString)
                 .then(res => {
                     if (res.status === 200) {
                         return res.text();
                     } else {
-                        this.setState({show_fetch_data_error: true})
+                        setShow_fetch_data_error(true);
                     }
                 }).then(data => {
                 if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
+                    setShow_fetch_data_error(true);
                 } else {
                     let remAddInfo = searchType === "species";
-                    this.setAvailableItems(data, remAddInfo);
+                    changeAvailableItems(data, remAddInfo);
                 }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => setShow_fetch_data_error(true));
         } else {
-            this.setAvailableItems("");
+            changeAvailableItems("");
         }
     }
 
-    render(){
-        const tpcTooltip = (
-            <Tooltip id="tooltip">
-                This field is prepopulated by Textpresso Central.
-            </Tooltip>
-        );
-        let data_fetch_err_alert = false;
-        if (this.state.show_fetch_data_error) {
-            data_fetch_err_alert = <Alert bsStyle="danger">
-                <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
-                Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
-                Wormbase Helpdesk</a>.
-            </Alert>;
-        }
+    const tpcTooltip = (
+        <Tooltip id="tooltip">
+            This field is prepopulated by Textpresso Central.
+        </Tooltip>
+    );
+    let data_fetch_err_alert = false;
+    if (show_fetch_data_error) {
+        data_fetch_err_alert = <Alert bsStyle="danger">
+            <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
+            Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
+            Wormbase Helpdesk</a>.
+        </Alert>;
+    }
 
-        let more = false;
-        if (this.state.showMore) {
-            more =
+    let more = false;
+    if (showMore) {
+        more =
             <div className="row">
                 <div className="col-sm-12">
                     Some results matching the query have been omitted. Try a different query to narrow down the results.
@@ -169,134 +139,138 @@ class MultipleSelect extends Component {
             </div>
         }
 
-        return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-12">
-                        &nbsp;
-                    </div>
+    return (
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col-sm-12">
+                    &nbsp;
                 </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <label>List of {this.props.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
-                                                                                                                    overlay={tpcTooltip}>
-                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-7">
-                        <FormControl componentClass="select" multiple
-                                     onChange={this.handleChangeIdentifiedListSelection}
-                                     defaultValue=""
-                                     style={{height: '200px'}}>
-                            {[...this.state.selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
-                        </FormControl>
-                    </div>
-                    <div className="col-sm-5">
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <Button
-                                        bsStyle="info"
-                                        bsClass="btn btn-info wrap-button"
-                                        onClick={this.handleRemSelectedFromList}>
-                                        <Glyphicon glyph="minus-sign"/>
-                                        &nbsp; Remove selected
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    &nbsp;
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {this.setState({showModal: true})}}>
-                                        <Glyphicon glyph="plus-sign"/>
-                                        &nbsp; Add from WB {this.props.itemsNameSingular} list
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    &nbsp;
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        &nbsp;
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-6">
-                        <input className="form-control" onChange={this.handleFilterIdChange}
-                               placeholder={"Start typing to filter " + this.props.itemsNamePlural + " list"}/>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <Button bsStyle="info" className="pull-right" bsSize="xsmall" onClick={() => {
-                            const element = document.createElement("a");
-                            const file = new Blob([[... this.state.selectedItemsToDisplay].sort().join("\n")],
-                                {type: 'text/plain'});
-                            element.href = URL.createObjectURL(file);
-                            element.download = this.props.itemsNamePlural + ".txt";
-                            document.body.appendChild(element); // Required for this to work in FireFox
-                            element.click();
-                        }}>Export .txt</Button>
-                    </div>
-                </div>
-                <Modal show={this.state.showModal} onHide={this.handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Select from Wormbase {this.props.itemsNameSingular} list</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {data_fetch_err_alert}
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <input className="form-control"
-                                           placeholder={this.props.sampleQuery}
-                                           ref={instance => { this.searchInput = instance; }}
-                                           onChange={(e) => {this.searchWB(e.target.value, this.props["searchType"])}}
-                                    />
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    &nbsp;
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <FormControl componentClass="select" multiple
-                                                 style={{height: '200px'}}
-                                                 defaultValue=""
-                                                 onChange={this.handleChangeWBListSelection}
-                                                 onDoubleClick={this.handleAddSelectedToList}>
-                                        {[...this.state.availableItems].map(item =>
-                                            <option>{item}</option>)}
-                                    </FormControl>
-                                </div>
-                            </div>
-                            {more}
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button bsStyle="success" onClick={this.handleAddSelectedToList}>Select</Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
-        );
-    }
+            <div className="row">
+                <div className="col-sm-12">
+                    <label>List of {props.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
+                                                                                                                overlay={tpcTooltip}>
+                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-7">
+                    <FormControl componentClass="select" multiple
+                                 onChange={handleChangeIdentifiedListSelection}
+                                 defaultValue=""
+                                 style={{height: '200px'}}>
+                        {[...selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
+                    </FormControl>
+                </div>
+                <div className="col-sm-5">
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-md-12">
+                                <Button
+                                    bsStyle="info"
+                                    bsClass="btn btn-info wrap-button"
+                                    onClick={handleRemSelectedFromList}>
+                                    <Glyphicon glyph="minus-sign"/>
+                                    &nbsp; Remove selected
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setShowModal(true)}>
+                                    <Glyphicon glyph="plus-sign"/>
+                                    &nbsp; Add from WB {props.itemsNameSingular} list
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-12">
+                    &nbsp;
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-6">
+                    <input className="form-control" onChange={handleFilterIdChange}
+                           placeholder={"Start typing to filter " + props.itemsNamePlural + " list"}/>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-12">
+                    <Button bsStyle="info" className="pull-right" bsSize="xsmall" onClick={() => {
+                        const element = document.createElement("a");
+                        const file = new Blob([[... selectedItemsToDisplay].sort().join("\n")],
+                            {type: 'text/plain'});
+                        element.href = URL.createObjectURL(file);
+                        element.download = props.itemsNamePlural + ".txt";
+                        document.body.appendChild(element); // Required for this to work in FireFox
+                        element.click();
+                    }}>Export .txt</Button>
+                </div>
+            </div>
+            <Modal show={showModal} onHide={() => {
+                setShowModal(false);
+                setTmpSelectedItems(new Set());
+                setShow_fetch_data_error(false);
+            }}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select from Wormbase {props.itemsNameSingular} list</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {data_fetch_err_alert}
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <input className="form-control"
+                                       placeholder={props.sampleQuery}
+                                       onChange={(e) => {searchWB(e.target.value, props["searchType"])}}
+                                />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <FormControl componentClass="select" multiple
+                                             style={{height: '200px'}}
+                                             defaultValue=""
+                                             onChange={handleChangeWBListSelection}
+                                             onDoubleClick={handleAddSelectedToList}>
+                                    {[...availableItems].map(item =>
+                                        <option>{item}</option>)}
+                                </FormControl>
+                            </div>
+                        </div>
+                        {more}
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button bsStyle="success" onClick={handleAddSelectedToList}>Select</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    );
 }
 
-function mapStateToProps(state, ownProps) {
-    return {items: ownProps.dataReaderFunction(state).elements}
+const mapStateToProps = (state, ownProps) => {
+    return {
+        items: ownProps.dataReaderFunction(state).elements
+    }
 }
 
 export default connect(mapStateToProps)(MultipleSelect);
