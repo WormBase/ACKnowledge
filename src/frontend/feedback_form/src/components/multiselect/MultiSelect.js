@@ -135,7 +135,7 @@ class MultipleSelect extends Component {
                 if (data === undefined) {
                     this.setState({show_fetch_data_error: true})
                 } else {
-                    let remAddInfo = searchType === "species" || searchType === "strain";
+                    let remAddInfo = searchType === "species";
                     this.setAvailableItems(data, remAddInfo);
                 }
             }).catch(() => this.setState({show_fetch_data_error: true}));

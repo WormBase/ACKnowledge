@@ -73,7 +73,11 @@ export function extractEntitiesFromTfpString(entitiesString, prefix) {
     let final_entities_list = [];
     for (let i in entities_split) {
         let entity_split = entities_split[i].split(";%;");
-        final_entities_list.push(entity_split[1] + " ( " + prefix + entity_split[0] + " )");
+        if (entity_split.length > 1) {
+            final_entities_list.push(entity_split[1] + " ( " + prefix + entity_split[0] + " )");
+        } else {
+            final_entities_list.push(entity_split[0])
+        }
     }
     return final_entities_list;
 }
