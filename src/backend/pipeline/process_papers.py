@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import ssl
 from datetime import datetime, timedelta
 
 from wbtools.db.dbmanager import WBDBManager
@@ -60,12 +58,13 @@ def main():
         tazendra_ssh_passwd=args.tazendra_ssh_password, from_date=(datetime.now() - timedelta(days=2*365))
             .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
         exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
-        exclude_no_author_email=True)
+        exclude_no_author_email=True, exclude_temp_pdf=True)
     curated_genes = ntt_extractor.get_curated_entities(EntityType.GENE, exclude_id_used_as_name=False)
     gene_name_id_map = db_manager.generic.get_gene_name_id_map()
     curated_alleles = ntt_extractor.get_curated_entities(EntityType.VARIATION, exclude_id_used_as_name=False)
     allele_name_id_map = db_manager.generic.get_variation_name_id_map()
     curated_strains = ntt_extractor.get_curated_entities(EntityType.STRAIN, exclude_id_used_as_name=False)
+    strain_name_id_map = db_manager.generic.get_strain_name_id_map()
     curated_transgenes = ntt_extractor.get_curated_entities(EntityType.TRANSGENE, exclude_id_used_as_name=False)
     transgene_name_id_map = db_manager.generic.get_transgene_name_id_map()
     taxon_id_species_name = db_manager.generic.get_taxon_id_names_map()
@@ -166,14 +165,16 @@ def main():
         logger.info("Transforming transgene keywords into transgene ids")
         transgenes_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
             meaningful_transgenes, transgene_name_id_map)]
+        strains_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
+            meaningful_strains, strain_name_id_map)]
         passwd = db_manager.afp.save_extracted_data_to_db(
             paper_id=paper.paper_id, genes=genes_id_name, alleles=alleles_id_name, species=meaningful_species,
-            strains=meaningful_strains, transgenes=transgenes_id_name,
+            strains=strains_id_name, transgenes=transgenes_id_name,
             author_email=paper.get_corresponding_author().email)
 
         feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(
             afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
-            alleles=alleles_id_name, strains=meaningful_strains, title=paper.title, journal=paper.journal,
+            alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
             pmid=paper.pmid, corresponding_author_id=paper.get_corresponding_author().person_id, doi=paper.doi)
         tinyurls.append(feedback_form_tiny_url)
         if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
