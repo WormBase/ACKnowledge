@@ -56,7 +56,7 @@ export class DataManager {
                     this.speciesList = getSetOfEntitiesFromWBAPIData(result.species, result.species, undefined);
                     this.structCorrcb = getCheckbxOrSingleFieldFromWBAPIData(result.structcorr, undefined);
                     this.variationsList = getSetOfEntitiesFromWBAPIData(result.variation, result.variation, "");
-                    this.strainsList = getSetOfEntitiesFromWBAPIData(result.strain, result.strain, undefined);
+                    this.strainsList = getSetOfEntitiesFromWBAPIData(result.strain, result.strain, "WBStrain");
                     this.seqChange = getCheckbxOrSingleFieldFromWBAPIData(result.seqchange, result.seqchange);
                     this.otherVariations = getTableValuesFromWBAPIData(result.othervariation, false);
                     this.otherStrains = getTableValuesFromWBAPIData(result.otherstrain, false);
