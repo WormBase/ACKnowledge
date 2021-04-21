@@ -167,15 +167,17 @@ def main():
             meaningful_transgenes, transgene_name_id_map)]
         strains_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
             meaningful_strains, strain_name_id_map)]
+        contact_person, contact_email = paper.get_first_author_with_email_address_in_wb(
+            blacklisted_email_addresses=blacklisted_email_addresses)
         passwd = db_manager.afp.save_extracted_data_to_db(
             paper_id=paper.paper_id, genes=genes_id_name, alleles=alleles_id_name, species=meaningful_species,
             strains=strains_id_name, transgenes=transgenes_id_name,
-            author_email=paper.get_corresponding_author().email)
+            author_email=contact_email)
 
         feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(
             afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
             alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
-            pmid=paper.pmid, corresponding_author_id=paper.get_corresponding_author().person_id, doi=paper.doi)
+            pmid=paper.pmid, corresponding_author_id=contact_person.person_id, doi=paper.doi)
         tinyurls.append(feedback_form_tiny_url)
         if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
             if args.dev_mode:
@@ -183,9 +185,7 @@ def main():
                                                    feedback_form_tiny_url, args.admin_emails)
             else:
                 email_manager.send_email_to_author(
-                    paper.paper_id, paper.title, paper.journal, feedback_form_tiny_url,
-                    [paper.get_first_author_with_email_address_in_wb(
-                        blacklisted_email_addresses=blacklisted_email_addresses).email])
+                    paper.paper_id, paper.title, paper.journal, feedback_form_tiny_url, [contact_email])
         else:
             email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
                                                                  paper.journal, feedback_form_tiny_url,
