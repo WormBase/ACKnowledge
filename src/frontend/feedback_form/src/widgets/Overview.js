@@ -16,7 +16,6 @@ import {
 } from "../redux/actions/overviewActions";
 import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
-import {DataManager} from "../lib/DataManager";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
 
