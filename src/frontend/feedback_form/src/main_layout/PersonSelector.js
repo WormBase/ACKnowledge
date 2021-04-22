@@ -1,5 +1,4 @@
-import {Component} from "react";
-import React from "react";
+import React, {useState} from "react";
 import {
     Alert,
     Button,
@@ -11,62 +10,45 @@ import {getPerson} from "../redux/selectors/personSelectors";
 import {connect} from "react-redux";
 import {setPerson} from "../redux/actions/personActions";
 
-class PersonSelector extends Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            person: props.person,
-            show_fetch_data_error: false,
-            show: false,
-            sampleQuery: "Type your name",
-            availableItems: new Set(),
-            showMore: false
-        };
-        this.handleShow = this.handleShow.bind(this);
-        this.handleClose = this.handleClose.bind(this);
+const PersonSelector = (props) => {
+    const [show_fetch_data_error, setShow_fetch_data_error] = useState(false);
+    const [show, setShow] = useState(false);
+    const [tmp_person_name, setTmp_person_name] = useState(undefined);
+    const [tmp_person_id, setTmp_person_id] = useState(undefined);
+    const [availableItems, setAvailableItems] = useState(new Set());
+    const [showMore, setShowMore] = useState(false);
+
+    const sampleQuery = "Type your name";
+
+    const handleClose = () => {
+        setShow(false);
+        setShow_fetch_data_error(false);
+        setTmp_person_id(undefined);
+        setTmp_person_name(undefined);
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.person !== this.props.person) {
-            this.setState({person: this.props.person});
-        }
-    }
-
-    handleClose() {
-        this.setState({
-            show: false,
-            show_fetch_data_error: false,
-            tmp_person_name: undefined,
-            tmp_person_id: undefined
-        });
-    }
-
-    handleShow() {
-        this.setState({ show: true });
-    }
-
-    searchWB(searchString, searchType) {
+    const searchWB = (searchString, searchType) => {
         if (searchString !== "") {
             fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' + searchType + '&userValue=' + searchString)
                 .then(res => {
                     if (res.status === 200) {
                         return res.text();
                     } else {
-                        this.setState({show_fetch_data_error: true})
+                        setShow_fetch_data_error(true);
                     }
                 }).then(data => {
                 if (data === undefined) {
-                    this.setState({show_fetch_data_error: true})
+                    setShow_fetch_data_error(true);
                 } else {
-                    this.setAvailableItems(data, false);
+                    setAvailableItemsFunction(data, false);
                 }
-            }).catch(() => this.setState({show_fetch_data_error: true}));
+            }).catch(() => setShow_fetch_data_error(true));
         } else {
-            this.setAvailableItems("");
+            setAvailableItemsFunction("");
         }
     }
 
-    setAvailableItems(wbItems, removeAddInfo = false) {
+    const setAvailableItemsFunction = (wbItems, removeAddInfo = false) => {
         const addInfoRegex = / \( ([^ ]+) \)[ ]+$/;
         if (wbItems !== undefined && wbItems !== "\n") {
             let newAvailItems = new Set(wbItems.split("\n").filter((item) => item !== ''));
@@ -75,122 +57,112 @@ class PersonSelector extends Component {
             }
             if (newAvailItems.has("more ...")) {
                 newAvailItems.delete("more ...");
-                this.setState({
-                    showMore: true
-                });
+                setShowMore(true);
             } else {
-                this.setState({
-                    showMore: false
-                });
+                setShowMore(false);
             }
-            this.setState({
-                availableItems: newAvailItems
-            });
+            setAvailableItems(newAvailItems);
         } else {
-            this.setState({
-                availableItems: new Set(),
-                showMore: false
-            });
+            setAvailableItems(new Set());
+            setShowMore(false);
         }
     }
 
-    render(){
-        let data_fetch_err_alert = false;
-        if (this.state.show_fetch_data_error) {
-            data_fetch_err_alert = <Alert bsStyle="danger">
-                <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
-                Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
-                Wormbase Helpdesk</a>.
-            </Alert>;
-        }
-        let more = false;
-        if (this.state.showMore) {
-            more =
-                <div className="row">
-                    <div className="col-sm-12">
-                        Some results matching the query have been omitted. Try a different query to narrow down the results.
-                    </div>
+    let data_fetch_err_alert = false;
+    if (show_fetch_data_error) {
+        data_fetch_err_alert = <Alert bsStyle="danger">
+            <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
+            Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
+            Wormbase Helpdesk</a>.
+        </Alert>;
+    }
+    let more = false;
+    if (showMore) {
+        more =
+            <div className="row">
+                <div className="col-sm-12">
+                    Some results matching the query have been omitted. Try a different query to narrow down the results.
                 </div>
-        }
-        return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-sm-8">
-                        WormBase User: <strong>{this.state.person.name}</strong> (WBPerson{this.state.person.personId})
-                        &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={this.handleShow}>Change user</Button>
-                    </div>
-                    <div className="col-sm-4" align="right">
-                        <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
-                           Request new WB Person
-                        </a>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-
-                    </div>
-                </div>
-                <Modal show={this.state.show} onHide={this.handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Select from Wormbase User list</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {data_fetch_err_alert}
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <input className="form-control"
-                                           placeholder={this.state.sampleQuery}
-                                           onChange={(e) => {this.searchWB(e.target.value, "person")}}
-                                    />
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    &nbsp;
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <FormControl componentClass="select" multiple
-                                                 style={{height: '200px'}}
-                                                 defaultValue=""
-                                                 onDoubleClick={(e) => {
-                                                     let fullData = e.target.label;
-                                                     let wbRx = / \( WBPerson([0-9]+) \)/;
-                                                     let arr = wbRx.exec(fullData);
-                                                     fullData = fullData.replace(wbRx, "");
-                                                     this.props.setPerson(fullData, arr[1]);
-                                                     this.handleClose();
-                                                 }}
-                                                 onClick={(e) => {
-                                                     let fullData = e.target.label;
-                                                     let wbRx = / \( WBPerson([0-9]+) \)/;
-                                                     let arr = wbRx.exec(fullData);
-                                                     fullData = fullData.replace(wbRx, "");
-                                                     this.setState({tmp_person_name: fullData, tmp_person_id: arr[1]})
-                                                 }}
-                                    >
-                                        {[...this.state.availableItems].map(item =>
-                                            <option>{item}</option>)}
-                                    </FormControl>
-                                </div>
-                            </div>
-                            {more}
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={() =>{
-                            if (this.state.tmp_person_id !== undefined && this.state.tmp_person_name !== undefined) {
-                                this.props.setPerson(this.state.tmp_person_name, this.state.tmp_person_id);
-                                this.handleClose();
-                            }
-                        }}>Select</Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
-        );
     }
+    return (
+        <div className="container-fluid">
+            <div className="row">
+                <div className="col-sm-8">
+                    WormBase User: <strong>{props.person.name}</strong> (WBPerson{props.person.personId})
+                    &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
+                </div>
+                <div className="col-sm-4" align="right">
+                    <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
+                        Request new WB Person
+                    </a>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-12">
+                </div>
+            </div>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select from Wormbase User list</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {data_fetch_err_alert}
+                    <div className="container-fluid">
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <input className="form-control"
+                                       placeholder={sampleQuery}
+                                       onChange={(e) => {searchWB(e.target.value, "person")}}
+                                />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                <FormControl componentClass="select" multiple
+                                             style={{height: '200px'}}
+                                             defaultValue=""
+                                             onDoubleClick={(e) => {
+                                                 let fullData = e.target.label;
+                                                 let wbRx = / \( WBPerson([0-9]+) \)/;
+                                                 let arr = wbRx.exec(fullData);
+                                                 fullData = fullData.replace(wbRx, "");
+                                                 props.setPerson(fullData, arr[1]);
+                                                 handleClose();
+                                             }}
+                                             onClick={(e) => {
+                                                 let fullData = e.target.label;
+                                                 let wbRx = / \( WBPerson([0-9]+) \)/;
+                                                 let arr = wbRx.exec(fullData);
+                                                 fullData = fullData.replace(wbRx, "");
+                                                 setTmp_person_name(fullData);
+                                                 setTmp_person_id(arr[1]);
+                                             }}
+                                >
+                                    {[...availableItems].map(item =>
+                                        <option>{item}</option>)}
+                                </FormControl>
+                            </div>
+                        </div>
+                        {more}
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() =>{
+                        if (tmp_person_id !== undefined && tmp_person_name !== undefined) {
+                            props.setPerson(tmp_person_name, tmp_person_id);
+                            handleClose();
+                        }
+                    }}>Select</Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    );
 }
 
 const mapStateToProps = state => ({
