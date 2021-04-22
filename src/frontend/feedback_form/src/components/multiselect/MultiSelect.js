@@ -18,6 +18,7 @@ const MultipleSelect = (props) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
     const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
+    const [selectedItems, setSelectedItems] = useState([]);
     const [availableItems, setAvailableItems] = useState(new Set());
     const [itemsIdForm, setItemsIdForm] = useState(undefined);
     const [tmpDeselectedItems, setTmpDeselectedItems] = useState(new Set());
@@ -64,9 +65,14 @@ const MultipleSelect = (props) => {
 
     const handleChangeIdentifiedListSelection = (e) => {
         let selectedOptions = new Set();
-        [...e.target].forEach(function(option){if (option.selected){ selectedOptions.add(option.value) }});
+        let selectedList = [];
+        [...e.target].forEach(function(option){if (option.selected){
+            selectedOptions.add(option.value);
+            selectedList.push(option.value);
+        }});
         setTmpDeselectedItems(selectedOptions);
         setItemsIdForm(e.target);
+        setSelectedItems(selectedList);
     }
 
     const handleFilterIdChange = (e) => {
@@ -159,7 +165,9 @@ const MultipleSelect = (props) => {
                                  onChange={handleChangeIdentifiedListSelection}
                                  defaultValue=""
                                  style={{height: '200px'}}>
-                        {[...selectedItemsToDisplay].sort().map(item => <option>{item}</option>)}
+                        {[...selectedItemsToDisplay].sort().map(item =>
+                            <option>{item}</option>
+                        )}
                     </FormControl>
                 </div>
                 <div className="col-sm-5">
@@ -186,6 +194,27 @@ const MultipleSelect = (props) => {
                                     <Glyphicon glyph="plus-sign"/>
                                     &nbsp; Add from WB {props.itemsNameSingular} list
                                 </Button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                {props.linkWB && selectedItems.length > 0 ?
+                                    <Button bsStyle="info" bsSize="xsmall" onClick={() => {
+                                        selectedItems.forEach((item) => {
+                                            let itemNameIdArr = item.split(' ( ');
+                                            if (itemNameIdArr.length > 1) {
+                                                window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
+                                            }
+                                        });
+                                    }}>
+                                        Show selected {props.itemsNamePlural} on WormBase
+                                    </Button>
+                                    : ""}
                             </div>
                         </div>
                         <div className="row">

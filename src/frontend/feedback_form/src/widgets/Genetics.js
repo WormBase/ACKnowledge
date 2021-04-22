@@ -55,6 +55,7 @@ const Genetics = (props) => {
     } else {
         allelesListComponent = (
             <MultipleSelect
+                linkWB={"https://wormbase.org/species/c_elegans/variation"}
                 itemsNameSingular={"allele"}
                 itemsNamePlural={"alleles"}
                 dataReaderFunction={getAlleles}
@@ -72,6 +73,7 @@ const Genetics = (props) => {
     } else {
         strainsListComponent = (
             <MultipleSelect
+                linkWB={"https://wormbase.org/species/c_elegans/strain"}
                 itemsNameSingular={"strain"}
                 itemsNamePlural={"strains"}
                 dataReaderFunction={getStrains}

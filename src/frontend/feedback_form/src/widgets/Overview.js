@@ -41,6 +41,7 @@ const Overview = (props) => {
     } else {
         geneListComponent = (
             <MultipleSelect
+                linkWB={"https://wormbase.org/species/c_elegans/gene"}
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
                 dataReaderFunction={getGenes}

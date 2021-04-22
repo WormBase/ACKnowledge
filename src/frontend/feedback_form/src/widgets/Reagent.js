@@ -67,6 +67,7 @@ const Reagent = (props) => {
                     </Panel.Heading>
                     <Panel.Body>
                         <MultipleSelect
+                            linkWB={"https://wormbase.org/species/c_elegans/transgene"}
                             itemsNameSingular={"transgene"}
                             itemsNamePlural={"transgenes"}
                             dataReaderFunction={getTransgenes}
