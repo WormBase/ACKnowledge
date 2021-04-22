@@ -5,17 +5,15 @@ import store from "./redux/store";
 import Main from "./main_layout/Main";
 import {BrowserRouter as Router} from "react-router-dom";
 
-class App extends Component {
+const App = () => {
 
-    render() {
-        return (
-            <Provider store={store}>
-                <Router>
-                    <Main/>
-                </Router>
-            </Provider>
-        );
-    }
+    return (
+        <Provider store={store}>
+            <Router>
+                <Main/>
+            </Router>
+        </Provider>
+    );
 }
 
 export default App;
