@@ -29,19 +29,6 @@ import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Expression extends React.Component {
 
-    getValidationState() {
-        if (this.state.active === true) {
-            const length = this.state.value.length;
-            if (length > 0) {
-                return 'success';
-            } else {
-                return 'error';
-            }
-        } else {
-            return '';
-        }
-    }
-
     render() {
         const tooltip = (
             <Tooltip id="tooltip">
@@ -162,21 +149,16 @@ class Expression extends React.Component {
                     </Panel.Heading>
                     <Panel.Body>
                         <Form horizontal>
-                            <FormGroup
-                                controlId="formBasicText"
-                                validationState={this.getValidationState()}>
-                                <Col componentClass={ControlLabel} sm={7}>
-                                    <FormControl
-                                        type="text"
-                                        value={this.props.additionalExpr}
-                                        placeholder="Add details here (e.g., qPCR, Proteomics)"
-                                        onChange={(event) => {
-                                            this.props.setAdditionalExpr(event.target.value);
-                                        }}
-                                    />
-                                    <FormControl.Feedback />
-                                </Col>
-                            </FormGroup>
+                            <Col componentClass={ControlLabel} sm={7}>
+                                <FormControl
+                                    type="text"
+                                    value={this.props.additionalExpr}
+                                    placeholder="Add details here (e.g., qPCR, Proteomics)"
+                                    onChange={(event) => {
+                                        this.props.setAdditionalExpr(event.target.value);
+                                    }}
+                                />
+                            </Col>
                         </Form>
                     </Panel.Body>
                 </Panel>

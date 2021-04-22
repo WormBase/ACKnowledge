@@ -113,7 +113,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 let rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.data.rnaseq, result.data.rnaseq);
                 dispatch(setRnaseq(rnaSeq.isChecked(), rnaSeq.details()));
                 let additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.data.additionalexpr, undefined);
-                dispatch(setAdditionalExpr(additionalExpr.isChecked(), additionalExpr.details()));
+                dispatch(setAdditionalExpr(additionalExpr.details()));
                 if (expression.prevSaved() && siteOfAction.prevSaved() && timeOfAction.prevSaved() &&
                     rnaSeq.prevSaved() && additionalExpr.prevSaved()) {
                     dispatch(setIsExpressionSavedToDB());

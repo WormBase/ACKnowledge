@@ -41,7 +41,7 @@ export const saveWidgetData = (dataToSave, widget) => {
                         dispatch(setIsCommentsSavedToDB());
                         break;
                 }
-                dispatch(showDataSaved(true, false));
+                dispatch(showDataSaved(true, widget === WIDGET.COMMENTS));
             })
             .catch((error) => {
                 dispatch(showDataSaved(false, false));
