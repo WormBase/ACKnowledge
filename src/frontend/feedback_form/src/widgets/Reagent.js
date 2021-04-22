@@ -26,17 +26,13 @@ import {
     getTransgenes, isReagentSavedToDB
 } from "../redux/selectors/reagentSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
-import {DataManager} from "../lib/DataManager";
+import {showDataSaved} from "../redux/actions/displayActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
+import {WIDGET} from "../constants";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Reagent extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         const transgenesTooltip = (
@@ -139,17 +135,10 @@ class Reagent extends React.Component {
                             transgenes_list: transformEntitiesIntoAfpString(this.props.transgenes, ""),
                             new_transgenes: JSON.stringify(this.props.otherTransgenes),
                             new_antibody: getCheckboxDBVal(this.props.newAntibodies.checked, this.props.newAntibodies.details),
-                            other_antibodies: JSON.stringify(this.props.otherAntibodies)
+                            other_antibodies: JSON.stringify(this.props.otherAntibodies),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsReagentSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false)
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.REAGENT);
                     }}>Save and continue
                     </Button>
                 </div>
@@ -163,9 +152,10 @@ const mapStateToProps = state => ({
     otherTransgenes: getOtherTransgenes(state).elements,
     newAntibodies: getNewAntibodies(state),
     otherAntibodies: getOtherAntibodies(state).elements,
-    isSavedToDB: isReagentSavedToDB(state)
+    isSavedToDB: isReagentSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
     addOtherTransgene, removeOtherTransgene, setOtherTransgenes, addOtherAntibody, removeOtherAntibody,
-    setOtherAntibodies, showDataSaved, setIsReagentSavedToDB, setLoading, unsetLoading})(Reagent);
+    setOtherAntibodies, showDataSaved, setIsReagentSavedToDB, saveWidgetData})(Reagent);

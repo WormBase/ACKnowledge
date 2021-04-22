@@ -8,17 +8,12 @@ import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelector
 import {setDisease, setIsDiseaseSavedToDB, toggleDisease} from "../redux/actions/diseaseActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
-import {DataManager} from "../lib/DataManager";
+import {showDataSaved} from "../redux/actions/displayActions";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
+import {WIDGET} from "../constants";
 
 class Disease extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
 
@@ -79,16 +74,9 @@ class Disease extends React.Component {
                     <Button bsStyle="success" onClick={() => {
                         let payload = {
                             disease: getCheckboxDBVal(this.props.disease.checked, this.props.disease.details),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsDiseaseSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.DISEASE);
                         }}>Save and continue
                     </Button>
                 </div>
@@ -99,7 +87,8 @@ class Disease extends React.Component {
 
 const mapStateToProps = state => ({
     disease: getDisease(state),
-    isSavedToDB: isDiseaseSavedToDB(state)
+    isSavedToDB: isDiseaseSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
-export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved, setIsDiseaseSavedToDB, setLoading, unsetLoading})(Disease);
+export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved, setIsDiseaseSavedToDB, saveWidgetData})(Disease);

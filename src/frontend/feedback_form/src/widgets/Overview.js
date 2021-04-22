@@ -17,15 +17,11 @@ import {
 import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {saveWidgetData} from "../redux/actions/widgetActions";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {WIDGET} from "../constants";
 
 class Overview extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         const geneTooltip = (
@@ -161,16 +157,9 @@ class Overview extends React.Component {
                             gene_list: transformEntitiesIntoAfpString(this.props.genes, "WBGene"),
                             gene_model_update: getCheckboxDBVal(this.props.geneModel.checked, this.props.geneModel.details),
                             species_list: transformEntitiesIntoAfpString(this.props.species, ""),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsOverviewSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.OVERVIEW);
                     }}>Save and continue
                     </Button>
                 </div>
@@ -183,8 +172,9 @@ const mapStateToProps = state => ({
     genes: getGenes(state).elements,
     geneModel: getGeneModel(state),
     species: getSpecies(state).elements,
-    isSavedToDB: isOverviewSavedToDB(state)
+    isSavedToDB: isOverviewSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel,
-    setIsOverviewSavedToDB, showDataSaved, setLoading, unsetLoading})(Overview);
+    setIsOverviewSavedToDB, saveWidgetData})(Overview);

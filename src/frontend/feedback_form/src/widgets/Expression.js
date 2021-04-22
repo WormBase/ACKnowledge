@@ -21,17 +21,13 @@ import {
     toggleExpression, toggleRnaseq,
     toggleSiteOfAction, toggleTimeOfAction
 } from "../redux/actions/expressionActions";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {showDataSaved} from "../redux/actions/displayActions";
 import {getCheckboxDBVal} from "../AFPValues";
-import {DataManager} from "../lib/DataManager";
+import {WIDGET} from "../constants";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Expression extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     getValidationState() {
         if (this.state.active === true) {
@@ -191,17 +187,10 @@ class Expression extends React.Component {
                             site_action: getCheckboxDBVal(this.props.siteOfAction.checked, this.props.siteOfAction.details),
                             time_action: getCheckboxDBVal(this.props.timeOfAction.checked, this.props.timeOfAction.details),
                             rnaseq: getCheckboxDBVal(this.props.rnaSeq.checked, this.props.rnaSeq.details),
-                            additional_expr: this.props.additionalExpr
+                            additional_expr: this.props.additionalExpr,
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsExpressionSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.EXPRESSION);
                     }}>Save and continue
                     </Button>
                 </div>
@@ -215,9 +204,10 @@ const mapStateToProps = state => ({
     timeOfAction: getTimeOfAction(state),
     rnaSeq: getRnaseq(state),
     additionalExpr: getAdditionalExpr(state),
-    isSavedToDB: isExpressionSavedToDB(state)
+    isSavedToDB: isExpressionSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {setExpression, toggleExpression, setSiteOfAction, toggleSiteOfAction,
     setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr, showDataSaved,
-    setIsExpressionSavedToDB, setLoading, unsetLoading})(Expression);
+    setIsExpressionSavedToDB, saveWidgetData})(Expression);

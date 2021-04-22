@@ -4,8 +4,7 @@ import InstructionsAlert from "../main_layout/InstructionsAlert";
 import {connect} from "react-redux";
 import {setComments, setIsCommentsSavedToDB} from "../redux/actions/commentsActions";
 import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
-import {setLoading, showDataSaved, showSectionsNotCompleted, unsetLoading} from "../redux/actions/displayActions";
-import {DataManager} from "../lib/DataManager";
+import {showDataSaved, showSectionsNotCompleted} from "../redux/actions/displayActions";
 import {isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
 import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
 import {isReagentSavedToDB} from "../redux/selectors/reagentSelectors";
@@ -14,15 +13,11 @@ import {isInteractionsSavedToDB} from "../redux/selectors/interactionsSelectors"
 import {isPhenotypesSavedToDB} from "../redux/selectors/phenotypesSelectors";
 import {isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
 import {getPerson} from "../redux/selectors/personSelectors";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {WIDGET} from "../constants";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Other extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         return (
@@ -137,21 +132,13 @@ class Other extends React.Component {
                         if (this.props.allOtherWidgetsSavedToDB) {
                             const payload = {
                                 comments: this.props.comments,
-                                person_id: "two" + this.props.person.personId
+                                person_id: "two" + this.props.person.personId,
+                                passwd: this.props.paperPasswd
                             };
-                            this.props.setLoading();
-                            this.state.dataManager.postWidgetData(payload)
-                                .then(() => {
-                                    this.props.setIsCommentsSavedToDB();
-                                    this.props.showDataSaved(true, true);
-                                })
-                                .catch((error) => {
-                                    this.props.showDataSaved(false, true);
-                                }).finally(() => this.props.unsetLoading());
+                            this.props.saveWidgetData(payload, WIDGET.COMMENTS);
                         } else {
-                            this.props.showSectionsNotCompleted()
+                            this.props.showSectionsNotCompleted();
                         }
-
                     }}>Finish and submit
                     </Button>
                 </div>
@@ -166,7 +153,8 @@ const mapStateToProps = state => ({
     person: getPerson(state),
     allOtherWidgetsSavedToDB: isOverviewSavedToDB(state) && isGeneticsSavedToDB(state) && isReagentSavedToDB(state) &&
         isExpressionSavedToDB(state) && isInteractionsSavedToDB(state) && isPhenotypesSavedToDB(state) &&
-        isDiseaseSavedToDB(state)
+        isDiseaseSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
-export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted, setIsCommentsSavedToDB, setLoading, unsetLoading})(Other);
+export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted, setIsCommentsSavedToDB, saveWidgetData})(Other);

@@ -16,17 +16,13 @@ import {
 } from "../redux/actions/interactionsActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
-import {DataManager} from "../lib/DataManager";
+import {showDataSaved} from "../redux/actions/displayActions";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
+import {WIDGET} from "../constants";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Interactions extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         const svmTooltip = (
@@ -114,17 +110,10 @@ class Interactions extends React.Component {
                         let payload = {
                             gene_int: getCheckboxDBVal(this.props.geneint.checked, this.props.geneint.details),
                             phys_int: getCheckboxDBVal(this.props.geneprod.checked, this.props.geneprod.details),
-                            gene_reg: getCheckboxDBVal(this.props.genereg.checked, this.props.genereg.details)
+                            gene_reg: getCheckboxDBVal(this.props.genereg.checked, this.props.genereg.details),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsInteractionsSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.INTERACTIONS);
                         }}>Save and continue
                     </Button>
                 </div>
@@ -137,9 +126,10 @@ const mapStateToProps = state => ({
     geneint: getGeneticInteractions(state),
     geneprod: getPhysicalInteractions(state),
     genereg: getRegulatoryInteractions(state),
-    isSavedToDB: isInteractionsSavedToDB(state)
+    isSavedToDB: isInteractionsSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {setGeneticInteractions, toggleGeneticInteractions, setPhysicalInteractions,
     togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions, showDataSaved,
-    setIsInteractionsSavedToDB, setLoading, unsetLoading})(Interactions);
+    setIsInteractionsSavedToDB, saveWidgetData})(Interactions);

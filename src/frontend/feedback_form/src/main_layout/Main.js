@@ -13,9 +13,9 @@ const Main = (props) => {
 
     useEffect(() => {
         let parameters = queryString.parse(props.location.search);
-        props.storePaperInfo(parameters.paper, parameters.password);
-        props.fetchPersonData(parameters.password, parameters.paper);
-        props.fetchPaperData(parameters.paper, parameters.password);
+        props.storePaperInfo(parameters.paper, parameters.passwd);
+        props.fetchPersonData(parameters.passwd, parameters.personid);
+        props.fetchPaperData(parameters.paper, parameters.passwd);
     }, []);
 
     useEffect(() => {

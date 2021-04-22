@@ -63,111 +63,111 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
         axios.get(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + paper_id + '&passwd=' + paper_passwd)
             .then(result => {
                 // Overview
-                let genes = getSetOfEntitiesFromWBAPIData(result.genestudied, result.genestudied, "WBGene");
-                setGenes(genes.entities(), genes.prevSaved());
-                let species = getSetOfEntitiesFromWBAPIData(result.species, result.species, undefined);
-                setSpecies(species.entities(), species.prevSaved());
-                let structCorrCB = getCheckbxOrSingleFieldFromWBAPIData(result.structcorr, undefined);
-                setGeneModel(structCorrCB.isChecked(), structCorrCB.details());
+                let genes = getSetOfEntitiesFromWBAPIData(result.data.genestudied, result.data.genestudied, "WBGene");
+                dispatch(setGenes(genes.entities(), genes.prevSaved()));
+                let species = getSetOfEntitiesFromWBAPIData(result.data.species, result.data.species, undefined);
+                dispatch(setSpecies(species.entities(), species.prevSaved()));
+                let structCorrCB = getCheckbxOrSingleFieldFromWBAPIData(result.data.structcorr, undefined);
+                dispatch(setGeneModel(structCorrCB.isChecked(), structCorrCB.details()));
                 if (genes.prevSaved() && species.prevSaved() && structCorrCB.prevSaved()) {
-                    setIsOverviewSavedToDB();
+                    dispatch(setIsOverviewSavedToDB());
                 }
 
                 // Genetics
-                let alleles = getSetOfEntitiesFromWBAPIData(result.variation, result.variation, "");
-                setAlleles(alleles.entities(), alleles.prevSaved());
-                let strains = getSetOfEntitiesFromWBAPIData(result.strain, result.strain, "");
-                setStrains(strains.entities(), strains.prevSaved());
-                let seqChange = getCheckbxOrSingleFieldFromWBAPIData(result.seqchange, result.seqchange);
-                setSequenceChange(seqChange.isChecked(), seqChange.details());
-                let otherAlleles = getTableValuesFromWBAPIData(result.othervariation, false);
-                setOtherAlleles(otherAlleles.entities(), otherAlleles.prevSaved());
-                let otherStrains = getTableValuesFromWBAPIData(result.otherstrain, false);
-                setOtherStrains(otherStrains.entities(), otherStrains.prevSaved());
+                let alleles = getSetOfEntitiesFromWBAPIData(result.data.variation, result.data.variation, "");
+                dispatch(setAlleles(alleles.entities(), alleles.prevSaved()));
+                let strains = getSetOfEntitiesFromWBAPIData(result.data.strain, result.data.strain, "");
+                dispatch(setStrains(strains.entities(), strains.prevSaved()));
+                let seqChange = getCheckbxOrSingleFieldFromWBAPIData(result.data.seqchange, result.data.seqchange);
+                dispatch(setSequenceChange(seqChange.isChecked(), seqChange.details()));
+                let otherAlleles = getTableValuesFromWBAPIData(result.data.othervariation, false);
+                dispatch(setOtherAlleles(otherAlleles.entities(), otherAlleles.prevSaved()));
+                let otherStrains = getTableValuesFromWBAPIData(result.data.otherstrain, false);
+                dispatch(setOtherStrains(otherStrains.entities(), otherStrains.prevSaved()));
                 if (alleles.prevSaved() && strains.prevSaved() && seqChange.prevSaved() && otherAlleles.prevSaved() &&
                     otherStrains.prevSaved()) {
-                    setIsGeneticsSavedToDB();
+                    dispatch(setIsGeneticsSavedToDB());
                 }
 
                 // Reagent
-                let transgenes = getSetOfEntitiesFromWBAPIData(result.transgene, result.transgene, "");
-                setTransgenes(transgenes.entities(), transgenes.prevSaved());
-                let otherTransgenes = getTableValuesFromWBAPIData(result.othertransgene, false);
-                setOtherTransgenes(otherTransgenes.entities(), otherTransgenes.prevSaved());
-                let otherAntibodies = getTableValuesFromWBAPIData(result.otherantibody, true);
-                setOtherAntibodies(otherAntibodies.entities(), otherAntibodies.prevSaved())
-                let newAntibodies = getCheckbxOrSingleFieldFromWBAPIData(result.antibody, undefined);
-                setNewAntibodies(newAntibodies.isChecked(), newAntibodies.details());
+                let transgenes = getSetOfEntitiesFromWBAPIData(result.data.transgene, result.data.transgene, "");
+                dispatch(setTransgenes(transgenes.entities(), transgenes.prevSaved()));
+                let otherTransgenes = getTableValuesFromWBAPIData(result.data.othertransgene, false);
+                dispatch(setOtherTransgenes(otherTransgenes.entities(), otherTransgenes.prevSaved()));
+                let otherAntibodies = getTableValuesFromWBAPIData(result.data.otherantibody, true);
+                dispatch(setOtherAntibodies(otherAntibodies.entities(), otherAntibodies.prevSaved()));
+                let newAntibodies = getCheckbxOrSingleFieldFromWBAPIData(result.data.antibody, undefined);
+                dispatch(setNewAntibodies(newAntibodies.isChecked(), newAntibodies.details()));
                 if (transgenes.prevSaved() && otherTransgenes.prevSaved() && otherAntibodies.prevSaved() &&
                     newAntibodies.prevSaved()) {
-                    setIsReagentSavedToDB();
+                    dispatch(setIsReagentSavedToDB());
                 }
 
                 // Expression
-                let expression = getCheckbxOrSingleFieldFromWBAPIData(result.otherexpr, result.otherexpr);
-                setExpression(expression.isChecked(), expression.details());
-                let siteOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.siteaction, undefined);
-                setSiteOfAction(siteOfAction.isChecked(), siteOfAction.details());
-                let timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.timeaction, undefined);
-                setTimeOfAction(timeOfAction.isChecked(), timeOfAction.details());
-                let rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.rnaseq, result.rnaseq);
-                setRnaseq(rnaSeq.isChecked(), rnaSeq.details());
-                let additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.additionalexpr, undefined);
-                setAdditionalExpr(additionalExpr.isChecked(), additionalExpr.details());
+                let expression = getCheckbxOrSingleFieldFromWBAPIData(result.data.otherexpr, result.data.otherexpr);
+                dispatch(setExpression(expression.isChecked(), expression.details()));
+                let siteOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.data.siteaction, undefined);
+                dispatch(setSiteOfAction(siteOfAction.isChecked(), siteOfAction.details()));
+                let timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.data.timeaction, undefined);
+                dispatch(setTimeOfAction(timeOfAction.isChecked(), timeOfAction.details()));
+                let rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.data.rnaseq, result.data.rnaseq);
+                dispatch(setRnaseq(rnaSeq.isChecked(), rnaSeq.details()));
+                let additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.data.additionalexpr, undefined);
+                dispatch(setAdditionalExpr(additionalExpr.isChecked(), additionalExpr.details()));
                 if (expression.prevSaved() && siteOfAction.prevSaved() && timeOfAction.prevSaved() &&
                     rnaSeq.prevSaved() && additionalExpr.prevSaved()) {
-                    setIsExpressionSavedToDB();
+                    dispatch(setIsExpressionSavedToDB());
                 }
 
                 // Interactions
-                let geneint = getCheckbxOrSingleFieldFromWBAPIData(result.geneint, result.geneint);
-                setGeneticInteractions(geneint.isChecked(), geneint.details())
-                let geneprod = getCheckbxOrSingleFieldFromWBAPIData(result.geneprod, result.geneprod);
-                setPhysicalInteractions(geneprod.isChecked(), geneprod.details())
-                let genereg = getCheckbxOrSingleFieldFromWBAPIData(result.genereg, result.genereg);
-                setRegulatoryInteractions(genereg.isChecked(), genereg.details());
+                let geneint = getCheckbxOrSingleFieldFromWBAPIData(result.data.geneint, result.data.geneint);
+                dispatch(setGeneticInteractions(geneint.isChecked(), geneint.details()));
+                let geneprod = getCheckbxOrSingleFieldFromWBAPIData(result.data.geneprod, result.data.geneprod);
+                dispatch(setPhysicalInteractions(geneprod.isChecked(), geneprod.details()));
+                let genereg = getCheckbxOrSingleFieldFromWBAPIData(result.data.genereg, result.data.genereg);
+                dispatch(setRegulatoryInteractions(genereg.isChecked(), genereg.details()));
                 if (geneint.prevSaved() && geneprod.prevSaved() && genereg.prevSaved()) {
-                    setIsInteractionsSavedToDB();
+                    dispatch(setIsInteractionsSavedToDB());
                 }
 
                 // Phenotype
-                let newmutant = getCheckbxOrSingleFieldFromWBAPIData(result.newmutant, result.newmutant);
-                setAllelePhenotype(newmutant.isChecked(), newmutant.details());
-                let rnai = getCheckbxOrSingleFieldFromWBAPIData(result.rnai, result.rnai);
-                setRnaiPhenotype(rnai.isChecked(), rnai.details());
-                let overexpr = getCheckbxOrSingleFieldFromWBAPIData(result.overexpr, result.overexpr);
-                setOverexprPhenotype(overexpr.isChecked(), overexpr.details());
-                let chemphen = getCheckbxOrSingleFieldFromWBAPIData(result.chemphen, undefined);
-                setChemicalPhenotype(chemphen.isChecked(), chemphen.details());
-                let envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.envpheno, undefined);
-                setEnvironmentalPhenotype(envpheno.isChecked(), envpheno.details());
-                let catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.catalyticact, undefined);
-                setEnzymaticActivity(catalyticact.isChecked(), catalyticact.details());
-                let othergenefunc = getCheckbxOrSingleFieldFromWBAPIData(result.othergenefunc, undefined);
-                setOthergenefunc(othergenefunc.isChecked(), othergenefunc.details());
+                let newmutant = getCheckbxOrSingleFieldFromWBAPIData(result.data.newmutant, result.data.newmutant);
+                dispatch(setAllelePhenotype(newmutant.isChecked(), newmutant.details()));
+                let rnai = getCheckbxOrSingleFieldFromWBAPIData(result.data.rnai, result.data.rnai);
+                dispatch(setRnaiPhenotype(rnai.isChecked(), rnai.details()));
+                let overexpr = getCheckbxOrSingleFieldFromWBAPIData(result.data.overexpr, result.data.overexpr);
+                dispatch(setOverexprPhenotype(overexpr.isChecked(), overexpr.details()));
+                let chemphen = getCheckbxOrSingleFieldFromWBAPIData(result.data.chemphen, undefined);
+                dispatch(setChemicalPhenotype(chemphen.isChecked(), chemphen.details()));
+                let envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.data.envpheno, undefined);
+                dispatch(setEnvironmentalPhenotype(envpheno.isChecked(), envpheno.details()));
+                let catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.data.catalyticact, undefined);
+                dispatch(setEnzymaticActivity(catalyticact.isChecked(), catalyticact.details()));
+                let othergenefunc = getCheckbxOrSingleFieldFromWBAPIData(result.data.othergenefunc, undefined);
+                dispatch(setOthergenefunc(othergenefunc.isChecked(), othergenefunc.details()));
                 if (newmutant.prevSaved() && rnai.prevSaved() && overexpr.prevSaved() && chemphen.prevSaved() &&
                     envpheno.prevSaved() && catalyticact.prevSaved() && othergenefunc.prevSaved()) {
-                    setIsPhenotypesSavedToDB();
+                    dispatch(setIsPhenotypesSavedToDB());
                 }
 
                 // Disease
-                let disease = getCheckbxOrSingleFieldFromWBAPIData(result.humdis, undefined);
-                setDisease(disease.isChecked(), disease.details());
+                let disease = getCheckbxOrSingleFieldFromWBAPIData(result.data.humdis, undefined);
+                dispatch(setDisease(disease.isChecked(), disease.details()));
                 if (disease.prevSaved()) {
-                    setIsDiseaseSavedToDB();
+                    dispatch(setIsDiseaseSavedToDB());
                 }
 
                 // Comments
-                let comments = getCheckbxOrSingleFieldFromWBAPIData(result.comment, undefined);
-                setComments(comments.details());
+                let comments = getCheckbxOrSingleFieldFromWBAPIData(result.data.comment, undefined);
+                dispatch(setComments(comments.details()));
                 if (comments.prevSaved()) {
-                    setIsCommentsSavedToDB();
+                    dispatch(setIsCommentsSavedToDB());
                 }
                 dispatch(fetchPaperDataSuccess());
             })
         .catch((error) => {
             console.log(error);
-            fetchPaperDataError(error);
+            dispatch(fetchPaperDataError(error));
         });
     }
 }

@@ -12,11 +12,11 @@ export const fetchPersonData = (passwd, personId) => {
         dispatch(fetchPersonDataRequest());
         axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT, {person_id: personId, passwd: passwd})
             .then(result => {
-                setPerson(result.fullname, result.person_id);
-                fetchPersonDataSuccess();
+                dispatch(setPerson(result.data.fullname, result.data.person_id));
+                dispatch(fetchPersonDataSuccess());
             })
             .catch(error => {
-                fetchPersonDataError(error);
+                dispatch(fetchPersonDataError(error));
             });
     }
 }

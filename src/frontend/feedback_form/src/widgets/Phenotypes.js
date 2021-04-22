@@ -24,17 +24,12 @@ import {
 } from "../redux/actions/phenotypesActions";
 import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
-import {DataManager} from "../lib/DataManager";
+import {showDataSaved} from "../redux/actions/displayActions";
+import {WIDGET} from "../constants";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 class Phenotypes extends React.Component {
-
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         const svmTooltip = (
@@ -172,17 +167,10 @@ class Phenotypes extends React.Component {
                             chemical: getCheckboxDBVal(this.props.chemPheno.checked),
                             env: getCheckboxDBVal(this.props.envPheno.checked),
                             protein: getCheckboxDBVal(this.props.enzymaticAct.checked, this.props.enzymaticAct.details),
-                            othergenefunc: getCheckboxDBVal(this.props.othergenefunc.checked, this.props.othergenefunc.details)
+                            othergenefunc: getCheckboxDBVal(this.props.othergenefunc.checked, this.props.othergenefunc.details),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsPhenotypesSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.PHENOTYPES);
                     }}>Save and continue
                     </Button>
                 </div>
@@ -199,11 +187,12 @@ const mapStateToProps = state => ({
     envPheno: getEnvironmentalPhenotype(state),
     enzymaticAct: getEnzymaticActivity(state),
     othergenefunc: getOthergenefunc(state),
-    isSavedToDB: isPhenotypesSavedToDB(state)
+    isSavedToDB: isPhenotypesSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {setAllelePhenotype,
     toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
     setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
     setEnzymaticActivity, toggleEnzymaticActivity, setOthergenefunc, toggleOthergenefunc, showDataSaved,
-    setIsPhenotypesSavedToDB, setLoading, unsetLoading})(Phenotypes);
+    setIsPhenotypesSavedToDB, saveWidgetData})(Phenotypes);

@@ -23,10 +23,12 @@ import {
     getStrains, isGeneticsSavedToDB
 } from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {DataManager} from "../lib/DataManager";
-import {setLoading, showDataSaved, unsetLoading} from "../redux/actions/displayActions";
+import {showDataSaved} from "../redux/actions/displayActions";
 import * as PropTypes from "prop-types";
 import FormControl from "react-bootstrap/lib/FormControl";
+import {WIDGET} from "../constants";
+import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 
 function FormLabel(props) {
     return null;
@@ -35,12 +37,6 @@ function FormLabel(props) {
 FormLabel.propTypes = {children: PropTypes.node};
 
 class Genetics extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            dataManager: new DataManager()
-        };
-    }
 
     render() {
         const allelesTooltip = (
@@ -195,17 +191,10 @@ class Genetics extends React.Component {
                             allele_seq_change: getCheckboxDBVal(this.props.sequenceChange.checked),
                             other_alleles: JSON.stringify(this.props.otherAlleles),
                             strains_list: transformEntitiesIntoAfpString(this.props.strains, ""),
-                            other_strains: JSON.stringify(this.props.otherStrains)
+                            other_strains: JSON.stringify(this.props.otherStrains),
+                            passwd: this.props.paperPasswd
                         };
-                        this.props.setLoading();
-                        this.state.dataManager.postWidgetData(payload)
-                            .then(() => {
-                                this.props.setIsGeneticsSavedToDB();
-                                this.props.showDataSaved(true, false);
-                            })
-                            .catch((error) => {
-                                this.props.showDataSaved(false, false);
-                            }).finally(() => this.props.unsetLoading());
+                        this.props.saveWidgetData(payload, WIDGET.GENETICS);
                     }}>Save and continue
                     </Button>
                 </div>
@@ -221,9 +210,10 @@ const mapStateToProps = state => ({
     otherAlleles: getOtherAlleles(state).elements,
     strains: getStrains(state).elements,
     otherStrains: getOtherStrains(state).elements,
-    isSavedToDB: isGeneticsSavedToDB(state)
+    isSavedToDB: isGeneticsSavedToDB(state),
+    paperPasswd: getPaperPassword(state)
 });
 
 export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,
     toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles,
-    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, setLoading, unsetLoading})(Genetics);
+    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, saveWidgetData})(Genetics);
