@@ -31,7 +31,7 @@ const Main = (props) => {
     return (
         <div>
             {developmentBanner}
-            <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
+            <div className="container">
                 <div className="row">
                     <div className="col-sm-12">
                         <MenuAndWidgets/>
