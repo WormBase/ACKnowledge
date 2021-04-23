@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import React from "react";
+import axios from "axios";
 import {
     Alert,
     Button,
@@ -38,7 +39,6 @@ const MultipleSelect = (props) => {
                props.addItemFunction(item);
             });
         }
-        setShowModal(false);
     }
 
     const handleRemSelectedFromList = () => {
@@ -99,23 +99,18 @@ const MultipleSelect = (props) => {
         }
     }
 
-    const searchWB = (searchString, searchType) => {
+    const searchWB = async (searchString, searchType) => {
         if (searchString !== "") {
-            fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' + searchType + '&userValue=' + searchString)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        setShow_fetch_data_error(true);
-                    }
-                }).then(data => {
-                if (data === undefined) {
-                    setShow_fetch_data_error(true);
-                } else {
-                    let remAddInfo = searchType === "species";
-                    changeAvailableItems(data, remAddInfo);
+            let searchEntities = searchString.split(",");
+            let results = new Array(searchEntities.length);
+            await Promise.all(searchEntities.map(async (e, idx) => {
+                if (e !== '') {
+                    results[idx] = await axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' +
+                        searchType + '&userValue=' + e.trim());
                 }
-            }).catch(() => setShow_fetch_data_error(true));
+            }));
+            let remAddInfo = searchType === "species";
+            changeAvailableItems(results.map(res => res.data).join("\n"), remAddInfo);
         } else {
             changeAvailableItems("");
         }
@@ -146,126 +141,37 @@ const MultipleSelect = (props) => {
         }
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-sm-12">
-                    &nbsp;
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-12">
-                    <label>List of {props.itemsNamePlural} identified in the paper</label> <OverlayTrigger placement="top"
-                                                                                                                overlay={tpcTooltip}>
-                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-7">
-                    <FormControl componentClass="select" multiple
-                                 onChange={handleChangeIdentifiedListSelection}
-                                 defaultValue=""
-                                 style={{height: '200px'}}>
-                        {[...selectedItemsToDisplay].sort().map(item =>
-                            <option>{item}</option>
-                        )}
-                    </FormControl>
-                </div>
-                <div className="col-sm-5">
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-md-12">
-                                <Button
-                                    bsStyle="info"
-                                    bsClass="btn btn-info wrap-button"
-                                    onClick={handleRemSelectedFromList}>
-                                    <Glyphicon glyph="minus-sign"/>
-                                    &nbsp; Remove selected
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                &nbsp;
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setShowModal(true)}>
-                                    <Glyphicon glyph="plus-sign"/>
-                                    &nbsp; Add from WB {props.itemsNameSingular} list
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                &nbsp;
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                {props.linkWB && selectedItems.length > 0 ?
-                                    <Button bsStyle="info" bsSize="xsmall" onClick={() => {
-                                        selectedItems.forEach((item) => {
-                                            let itemNameIdArr = item.split(' ( ');
-                                            if (itemNameIdArr.length > 1) {
-                                                window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
-                                            }
-                                        });
-                                    }}>
-                                        Show selected {props.itemsNamePlural} on WormBase
-                                    </Button>
-                                    : ""}
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                &nbsp;
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-12">
-                    &nbsp;
-                </div>
-            </div>
+        <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
             <div className="row">
                 <div className="col-sm-6">
-                    <input className="form-control" onChange={handleFilterIdChange}
-                           placeholder={"Start typing to filter " + props.itemsNamePlural + " list"}/>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-12">
-                    <Button bsStyle="info" className="pull-right" bsSize="xsmall" onClick={() => {
-                        const element = document.createElement("a");
-                        const file = new Blob([[... selectedItemsToDisplay].sort().join("\n")],
-                            {type: 'text/plain'});
-                        element.href = URL.createObjectURL(file);
-                        element.download = props.itemsNamePlural + ".txt";
-                        document.body.appendChild(element); // Required for this to work in FireFox
-                        element.click();
-                    }}>Export .txt</Button>
-                </div>
-            </div>
-            <Modal show={showModal} onHide={() => {
-                setShowModal(false);
-                setTmpSelectedItems(new Set());
-                setShow_fetch_data_error(false);
-            }}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Select from Wormbase {props.itemsNameSingular} list</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {data_fetch_err_alert}
-                    <div className="container-fluid">
+                    <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
                         <div className="row">
                             <div className="col-sm-12">
-                                <input className="form-control"
-                                       placeholder={props.sampleQuery}
-                                       onChange={(e) => {searchWB(e.target.value, props["searchType"])}}
-                                />
+                                <label>{props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)} identified in the paper</label> <OverlayTrigger placement="top"
+                                                                                                                       overlay={tpcTooltip}>
+                                <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-8">
+                                <FormControl type="text" bsSize="sm" onChange={handleFilterIdChange}
+                                       placeholder={"Start typing to filter " + props.itemsNamePlural + " list"}/>
+                            </div>
+                            <div className="col-sm-4">
+                                <Button className="pull-right" bsSize="small" onClick={() => {
+                                    const element = document.createElement("a");
+                                    const file = new Blob([[... selectedItemsToDisplay].sort().join("\n")],
+                                        {type: 'text/plain'});
+                                    element.href = URL.createObjectURL(file);
+                                    element.download = props.itemsNamePlural + ".txt";
+                                    document.body.appendChild(element); // Required for this to work in FireFox
+                                    element.click();
+                                }}>Export .txt</Button>
                             </div>
                         </div>
                         <div className="row">
@@ -276,22 +182,126 @@ const MultipleSelect = (props) => {
                         <div className="row">
                             <div className="col-sm-12">
                                 <FormControl componentClass="select" multiple
-                                             style={{height: '200px'}}
+                                             onChange={handleChangeIdentifiedListSelection}
                                              defaultValue=""
-                                             onChange={handleChangeWBListSelection}
-                                             onDoubleClick={handleAddSelectedToList}>
-                                    {[...availableItems].map(item =>
-                                        <option>{item}</option>)}
+                                             style={{height: '200px'}}>
+                                    {[...selectedItemsToDisplay].sort().map(item =>
+                                        <option>{item}</option>
+                                    )}
                                 </FormControl>
                             </div>
                         </div>
-                        {more}
+                        <div className="row">
+                            <div className="col-sm-12">
+                                &nbsp;
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-sm-6">
+                                <Button
+                                    bsStyle="info"
+                                    bsSize="small"
+                                    onClick={handleRemSelectedFromList}>
+                                    <Glyphicon glyph="minus-sign"/>
+                                    &nbsp; Remove selected
+                                </Button>
+                            </div>
+                            <div className="col-sm-6">
+                                {props.linkWB && selectedItems.length > 0 ?
+                                    <Button bsSize="small" onClick={() => {
+                                        selectedItems.forEach((item) => {
+                                            let itemNameIdArr = item.split(' ( ');
+                                            if (itemNameIdArr.length > 1) {
+                                                window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
+                                            }
+                                        });
+                                    }}>
+                                        Show selected on WB
+                                    </Button>
+                                    : ""}
+                            </div>
+                        </div>
                     </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button bsStyle="success" onClick={handleAddSelectedToList}>Select</Button>
-                </Modal.Footer>
-            </Modal>
+                </div>
+                <div className="col-sm-6">
+                    <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                        <div className="row">
+                            <div className="col-sm-12">
+                                {!showModal
+                                    ?
+                                    <div>
+                                        <br/><br/><br/><br/><br/><br/><br/>
+                                        <center><Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setShowModal(true)}>
+                                            <Glyphicon glyph="plus-sign"/>
+                                            &nbsp; Add from WB {props.itemsNameSingular} list
+                                        </Button></center>
+                                    </div>
+                                    :
+                                    <div>
+                                        <label>Add from Wormbase {props.itemsNameSingular} list</label>
+                                        {data_fetch_err_alert}
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
+                                            <div className="row">
+                                                <div className="col-sm-12">
+                                                    <FormControl type="text" bsSize="sm"
+                                                           placeholder={"Insert one or more comma separated entities"}
+                                                           onChange={(e) => {searchWB(e.target.value, props["searchType"])}}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-sm-12">
+                                                    &nbsp;
+                                                </div>
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-sm-12">
+                                                    <FormControl componentClass="select" multiple
+                                                                 style={{height: '200px'}}
+                                                                 defaultValue=""
+                                                                 onChange={handleChangeWBListSelection}
+                                                                 onDoubleClick={handleAddSelectedToList}>
+                                                        {[...availableItems].map(item =>
+                                                            <option>{item}</option>)}
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        <Button bsStyle="info" bsSize="small" onClick={() => {
+                                            handleAddSelectedToList();
+                                            setTmpSelectedItems(new Set());
+                                            setShow_fetch_data_error(false);
+                                        }}><Glyphicon glyph="plus-sign"/>
+                                            &nbsp; Add selected</Button>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                &nbsp;
+                                            </div>
+                                        </div>
+                                        {more}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-12">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
