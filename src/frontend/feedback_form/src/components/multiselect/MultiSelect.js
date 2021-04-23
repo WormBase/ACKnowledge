@@ -7,7 +7,6 @@ import {
     FormControl,
     Glyphicon,
     Image,
-    Modal,
     OverlayTrigger,
     Tooltip
 } from "react-bootstrap";
