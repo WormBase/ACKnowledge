@@ -63,6 +63,7 @@ const Genetics = (props) => {
                 remItemFunction={(allele) => props.removeAllele(allele)}
                 searchType={"variation"}
                 sampleQuery={"e.g. e1000"}
+                listIDsAPI={'http://rest.wormbase.org/rest/field/variation/'}
             />);
     }
     let strainsListComponent;
@@ -81,6 +82,7 @@ const Genetics = (props) => {
                 remItemFunction={(strain) => props.removeStrain(strain)}
                 searchType={"strain"}
                 sampleQuery={"e.g. CB4856"}
+                listIDsAPI={'http://rest.wormbase.org/rest/field/strain/'}
             />);
     }
     return (

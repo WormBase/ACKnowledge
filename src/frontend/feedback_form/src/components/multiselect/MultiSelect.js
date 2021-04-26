@@ -240,10 +240,12 @@ const MultipleSelect = (props) => {
                                             &nbsp; Add from WB {props.itemsNameSingular} list &nbsp;
                                         </Button>
                                             <br/><br/>
-                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setUploadIDs(true)}>
-                                            <Glyphicon glyph="upload"/>
-                                            &nbsp; Upload a list of WB IDs
-                                        </Button>
+                                            {!(props.hideListIDs !== undefined && props.hideListIDs === true) ?
+                                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setUploadIDs(true)}>
+                                                    <Glyphicon glyph="upload"/>
+                                                    &nbsp; Upload a list of WB IDs
+                                                </Button>
+                                                : ""}
                                         </center>
                                     </div>
                                     : ""}
@@ -319,7 +321,7 @@ const MultipleSelect = (props) => {
                                             geneIds = uploadedIDs.split(",");
                                         }
                                         geneIds.forEach(async (geneId) => {
-                                            let data = await axios.get('http://rest.wormbase.org/rest/field/gene/' + geneId.trim() + '/name');
+                                            let data = await axios.get(props.listIDsAPI + geneId.trim() + '/name');
                                             if (data.data) {
                                                 props.addItemFunction(data.data.name.data.label + " ( " + geneId + " )");
                                             }
