@@ -11,11 +11,15 @@ import {
     Tooltip
 } from "react-bootstrap";
 import {connect} from "react-redux";
+import FormGroup from "react-bootstrap/lib/FormGroup";
+import ControlLabel from "react-bootstrap/lib/ControlLabel";
 
 const MultipleSelect = (props) => {
 
     let selected = new Set(props.items);
-    const [showModal, setShowModal] = useState(false);
+    const [showAddFromWB, setAddFromWB] = useState(false);
+    const [showUploadIDs, setUploadIDs] = useState(false);
+    const [uploadedIDs, setUploadedIDs] = useState([]);
     const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
     const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -227,18 +231,26 @@ const MultipleSelect = (props) => {
                     <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
                         <div className="row">
                             <div className="col-sm-12">
-                                {!showModal
+                                {!showAddFromWB && !showUploadIDs
                                     ?
                                     <div>
                                         <br/><br/><br/><br/><br/><br/><br/>
-                                        <center><Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setShowModal(true)}>
+                                        <center><Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setAddFromWB(true)}>
                                             <Glyphicon glyph="plus-sign"/>
-                                            &nbsp; Add from WB {props.itemsNameSingular} list
-                                        </Button></center>
+                                            &nbsp; Add from WB {props.itemsNameSingular} list &nbsp;
+                                        </Button>
+                                            <br/><br/>
+                                        <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setUploadIDs(true)}>
+                                            <Glyphicon glyph="upload"/>
+                                            &nbsp; Upload a list of WB IDs
+                                        </Button>
+                                        </center>
                                     </div>
-                                    :
+                                    : ""}
+                                {showAddFromWB ?
                                     <div>
                                         <label>Add from Wormbase {props.itemsNameSingular} list</label>
+                                        <Button bsSize="xsmall" className="pull-right" bsStyle="info" onClick={() => setAddFromWB(false)}>Close form</Button>
                                         {data_fetch_err_alert}
                                         <div className="row">
                                             <div className="col-sm-12">
@@ -249,7 +261,7 @@ const MultipleSelect = (props) => {
                                             <div className="row">
                                                 <div className="col-sm-12">
                                                     <FormControl type="text" bsSize="sm"
-                                                           placeholder={"Insert one or more comma separated entities"}
+                                                           placeholder={"Autocomplete - one or more comma separated entities"}
                                                            onChange={(e) => {searchWB(e.target.value, props["searchType"])}}
                                                     />
                                                 </div>
@@ -290,7 +302,32 @@ const MultipleSelect = (props) => {
                                         </div>
                                         {more}
                                     </div>
-                                }
+                                    : ""}
+                                {showUploadIDs ?
+                                <div>
+                                    <FormGroup controlId="formControlsTextarea">
+                                        <ControlLabel>Insert a list of WB {props.itemsNamePlural} IDs</ControlLabel> <Button bsSize="xsmall" bsStyle="info" className="pull-right" onClick={()=>setUploadIDs(false)}>Close Form</Button>
+                                        <br/><br/>
+                                        <FormControl componentClass="textarea" rows="12" placeholder="IDs separated by newline or comma"
+                                                     onChange={(e) => {
+                                                         setUploadedIDs(e.target.value);
+                                                     }}/>
+                                    </FormGroup>
+                                    <Button bsStyle="info" bsSize="small" onClick={() => {
+                                        let geneIds = uploadedIDs.split("\n");
+                                        if (geneIds.length === 1) {
+                                            geneIds = uploadedIDs.split(",");
+                                        }
+                                        geneIds.forEach(async (geneId) => {
+                                            let data = await axios.get('http://rest.wormbase.org/rest/field/gene/' + geneId.trim() + '/name');
+                                            if (data.data) {
+                                                props.addItemFunction(data.data.name.data.label + " ( " + geneId + " )");
+                                            }
+                                        });
+                                    }}><Glyphicon glyph="plus-sign"/>&nbsp; Add to list</Button>
+                                </div>
+                                : ""}
+
                             </div>
                         </div>
                         <div className="row">
