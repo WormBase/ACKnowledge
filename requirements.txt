@@ -6,4 +6,4 @@ requests
 numpy
 dataclasses
 pyyaml
-wbtools==1.0.21
+wbtools==1.0.23
