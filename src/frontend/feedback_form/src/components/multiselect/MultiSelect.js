@@ -1,8 +1,7 @@
 import {useEffect, useState} from "react";
 import React from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
 import {
-    Alert,
     Button,
     FormControl,
     Glyphicon,
@@ -11,38 +10,25 @@ import {
     Tooltip
 } from "react-bootstrap";
 import {connect} from "react-redux";
-import FormGroup from "react-bootstrap/lib/FormGroup";
-import ControlLabel from "react-bootstrap/lib/ControlLabel";
+import AutoComplete from "./AutoComplete";
+import BulkIDUpload from "./BulkIDUpload";
 
 const MultipleSelect = (props) => {
 
     let selected = new Set(props.items);
     const [showAddFromWB, setAddFromWB] = useState(false);
     const [showUploadIDs, setUploadIDs] = useState(false);
-    const [uploadedIDs, setUploadedIDs] = useState([]);
     const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
     const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [availableItems, setAvailableItems] = useState(new Set());
     const [itemsIdForm, setItemsIdForm] = useState(undefined);
     const [tmpDeselectedItems, setTmpDeselectedItems] = useState(new Set());
-    const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
-    const [show_fetch_data_error, setShow_fetch_data_error] = useState(false);
-    const [showMore, setShowMore] = useState(false);
 
     useEffect(() => {
         setSelectedItemsToDisplay(new Set(props.items));
         setSelectedItemsAll(new Set(props.items));
 
     }, [props.items]);
-
-    const handleAddSelectedToList = () => {
-        if (tmpSelectedItems.size > 0) {
-            [...tmpSelectedItems].forEach((item) => {
-               props.addItemFunction(item);
-            });
-        }
-    }
 
     const handleRemSelectedFromList = () => {
         if (itemsIdForm !== undefined) {
@@ -58,12 +44,6 @@ const MultipleSelect = (props) => {
                props.remItemFunction(item);
             });
         }
-    }
-
-    const handleChangeWBListSelection = (e) => {
-        let selectedOptions = new Set();
-        [...e.target].forEach(function(option){if (option.selected){ selectedOptions.add(option.value) }});
-        setTmpSelectedItems(selectedOptions);
     }
 
     const handleChangeIdentifiedListSelection = (e) => {
@@ -82,66 +62,11 @@ const MultipleSelect = (props) => {
         setSelectedItemsToDisplay(new Set([...selectedItemsAll].filter(item => item.startsWith(e.target.value))));
     }
 
-    const changeAvailableItems = (wbItems, removeAddInfo = false) => {
-        const addInfoRegex = / \( ([^ ]+) \)[ ]+$/;
-        if (wbItems !== undefined && wbItems !== "\n") {
-            let newAvailItems = new Set(wbItems.split("\n").filter((item) => item !== ''));
-            if (removeAddInfo) {
-                newAvailItems = new Set([...newAvailItems].map((elem) => elem.replace(addInfoRegex, "")));
-            }
-            if (newAvailItems.has("more ...")) {
-                newAvailItems.delete("more ...");
-                setShowMore(true);
-            } else {
-                setShowMore(false);
-            }
-            setAvailableItems(newAvailItems)
-        } else {
-            setAvailableItems(new Set());
-            setShowMore(false);
-        }
-    }
-
-    const searchWB = async (searchString, searchType) => {
-        if (searchString !== "") {
-            let searchEntities = searchString.split(",");
-            let results = new Array(searchEntities.length);
-            await Promise.all(searchEntities.map(async (e, idx) => {
-                if (e !== '') {
-                    results[idx] = await axios.get(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' +
-                        searchType + '&userValue=' + e.trim());
-                }
-            }));
-            let remAddInfo = searchType === "species";
-            changeAvailableItems(results.map(res => res.data).join("\n"), remAddInfo);
-        } else {
-            changeAvailableItems("");
-        }
-    }
-
     const tpcTooltip = (
         <Tooltip id="tooltip">
             This field is prepopulated by Textpresso Central.
         </Tooltip>
     );
-    let data_fetch_err_alert = false;
-    if (show_fetch_data_error) {
-        data_fetch_err_alert = <Alert bsStyle="danger">
-            <Glyphicon glyph="warning-sign"/> <strong>Error</strong><br/>
-            Can't download WormBase data. Try again later or contact <a href="mailto:help@wormbase.org">
-            Wormbase Helpdesk</a>.
-        </Alert>;
-    }
-
-    let more = false;
-    if (showMore) {
-        more =
-            <div className="row">
-                <div className="col-sm-12">
-                    Some results matching the query have been omitted. Try a different query to narrow down the results.
-                </div>
-            </div>
-        }
 
     return (
         <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
@@ -250,84 +175,16 @@ const MultipleSelect = (props) => {
                                     </div>
                                     : ""}
                                 {showAddFromWB ?
-                                    <div>
-                                        <label>Add from Wormbase {props.itemsNameSingular} list</label>
-                                        <Button bsSize="xsmall" className="pull-right" bsStyle="info" onClick={() => setAddFromWB(false)}>Close form</Button>
-                                        {data_fetch_err_alert}
-                                        <div className="row">
-                                            <div className="col-sm-12">
-                                                &nbsp;
-                                            </div>
-                                        </div>
-                                        <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    <FormControl type="text" bsSize="sm"
-                                                           placeholder={"Autocomplete - one or more comma separated entities"}
-                                                           onChange={(e) => {searchWB(e.target.value, props["searchType"])}}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    &nbsp;
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    <FormControl componentClass="select" multiple
-                                                                 style={{height: '200px'}}
-                                                                 defaultValue=""
-                                                                 onChange={handleChangeWBListSelection}
-                                                                 onDoubleClick={handleAddSelectedToList}>
-                                                        {[...availableItems].map(item =>
-                                                            <option>{item}</option>)}
-                                                    </FormControl>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row">
-                                            <div className="col-sm-12">
-                                                &nbsp;
-                                            </div>
-                                        </div>
-                                        <Button bsStyle="info" bsSize="small" onClick={() => {
-                                            handleAddSelectedToList();
-                                            setTmpSelectedItems(new Set());
-                                            setShow_fetch_data_error(false);
-                                        }}><Glyphicon glyph="plus-sign"/>
-                                            &nbsp; Add selected</Button>
-                                        <div className="row">
-                                            <div className="col-sm-12">
-                                                &nbsp;
-                                            </div>
-                                        </div>
-                                        {more}
-                                    </div>
+                                    <AutoComplete close={() => setAddFromWB(false)}
+                                                  addItemFunction={props.addItemFunction}
+                                                  searchType={props.searchType} />
                                     : ""}
                                 {showUploadIDs ?
-                                <div>
-                                    <FormGroup controlId="formControlsTextarea">
-                                        <ControlLabel>Insert a list of WB {props.itemsNamePlural} IDs</ControlLabel> <Button bsSize="xsmall" bsStyle="info" className="pull-right" onClick={()=>setUploadIDs(false)}>Close Form</Button>
-                                        <br/><br/>
-                                        <FormControl componentClass="textarea" rows="12" placeholder="IDs separated by newline or comma"
-                                                     onChange={(e) => {
-                                                         setUploadedIDs(e.target.value);
-                                                     }}/>
-                                    </FormGroup>
-                                    <Button bsStyle="info" bsSize="small" onClick={() => {
-                                        let geneIds = uploadedIDs.split("\n");
-                                        if (geneIds.length === 1) {
-                                            geneIds = uploadedIDs.split(",");
-                                        }
-                                        geneIds.forEach(async (geneId) => {
-                                            let data = await axios.get(props.listIDsAPI + geneId.trim() + '/name');
-                                            if (data.data) {
-                                                props.addItemFunction(data.data.name.data.label + " ( " + geneId + " )");
-                                            }
-                                        });
-                                    }}><Glyphicon glyph="plus-sign"/>&nbsp; Add to list</Button>
-                                </div>
+                                    <BulkIDUpload addItemFunction={props.addItemFunction}
+                                                  close={() => setUploadIDs(false)}
+                                                  searchType={props.searchType}
+                                                  listIDsAPI={props.listIDsAPI}
+                                    />
                                 : ""}
 
                             </div>
@@ -348,6 +205,20 @@ const mapStateToProps = (state, ownProps) => {
     return {
         items: ownProps.dataReaderFunction(state).elements
     }
+}
+
+MultipleSelect.propTypes = {
+    items: PropTypes.array,
+    addItemFunction: PropTypes.func,
+    remItemFunction: PropTypes.func,
+    itemsNameSingular: PropTypes.string,
+    itemsNamePlural: PropTypes.string,
+    linkWB: PropTypes.string,
+    hideListIDs: PropTypes.bool,
+    dataReaderFunction: PropTypes.func,
+    searchType: PropTypes.string,
+    sampleQuery: PropTypes.string,
+    listIDsAPI: PropTypes.string
 }
 
 export default connect(mapStateToProps)(MultipleSelect);
