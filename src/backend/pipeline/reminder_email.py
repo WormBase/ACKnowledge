@@ -47,13 +47,16 @@ def main():
             paper_title = db_manager.get_paper_title(paper_id)
             paper_journal = db_manager.get_paper_journal(paper_id)
             afp_link = db_manager.get_afp_form_link(paper_id, args.afp_base_url)
-            data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
-            tiny_url = data.read().decode('utf-8')
-            email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
-                                                  paper_journal=paper_journal, afp_link=tiny_url,
-                                                  recipients=[author_email], final_call=options[1])
-            logger.info("going to sleep for ~15 minutes")
-            time.sleep(1000)
+            if afp_link:
+                data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
+                tiny_url = data.read().decode('utf-8')
+                email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
+                                                      paper_journal=paper_journal, afp_link=tiny_url,
+                                                      recipients=[author_email], final_call=options[1])
+                logger.info("going to sleep for ~15 minutes")
+                time.sleep(1000)
+            else:
+                logger.warning("skipping email address removed from db")
     db_manager.close()
     logger.info("Pipeline finished successfully")
 
