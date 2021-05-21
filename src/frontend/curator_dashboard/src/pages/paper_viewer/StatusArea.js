@@ -53,7 +53,7 @@ class StatusArea extends React.Component {
                                         {link_to_afp_form}
                                         <br/>
                                         <Button size="sm" onClick={async () => {
-                                            let formContent = "WormBase Author First Pass\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed, and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
+                                            let formContent = "WormBase Author First Pass\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
                                             let payload = {
                                                 paper_id: this.props.paper_id
                                             };
