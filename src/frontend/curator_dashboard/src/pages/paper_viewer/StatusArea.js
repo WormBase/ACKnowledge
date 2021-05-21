@@ -53,7 +53,7 @@ class StatusArea extends React.Component {
                                         {link_to_afp_form}
                                         <br/>
                                         <Button size="sm" onClick={async () => {
-                                            let formContent = "WormBase Author First Pass\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods. Please modify the values as needed\n\nENTITIES IDENTIFIED IN THE PAPER\n\n";
+                                            let formContent = "WormBase Author First Pass\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed, and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
                                             let payload = {
                                                 paper_id: this.props.paper_id
                                             };
@@ -116,16 +116,16 @@ class StatusArea extends React.Component {
                                                 formContent += tfp_strains.join("\n") + "\n\n";
                                                 formContent += "TRANSGENES (TPC powered)\n";
                                                 formContent += tfp_transgenes.join("\n") + "\n\n";
-                                                formContent += "New Genes reported\nNone\n\n";
-                                                formContent += "New Alleles reported\nNone\n\n";
-                                                formContent += "New Strains reported\nNone\n\n";
-                                                formContent += "New Transgenes reported\nNone\n\n";
-                                                formContent += "Known Antobodies used in the study\nNone\n\n";
+                                                formContent += "New Genes reported\nList here\n\n";
+                                                formContent += "New Alleles reported\nList here\n\n";
+                                                formContent += "New Strains reported\nList here\n\n";
+                                                formContent += "New Transgenes reported\nList here\n\n";
+                                                formContent += "Known Antobodies used in the study\nList here\n\n";
                                                 formContent += "Are you reporting an allele sequence change? (TPC powered)\n" + (flags["svm_seqchange_checked"] ? "Yes" : "No") + "\n\n";
                                                 formContent += "Are you reporting a Gene model update and gene sequence connection?\nNo\n\n";
                                                 formContent += "Did you generate a new antibody? If yes specify\nNo\n\n";
 
-                                                formContent += "DATATYPES\n\n";
+                                                formContent += "*** Section 2: Datatypes ***\nConfirm if your paper contains any of the data types below\n\n";
                                                 formContent += "Anatomic Expression data in WT condition (TPC powered)\n" + (flags["svm_otherexpr_checked"] ? "Yes": "No") + "\n\n";
                                                 formContent += "Site of action data\nNo\n\n";
                                                 formContent += "Time of action data\nNo\n\n";
@@ -140,7 +140,7 @@ class StatusArea extends React.Component {
                                                 formContent += "Environmental Induced Phenotype Data\nNo\n\n";
                                                 formContent += "Enzymatic activity Data\nNo\n\n";
 
-                                                formContent += "OTHER DATA\n\n";
+                                                formContent += "*** Section 3: Other data ***\n\n";
 
                                                 formContent += "Does the paper report Disease Model data?\nNo\n\n";
                                                 formContent += "Are there additional types of expression data? e.g. qPCR or proteomics\nNo\n\n";
