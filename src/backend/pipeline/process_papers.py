@@ -54,8 +54,9 @@ def main():
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
     cm.load_from_wb_database(
-        args.db_name, args.db_user, args.db_password, args.db_host, tazendra_ssh_user=args.tazendra_ssh_user,
-        tazendra_ssh_passwd=args.tazendra_ssh_password, from_date=(datetime.now() - timedelta(days=2*365))
+        args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
+        ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
+        from_date=(datetime.now() - timedelta(days=2*365))
             .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
         exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
         exclude_no_author_email=True, exclude_temp_pdf=True)
