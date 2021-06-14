@@ -12,7 +12,7 @@ AFP_WATCHERS_TABLES = {
        "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
                                 "afp_otherstrain", "afp_rnaseq"],
        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
-       "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+       "daniela@wormbase.org": ["afp_otherantibody", "afp_antibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
        "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
        "jae.cho@wormbase.org": ["afp_geneprod"],
        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
@@ -58,6 +58,10 @@ def main():
                 if table_to_watch == "afp_othertransgene":
                     positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
                                            pap_id, val in positive_papers_val.items()}
+                elif table_to_watch == "afp_otherantibody":
+                    positive_papers_val = {pap_id: ", ".join(["name: " + tr_data["name"] + " paperId:" +
+                                                              tr_data["publicationId"] for tr_data in json.loads(val)])
+                                           for pap_id, val in positive_papers_val.items()}
                 email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                           [afp_watcher])
     db_manager.close()
