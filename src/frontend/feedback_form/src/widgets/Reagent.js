@@ -4,7 +4,7 @@ import {
     Checkbox,
     Form,
     FormControl,
-    FormGroup,
+    FormGroup, FormLabel,
     Glyphicon,
     OverlayTrigger,
     Panel, Tooltip
@@ -87,7 +87,12 @@ const Reagent = (props) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here (e.g. ctls40 or ycEx60), one per line"
+                                    <ControlLabel>
+                                        Enter the transgene name followed by genotype followed by species, separated by comma. <br/>
+                                        e.g.: eaIs15, [Ppie-1::HIM-5::GFP::pie-1], C. elegans. <br/>
+                                        For extrachromosomal arrays: sqEx67, [rgef-1p::mcherry::GFP::lgg-1 + rol-6], C. elegans
+                                    </ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here, one per line"
                                                  value={props.otherTransgenes.map(a => a.name).join("\n")}
                                                  onChange={e => props.setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
                                                      return {id: index + 1, name: a}}))}/>

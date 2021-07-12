@@ -28,6 +28,7 @@ import FormControl from "react-bootstrap/lib/FormControl";
 import {WIDGET} from "../constants";
 import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
+import ControlLabel from "react-bootstrap/lib/ControlLabel";
 
 const Genetics = (props) => {
 
@@ -115,7 +116,13 @@ const Genetics = (props) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new alleles here (e.g. e1000), one per line"
+                                    <ControlLabel>
+                                        Enter the gene and allele name followed by strain and species, separated by comma. <br/>
+                                        e.g. flu-4(e1004), CB1004, C.elegans. <br/>
+                                        For CRISPR alleles include the knock-in construct, followed by strain and species, separated by comma. <br/>
+                                        e.g. hmg-3(bar24[hmg-3::3xHA]), BAT1560, C. elegans
+                                    </ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new alleles here, one per line"
                                                  value={props.otherAlleles.map(a => a.name).join("\n")}
                                                  onChange={e => props.setOtherAlleles(e.target.value.split("\n").map((a, index) => {
                                                      return {id: index + 1, name: a}}))}/>
@@ -170,7 +177,11 @@ const Genetics = (props) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new strains here (e.g. CB1001), one per line"
+                                    <ControlLabel>
+                                        Enter the strain name followed by genotype followed by species, separated by comma. <br/>
+                                        e.g. PMD153, (vhp-1(sa366) II; egIs1 [dat-1p::GFP]), C. elegans
+                                    </ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new strains here, one per line"
                                                  value={props.otherStrains.map(a => a.name).join("\n")}
                                                  onChange={e => props.setOtherStrains(e.target.value.split("\n").map((a, index) => {
                                                      return {id: index + 1, name: a}}))}/>
