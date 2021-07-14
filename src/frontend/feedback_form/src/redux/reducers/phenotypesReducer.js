@@ -229,7 +229,7 @@ export default function(state = initialState, action) {
         chemPheno: state.chemPheno,
         envPheno: state.envPheno,
         enzymaticAct: state.enzymaticAct,
-        othergenefunc: {checked: !state.enzymaticAct.checked, details: ''},
+        othergenefunc: {checked: !state.othergenefunc.checked, details: ''},
         isSavedToDB: false
       };
     }
