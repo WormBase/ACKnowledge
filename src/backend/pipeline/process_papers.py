@@ -173,7 +173,7 @@ def main():
         passwd = db_manager.afp.save_extracted_data_to_db(
             paper_id=paper.paper_id, genes=genes_id_name, alleles=alleles_id_name, species=meaningful_species,
             strains=strains_id_name, transgenes=transgenes_id_name,
-            author_email=contact_email)
+            author_emails=[contact_email])
 
         feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(
             afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,

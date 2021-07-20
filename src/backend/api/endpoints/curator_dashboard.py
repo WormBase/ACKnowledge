@@ -1,17 +1,140 @@
+import json
+
 import falcon
 import logging
 
-from src.backend.api.storagengin.curator_dashboard import CuratorDashboardStorageEngine
+from wbtools.db.dbmanager import WBDBManager
 
 
 logger = logging.getLogger(__name__)
 
 
+MIN_CLASS_VAL = "medium"
+
+
 class CuratorDashboardReader:
 
-    def __init__(self, storage_engine: CuratorDashboardStorageEngine, afp_base_url: str):
-        self.db = storage_engine
+    def __init__(self, db_manager: WBDBManager, afp_base_url: str):
+        self.db = db_manager
         self.afp_base_url = afp_base_url
+
+    @staticmethod
+    def transform_none_to_string(val):
+        if val is None:
+            return 'null'
+        else:
+            return val
+
+    def get_all_lists(self, paper_id):
+        tfp_genestudied = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_genestudied"))
+        afp_genestudied = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_genestudied"))
+        tfp_species = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_species"))
+        afp_species = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_species"))
+        tfp_alleles = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_variation"))
+        afp_alleles = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_variation"))
+        tfp_strains = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_strain"))
+        afp_strains = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_strain"))
+        tfp_transgenes = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_transgene"))
+        afp_transgenes = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_transgene"))
+        return {"tfp_genestudied": tfp_genestudied, "afp_genestudied": afp_genestudied, "tfp_species": tfp_species,
+                "afp_species": afp_species, "tfp_alleles": tfp_alleles, "afp_alleles": afp_alleles,
+                "tfp_strains": tfp_strains, "afp_strains": afp_strains, "tfp_transgenes": tfp_transgenes,
+                "afp_transgenes": afp_transgenes}
+
+    def get_class_author_sub_val(self, table_name, paper_id):
+        afp_val = self.db._get_single_field(paper_id, table_name)
+        if afp_val is not None:
+            afp_val_checked = afp_val != ""
+            afp_val_details = afp_val if afp_val != "Checked" and afp_val != "checked" and afp_val != "" else ""
+        else:
+            afp_val_checked = 'null'
+            afp_val_details = 'null'
+        return afp_val_checked, afp_val_details
+
+
+    def get_all_flagged_data_types(self, paper_id):
+        classifications = self.db.paper.get_automated_classification_values(paper_id)
+        svm_otherexpr = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                  cl="otherexpr", min_value=MIN_CLASS_VAL)
+        afp_otherexpr_checked, afp_otherexpr_details = self.get_class_author_sub_val("afp_otherexpr", paper_id)
+        svm_seqchange = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                  cl="seqchange", min_value=MIN_CLASS_VAL)
+        afp_seqchange_checked, afp_seqchange_details = self.get_class_author_sub_val("afp_seqchange", paper_id)
+        svm_geneint = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                cl="geneint", min_value=MIN_CLASS_VAL)
+        afp_geneint_checked, afp_geneint_details = self.get_class_author_sub_val("afp_geneint", paper_id)
+        svm_geneprod = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                 cl="geneprod", min_value=MIN_CLASS_VAL)
+        afp_geneprod_checked, afp_geneprod_details = self.get_class_author_sub_val("afp_geneprod", paper_id)
+        svm_genereg = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                cl="genereg", min_value=MIN_CLASS_VAL)
+        afp_genereg_checked, afp_genereg_details = self.get_class_author_sub_val("afp_genereg", paper_id)
+        svm_newmutant = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                  cl="newmutant", min_value=MIN_CLASS_VAL)
+        afp_newmutant_checked, afp_newmutant_details = self.get_class_author_sub_val("afp_newmutant", paper_id)
+        svm_rnai = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                             cl="rnai", min_value=MIN_CLASS_VAL)
+        afp_rnai_checked, afp_rnai_details = self.get_class_author_sub_val("afp_rnai", paper_id)
+        svm_overexpr = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                 cl="overexpr", min_value=MIN_CLASS_VAL)
+        afp_overexpr_checked, afp_overexpr_details = self.get_class_author_sub_val("afp_overexpr", paper_id)
+        return {"svm_otherexpr_checked": svm_otherexpr, "afp_otherexpr_checked": afp_otherexpr_checked,
+                "afp_otherexpr_details": afp_otherexpr_details,
+                "svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
+                "afp_seqchange_details": afp_seqchange_details, "svm_geneint_checked": svm_geneint,
+                "afp_geneint_checked": afp_geneint_checked, "afp_geneint_details": afp_geneint_details,
+                "svm_geneprod_checked": svm_geneprod, "afp_geneprod_checked": afp_geneprod_checked,
+                "afp_geneprod_details": afp_geneprod_details, "svm_genereg_checked": svm_genereg,
+                "afp_genereg_checked": afp_genereg_checked, "afp_genereg_details": afp_genereg_details,
+                "svm_newmutant_checked": svm_newmutant, "afp_newmutant_checked": afp_newmutant_checked,
+                "afp_newmutant_details": afp_newmutant_details, "svm_rnai_checked": svm_rnai,
+                "afp_rnai_checked": afp_rnai_checked, "afp_rnai_details": afp_rnai_details,
+                "svm_overexpr_checked": svm_overexpr, "afp_overexpr_checked": afp_overexpr_checked,
+                "afp_overexpr_details": afp_overexpr_details}
+
+    def get_all_yes_no_data_types(self, paper_id):
+        afp_modchange_checked, afp_modchange_details = self.get_class_author_sub_val("afp_structcorr", paper_id)
+        afp_newantibody_checked, afp_newantibody_details = self.get_class_author_sub_val("afp_antibody", paper_id)
+        afp_siteaction_checked, afp_siteaction_details = self.get_class_author_sub_val("afp_siteaction", paper_id)
+        afp_timeaction_checked, afp_timeaction_details = self.get_class_author_sub_val("afp_timeaction", paper_id)
+        afp_rnaseq_checked, afp_rnaseq_details = self.get_class_author_sub_val("afp_rnaseq", paper_id)
+        afp_chemphen_checked, afp_chemphen_details = self.get_class_author_sub_val("afp_chemphen", paper_id)
+        afp_envpheno_checked, afp_envpheno_details = self.get_class_author_sub_val("afp_envpheno", paper_id)
+        afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
+        afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val("afp_humdis", paper_id)
+        afp_additionalexpr = self.db._get_single_field(paper_id, "afp_additionalexpr")
+        if afp_additionalexpr == 'null':
+            afp_additionalexpr = ''
+        afp_othergenefunc_checked, afp_othergenefunc_details = self.get_class_author_sub_val("afp_othergenefunc", paper_id)
+        return {"afp_modchange_checked": afp_modchange_checked, "afp_modchange_details": afp_modchange_details,
+                "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
+                "afp_siteaction_checked": afp_siteaction_checked, "afp_siteaction_details": afp_siteaction_details,
+                "afp_timeaction_checked": afp_timeaction_checked, "afp_timeaction_details": afp_timeaction_details,
+                "afp_rnaseq_checked": afp_rnaseq_checked, "afp_rnaseq_details": afp_rnaseq_details,
+                "afp_chemphen_checked": afp_chemphen_checked, "afp_chemphen_details": afp_chemphen_details,
+                "afp_envpheno_checked": afp_envpheno_checked, "afp_envpheno_details": afp_envpheno_details,
+                "afp_catalyticact_checked": afp_catalyticact_checked, "afp_catalyticact_details":
+                    afp_catalyticact_details,
+                "afp_humdis_checked": afp_humdis_checked, "afp_humdis_details": afp_humdis_details,
+                "afp_additionalexpr": afp_additionalexpr, "afp_othergenefunc_checked": afp_othergenefunc_checked,
+                "afp_othergenefunc_details": afp_othergenefunc_details}
+
+    def get_other_data_types(self, paper_id):
+        othervariations = self.db._get_single_field(paper_id, "afp_othervariation")
+        afp_newalleles = " | ".join([elem['name'] for elem in json.loads(othervariations)]) if \
+            othervariations and othervariations != 'null' else ""
+        otherstrains = self.db._get_single_field(paper_id, "afp_otherstrain")
+        afp_newstrains = " | ".join([elem['name'] for elem in json.loads(otherstrains)]) if \
+            otherstrains and otherstrains != 'null' else ""
+        othertransgenes = self.db._get_single_field(paper_id, "afp_othertransgene")
+        afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(othertransgenes)]) if \
+            othertransgenes and othertransgenes != 'null' else ""
+        otherantibodies = self.db._get_single_field(paper_id, "afp_otherantibody")
+        afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in
+                                          json.loads(otherantibodies) if
+                                          elem["name"] != ""]) if otherantibodies and otherantibodies != 'null' else ""
+        return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
+                "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
 
     def on_post(self, req, resp, req_type):
         with self.db:
@@ -21,16 +144,16 @@ class CuratorDashboardReader:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
                 if req_type == "status":
-                    afp_processed = self.db.paper_is_afp_processed(paper_id)
-                    afp_processed_date = self.db.get_processed_date(paper_id)
-                    author_submitted = self.db.author_has_submitted(paper_id)
-                    author_modified = self.db.author_has_modified(paper_id)
-                    afp_form_link = self.db.get_afp_form_link(paper_id, self.afp_base_url)
-                    title = self.db.get_paper_title(paper_id)
-                    journal = self.db.get_paper_journal(paper_id)
-                    email = self.db.get_corresponding_author_email(paper_id)
-                    pmid = self.db.get_pmid_from_paper_id(paper_id)
-                    doi = self.db.get_doi_from_paper_id(paper_id)
+                    afp_processed = self.db.afp.paper_is_afp_processed(paper_id)
+                    afp_processed_date = self.db.afp.get_processed_date(paper_id)
+                    author_submitted = self.db.afp.author_has_submitted(paper_id)
+                    author_modified = self.db.afp.author_has_modified(paper_id)
+                    afp_form_link = self.db.afp.get_afp_form_link(paper_id, self.afp_base_url)
+                    title = self.db.paper.get_paper_title(paper_id)
+                    journal = self.db.paper.get_paper_journal(paper_id)
+                    email = self.db.afp.get_afp_emails(paper_id)
+                    pmid = self.db.paper.get_pmid(paper_id)
+                    doi = self.db.paper.get_doi(paper_id)
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
                                 '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}", "pmid": "{}", ' \
                                 '"doi": "{}", "afp_processed_date": "{}"}}'.format(
@@ -39,7 +162,7 @@ class CuratorDashboardReader:
                         author_modified else "false", afp_form_link, pmid, doi, afp_processed_date)
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
-                    lists_dict = self.db.get_all_lists(paper_id)
+                    lists_dict = self.get_all_lists(paper_id)
                     resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
                                 '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
                                 '"{}", "tfp_transgenes": "{}", "afp_transgenes": "{}"}}'.format(
@@ -49,7 +172,7 @@ class CuratorDashboardReader:
                         lists_dict["afp_transgenes"])
                     resp.status = falcon.HTTP_200
                 elif req_type == "flagged":
-                    flagged_dict = self.db.get_all_flagged_data_types(paper_id)
+                    flagged_dict = self.get_all_flagged_data_types(paper_id)
                     resp.body = '{{"svm_otherexpr_checked": "{}", "afp_otherexpr_checked": "{}", ' \
                                 '"afp_otherexpr_details": "{}", "svm_seqchange_checked": "{}", ' \
                                 '"afp_seqchange_checked": "{}", ' \
@@ -73,7 +196,7 @@ class CuratorDashboardReader:
                         flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], repr(flagged_dict["afp_overexpr_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
-                    other_yn = self.db.get_all_yes_no_data_types(paper_id)
+                    other_yn = self.get_all_yes_no_data_types(paper_id)
                     resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": "{}", ' \
                                 '"afp_newantibody_checked": "{}", "afp_newantibody_details": "{}", ' \
                                 '"afp_siteaction_checked": "{}", "afp_siteaction_details": "{}", ' \
@@ -98,39 +221,41 @@ class CuratorDashboardReader:
                                             repr(other_yn["afp_othergenefunc_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
-                    others = self.db.get_other_data_types(paper_id)
+                    others = self.get_other_data_types(paper_id)
                     resp.body = '{{"afp_newalleles": "{}", "afp_newstrains": "{}", "afp_newtransgenes": "{}", ' \
                                 '"afp_otherantibodies": "{}"}}'.format(others["afp_newalleles"], others["afp_newstrains"],
                                                                        others["afp_newtransgenes"],
                                                                        others["afp_otherantibodies"])
                     resp.status = falcon.HTTP_200
                 elif req_type == "comments":
-                    comments = repr(self.db.get_comments(paper_id))
+                    comments = repr(self.db._get_single_field(paper_id, "afp_comment"))
                     resp.body = '{{"afp_comments": "{}"}}'.format(comments)
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
             else:
                 if req_type == "stats":
-                    num_papers_new_afp_processed = self.db.get_num_papers_new_afp_processed()
-                    num_papers_old_afp_processed = self.db.get_num_papers_old_afp_processed()
-                    num_papers_new_afp_author_submitted = self.db.get_num_papers_new_afp_author_submitted()
-                    num_papers_old_afp_author_submitted = self.db.get_num_papers_old_afp_author_submitted()
-                    num_papers_new_afp_partial_sub = self.db.get_num_papers_new_afp_partial_submissions()
-                    num_extracted_genes_per_paper = self.db.get_num_entities_extracted_by_afp("genestudied")
-                    num_extracted_species_per_paper = self.db.get_num_entities_extracted_by_afp("species")
-                    num_extracted_alleles_per_paper = self.db.get_num_entities_extracted_by_afp("variation")
-                    num_extracted_strains_per_paper = self.db.get_num_entities_extracted_by_afp("strain")
-                    num_extracted_transgenes_per_paper = self.db.get_num_entities_extracted_by_afp("transgene")
+                    num_no_submission = self.db.afp.get_paper_ids_afp_no_submission(count=True)
+                    num_full_submission = self.db.afp.get_paper_ids_afp_full_submission(count=True)
+                    num_partial_submission = self.db.afp.get_paper_ids_afp_partial_submission(count=True)
+                    num_processed = num_no_submission
+
+                    num_papers_old_afp_processed = self.db.afp.get_num_papers_old_afp_processed()
+                    num_papers_old_afp_author_submitted = self.db.afp.get_num_papers_old_afp_author_submitted()
+                    num_extracted_genes_per_paper = self.db.afp.get_num_entities_per_paper("genestudied")
+                    num_extracted_species_per_paper = self.db.afp.get_num_entities_per_paper("species")
+                    num_extracted_alleles_per_paper = self.db.afp.get_num_entities_per_paper("variation")
+                    num_extracted_strains_per_paper = self.db.afp.get_num_entities_per_paper("strain")
+                    num_extracted_transgenes_per_paper = self.db.afp.get_num_entities_per_paper("transgene")
                     resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
                                 '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
                                 '"{}", "num_papers_new_afp_partial_sub": ' \
                                 '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
                                 '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
                                 '"num_extracted_transgenes_per_paper": {}}}'\
-                        .format(num_papers_new_afp_processed, num_papers_old_afp_processed,
-                                num_papers_new_afp_author_submitted, num_papers_old_afp_author_submitted,
-                                num_papers_new_afp_partial_sub,
+                        .format(num_processed, num_papers_old_afp_processed,
+                                num_full_submission, num_papers_old_afp_author_submitted,
+                                num_partial_submission,
                                 num_extracted_genes_per_paper, num_extracted_species_per_paper,
                                 num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
                                 num_extracted_transgenes_per_paper)
@@ -144,35 +269,56 @@ class CuratorDashboardReader:
                     curation_filters = req.media["curation_filters"].split(",")
                     combine_filters = req.media["combine_filters"]
                     if list_type == "processed":
-                        num_papers = self.db.get_num_papers_new_afp_processed(svm_filters, manual_filters,
-                                                                              curation_filters, combine_filters)
+                        num_papers = self.db.afp.get_paper_ids_afp_no_submission(
+                                                 must_be_autclass_positive_data_types=svm_filters,
+                                                 must_be_positive_manual_flag_data_types=manual_filters,
+                                                 must_be_curation_negative_data_types=curation_filters,
+                                                 combine_filters=combine_filters, count=True)
+                        ids = self.db.afp.get_paper_ids_afp_no_submission(
+                                                 must_be_autclass_positive_data_types=svm_filters,
+                                                 must_be_positive_manual_flag_data_types=manual_filters,
+                                                 must_be_curation_negative_data_types=curation_filters,
+                                                 combine_filters=combine_filters,
+                                                 offset=from_offset,
+                                                 limit=count)
+                        pap_titles = self.db.paper.get_papers_titles(paper_ids=ids)
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.get_list_paper_ids_afp_processed(
-                                                 from_offset, count, svm_filters, manual_filters, curation_filters,
-                                                 combine_filters)])
+                                             pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "submitted":
-                        num_papers = self.db.get_num_papers_new_afp_author_submitted(svm_filters, manual_filters,
-                                                                                     curation_filters, combine_filters)
+                        num_papers = self.db.afp.get_paper_ids_afp_full_submission(
+                            must_be_autclass_positive_data_types=svm_filters,
+                            must_be_positive_manual_flag_data_types=manual_filters,
+                            must_be_curation_negative_data_types=curation_filters,
+                            combine_filters=combine_filters, count=True)
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.get_list_paper_ids_afp_submitted(
-                                                 from_offset, count, svm_filters, manual_filters, curation_filters,
-                                                 combine_filters)])
+                                             self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
+                                             self.db.afp.get_paper_ids_afp_full_submission(
+                                                 must_be_autclass_positive_data_types=svm_filters,
+                                                 must_be_positive_manual_flag_data_types=manual_filters,
+                                                 must_be_curation_negative_data_types=curation_filters,
+                                                 combine_filters=combine_filters,
+                                                 offset=from_offset,
+                                                 limit=count)])
                     elif list_type == "partial":
-                        num_papers = self.db.get_num_papers_new_afp_partial_submissions(svm_filters, manual_filters,
-                                                                                        curation_filters,
-                                                                                        combine_filters)
+                        num_papers = self.db.afp.get_paper_ids_afp_partial_submission(
+                            must_be_autclass_positive_data_types=svm_filters,
+                            must_be_positive_manual_flag_data_types=manual_filters,
+                            must_be_curation_negative_data_types=curation_filters,
+                            combine_filters=combine_filters, count=True)
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.get_list_papers_new_afp_partial_submissions(
-                                                 from_offset, count, svm_filters, manual_filters, curation_filters,
-                                                 combine_filters)])
+                                             self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
+                                             self.db.afp.get_paper_ids_afp_partial_submission(
+                                                 must_be_autclass_positive_data_types=svm_filters,
+                                                 must_be_positive_manual_flag_data_types=manual_filters,
+                                                 must_be_curation_negative_data_types=curation_filters,
+                                                 combine_filters=combine_filters,
+                                                 offset=from_offset,
+                                                 limit=count)])
                     elif list_type == "empty":
-                        num_papers = self.db.get_num_papers_no_entities()
+                        num_papers = self.db.afp.get_num_papers_no_entities()
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.get_list_papers_no_entities(from_offset, count)])
+                                             self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
+                                             self.db.afp.get_list_papers_no_entities(from_offset, count)])
                     else:
                         raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                     resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(
@@ -187,44 +333,56 @@ class CuratorDashboardReader:
                     combine_filters = req.media["combine_filters"]
                     if list_type == "processed":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                            self.db.get_list_paper_ids_afp_processed(
-                                                0, 0, svm_filters, manual_filters, curation_filters,
-                                                combine_filters)])
+                                            self.db.afp.get_paper_ids_afp_processed(
+                                                must_be_autclass_positive_data_types=svm_filters,
+                                                must_be_positive_manual_flag_data_types=manual_filters,
+                                                must_be_curation_negative_data_types=curation_filters,
+                                                combine_filters=combine_filters,
+                                                offset=0,
+                                                limit=0)])
                     elif list_type == "submitted":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                            self.db.get_list_paper_ids_afp_submitted(
-                                                0, 0, svm_filters, manual_filters, curation_filters,
-                                                combine_filters)])
+                                            self.db.afp.get_paper_ids_afp_full_submission(
+                                                must_be_autclass_positive_data_types=svm_filters,
+                                                must_be_positive_manual_flag_data_types=manual_filters,
+                                                must_be_curation_negative_data_types=curation_filters,
+                                                combine_filters=combine_filters,
+                                                offset=0,
+                                                limit=0)])
                     elif list_type == "partial":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                            self.db.get_list_papers_new_afp_partial_submissions(
-                                                0, 0, svm_filters, manual_filters, curation_filters,
-                                                combine_filters)])
+                                            self.db.afp.get_paper_ids_afp_partial_submission(
+                                                must_be_autclass_positive_data_types=svm_filters,
+                                                must_be_positive_manual_flag_data_types=manual_filters,
+                                                must_be_curation_negative_data_types=curation_filters,
+                                                combine_filters=combine_filters,
+                                                offset=0,
+                                                limit=0)])
                     elif list_type == "empty":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                            self.db.get_list_papers_no_entities(0, 0)])
+                                            self.db.afp.get_list_papers_no_entities(0, 0)])
                     resp.body = '{{"all_ids": [{}]}}'.format(all_ids)
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "contributors":
                     from_offset = req.media["from"]
                     count = req.media["count"]
-                    num_contrib = self.db.get_num_contributors()
-                    list_contrib = ",".join(["{\"name\":\"" + self.db.get_user_fullname_from_email(contrib[0]) +
+                    num_contrib = self.db.afp.get_num_contributors()
+                    list_contrib = ",".join(["{\"name\":\"" + self.db.person.get_fullname_from_personid(self.db.person.get_person_id_from_email_address(contrib[0])) +
                                              "\",\"email\":\"" + contrib[0] +
                                              "\",\"count\":\"" + str(contrib[1]) + "\"}"
-                                             for contrib in self.db.get_list_contributors_with_numbers(from_offset,
-                                                                                                       count)])
+                                             for contrib in self.db.afp.get_list_contributors_with_numbers(from_offset,
+                                                                                                           count)])
                     resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_contrib, num_contrib)
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "most_emailed":
                     from_offset = req.media["from"]
                     count = req.media["count"]
-                    num_emailed = self.db.get_num_emailed()
-                    list_emailed = ",".join(["{\"name\":\"" + self.db.get_user_fullname_from_email(emailed[0]) +
+                    num_emailed = self.db.afp.get_num_unique_emailed_addresses()
+                    list_emailed = ",".join(["{\"name\":\"" + self.db.person.get_fullname_from_personid(self.db.person.get_person_id_from_email_address(emailed[0])) +
                                              "\",\"email\":\"" + emailed[0] +
                                              "\",\"count\":\"" + str(emailed[1]) + "\"}"
-                                             for emailed in self.db.get_list_emailed_with_numbers(from_offset, count)])
+                                             for emailed in self.db.afp.get_emailed_authors_with_count(from_offset, count)])
                     resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_emailed, num_emailed)
                     resp.status = falcon.HTTP_200
