@@ -151,7 +151,7 @@ class CuratorDashboardReader:
                     afp_form_link = self.db.afp.get_afp_form_link(paper_id, self.afp_base_url)
                     title = self.db.paper.get_paper_title(paper_id)
                     journal = self.db.paper.get_paper_journal(paper_id)
-                    email = self.db.afp.get_afp_emails(paper_id)
+                    email = self.db.afp.get_contact_emails(paper_id)
                     pmid = self.db.paper.get_pmid(paper_id)
                     doi = self.db.paper.get_doi(paper_id)
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
