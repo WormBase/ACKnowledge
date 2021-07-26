@@ -9,21 +9,21 @@ from wbtools.db.dbmanager import WBDBManager
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import EmailManager
 
-# AFP_WATCHERS_TABLES = {
-#        "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
-#                                 "afp_otherstrain", "afp_rnaseq"],
-#        "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
-#        "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
-#        "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
-#        "jae.cho@wormbase.org": ["afp_geneprod"],
-#        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
-#        "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
-#        "ranjana@caltech.edu": ["afp_humdis"]
-#    }
-
 AFP_WATCHERS_TABLES = {
-     "valearna@caltech.edu": ["afp_othertransgene"],
- }
+       "hinxton@wormbase.org": ["afp_structcorr", "afp_seqchange", "afp_othervariation", "afp_strain",
+                                "afp_otherstrain", "afp_rnaseq"],
+       "karen@wormbase.org": ["afp_othertransgene", "afp_overexpr"],
+       "daniela@wormbase.org": ["afp_otherantibody", "afp_otherexpr", "afp_additionalexpr", "afp_comment"],
+       "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
+       "jae.cho@wormbase.org": ["afp_geneprod"],
+       "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
+       "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
+       "ranjana@caltech.edu": ["afp_humdis"]
+   }
+
+# AFP_WATCHERS_TABLES = {
+#      "valearna@caltech.edu": ["afp_othertransgene"],
+#  }
 
 logger = logging.getLogger(__name__)
 
