@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 from datetime import datetime, timedelta
 
 from wbtools.db.dbmanager import WBDBManager
@@ -60,6 +61,7 @@ def main():
             .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
         exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
         exclude_no_author_email=True, exclude_temp_pdf=True)
+    logging.info("getting lists of entities")
     curated_genes = ntt_extractor.get_curated_entities(EntityType.GENE, exclude_id_used_as_name=False)
     gene_name_id_map = db_manager.generic.get_gene_name_id_map()
     curated_alleles = ntt_extractor.get_curated_entities(EntityType.VARIATION, exclude_id_used_as_name=False)
@@ -70,8 +72,10 @@ def main():
     transgene_name_id_map = db_manager.generic.get_transgene_name_id_map()
     taxon_id_species_name = db_manager.generic.get_taxon_id_names_map()
     tinyurls = []
+    emailed_papers = []
     blacklisted_email_addresses = db_manager.generic.get_blacklisted_email_addresses()
     for paper in cm.get_all_papers():
+        logging.info("processing paper " + str(paper.paper_id))
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
 
         logger.info("Getting list of genes")
@@ -168,31 +172,39 @@ def main():
             meaningful_transgenes, transgene_name_id_map)]
         strains_id_name = [ntt_id + ";%;" + ntt_name for ntt_id, ntt_name in ntt_extractor.get_entity_ids_from_names(
             meaningful_strains, strain_name_id_map)]
-        contact_person, contact_email = paper.get_first_author_with_email_address_in_wb(
-            blacklisted_email_addresses=blacklisted_email_addresses)
-        passwd = db_manager.afp.save_extracted_data_to_db(
-            paper_id=paper.paper_id, genes=genes_id_name, alleles=alleles_id_name, species=meaningful_species,
-            strains=strains_id_name, transgenes=transgenes_id_name,
-            author_emails=[contact_email])
+        authors = paper.get_authors_with_email_address_in_wb(blacklisted_email_addresses=blacklisted_email_addresses,
+                                                             first_only=False)
+        with db_manager:
+            passwd = db_manager.afp.save_extracted_data_to_db(
+                paper_id=paper.paper_id, genes=genes_id_name, alleles=alleles_id_name, species=meaningful_species,
+                strains=strains_id_name, transgenes=transgenes_id_name,
+                author_emails=[author[1] for author in authors])
 
-        feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(
-            afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
-            alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
-            pmid=paper.pmid, corresponding_author_id=contact_person.person_id, doi=paper.doi)
-        tinyurls.append(feedback_form_tiny_url)
-        if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
-            if args.dev_mode:
-                email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
-                                                   feedback_form_tiny_url, args.admin_emails)
+        if authors:
+            feedback_form_tiny_url = EmailManager.get_feedback_form_tiny_url(
+                afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
+                alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
+                pmid=paper.pmid, corresponding_author_id=authors[0][0].person_id, doi=paper.doi)
+            tinyurls.append(feedback_form_tiny_url)
+            emailed_papers.append(paper.paper_id)
+
+            if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
+                if args.dev_mode:
+                    email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
+                                                       feedback_form_tiny_url, args.admin_emails)
+                else:
+                    for author in authors:
+                        author_specific_form_link = EmailManager.get_feedback_form_tiny_url(
+                            afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
+                            alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
+                            pmid=paper.pmid, corresponding_author_id=authors[0][0].person_id, doi=paper.doi)
+                        email_manager.send_email_to_author(
+                            paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]])
             else:
-                email_manager.send_email_to_author(
-                    paper.paper_id, paper.title, paper.journal, feedback_form_tiny_url, [contact_email])
-        else:
-            email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
-                                                                 paper.journal, feedback_form_tiny_url,
-                                                                 args.admin_emails)
-    email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=[paper.paper_id for paper in cm.get_all_papers()],
-                                              recipients=args.admin_emails)
+                email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
+                                                                     paper.journal, feedback_form_tiny_url,
+                                                                     args.admin_emails)
+    email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=emailed_papers, recipients=args.admin_emails)
     logger.info("Pipeline finished successfully")
 
 
