@@ -189,17 +189,18 @@ def main():
             emailed_papers.append(paper.paper_id)
 
             if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
+                for author in authors:
+                    author_specific_form_link = EmailManager.get_feedback_form_tiny_url(
+                        afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
+                        alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
+                        pmid=paper.pmid, corresponding_author_id=authors[0][0].person_id, doi=paper.doi)
+                    logger.debug("Author specific link: " + author_specific_form_link)
+                    if not args.dev_mode:
+                        email_manager.send_email_to_author(
+                            paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]])
                 if args.dev_mode:
                     email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
                                                        feedback_form_tiny_url, args.admin_emails)
-                else:
-                    for author in authors:
-                        author_specific_form_link = EmailManager.get_feedback_form_tiny_url(
-                            afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
-                            alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
-                            pmid=paper.pmid, corresponding_author_id=authors[0][0].person_id, doi=paper.doi)
-                        email_manager.send_email_to_author(
-                            paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]])
             else:
                 email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
                                                                      paper.journal, feedback_form_tiny_url,
