@@ -2,8 +2,8 @@ FROM python:3.9-slim
 
 WORKDIR /usr/src/app/
 ADD requirements.txt .
-RUN pip3 install pip
 RUN pip3 install -r requirements.txt
+RUN python3 -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 COPY src/backend src/backend
 
 
