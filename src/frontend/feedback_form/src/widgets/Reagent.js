@@ -89,8 +89,8 @@ const Reagent = (props) => {
                                 <div className="col-sm-12">
                                     <ControlLabel>
                                         Enter the transgene name followed by genotype followed by species, separated by comma. <br/>
-                                        e.g.: eaIs15, [Ppie-1::HIM-5::GFP::pie-1], C. elegans. <br/>
-                                        For extrachromosomal arrays: sqEx67, [rgef-1p::mcherry::GFP::lgg-1 + rol-6], C. elegans
+                                        e.g. <i>eaIs15</i>, [<i>Ppie-1::HIM-5::GFP::pie-1</i>], C. elegans. <br/>
+                                        For extrachromosomal arrays: <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
                                     </ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here, one per line"
                                                  value={props.otherTransgenes.map(a => a.name).join("\n")}
