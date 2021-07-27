@@ -1,7 +1,8 @@
-FROM python:3.7-slim
+FROM python:3.9-slim
 
 WORKDIR /usr/src/app/
 ADD requirements.txt .
+RUN pip3 install pip
 RUN pip3 install -r requirements.txt
 COPY src/backend src/backend
 
