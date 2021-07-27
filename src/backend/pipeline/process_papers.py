@@ -193,7 +193,7 @@ def main():
                     author_specific_form_link = EmailManager.get_feedback_form_tiny_url(
                         afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
                         alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
-                        pmid=paper.pmid, corresponding_author_id=authors[0][0].person_id, doi=paper.doi)
+                        pmid=paper.pmid, corresponding_author_id=author[0].person_id, doi=paper.doi)
                     logger.debug("Author specific link: " + author_specific_form_link)
                     if not args.dev_mode:
                         email_manager.send_email_to_author(
