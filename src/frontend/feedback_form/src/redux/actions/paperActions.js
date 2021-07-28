@@ -141,7 +141,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 dispatch(setChemicalPhenotype(chemphen.isChecked(), chemphen.details()));
                 let envpheno = getCheckbxOrSingleFieldFromWBAPIData(result.data.envpheno, undefined);
                 dispatch(setEnvironmentalPhenotype(envpheno.isChecked(), envpheno.details()));
-                let catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.data.catalyticact, undefined);
+                let catalyticact = getCheckbxOrSingleFieldFromWBAPIData(result.data.catalyticact, result.data.catalyticact);
                 dispatch(setEnzymaticActivity(catalyticact.isChecked(), catalyticact.details()));
                 let othergenefunc = getCheckbxOrSingleFieldFromWBAPIData(result.data.othergenefunc, undefined);
                 dispatch(setOthergenefunc(othergenefunc.isChecked(), othergenefunc.details()));
