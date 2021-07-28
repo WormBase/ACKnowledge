@@ -104,7 +104,11 @@ class EntitiesListsComparisonTab extends React.Component {
                 }
                 let tfp_strains = data["tfp_strains"];
                 if (tfp_strains !== 'null' && tfp_strains !== '') {
-                    tfp_strains = data["tfp_strains"].split(" | ");
+                    if (tfp_strains.includes(";%;")) {
+                        tfp_strains = extractEntitiesFromTfpString(data["tfp_strains"], "");
+                    } else {
+                        tfp_strains = data["tfp_strains"].split(" | ");
+                    }
                 } else {
                     tfp_strains = [];
                 }
@@ -112,7 +116,11 @@ class EntitiesListsComparisonTab extends React.Component {
                 if (afp_strains === 'null') {
                     afp_strains = undefined
                 } else if (afp_strains !== '') {
-                    afp_strains = data["afp_strains"].split(" | ");
+                    if (afp_strains.includes(";%;")) {
+                        afp_strains = extractEntitiesFromTfpString(data["afp_strains"], "");
+                    } else {
+                        afp_strains = data["afp_strains"].split(" | ");
+                    }
                 } else {
                     afp_strains = [];
                 }
