@@ -4,7 +4,7 @@ import falcon
 import logging
 
 from wbtools.db.dbmanager import WBDBManager
-
+from wbtools.lib.nlp.common import EntityType
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,7 @@ class CuratorDashboardReader:
     def on_post(self, req, resp, req_type):
         with self.db:
             if req_type != "stats" and req_type != "papers" and req_type != "contributors" \
-                    and req_type != "most_emailed" and req_type != "all_papers":
+                    and req_type != "most_emailed" and req_type != "all_papers" and req_type != "entities_count":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -385,4 +385,26 @@ class CuratorDashboardReader:
                                              "\",\"count\":\"" + str(emailed[1]) + "\"}"
                                              for emailed in self.db.afp.get_emailed_authors_with_count(from_offset, count)])
                     resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_emailed, num_emailed)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "entities_count":
+                    entity_type = req.media["entity_type"]
+                    if entity_type == "gene":
+                        entity_type = EntityType.GENE
+                    elif entity_type == "species":
+                        entity_type = EntityType.SPECIES
+                    elif entity_type == "strain":
+                        entity_type = EntityType.STRAIN
+                    elif entity_type == "transgenes":
+                        entity_type = EntityType.TRANSGENE
+                    elif entity_type == "variation":
+                        entity_type = EntityType.VARIATION
+                    added = bool(req.media["added"])
+                    from_offset = req.media["from"]
+                    count = req.media["count"]
+                    sorted_list, total_len = self.db.afp.get_author_modified_entities_with_counter(
+                        entity_type=entity_type, added=added, limit=count, offset=from_offset)
+                    list_entities = ",".join(["{\"name\":\"" + elem[1] + "\",\"id\":\"" + elem[2] +
+                                             "\",\"count\":\"" + str(elem[0]) + "\"}" for elem in sorted_list])
+                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_entities, total_len)
                     resp.status = falcon.HTTP_200

@@ -8,6 +8,14 @@ import axios from 'axios';
 import {downloadFile} from "../lib/file";
 
 
+const prepFilterString = filter => {
+    let outFilters = "";
+    if (filter !== undefined) {
+        outFilters = [...filter].join(',');
+    }
+    return outFilters;
+}
+
 class PaperLists extends React.Component {
     constructor(props, context) {
         super(props, context);
@@ -135,9 +143,14 @@ class PaperLists extends React.Component {
                                                 <Card.Body>
                                                     <PaginatedPapersList
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
-                                                        listType="processed"
+                                                        payload={{
+                                                            list_type: "processed",
+                                                            count: this.state.papersPerPage,
+                                                            svm_filters: prepFilterString(this.state.svmFilter),
+                                                            manual_filters: prepFilterString(this.state.manualFilter),
+                                                            curation_filters: prepFilterString(this.state.curationFilter),
+                                                            combine_filters: this.state.combineFilters}}
                                                         elemPerPage={this.state.papersPerPage}
-                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
                                                     <br/>
                                                     <Button size="sm" variant="link" onClick={() => {
@@ -152,9 +165,15 @@ class PaperLists extends React.Component {
                                                 <Card.Body>
                                                     <PaginatedPapersList
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
-                                                        listType="submitted"
+                                                        payload={{
+                                                            list_type: "submitted",
+                                                            count: this.state.papersPerPage,
+                                                            svm_filters: prepFilterString(this.state.svmFilter),
+                                                            manual_filters: prepFilterString(this.state.manualFilter),
+                                                            curation_filters: prepFilterString(this.state.curationFilter),
+                                                            combine_filters: this.state.combineFilters
+                                                        }}
                                                         elemPerPage={this.state.papersPerPage}
-                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
                                                     <br/>
                                                     <Button size="sm" variant="link" onClick={() => {
@@ -169,9 +188,15 @@ class PaperLists extends React.Component {
                                                 <Card.Body>
                                                     <PaginatedPapersList
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
-                                                        listType="partial"
+                                                        payload={{
+                                                            list_type: "partial",
+                                                            count: this.state.papersPerPage,
+                                                            svm_filters: prepFilterString(this.state.svmFilter),
+                                                            manual_filters: prepFilterString(this.state.manualFilter),
+                                                            curation_filters: prepFilterString(this.state.curationFilter),
+                                                            combine_filters: this.state.combineFilters
+                                                        }}
                                                         elemPerPage={this.state.papersPerPage}
-                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
                                                     <br/>
                                                     <Button size="sm" variant="link" onClick={() => {
@@ -197,9 +222,15 @@ class PaperLists extends React.Component {
                                                 <Card.Body>
                                                     <PaginatedPapersList
                                                         endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/papers"}
-                                                        listType="empty"
+                                                        payload={{
+                                                            list_type: "empty",
+                                                            count: this.state.papersPerPage,
+                                                            svm_filters: prepFilterString(this.state.svmFilter),
+                                                            manual_filters: prepFilterString(this.state.manualFilter),
+                                                            curation_filters: prepFilterString(this.state.curationFilter),
+                                                            combine_filters: this.state.combineFilters
+                                                        }}
                                                         elemPerPage={this.state.papersPerPage}
-                                                        filters={{svmFilters:this.state.svmFilter, manualFilters:this.state.manualFilter, curationFilters:this.state.curationFilter, combineFilters: this.state.combineFilters}}
                                                     />
                                                     <br/>
                                                     <Button size="sm" variant="link" onClick={() => {

@@ -7,8 +7,8 @@ import {
     ListGroupItem,
     Pagination, Row
 } from "react-bootstrap";
-import {getListElements} from "./DataManager";
 import NumElemPerPageSelector from "./NumElemPerPageSelector";
+import axios from "axios";
 
 function withPaginatedList(WrappedComponent) {
 
@@ -52,8 +52,12 @@ function withPaginatedList(WrappedComponent) {
 
         loadData(offset) {
             this.setState({isLoading: true});
-            getListElements(this.props.filters, this.props.listType, offset, this.props.elemPerPage, this.props.endpoint)
-                .then(result => this.setState({elements: result.elements, totNumElements: result.totNumElements, isLoading: false}))
+            let payload = this.props.payload;
+            payload.from = offset;
+            axios.post(this.props.endpoint, payload)
+                .then(result => {
+                    this.setState({elements: result.data.list_elements, totNumElements: result.data.total_num_elements, isLoading: false})
+                })
                 .catch(error=> {this.setState({isLoading: false}); alert(error)});
         }
 
