@@ -119,7 +119,7 @@ const Overview = (props) => {
                                 <div className="col-sm-12">
                                     <FormControl type="text" placeholder="Add details here"
                                                  value={props.geneModel.details}
-                                                 onClick={() => props.setGeneModel(true, '')}
+                                                 onClick={() => props.setGeneModel(true, props.geneModel.details)}
                                                  onChange={(event) => {
                                                      props.setGeneModel(true, event.target.value)
                                                  }}
