@@ -130,7 +130,8 @@ const Phenotypes = (props) => {
                     <Form>
                         <FormGroup>
                             <Checkbox checked={props.enzymaticAct.checked} onClick={() => props.toggleEnzymaticActivity()}>
-                                <strong>Enzymatic Activity</strong>
+                                <strong>Enzymatic Activity</strong> <OverlayTrigger placement="top" overlay={svmTooltip}>
+                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => props.setEnzymaticActivity(true, props.enzymaticAct.details)}
