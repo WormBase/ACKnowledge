@@ -77,6 +77,7 @@ def main():
     for paper in cm.get_all_papers():
         logging.info("processing paper " + str(paper.paper_id))
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
+        fulltext = fulltext.replace('\n', ' ')
 
         logger.info("Getting list of genes")
 
