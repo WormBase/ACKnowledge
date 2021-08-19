@@ -47,6 +47,9 @@ class Contributors extends React.Component {
                                         <Card.Body>
                                             <PaginatedAuthorsList
                                                 endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/contributors"}
+                                                payload={{
+                                                    count: this.state.elemPerPage
+                                                }}
                                                 elemPerPage={this.state.elemPerPage}
                                             />
                                         </Card.Body>
@@ -58,6 +61,9 @@ class Contributors extends React.Component {
                                         <Card.Body>
                                             <PaginatedAuthorsList
                                                 endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/most_emailed"}
+                                                payload={{
+                                                    count: this.state.elemPerPage
+                                                }}
                                                 elemPerPage={this.state.elemPerPage}
                                             />
                                         </Card.Body>
