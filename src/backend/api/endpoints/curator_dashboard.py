@@ -333,13 +333,12 @@ class CuratorDashboardReader:
                     combine_filters = req.media["combine_filters"]
                     if list_type == "processed":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
-                                            self.db.afp.get_paper_ids_afp_processed(
+                                            self.db.afp.get_paper_ids_afp_no_submission(
                                                 must_be_autclass_positive_data_types=svm_filters,
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=0,
-                                                limit=0)])
+                                                offset=None, limit=None)])
                     elif list_type == "submitted":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_paper_ids_afp_full_submission(
@@ -347,8 +346,7 @@ class CuratorDashboardReader:
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=0,
-                                                limit=0)])
+                                                offset=None, limit=None)])
                     elif list_type == "partial":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_paper_ids_afp_partial_submission(
@@ -356,8 +354,7 @@ class CuratorDashboardReader:
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=0,
-                                                limit=0)])
+                                                offset=None, limit=None)])
                     elif list_type == "empty":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_list_papers_no_entities(0, 0)])

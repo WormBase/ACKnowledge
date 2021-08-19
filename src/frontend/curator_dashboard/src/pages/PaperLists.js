@@ -234,7 +234,7 @@ class PaperLists extends React.Component {
                                                     />
                                                     <br/>
                                                     <Button size="sm" variant="link" onClick={() => {
-                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "empty", [...this.state.svmFilter].join(','), [...this.state.manualFilter].join(','), [...this.state.curationFilter].join(','), this.state.combineFilters)
+                                                        this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "empty", prepFilterString(this.state.svmFilter), prepFilterString(this.state.manualFilter), prepFilterString(this.state.curationFilter), this.state.combineFilters)
                                                     }}>Download CSV</Button>
                                                 </Card.Body>
                                             </Card>
