@@ -130,7 +130,7 @@ class CuratorDashboardReader:
         afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(othertransgenes)]) if \
             othertransgenes and othertransgenes != 'null' else ""
         otherantibodies = self.db._get_single_field(paper_id, "afp_otherantibody")
-        afp_otherantibodies = " | ".join([elem['name'] + ";%;" + elem["publicationId"] for elem in
+        afp_otherantibodies = " | ".join([elem['name'] for elem in
                                           json.loads(otherantibodies) if
                                           elem["name"] != ""]) if otherantibodies and otherantibodies != 'null' else ""
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
@@ -174,51 +174,51 @@ class CuratorDashboardReader:
                 elif req_type == "flagged":
                     flagged_dict = self.get_all_flagged_data_types(paper_id)
                     resp.body = '{{"svm_otherexpr_checked": "{}", "afp_otherexpr_checked": "{}", ' \
-                                '"afp_otherexpr_details": "{}", "svm_seqchange_checked": "{}", ' \
+                                '"afp_otherexpr_details": {}, "svm_seqchange_checked": "{}", ' \
                                 '"afp_seqchange_checked": "{}", ' \
-                                '"afp_seqchange_details": "{}", "svm_geneint_checked": "{}", ' \
-                                '"afp_geneint_checked": "{}", "afp_geneint_details": "{}", ' \
+                                '"afp_seqchange_details": {}, "svm_geneint_checked": "{}", ' \
+                                '"afp_geneint_checked": "{}", "afp_geneint_details": {}, ' \
                                 '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
-                                '"afp_geneprod_details": "{}", "svm_genereg_checked": "{}",' \
-                                '"afp_genereg_checked": "{}", "afp_genereg_details": "{}", ' \
+                                '"afp_geneprod_details": {}, "svm_genereg_checked": "{}",' \
+                                '"afp_genereg_checked": "{}", "afp_genereg_details": {}, ' \
                                 '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
-                                '"afp_newmutant_details": "{}", "svm_rnai_checked": "{}",' \
-                                ' "afp_rnai_checked": "{}", "afp_rnai_details": "{}", ' \
+                                '"afp_newmutant_details": {}, "svm_rnai_checked": "{}",' \
+                                ' "afp_rnai_checked": "{}", "afp_rnai_details": {}, ' \
                                 '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
-                                '"afp_overexpr_details": "{}"}}'.format(
-                        flagged_dict["svm_otherexpr_checked"], flagged_dict["afp_otherexpr_checked"], repr(flagged_dict["afp_otherexpr_details"]),
-                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], repr(flagged_dict["afp_seqchange_details"]),
-                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], repr(flagged_dict["afp_geneint_details"]),
-                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], repr(flagged_dict["afp_geneprod_details"]),
-                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], repr(flagged_dict["afp_genereg_details"]),
-                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], repr(flagged_dict["afp_newmutant_details"]),
-                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], repr(flagged_dict["afp_rnai_details"]),
-                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], repr(flagged_dict["afp_overexpr_details"]))
+                                '"afp_overexpr_details": {}}}'.format(
+                        flagged_dict["svm_otherexpr_checked"], flagged_dict["afp_otherexpr_checked"], json.dumps(flagged_dict["afp_otherexpr_details"]),
+                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], json.dumps(flagged_dict["afp_seqchange_details"]),
+                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], json.dumps(flagged_dict["afp_geneint_details"]),
+                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], json.dumps(flagged_dict["afp_geneprod_details"]),
+                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], json.dumps(flagged_dict["afp_genereg_details"]),
+                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], json.dumps(flagged_dict["afp_newmutant_details"]),
+                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], json.dumps(flagged_dict["afp_rnai_details"]),
+                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], json.dumps(flagged_dict["afp_overexpr_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
                     other_yn = self.get_all_yes_no_data_types(paper_id)
-                    resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": "{}", ' \
-                                '"afp_newantibody_checked": "{}", "afp_newantibody_details": "{}", ' \
-                                '"afp_siteaction_checked": "{}", "afp_siteaction_details": "{}", ' \
-                                '"afp_timeaction_checked": "{}", "afp_timeaction_details": "{}", ' \
-                                '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": "{}", ' \
-                                '"afp_chemphen_checked": "{}", "afp_chemphen_details": "{}", ' \
-                                '"afp_envpheno_checked": "{}", "afp_envpheno_details": "{}", ' \
-                                '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": "{}", ' \
-                                '"afp_humdis_checked": "{}", "afp_humdis_details": "{}", ' \
-                                '"afp_additionalexpr": "{}", "afp_othergenefunc_checked": "{}", ' \
-                                '"afp_othergenefunc_details": "{}"}}'.format(
-                                            other_yn["afp_modchange_checked"], repr(other_yn["afp_modchange_details"]),
-                                            other_yn["afp_newantibody_checked"], repr(other_yn["afp_newantibody_details"]),
-                                            other_yn["afp_siteaction_checked"], repr(other_yn["afp_siteaction_details"]),
-                                            other_yn["afp_timeaction_checked"], repr(other_yn["afp_timeaction_details"]),
-                                            other_yn["afp_rnaseq_checked"], repr(other_yn["afp_rnaseq_details"]),
-                                            other_yn["afp_chemphen_checked"], repr(other_yn["afp_chemphen_details"]),
-                                            other_yn["afp_envpheno_checked"], repr(other_yn["afp_envpheno_details"]),
-                                            other_yn["afp_catalyticact_checked"], repr(other_yn["afp_catalyticact_details"]),
-                                            other_yn["afp_humdis_checked"], repr(other_yn["afp_humdis_details"]),
-                                            repr(other_yn["afp_additionalexpr"]), other_yn["afp_othergenefunc_checked"],
-                                            repr(other_yn["afp_othergenefunc_details"]))
+                    resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": {}, ' \
+                                '"afp_newantibody_checked": "{}", "afp_newantibody_details": {}, ' \
+                                '"afp_siteaction_checked": "{}", "afp_siteaction_details": {}, ' \
+                                '"afp_timeaction_checked": "{}", "afp_timeaction_details": {}, ' \
+                                '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": {}, ' \
+                                '"afp_chemphen_checked": "{}", "afp_chemphen_details": {}, ' \
+                                '"afp_envpheno_checked": "{}", "afp_envpheno_details": {}, ' \
+                                '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": {}, ' \
+                                '"afp_humdis_checked": "{}", "afp_humdis_details": {}, ' \
+                                '"afp_additionalexpr": {}, "afp_othergenefunc_checked": "{}", ' \
+                                '"afp_othergenefunc_details": {}}}'.format(
+                                            other_yn["afp_modchange_checked"], json.dumps(other_yn["afp_modchange_details"]),
+                                            other_yn["afp_newantibody_checked"], json.dumps(other_yn["afp_newantibody_details"]),
+                                            other_yn["afp_siteaction_checked"], json.dumps(other_yn["afp_siteaction_details"]),
+                                            other_yn["afp_timeaction_checked"], json.dumps(other_yn["afp_timeaction_details"]),
+                                            other_yn["afp_rnaseq_checked"], json.dumps(other_yn["afp_rnaseq_details"]),
+                                            other_yn["afp_chemphen_checked"], json.dumps(other_yn["afp_chemphen_details"]),
+                                            other_yn["afp_envpheno_checked"], json.dumps(other_yn["afp_envpheno_details"]),
+                                            other_yn["afp_catalyticact_checked"], json.dumps(other_yn["afp_catalyticact_details"]),
+                                            other_yn["afp_humdis_checked"], json.dumps(other_yn["afp_humdis_details"]),
+                                            json.dumps(other_yn["afp_additionalexpr"]), other_yn["afp_othergenefunc_checked"],
+                                            json.dumps(other_yn["afp_othergenefunc_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
                     others = self.get_other_data_types(paper_id)
@@ -228,8 +228,8 @@ class CuratorDashboardReader:
                                                                        others["afp_otherantibodies"])
                     resp.status = falcon.HTTP_200
                 elif req_type == "comments":
-                    comments = repr(self.db._get_single_field(paper_id, "afp_comment"))
-                    resp.body = '{{"afp_comments": "{}"}}'.format(comments)
+                    comments = json.dumps(self.db._get_single_field(paper_id, "afp_comment"))
+                    resp.body = '{{"afp_comments": {}}}'.format(comments)
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
