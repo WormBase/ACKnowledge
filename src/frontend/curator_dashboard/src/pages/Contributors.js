@@ -80,7 +80,7 @@ class Contributors extends React.Component {
                 </Row>
                 <Row>
                     <Col>
-                        <NumElemPerPageSelector />
+                        <NumElemPerPageSelector setNumElemPerPageCallback={(numElem) => this.setState({elemPerPage: numElem})}/>
                     </Col>
                 </Row>
             </Container>
