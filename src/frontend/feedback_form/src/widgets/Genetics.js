@@ -117,7 +117,7 @@ const Genetics = (props) => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <ControlLabel>
-                                        Enter the gene and allele name followed by strain and species, separated by comma. <br/>
+                                        Enter one allele per line. If possible, enter the gene and allele name followed by strain and species, separated by comma. <br/>
                                         e.g. <i>flu-4(e1004)</i>, CB1004, <i>C.elegans</i>. <br/>
                                         For CRISPR alleles include the knock-in construct, followed by strain and species, separated by comma. <br/>
                                         e.g. <i>hmg-3(bar24[hmg-3::3xHA])</i>, BAT1560, <i>C. elegans</i>
@@ -178,7 +178,7 @@ const Genetics = (props) => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <ControlLabel>
-                                        Enter the strain name followed by genotype followed by species, separated by comma. <br/>
+                                        Enter one strain per line. If possible, enter the strain name followed by genotype followed by species, separated by comma. <br/>
                                         e.g. PMD153, (<i>vhp-1(sa366) II; egIs1 [dat-1p::GFP]</i>), <i>C. elegans</i>
                                     </ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert new strains here, one per line"
