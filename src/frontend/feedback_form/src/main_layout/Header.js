@@ -14,7 +14,7 @@ const Title = () => {
                     <Image src="logo_afp.svg" width="100%" />
                 </div>
                 <div className="col-sm-2" align="right">
-                    <a href="mailto:help.afp@wormbase.org"><Button bsSize="xs">Contact us</Button></a><br/><br/>
+                    <br/>
                     <Badge>Release {process.env.REACT_APP_VERSION}</Badge>
                 </div>
             </div>
