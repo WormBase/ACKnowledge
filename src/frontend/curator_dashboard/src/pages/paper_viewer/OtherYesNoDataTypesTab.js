@@ -162,8 +162,8 @@ class OtherYesNoDataTypesTab extends React.Component {
                                     afpDetails={this.state.afp_humdis_details}
                     />
                     <FlaggedInfoRow title="Additional type of expression data"
-                                    afpChecked={this.state.afp_additionalexpr !== "''" ? "True" : "False"}
-                                    afpDetails={this.state.afp_additionalexpr}
+                                    afpChecked={this.state.afp_additionalexpr === null ? "null" : this.state.afp_additionalexpr !== ""? "True" : "False"}
+                                    afpDetails={this.state.afp_additionalexpr === null ? "null" : this.state.afp_additionalexpr}
                     />
                     <FlaggedInfoRow title="Other gene function"
                                     afpChecked={this.state.afp_othergenefunc_checked}

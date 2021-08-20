@@ -81,7 +81,7 @@ class CommentsTab extends React.Component {
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            {this.state.comments}
+                            {this.state.comments !== null && this.state.comments !== '' ? this.state.comments : 'Null'}
                         </div>
                     </div>
                 </div>

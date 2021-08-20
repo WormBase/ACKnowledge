@@ -222,10 +222,10 @@ class CuratorDashboardReader:
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
                     others = self.get_other_data_types(paper_id)
-                    resp.body = '{{"afp_newalleles": "{}", "afp_newstrains": "{}", "afp_newtransgenes": "{}", ' \
-                                '"afp_otherantibodies": "{}"}}'.format(others["afp_newalleles"], others["afp_newstrains"],
-                                                                       others["afp_newtransgenes"],
-                                                                       others["afp_otherantibodies"])
+                    resp.body = '{{"afp_newalleles": {}, "afp_newstrains": {}, "afp_newtransgenes": {}, ' \
+                                '"afp_otherantibodies": {}}}'.format(
+                        json.dumps(others["afp_newalleles"]), json.dumps(others["afp_newstrains"]),
+                        json.dumps(others["afp_newtransgenes"]), json.dumps(others["afp_otherantibodies"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "comments":
                     comments = json.dumps(self.db._get_single_field(paper_id, "afp_comment"))
