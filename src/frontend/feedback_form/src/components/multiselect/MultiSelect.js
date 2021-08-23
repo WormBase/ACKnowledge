@@ -9,9 +9,7 @@ import {
     OverlayTrigger,
     Tooltip
 } from "react-bootstrap";
-import {connect} from "react-redux";
 import AutoComplete from "./AutoComplete";
-import BulkIDUpload from "./BulkIDUpload";
 
 const MultipleSelect = (props) => {
 
@@ -113,7 +111,7 @@ const MultipleSelect = (props) => {
                                              defaultValue=""
                                              style={{height: '200px'}}>
                                     {[...selectedItemsToDisplay].sort().map(item =>
-                                        <option>{item}</option>
+                                        <option style={new Set(props.addedItems).has(item) ? {color: "blue"} : {color: "black"}}>{item}</option>
                                     )}
                                 </FormControl>
                             </div>
@@ -192,12 +190,6 @@ const MultipleSelect = (props) => {
     );
 }
 
-const mapStateToProps = (state, ownProps) => {
-    return {
-        items: ownProps.dataReaderFunction(state).elements
-    }
-}
-
 MultipleSelect.propTypes = {
     items: PropTypes.array,
     addItemFunction: PropTypes.func,
@@ -206,12 +198,11 @@ MultipleSelect.propTypes = {
     itemsNamePlural: PropTypes.string,
     linkWB: PropTypes.string,
     hideListIDs: PropTypes.bool,
-    dataReaderFunction: PropTypes.func,
     searchType: PropTypes.string,
     sampleQuery: PropTypes.string,
     listIDsAPI: PropTypes.string
 }
 
-export default connect(mapStateToProps)(MultipleSelect);
+export default MultipleSelect;
 
 

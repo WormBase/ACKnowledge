@@ -16,6 +16,8 @@ import {
     toggleSequenceChange
 } from "../redux/actions/geneticsActions";
 import {
+    getAddedAlleles,
+    getAddedStrains,
     getAlleles,
     getOtherAlleles,
     getOtherStrains,
@@ -59,7 +61,8 @@ const Genetics = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/variation"}
                 itemsNameSingular={"allele"}
                 itemsNamePlural={"alleles"}
-                dataReaderFunction={getAlleles}
+                items={props.alleles}
+                addedItems={props.addedAlleles}
                 addItemFunction={(allele) => props.addAllele(allele)}
                 remItemFunction={(allele) => props.removeAllele(allele)}
                 searchType={"variation"}
@@ -78,7 +81,8 @@ const Genetics = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/strain"}
                 itemsNameSingular={"strain"}
                 itemsNamePlural={"strains"}
-                dataReaderFunction={getStrains}
+                items={props.strains}
+                addedItems={props.addedStrains}
                 addItemFunction={(strain) => props.addStrain(strain)}
                 remItemFunction={(strain) => props.removeStrain(strain)}
                 searchType={"strain"}
@@ -217,7 +221,9 @@ const mapStateToProps = state => ({
     strains: getStrains(state).elements,
     otherStrains: getOtherStrains(state).elements,
     isSavedToDB: isGeneticsSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
+    paperPasswd: getPaperPassword(state),
+    addedStrains: getAddedStrains(state),
+    addedAlleles: getAddedAlleles(state)
 });
 
 export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,

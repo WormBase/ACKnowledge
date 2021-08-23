@@ -14,7 +14,13 @@ import {
     setGeneModel, setIsOverviewSavedToDB,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
-import {getGeneModel, getGenes, getSpecies, isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
+import {
+    getAddedGenes, getAddedSpecies,
+    getGeneModel,
+    getGenes,
+    getSpecies,
+    isOverviewSavedToDB
+} from "../redux/selectors/overviewSelectors";
 import {connect} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData} from "../redux/actions/widgetActions";
@@ -44,7 +50,8 @@ const Overview = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
-                dataReaderFunction={getGenes}
+                items={props.genes}
+                addedItems={props.addedGenes}
                 addItemFunction={(gene) => props.addGene(gene)}
                 remItemFunction={(gene) => props.removeGene(gene)}
                 searchType={"gene"}
@@ -142,7 +149,8 @@ const Overview = (props) => {
                         <MultipleSelect
                             itemsNameSingular={"species"}
                             itemsNamePlural={"species"}
-                            dataReaderFunction={getSpecies}
+                            items={props.species}
+                            addedItems={props.addedSpecies}
                             addItemFunction={(species) => props.addSpecies(species)}
                             remItemFunction={(species) => props.removeSpecies(species)}
                             searchType={"species"}
@@ -173,7 +181,9 @@ const mapStateToProps = state => ({
     geneModel: getGeneModel(state),
     species: getSpecies(state).elements,
     isSavedToDB: isOverviewSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
+    paperPasswd: getPaperPassword(state),
+    addedGenes: getAddedGenes(state),
+    addedSpecies: getAddedSpecies(state)
 });
 
 export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel,

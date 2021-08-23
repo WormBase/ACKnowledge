@@ -9,3 +9,5 @@ export const getOtherTransgenes = store => getReagentState(store) ? getReagentSt
 export const isReagentSavedToDB = store => getReagentState(store) ? getReagentState(store).isSavedToDB : false;
 
 export const getOtherAntibodies = store => getReagentState(store) ? getReagentState(store).otherAntibodies : {elements: [ { id: 1, name: "", publicationId: "" } ], saved: false};
+
+export const getAddedTransgenes = store => getReagentState(store) ? getReagentState(store).addedTransgenes : [];

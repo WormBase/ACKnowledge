@@ -20,6 +20,7 @@ import {
     toggleNewAntibodies
 } from "../redux/actions/reagentActions";
 import {
+    getAddedTransgenes,
     getNewAntibodies,
     getOtherAntibodies,
     getOtherTransgenes,
@@ -70,7 +71,8 @@ const Reagent = (props) => {
                             linkWB={"https://wormbase.org/species/c_elegans/transgene"}
                             itemsNameSingular={"transgene"}
                             itemsNamePlural={"transgenes"}
-                            dataReaderFunction={getTransgenes}
+                            items={props.transgenes}
+                            addedItems={props.addedTransgenes}
                             addItemFunction={(transgene) => props.addTransgene(transgene)}
                             remItemFunction={(transgene) => props.removeTransgene(transgene)}
                             searchType={"transgene"}
@@ -158,7 +160,8 @@ const mapStateToProps = state => ({
     newAntibodies: getNewAntibodies(state),
     otherAntibodies: getOtherAntibodies(state).elements,
     isSavedToDB: isReagentSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
+    paperPasswd: getPaperPassword(state),
+    addedTransgenes: getAddedTransgenes(state)
 });
 
 export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
