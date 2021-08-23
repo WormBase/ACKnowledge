@@ -9,7 +9,7 @@ import {useQueries} from "react-query";
 import axios from "axios";
 
 
-const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addItemFunction}) => {
+const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType, addItemFunction, selectAll}) => {
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
 
@@ -23,7 +23,6 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
         }
     })));
 
-
     let availableItems = []
     let showMore = false;
 
@@ -34,10 +33,10 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
         let toMatch = new Set(searchEntities);
         let unorderedResults = apiQueries.map(res => res.data.data).join('\n').split('\n');
         unorderedResults.forEach(res => {
-            if (toMatch.has(res.split(' ')[0])) {
-                resultsMergedFirst.push(res);
-            } else if (!exactMatchOnly) {
+            if (!exactMatchOnly) {
                 resultsMergedSecond.push(res);
+            } else if (toMatch.has(res.split(' ')[0]) || toMatch.has(res.split(' ')[2])) {
+                resultsMergedFirst.push(res);
             }
         });
         let resultsMerged = [...resultsMergedFirst, ...resultsMergedSecond].join('\n');
@@ -61,8 +60,12 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
     }
 
     const addMultipleItems = () => {
-        if (tmpSelectedItems.size > 0) {
-            [...tmpSelectedItems].forEach((item) => {
+        let itemsToAdd = tmpSelectedItems;
+        if (selectAll) {
+            itemsToAdd = availableItems;
+        }
+        if (itemsToAdd.size > 0) {
+            [...itemsToAdd].forEach((item) => {
                addItemFunction(item);
             });
         }
@@ -83,12 +86,12 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
                             Wormbase Helpdesk</a>.
                         </Alert> : null}
                         <FormControl componentClass="select" multiple
-                                     style={{height: '180px'}}
+                                     style={{height: '170px'}}
                                      defaultValue=""
                                      onChange={(e) => setTmpSelectedItems(new Set([...e.target].filter(option => option.selected).map(option => option.value)))}
                                      onDoubleClick={addMultipleItems}>
                             {[...availableItems].map(item =>
-                                <option>{item}</option>)}
+                                <option selected={item.selected || selectAll}>{item}</option>)}
                         </FormControl>
                     </LoadingOverlay>
                 </div>
@@ -99,12 +102,15 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
                 </div>
             </div>
             <div className="row">
-                <div className="col-sm-12">
+                <div className="col-sm-10">
                     <Button bsStyle="info" bsSize="small" onClick={() => {
                         addMultipleItems();
                         setTmpSelectedItems(new Set());
                     }}><Glyphicon glyph="plus-sign"/>
                         &nbsp; Add selected</Button>
+                </div>
+                <div>
+                    <Button bsSize="small" onClick={close}>Back</Button>
                 </div>
             </div>
             <div className="row">
@@ -122,6 +128,7 @@ const EntitiesFetchAndSelect = ({searchString, exactMatchOnly, searchType, addIt
 }
 
 EntitiesFetchAndSelect.propTypes = {
+    close: PropTypes.func,
     searchString: PropTypes.string,
     exactMatchOnly: PropTypes.bool,
     searchType: PropTypes.string,

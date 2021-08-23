@@ -9,39 +9,37 @@ import EntitiesFetchAndSelect from "./EntitiesFetchAndSelect";
 const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular}) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(false);
     const [searchString, setSearchString] = useState('');
+    const [selectAll, setSelectAll] = useState(false);
 
     return (
         <div>
-            <label>Add from Wormbase {itemsNameSingular} list</label>
-            <Button bsSize="xsmall" className="pull-right" bsStyle="info" onClick={close}>Close
-                form</Button>
-            <div className="row">
-                <div className="col-sm-12">
-                    &nbsp;
-                </div>
-            </div>
             <div className="container-fluid" style={{paddingLeft: 0, paddingRight: 0}}>
                 <div className="row">
                     <div className="col-sm-12">
-                        <FormControl componentClass="textarea" rows="1" bsSize="sm"
-                                     placeholder={"Autocomplete on one or more name or ID"}
+                        <FormControl componentClass="textarea" rows="4" bsSize="sm"
+                                     placeholder={"Autocomplete on one or more name or ID. Type or paste entities separated by comma, whitespace, or newline"}
                                      onChange={(e) => {setSearchString(e.target.value)}}
                         />
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-12">
+                    <div className="col-sm-6">
+                        <Checkbox checked={selectAll}
+                                  onClick={() => setSelectAll(selectAll => !selectAll)}>
+                            Select all</Checkbox>
+                    </div>
+                    <div className="col-sm-6">
                         <div className="pull-right">
                             <Checkbox checked={exactMatchOnly}
                                       onClick={() => setExactMatchOnly(exactMatchOnly => !exactMatchOnly)}>
-                                Show exact match only</Checkbox>
+                                Exact match only</Checkbox>
                         </div>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <EntitiesFetchAndSelect searchString={searchString} exactMatchOnly={exactMatchOnly}
-                                                addItemFunction={addItemFunction} searchType={searchType} />
+                        <EntitiesFetchAndSelect close={close} searchString={searchString} exactMatchOnly={exactMatchOnly}
+                                                addItemFunction={addItemFunction} searchType={searchType} selectAll={selectAll} />
                     </div>
                 </div>
             </div>

@@ -17,7 +17,6 @@ const MultipleSelect = (props) => {
 
     let selected = new Set(props.items);
     const [showAddFromWB, setAddFromWB] = useState(false);
-    const [showUploadIDs, setUploadIDs] = useState(false);
     const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
     const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -127,13 +126,14 @@ const MultipleSelect = (props) => {
 
                         <div className="row">
                             <div className="col-sm-6">
+                                {showAddFromWB ?
                                 <Button
                                     bsStyle="info"
                                     bsSize="small"
                                     onClick={handleRemSelectedFromList}>
                                     <Glyphicon glyph="minus-sign"/>
                                     &nbsp; Remove selected
-                                </Button>
+                                </Button> : null}
                             </div>
                             <div className="col-sm-6">
                                 {props.linkWB && selectedItems.length > 0 ?
@@ -156,21 +156,20 @@ const MultipleSelect = (props) => {
                     <div className="container-fluid" style={{ paddingLeft: 0, paddingRight: 0 }}>
                         <div className="row">
                             <div className="col-sm-12">
-                                {!showAddFromWB && !showUploadIDs
+                                {!showAddFromWB
                                     ?
                                     <div>
                                         <br/><br/><br/><br/><br/><br/><br/>
                                         <center><Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setAddFromWB(true)}>
                                             <Glyphicon glyph="plus-sign"/>
-                                            &nbsp; Add from WB {props.itemsNameSingular} list &nbsp;
+                                            &nbsp; Add {props.itemsNamePlural} &nbsp;
                                         </Button>
                                             <br/><br/>
-                                            {!(props.hideListIDs !== undefined && props.hideListIDs === true) ?
-                                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => setUploadIDs(true)}>
-                                                    <Glyphicon glyph="upload"/>
-                                                    &nbsp; Upload a list of WB IDs
-                                                </Button>
-                                                : ""}
+                                            <Button bsClass="btn btn-info wrap-button" bsStyle="info"
+                                                    onClick={handleRemSelectedFromList}>
+                                    <Glyphicon glyph="minus-sign"/>
+                                    &nbsp; Remove selected
+                                </Button>
                                         </center>
                                     </div>
                                     : ""}
@@ -179,14 +178,6 @@ const MultipleSelect = (props) => {
                                                   addItemFunction={props.addItemFunction}
                                                   searchType={props.searchType} />
                                     : ""}
-                                {showUploadIDs ?
-                                    <BulkIDUpload addItemFunction={props.addItemFunction}
-                                                  close={() => setUploadIDs(false)}
-                                                  searchType={props.searchType}
-                                                  listIDsAPI={props.listIDsAPI}
-                                    />
-                                : ""}
-
                             </div>
                         </div>
                         <div className="row">
