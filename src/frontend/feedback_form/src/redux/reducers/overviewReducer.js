@@ -40,7 +40,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         genes: {
-          elements: [...state.genes.elements, action.payload.gene],
+          elements: [...new Set([...state.genes.elements, action.payload.gene])],
           saved: false
         },
         geneModel: state.geneModel,
@@ -75,7 +75,7 @@ export default function(state = initialState, action) {
         genes: state.genes,
         geneModel: state.geneModel,
         species: {
-          elements: [...state.species.elements, action.payload.species],
+          elements: [...new Set([...state.species.elements, action.payload.species])],
           saved: false
         },
         isSavedToDB: false

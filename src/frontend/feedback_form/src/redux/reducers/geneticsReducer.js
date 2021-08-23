@@ -58,7 +58,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         alleles: {
-          elements: [...state.alleles.elements, action.payload.allele],
+          elements: [...new Set([...state.alleles.elements, action.payload.allele])],
           saved: false
         },
         strains: state.strains,
@@ -98,7 +98,7 @@ export default function(state = initialState, action) {
         ...state,
         alleles: state.alleles,
         strains: {
-          elements: [...state.strains.elements, action.payload.strain],
+          elements: [...new Set([...state.strains.elements, action.payload.strain])],
           saved: false
         },
         sequenceChange: state.sequenceChange,
@@ -171,7 +171,7 @@ export default function(state = initialState, action) {
         alleles: state.alleles,
         strains: state.strains,
         sequenceChange: state.sequenceChange,
-        otherAlleles: {elements: [...state.otherAlleles.elements, action.payload.allele], saved: false},
+        otherAlleles: {elements: [...new Set([...state.otherAlleles.elements, action.payload.allele])], saved: false},
         otherStrains: state.otherStrains,
         isSavedToDB: false
       };
@@ -207,7 +207,7 @@ export default function(state = initialState, action) {
         strains: state.strains,
         sequenceChange: state.sequenceChange,
         otherAlleles: state.otherAlleles,
-        otherStrains: {elements: [...state.otherStrains.elements, action.payload.strain], saved: false},
+        otherStrains: {elements: [...new Set([...state.otherStrains.elements, action.payload.strain])], saved: false},
         isSavedToDB: false
       };
     }

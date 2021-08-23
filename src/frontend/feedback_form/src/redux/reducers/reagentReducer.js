@@ -50,7 +50,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         transgenes: {
-          elements: [...state.transgenes.elements, action.payload.transgene],
+          elements: [...new Set([...state.transgenes.elements, action.payload.transgene])],
           saved: false
         },
         newAntibodies: state.newAntibodies,
@@ -117,7 +117,7 @@ export default function(state = initialState, action) {
         ...state,
         transgenes: state.transgenes,
         newAntibodies: state.newAntibodies,
-        otherTransgenes: {elements: [...state.otherTransgenes.elements, action.payload.transgene], saved: false},
+        otherTransgenes: {elements: [...new Set([...state.otherTransgenes.elements, action.payload.transgene])], saved: false},
         otherAntibodies: state.otherAntibodies,
         isSavedToDB: false
       };
@@ -150,7 +150,7 @@ export default function(state = initialState, action) {
         transgenes: state.transgenes,
         newAntibodies: state.newAntibodies,
         otherTransgenes: state.otherTransgenes,
-        otherAntibodies: {elements: [...state.otherAntibodies.elements, action.payload.antibody], saved: false},
+        otherAntibodies: {elements: [...new Set([...state.otherAntibodies.elements, action.payload.antibody])], saved: false},
         isSavedToDB: false
       };
     }
