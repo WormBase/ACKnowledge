@@ -37,9 +37,12 @@ const MultipleSelect = (props) => {
             }
         }
         if (tmpDeselectedItems.size > 0) {
+            let newSelectedItems = selectedItems;
             [...tmpDeselectedItems].forEach((item) => {
+                newSelectedItems = newSelectedItems.filter(selItem => selItem !== item);
                props.remItemFunction(item);
             });
+            setSelectedItems(newSelectedItems);
         }
     }
 
