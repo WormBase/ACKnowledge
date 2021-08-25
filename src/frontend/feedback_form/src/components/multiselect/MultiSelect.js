@@ -86,20 +86,9 @@ const MultipleSelect = (props) => {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-sm-8">
+                            <div className="col-sm-12">
                                 <FormControl type="text" bsSize="sm" onChange={handleFilterIdChange}
                                        placeholder={"Start typing to filter " + props.itemsNamePlural + " list"}/>
-                            </div>
-                            <div className="col-sm-4">
-                                <Button className="pull-right" bsSize="small" onClick={() => {
-                                    const element = document.createElement("a");
-                                    const file = new Blob([[... selectedItemsToDisplay].sort().join("\n")],
-                                        {type: 'text/plain'});
-                                    element.href = URL.createObjectURL(file);
-                                    element.download = props.itemsNamePlural + ".txt";
-                                    document.body.appendChild(element); // Required for this to work in FireFox
-                                    element.click();
-                                }}>Export .txt</Button>
                             </div>
                         </div>
                         <div className="row">
@@ -121,12 +110,33 @@ const MultipleSelect = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-sm-12">
-                                &nbsp;
+                                {props.linkWB ?
+                                    <Button bsSize="small" bsStyle="link" onClick={() => {
+                                        if (selectedItems.length > 0) {
+                                            selectedItems.forEach((item) => {
+                                                let itemNameIdArr = item.split(' ( ');
+                                                if (itemNameIdArr.length > 1) {
+                                                    window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
+                                                }
+                                            });
+                                        }
+                                    }}>
+                                        Show selected on WB
+                                    </Button>
+                                    : ""}
+                                <Button className="pull-right" bsSize="small" bsStyle="link" onClick={() => {
+                                    const element = document.createElement("a");
+                                    const file = new Blob([[... selectedItemsToDisplay].sort().join("\n")],
+                                        {type: 'text/plain'});
+                                    element.href = URL.createObjectURL(file);
+                                    element.download = props.itemsNamePlural + ".txt";
+                                    document.body.appendChild(element); // Required for this to work in FireFox
+                                    element.click();
+                                }}>Export .txt</Button>
                             </div>
                         </div>
-
                         <div className="row">
-                            <div className="col-sm-6">
+                            <div className="col-sm-12">
                                 {showAddFromWB ?
                                 <Button
                                     bsStyle="info"
@@ -135,20 +145,6 @@ const MultipleSelect = (props) => {
                                     <Glyphicon glyph="minus-sign"/>
                                     &nbsp; Remove selected
                                 </Button> : null}
-                            </div>
-                            <div className="col-sm-6">
-                                {props.linkWB && selectedItems.length > 0 ?
-                                    <Button bsSize="small" onClick={() => {
-                                        selectedItems.forEach((item) => {
-                                            let itemNameIdArr = item.split(' ( ');
-                                            if (itemNameIdArr.length > 1) {
-                                                window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
-                                            }
-                                        });
-                                    }}>
-                                        Show selected on WB
-                                    </Button>
-                                    : ""}
                             </div>
                         </div>
                     </div>
