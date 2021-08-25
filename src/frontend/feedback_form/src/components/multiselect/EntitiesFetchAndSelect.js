@@ -13,7 +13,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
 
-    const searchEntities = searchString.split(/[\s,/\n]+/).map(e => e.trim()).filter(e => e !== "");
+    const searchEntities = searchString.split(/[\t,/\n]+/).map(e => e.trim()).filter(e => e !== "");
 
     const apiQueries = useQueries(searchEntities.map(entity => ({
         queryKey: ['apiQuery', entity],
@@ -35,7 +35,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
         unorderedResults.forEach(res => {
             if (!exactMatchOnly) {
                 resultsMergedSecond.push(res);
-            } else if (toMatch.has(res.split(' ')[0]) || toMatch.has(res.split(' ')[2])) {
+            } else if (toMatch.has(res.split(' ( ')[0]) || (res.split(' ( ')[1] !== undefined && toMatch.has(res.split(' ( ')[1].split(' )')[0]))) {
                 resultsMergedFirst.push(res);
             }
         });
