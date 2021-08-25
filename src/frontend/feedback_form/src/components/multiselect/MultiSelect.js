@@ -111,7 +111,7 @@ const MultipleSelect = (props) => {
                                              defaultValue=""
                                              style={{height: '200px'}}>
                                     {[...selectedItemsToDisplay].sort().map(item =>
-                                        <option style={new Set(props.addedItems).has(item) ? {color: "blue"} : {color: "black"}}>{item}</option>
+                                        <option style={new Set(props.addedItems).has(item) ? {color: "blue"} : {color: "black"}} data-toggle="tooltip" title={item}>{item}</option>
                                     )}
                                 </FormControl>
                             </div>
