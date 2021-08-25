@@ -77,7 +77,6 @@ const Reagent = (props) => {
                             remItemFunction={(transgene) => props.removeTransgene(transgene)}
                             searchType={"transgene"}
                             sampleQuery={"e.g. ctIs40"}
-                            listIDsAPI={'http://rest.wormbase.org/rest/field/transgene/'}
                         />
                     </Panel.Body>
                 </Panel>

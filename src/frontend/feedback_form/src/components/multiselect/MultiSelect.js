@@ -200,7 +200,6 @@ MultipleSelect.propTypes = {
     hideListIDs: PropTypes.bool,
     searchType: PropTypes.string,
     sampleQuery: PropTypes.string,
-    listIDsAPI: PropTypes.string
 }
 
 export default MultipleSelect;

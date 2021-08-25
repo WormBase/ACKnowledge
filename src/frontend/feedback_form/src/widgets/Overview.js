@@ -56,7 +56,6 @@ const Overview = (props) => {
                 remItemFunction={(gene) => props.removeGene(gene)}
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
-                listIDsAPI={'http://rest.wormbase.org/rest/field/gene/'}
             />);
     }
     return (
