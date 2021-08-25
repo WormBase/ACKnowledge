@@ -104,11 +104,17 @@ export default function(state = initialState, action) {
             };
         }
         case ADD_STRAIN: {
+            let newStrainsArr = [...new Set([...state.strains.elements, action.payload.strain])];
+            let currStrainsNamesOnlySet =  new Set(state.strains.elements.map(strain => strain.split(" ( ")[0]));
+            let newStrainNameOnly = action.payload.strain.split(" ( ")[0];
+            if (currStrainsNamesOnlySet.has(newStrainNameOnly)) {
+                newStrainsArr = state.strains.elements;
+            }
             return {
                 ...state,
                 alleles: state.alleles,
                 strains: {
-                    elements: [...new Set([...state.strains.elements, action.payload.strain])],
+                    elements: newStrainsArr,
                     saved: false
                 },
                 addedStrains: [...new Set([...state.addedStrains, action.payload.strain])],
