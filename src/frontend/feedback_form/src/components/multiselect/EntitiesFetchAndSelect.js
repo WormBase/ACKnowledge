@@ -7,11 +7,13 @@ import FormControl from "react-bootstrap/lib/FormControl";
 import Button from "react-bootstrap/lib/Button";
 import {useQueries} from "react-query";
 import axios from "axios";
+import NoEntitiesSelectedModal from "./NoEntitiesSelectedModal";
 
 
 const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType, addItemFunction, selectAll}) => {
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
+    const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
 
     const searchEntities = searchString.split(/[\t,/\n]+/).map(e => e.trim()).filter(e => e !== "");
 
@@ -68,6 +70,8 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
             [...itemsToAdd].forEach((item) => {
                addItemFunction(item);
             });
+        } else {
+            setShowNoEntitiesSelected(true);
         }
     }
 
@@ -86,7 +90,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                             Wormbase Helpdesk</a>.
                         </Alert> : null}
                         <FormControl componentClass="select" multiple
-                                     style={{height: '170px'}}
+                                     style={{height: '180px'}}
                                      defaultValue=""
                                      onChange={(e) => setTmpSelectedItems(new Set([...e.target].filter(option => option.selected).map(option => option.value)))}
                                      onDoubleClick={addMultipleItems}>
@@ -105,7 +109,6 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                 <div className="col-sm-10">
                     <Button bsStyle="info" bsSize="small" onClick={() => {
                         addMultipleItems();
-                        setTmpSelectedItems(new Set());
                     }}><Glyphicon glyph="plus-sign"/>
                         &nbsp; Add selected</Button>
                 </div>
@@ -123,6 +126,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                     Some results matching the query have been omitted. Try a different query to narrow down the results.
                 </div>
             </div> : null}
+            <NoEntitiesSelectedModal show={showNoEntitiesSelected} close={() => setShowNoEntitiesSelected(false)}/>
         </div>
     )
 }

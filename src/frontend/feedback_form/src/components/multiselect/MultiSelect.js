@@ -10,10 +10,12 @@ import {
     Tooltip
 } from "react-bootstrap";
 import AutoComplete from "./AutoComplete";
+import NoEntitiesSelectedModal from "./NoEntitiesSelectedModal";
 
 const MultipleSelect = (props) => {
 
     let selected = new Set(props.items);
+    const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
     const [showAddFromWB, setAddFromWB] = useState(false);
     const [selectedItemsToDisplay, setSelectedItemsToDisplay] = useState(selected);
     const [selectedItemsAll, setSelectedItemsAll] = useState(selected);
@@ -38,11 +40,16 @@ const MultipleSelect = (props) => {
         }
         if (tmpDeselectedItems.size > 0) {
             let newSelectedItems = selectedItems;
+            let newTmpDeselectedItems = [...tmpDeselectedItems];
             [...tmpDeselectedItems].forEach((item) => {
                 newSelectedItems = newSelectedItems.filter(selItem => selItem !== item);
+                newTmpDeselectedItems = newTmpDeselectedItems.filter(selItem => selItem !== item);
                props.remItemFunction(item);
             });
             setSelectedItems(newSelectedItems);
+            setTmpDeselectedItems(new Set(newTmpDeselectedItems));
+        } else {
+            setShowNoEntitiesSelected(true);
         }
     }
 
@@ -138,13 +145,14 @@ const MultipleSelect = (props) => {
                         <div className="row">
                             <div className="col-sm-12">
                                 {showAddFromWB ?
-                                <Button
-                                    bsStyle="info"
-                                    bsSize="small"
-                                    onClick={handleRemSelectedFromList}>
-                                    <Glyphicon glyph="minus-sign"/>
-                                    &nbsp; Remove selected
-                                </Button> : null}
+                                    <Button
+                                        bsStyle="info"
+                                        bsSize="small"
+                                        onClick={handleRemSelectedFromList}>
+                                        <Glyphicon glyph="minus-sign"/>
+                                        &nbsp; Remove selected
+                                    </Button>
+                                    : null}
                             </div>
                         </div>
                     </div>
@@ -165,7 +173,7 @@ const MultipleSelect = (props) => {
                                             <Button bsClass="btn btn-info wrap-button" bsStyle="info"
                                                     onClick={handleRemSelectedFromList}>
                                     <Glyphicon glyph="minus-sign"/>
-                                    &nbsp; Remove selected
+                                    &nbsp; Remove {props.itemsNamePlural}
                                 </Button>
                                         </center>
                                     </div>
@@ -185,6 +193,7 @@ const MultipleSelect = (props) => {
                     </div>
                 </div>
             </div>
+            <NoEntitiesSelectedModal show={showNoEntitiesSelected} close={() => setShowNoEntitiesSelected(false)}/>
         </div>
     );
 }
