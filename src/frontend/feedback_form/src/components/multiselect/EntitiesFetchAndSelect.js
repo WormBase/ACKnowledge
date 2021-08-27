@@ -32,12 +32,12 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
         let remAddInfo = searchType === "species";
         let resultsMergedFirst = []
         let resultsMergedSecond = []
-        let toMatch = new Set(searchEntities);
+        let toMatch = new Set(searchEntities.map(entity => entity.toLowerCase()));
         let unorderedResults = apiQueries.map(res => res.data.data).join('\n').split('\n');
         unorderedResults.forEach(res => {
             if (!exactMatchOnly) {
                 resultsMergedSecond.push(res);
-            } else if (toMatch.has(res.split(' ( ')[0]) || (res.split(' ( ')[1] !== undefined && toMatch.has(res.split(' ( ')[1].split(' )')[0]))) {
+            } else if (toMatch.has(res.split(' ( ')[0].toLowerCase()) || (res.split(' ( ')[1] !== undefined && toMatch.has(res.split(' ( ')[1].split(' )')[0].toLowerCase()))) {
                 resultsMergedFirst.push(res);
             }
         });
