@@ -68,6 +68,7 @@ const Genetics = (props) => {
                 searchType={"variation"}
                 sampleQuery={"e.g. e1000"}
                 defaultExactMatchOnly={true}
+                autocompletePlaceholder={"Enter one or more allele name or ID, e.g. e1000 or WBVar00143672, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
             />);
     }
     let strainsListComponent;
@@ -87,6 +88,7 @@ const Genetics = (props) => {
                 remItemFunction={(strain) => props.removeStrain(strain)}
                 searchType={"strain"}
                 sampleQuery={"e.g. CB4856"}
+                autocompletePlaceholder={"Enter one or more Strain name or ID, e.g. CB1001 or WBStrain00004222, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
             />);
     }
     return (

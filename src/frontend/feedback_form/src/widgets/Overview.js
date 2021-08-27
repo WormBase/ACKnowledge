@@ -58,6 +58,7 @@ const Overview = (props) => {
                 sampleQuery={"e.g. dbl-1"}
                 defaultExactMatchOnly={true}
                 exactMatchTooltip={'Uncheck this option to see genes from more species'}
+                autocompletePlaceholder={"Enter one or more gene name or ID, e.g. unc-26 or WBGene00006763, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
             />);
     }
     return (
@@ -157,6 +158,7 @@ const Overview = (props) => {
                             searchType={"species"}
                             sampleQuery={"e.g. Caenorhabditis"}
                             defaultExactMatchOnly={true}
+                            autocompletePlaceholder={"Enter one or more species name, e.g. Caenorhabditis elegans, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
                             hideListIDs
                         />
                     </Panel.Body>

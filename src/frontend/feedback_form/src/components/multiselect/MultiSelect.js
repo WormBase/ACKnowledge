@@ -184,6 +184,7 @@ const MultipleSelect = (props) => {
                                                   searchType={props.searchType}
                                                   defaultExactMatchOnly={props.defaultExactMatchOnly}
                                                   exactMatchTooltip={props.exactMatchTooltip}
+                                                  autocompletePlaceholder={props.autocompletePlaceholder}
                                     />
                                     : ""}
                             </div>
@@ -212,7 +213,8 @@ MultipleSelect.propTypes = {
     searchType: PropTypes.string,
     sampleQuery: PropTypes.string,
     defaultExactMatchOnly: PropTypes.bool,
-    exactMatchTooltip: PropTypes.string
+    exactMatchTooltip: PropTypes.string,
+    autocompletePlaceholder: PropTypes.string.isRequired
 }
 
 MultipleSelect.defaultProps = {

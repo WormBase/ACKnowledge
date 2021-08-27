@@ -6,7 +6,7 @@ import EntitiesFetchAndSelect from "./EntitiesFetchAndSelect";
 import Tooltip from "react-bootstrap/lib/Tooltip";
 
 
-const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly, exactMatchTooltip}) => {
+const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly, exactMatchTooltip, autocompletePlaceholder}) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState('');
     const [selectAll, setSelectAll] = useState(false);
@@ -17,7 +17,7 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, de
                 <div className="row">
                     <div className="col-sm-12">
                         <FormControl componentClass="textarea" rows="4" bsSize="sm"
-                                     placeholder={"Autocomplete on one or more name or ID. Type or paste entities separated by comma, whitespace, or newline"}
+                                     placeholder={autocompletePlaceholder}
                                      onChange={(e) => {setSearchString(e.target.value)}}
                         />
                     </div>
@@ -63,7 +63,8 @@ AutoComplete.propTypes = {
     addItemFunction: PropTypes.func,
     searchType: PropTypes.string,
     itemsNameSingular: PropTypes.string,
-    exactMatchTooltip: PropTypes.string
+    exactMatchTooltip: PropTypes.string,
+    autocompletePlaceholder: PropTypes.string.isRequired,
 }
 
 AutoComplete.defaultProps = {

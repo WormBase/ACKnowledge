@@ -77,6 +77,7 @@ const Reagent = (props) => {
                             remItemFunction={(transgene) => props.removeTransgene(transgene)}
                             searchType={"transgene"}
                             sampleQuery={"e.g. ctIs40"}
+                            autocompletePlaceholder={"Enter one or more Transgene name or ID, e.g. inIs179 or WBTransgene00000647, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
                         />
                     </Panel.Body>
                 </Panel>
