@@ -67,6 +67,7 @@ const Genetics = (props) => {
                 remItemFunction={(allele) => props.removeAllele(allele)}
                 searchType={"variation"}
                 sampleQuery={"e.g. e1000"}
+                defaultExactMatchOnly={true}
             />);
     }
     let strainsListComponent;

@@ -5,8 +5,8 @@ import Checkbox from "react-bootstrap/lib/Checkbox";
 import EntitiesFetchAndSelect from "./EntitiesFetchAndSelect";
 
 
-const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular}) => {
-    const [exactMatchOnly, setExactMatchOnly] = useState(false);
+const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly}) => {
+    const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState('');
     const [selectAll, setSelectAll] = useState(false);
 
