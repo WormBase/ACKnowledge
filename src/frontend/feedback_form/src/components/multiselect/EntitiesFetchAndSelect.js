@@ -93,7 +93,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                                      style={{height: '180px'}}
                                      defaultValue=""
                                      onChange={(e) => setTmpSelectedItems(new Set([...e.target].filter(option => option.selected).map(option => option.value)))}
-                                     onDoubleClick={addMultipleItems}>
+                                     onDoubleClick={addMultipleItems} disabled={selectAll} >
                             {[...availableItems].map(item =>
                                 <option selected={item.selected || selectAll} data-toggle="tooltip" title={item}>{item}</option>)}
                         </FormControl>
