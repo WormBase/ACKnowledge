@@ -165,9 +165,9 @@ class FeedbackFormWriter:
                                                                                        tiny_url,
                                                                                        self.test)
                     self.email_manager.send_email(("[Dev Test] " if self.test else "") + "Thank you for submitting your data to WormBase",
-                                                  "We have received your AFP data submission for the following publication:<br/><br/>" +
+                                                  "Thank you for your participation in WormBase Author First Pass.<br/><br/>We have received your AFP data submission for the following publication:<br/><br/>" +
                                                   paper_title + "<br/>WBPaperID: " + paper_id +
-                                                  "<br/><br/>Thank you for using WormBase Author First Pass.<br/><br/>The AFP Team",
+                                                  "<br/><br/>We appreciate your time and effort.<br/>The AFP Team",
                                                   ([author_email] if not self.test else self.admin_emails))
                 resp.body = '{"result": "success"}'
                 resp.status = falcon.HTTP_200
