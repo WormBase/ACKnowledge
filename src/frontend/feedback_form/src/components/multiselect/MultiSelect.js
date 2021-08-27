@@ -182,7 +182,9 @@ const MultipleSelect = (props) => {
                                     <AutoComplete close={() => setAddFromWB(false)}
                                                   addItemFunction={props.addItemFunction}
                                                   searchType={props.searchType}
-                                                  defaultExactMatchOnly={props.defaultExactMatchOnly} />
+                                                  defaultExactMatchOnly={props.defaultExactMatchOnly}
+                                                  exactMatchTooltip={props.exactMatchTooltip}
+                                    />
                                     : ""}
                             </div>
                         </div>
@@ -209,11 +211,13 @@ MultipleSelect.propTypes = {
     hideListIDs: PropTypes.bool,
     searchType: PropTypes.string,
     sampleQuery: PropTypes.string,
-    defaultExactMatchOnly: PropTypes.bool
+    defaultExactMatchOnly: PropTypes.bool,
+    exactMatchTooltip: PropTypes.string
 }
 
 MultipleSelect.defaultProps = {
-    defaultExactMatchOnly: false
+    defaultExactMatchOnly: false,
+    exactMatchTooltip: false
 }
 
 export default MultipleSelect;

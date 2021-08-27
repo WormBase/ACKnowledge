@@ -1,11 +1,12 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
-import {FormControl} from "react-bootstrap";
+import {FormControl, OverlayTrigger} from "react-bootstrap";
 import Checkbox from "react-bootstrap/lib/Checkbox";
 import EntitiesFetchAndSelect from "./EntitiesFetchAndSelect";
+import Tooltip from "react-bootstrap/lib/Tooltip";
 
 
-const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly}) => {
+const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly, exactMatchTooltip}) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState('');
     const [selectAll, setSelectAll] = useState(false);
@@ -28,11 +29,22 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, de
                             Select all</Checkbox>
                     </div>
                     <div className="col-sm-6">
-                        <div className="pull-right">
-                            <Checkbox checked={exactMatchOnly}
-                                      onClick={() => setExactMatchOnly(exactMatchOnly => !exactMatchOnly)}>
-                                Exact match only</Checkbox>
-                        </div>
+                        {exactMatchTooltip !== false ?
+                            <OverlayTrigger placement="top" overlay={<Tooltip>{exactMatchTooltip}</Tooltip>}>
+                                <div className="pull-right">
+                                    <Checkbox checked={exactMatchOnly}
+                                              onClick={() => setExactMatchOnly(exactMatchOnly => !exactMatchOnly)}>
+                                        Exact match only</Checkbox>
+                                </div>
+                            </OverlayTrigger>
+                            :
+                            <div className="pull-right">
+                                <Checkbox checked={exactMatchOnly}
+                                          onClick={() => setExactMatchOnly(exactMatchOnly => !exactMatchOnly)}>
+                                    Exact match only
+                                </Checkbox>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className="row">
@@ -50,7 +62,12 @@ AutoComplete.propTypes = {
     close: PropTypes.func,
     addItemFunction: PropTypes.func,
     searchType: PropTypes.string,
-    itemsNameSingular: PropTypes.string
+    itemsNameSingular: PropTypes.string,
+    exactMatchTooltip: PropTypes.string
+}
+
+AutoComplete.defaultProps = {
+    exactMatchTooltip: false
 }
 
 export default AutoComplete

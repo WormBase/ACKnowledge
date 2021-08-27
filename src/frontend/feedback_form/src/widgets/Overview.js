@@ -57,6 +57,7 @@ const Overview = (props) => {
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
                 defaultExactMatchOnly={true}
+                exactMatchTooltip={'Uncheck this option to see genes from more species'}
             />);
     }
     return (
