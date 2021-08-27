@@ -64,7 +64,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
     const addMultipleItems = () => {
         let itemsToAdd = tmpSelectedItems;
         if (selectAll) {
-            itemsToAdd = availableItems;
+            itemsToAdd = new Set([...availableItems].map(item => item.trim()));
         }
         if (itemsToAdd.size > 0) {
             [...itemsToAdd].forEach((item) => {
