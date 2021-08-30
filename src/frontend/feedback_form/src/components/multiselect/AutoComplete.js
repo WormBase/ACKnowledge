@@ -9,7 +9,6 @@ import Tooltip from "react-bootstrap/lib/Tooltip";
 const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, defaultExactMatchOnly, exactMatchTooltip, autocompletePlaceholder}) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState('');
-    const [selectAll, setSelectAll] = useState(false);
 
     return (
         <div>
@@ -23,12 +22,7 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, de
                     </div>
                 </div>
                 <div className="row">
-                    <div className="col-sm-6">
-                        <Checkbox checked={selectAll}
-                                  onClick={() => setSelectAll(selectAll => !selectAll)}>
-                            Select all</Checkbox>
-                    </div>
-                    <div className="col-sm-6">
+                    <div className="col-sm-12">
                         {exactMatchTooltip !== false ?
                             <OverlayTrigger placement="top" overlay={<Tooltip>{exactMatchTooltip}</Tooltip>}>
                                 <div className="pull-right">
@@ -50,7 +44,7 @@ const AutoComplete = ({close, addItemFunction, searchType, itemsNameSingular, de
                 <div className="row">
                     <div className="col-sm-12">
                         <EntitiesFetchAndSelect close={close} searchString={searchString} exactMatchOnly={exactMatchOnly}
-                                                addItemFunction={addItemFunction} searchType={searchType} selectAll={selectAll} />
+                                                addItemFunction={addItemFunction} searchType={searchType} />
                     </div>
                 </div>
             </div>

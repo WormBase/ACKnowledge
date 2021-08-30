@@ -10,7 +10,7 @@ import axios from "axios";
 import NoEntitiesSelectedModal from "./NoEntitiesSelectedModal";
 
 
-const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType, addItemFunction, selectAll}) => {
+const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType, addItemFunction}) => {
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
     const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
@@ -61,9 +61,9 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
         }
     }
 
-    const addMultipleItems = () => {
+    const addMultipleItems = (addAll) => {
         let itemsToAdd = tmpSelectedItems;
-        if (selectAll) {
+        if (addAll) {
             itemsToAdd = new Set([...availableItems].map(item => item.trim()));
         }
         if (itemsToAdd.size > 0) {
@@ -93,9 +93,9 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                                      style={{height: '180px'}}
                                      defaultValue=""
                                      onChange={(e) => setTmpSelectedItems(new Set([...e.target].filter(option => option.selected).map(option => option.value)))}
-                                     onDoubleClick={addMultipleItems} disabled={selectAll} >
+                                     onDoubleClick={() => addMultipleItems(false)} >
                             {[...availableItems].map(item =>
-                                <option selected={item.selected || selectAll} data-toggle="tooltip" title={item}>{item}</option>)}
+                                <option selected={item.selected} data-toggle="tooltip" title={item}>{item}</option>)}
                         </FormControl>
                     </LoadingOverlay>
                 </div>
@@ -106,14 +106,20 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
                 </div>
             </div>
             <div className="row">
-                <div className="col-sm-10">
+                <div className="col-sm-5">
                     <Button bsStyle="info" bsSize="small" onClick={() => {
-                        addMultipleItems();
+                        addMultipleItems(false);
                     }}><Glyphicon glyph="plus-sign"/>
                         &nbsp; Add selected</Button>
                 </div>
-                <div>
-                    <Button bsSize="small" onClick={close}>Back</Button>
+                <div className="col-sm-4">
+                    <Button bsStyle="info" bsSize="small" onClick={() => {
+                        addMultipleItems(true);
+                    }}><Glyphicon glyph="plus-sign"/>
+                        &nbsp; Add all</Button>
+                </div>
+                <div className="col-sm-3">
+                    <Button className="pull-right" bsSize="small" onClick={close}>Back</Button>
                 </div>
             </div>
             <div className="row">
