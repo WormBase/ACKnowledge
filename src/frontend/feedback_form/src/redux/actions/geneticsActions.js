@@ -13,6 +13,7 @@ export const REMOVE_OTHER_ALLELE = "REMOVE_OTHER_ALLELE";
 export const SET_OTHER_STRAINS = "SET_OTHER_STRAINS";
 export const ADD_OTHER_STRAIN = "ADD_OTHER_STRAIN";
 export const REMOVE_OTHER_STRAIN = "REMOVE_OTHER_STRAIN";
+export const SET_STRAIN_ALREADY_PRESENT_ERROR = "SET_STRAIN_ALREADY_PRESENT_ERROR";
 
 
 export const setAlleles = (elements, saved) => ({
@@ -120,3 +121,8 @@ export const removeOtherStrain = strain => ({
         strain
     }
 });
+
+export const setStrainAlreadyPresentError = errorMessage => ({
+    type: SET_STRAIN_ALREADY_PRESENT_ERROR,
+    payload: { errorMessage }
+})

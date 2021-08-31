@@ -12,7 +12,7 @@ import {
     addStrain,
     removeAllele, removeOtherAllele, removeOtherStrain,
     removeStrain, setIsGeneticsSavedToDB, setOtherAlleles, setOtherStrains,
-    setSequenceChange,
+    setSequenceChange, setStrainAlreadyPresentError,
     toggleSequenceChange
 } from "../redux/actions/geneticsActions";
 import {
@@ -21,7 +21,7 @@ import {
     getAlleles,
     getOtherAlleles,
     getOtherStrains,
-    getSequenceChange,
+    getSequenceChange, getStrainAlreadyPresentError,
     getStrains, isGeneticsSavedToDB
 } from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
@@ -31,6 +31,7 @@ import {WIDGET} from "../constants";
 import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
+import Modal from "react-bootstrap/lib/Modal";
 
 const Genetics = (props) => {
 
@@ -209,6 +210,15 @@ const Genetics = (props) => {
                 }}>Save and continue
                 </Button>
             </div>
+            <Modal show={props.strainAlreadyPresentError} onHide={()=>props.setStrainAlreadyPresentError(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>One or more strains were not added</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Some of the added strains are already present in the final list and were not added</Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={()=>props.setStrainAlreadyPresentError(false)}>Close</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
@@ -223,9 +233,10 @@ const mapStateToProps = state => ({
     isSavedToDB: isGeneticsSavedToDB(state),
     paperPasswd: getPaperPassword(state),
     addedStrains: getAddedStrains(state),
-    addedAlleles: getAddedAlleles(state)
+    addedAlleles: getAddedAlleles(state),
+    strainAlreadyPresentError: getStrainAlreadyPresentError(state)
 });
 
 export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,
     toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles,
-    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, saveWidgetData})(Genetics);
+    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, saveWidgetData, setStrainAlreadyPresentError})(Genetics);

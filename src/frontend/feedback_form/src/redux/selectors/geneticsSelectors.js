@@ -17,3 +17,5 @@ export const getOtherStrains = store => getGeneticsState(store) ? getGeneticsSta
 
 export const getAddedStrains = store => getGeneticsState(store) ? getGeneticsState(store).addedStrains : [];
 export const getAddedAlleles = store => getGeneticsState(store) ? getGeneticsState(store).addedAlleles : [];
+
+export const getStrainAlreadyPresentError = store => getGeneticsState(store) ? getGeneticsState(store).strainAlreadyPresentError : false;

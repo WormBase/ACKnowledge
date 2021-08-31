@@ -13,7 +13,7 @@ import {
     REMOVE_OTHER_ALLELE,
     SET_OTHER_STRAINS,
     ADD_OTHER_STRAIN,
-    REMOVE_OTHER_STRAIN
+    REMOVE_OTHER_STRAIN, SET_STRAIN_ALREADY_PRESENT_ERROR
 } from "../actions/geneticsActions";
 
 
@@ -40,7 +40,8 @@ const initialState = {
         elements: [ { id: 1, name: "" } ],
         saved: false
     },
-    isSavedToDB: false
+    isSavedToDB: false,
+    strainAlreadyPresentError: false,
 };
 
 export default function(state = initialState, action) {
@@ -107,8 +108,10 @@ export default function(state = initialState, action) {
             let newStrainsArr = [...new Set([...state.strains.elements, action.payload.strain])];
             let currStrainsNamesOnlySet =  new Set(state.strains.elements.map(strain => strain.split(" ( ")[0]));
             let newStrainNameOnly = action.payload.strain.split(" ( ")[0];
+            let newStrainAlreadyPresentError = state.strainAlreadyPresentError;
             if (currStrainsNamesOnlySet.has(newStrainNameOnly)) {
                 newStrainsArr = state.strains.elements;
+                newStrainAlreadyPresentError = true
             }
             return {
                 ...state,
@@ -122,7 +125,8 @@ export default function(state = initialState, action) {
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
-                isSavedToDB: false
+                isSavedToDB: false,
+                strainAlreadyPresentError: newStrainAlreadyPresentError
             };
         }
         case REMOVE_STRAIN: {
@@ -262,6 +266,12 @@ export default function(state = initialState, action) {
                 addedStrains: state.addedStrains,
                 isSavedToDB: state.isSavedToDB
             };
+        }
+        case SET_STRAIN_ALREADY_PRESENT_ERROR: {
+            return {
+                ...state,
+                strainAlreadyPresentError: action.payload.errorMessage
+            }
         }
         default:
             return state;
