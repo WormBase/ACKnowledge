@@ -157,7 +157,7 @@ const Overview = (props) => {
                             remItemFunction={(species) => props.removeSpecies(species)}
                             searchType={"species"}
                             sampleQuery={"e.g. Caenorhabditis"}
-                            defaultExactMatchOnly={true}
+                            defaultExactMatchOnly={false}
                             autocompletePlaceholder={"Enter one or more species name, e.g. Caenorhabditis elegans, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
                             hideListIDs
                         />
