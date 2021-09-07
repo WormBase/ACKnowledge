@@ -212,9 +212,9 @@ const Genetics = (props) => {
             </div>
             <Modal show={props.strainAlreadyPresentError} onHide={()=>props.setStrainAlreadyPresentError(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>One or more strains were not added</Modal.Title>
+                    <Modal.Title>One or more strains were replaced by the added strain(s)</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Some of the added strains are already present in the final list and were not added</Modal.Body>
+                <Modal.Body>Some of the added strains were already present in the final list and were replaced by the added strains</Modal.Body>
                 <Modal.Footer>
                     <Button onClick={()=>props.setStrainAlreadyPresentError(false)}>Close</Button>
                 </Modal.Footer>

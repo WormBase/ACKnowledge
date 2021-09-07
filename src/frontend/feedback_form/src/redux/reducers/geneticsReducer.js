@@ -110,7 +110,7 @@ export default function(state = initialState, action) {
             let newStrainNameOnly = action.payload.strain.split(" ( ")[0];
             let newStrainAlreadyPresentError = state.strainAlreadyPresentError;
             if (currStrainsNamesOnlySet.has(newStrainNameOnly)) {
-                newStrainsArr = state.strains.elements;
+                newStrainsArr = [...new Set([...[...state.strains.elements].filter(e => e !== newStrainNameOnly), action.payload.strain])];
                 newStrainAlreadyPresentError = true
             }
             return {
