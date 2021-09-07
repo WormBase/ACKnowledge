@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import LoadingOverlay from 'react-loading-overlay';
 import PropTypes from "prop-types";
 import Alert from "react-bootstrap/lib/Alert";
@@ -14,6 +14,10 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
 
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
     const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
+
+    useEffect(() => {
+        setTmpSelectedItems(new Set());
+    }, [searchString])
 
     const searchEntities = searchString.split(/[\t,/\n]+/).map(e => e.trim()).filter(e => e !== "");
 
