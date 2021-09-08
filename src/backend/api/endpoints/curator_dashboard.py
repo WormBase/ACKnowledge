@@ -14,9 +14,11 @@ MIN_CLASS_VAL = "medium"
 
 class CuratorDashboardReader:
 
-    def __init__(self, db_manager: WBDBManager, afp_base_url: str):
+    def __init__(self, db_manager: WBDBManager, afp_base_url: str, tazendra_username, tazendra_password):
         self.db = db_manager
         self.afp_base_url = afp_base_url
+        self.tazendra_username = tazendra_username
+        self.tazendra_password = tazendra_password
 
     @staticmethod
     def transform_none_to_string(val):
@@ -78,6 +80,9 @@ class CuratorDashboardReader:
         svm_overexpr = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
                                                                  cl="overexpr", min_value=MIN_CLASS_VAL)
         afp_overexpr_checked, afp_overexpr_details = self.get_class_author_sub_val("afp_overexpr", paper_id)
+        svm_catalyticact = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
+                                                                     cl="catalyticact", min_value=MIN_CLASS_VAL)
+        afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
         return {"svm_otherexpr_checked": svm_otherexpr, "afp_otherexpr_checked": afp_otherexpr_checked,
                 "afp_otherexpr_details": afp_otherexpr_details,
                 "svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
@@ -90,7 +95,9 @@ class CuratorDashboardReader:
                 "afp_newmutant_details": afp_newmutant_details, "svm_rnai_checked": svm_rnai,
                 "afp_rnai_checked": afp_rnai_checked, "afp_rnai_details": afp_rnai_details,
                 "svm_overexpr_checked": svm_overexpr, "afp_overexpr_checked": afp_overexpr_checked,
-                "afp_overexpr_details": afp_overexpr_details}
+                "afp_overexpr_details": afp_overexpr_details,
+                "svm_catalyticact_checked": svm_catalyticact, "afp_catalyticact_checked": afp_catalyticact_checked,
+                "afp_catalyticact_details": afp_catalyticact_details}
 
     def get_all_yes_no_data_types(self, paper_id):
         afp_modchange_checked, afp_modchange_details = self.get_class_author_sub_val("afp_structcorr", paper_id)
@@ -184,6 +191,8 @@ class CuratorDashboardReader:
                                 '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
                                 '"afp_newmutant_details": {}, "svm_rnai_checked": "{}",' \
                                 ' "afp_rnai_checked": "{}", "afp_rnai_details": {}, ' \
+                                '"svm_catalyticact_checked": "{}", "afp_catalyticact_checked": "{}", ' \
+                                '"afp_catalyticact_details": {}, ' \
                                 '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
                                 '"afp_overexpr_details": {}}}'.format(
                         flagged_dict["svm_otherexpr_checked"], flagged_dict["afp_otherexpr_checked"], json.dumps(flagged_dict["afp_otherexpr_details"]),
@@ -193,6 +202,7 @@ class CuratorDashboardReader:
                         flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], json.dumps(flagged_dict["afp_genereg_details"]),
                         flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], json.dumps(flagged_dict["afp_newmutant_details"]),
                         flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], json.dumps(flagged_dict["afp_rnai_details"]),
+                        flagged_dict["svm_catalyticact_checked"], flagged_dict["afp_catalyticact_checked"], json.dumps(flagged_dict["afp_catalyticact_details"]),
                         flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], json.dumps(flagged_dict["afp_overexpr_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
@@ -204,7 +214,6 @@ class CuratorDashboardReader:
                                 '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": {}, ' \
                                 '"afp_chemphen_checked": "{}", "afp_chemphen_details": {}, ' \
                                 '"afp_envpheno_checked": "{}", "afp_envpheno_details": {}, ' \
-                                '"afp_catalyticact_checked": "{}", "afp_catalyticact_details": {}, ' \
                                 '"afp_humdis_checked": "{}", "afp_humdis_details": {}, ' \
                                 '"afp_additionalexpr": {}, "afp_othergenefunc_checked": "{}", ' \
                                 '"afp_othergenefunc_details": {}}}'.format(
@@ -215,7 +224,6 @@ class CuratorDashboardReader:
                                             other_yn["afp_rnaseq_checked"], json.dumps(other_yn["afp_rnaseq_details"]),
                                             other_yn["afp_chemphen_checked"], json.dumps(other_yn["afp_chemphen_details"]),
                                             other_yn["afp_envpheno_checked"], json.dumps(other_yn["afp_envpheno_details"]),
-                                            other_yn["afp_catalyticact_checked"], json.dumps(other_yn["afp_catalyticact_details"]),
                                             other_yn["afp_humdis_checked"], json.dumps(other_yn["afp_humdis_details"]),
                                             json.dumps(other_yn["afp_additionalexpr"]), other_yn["afp_othergenefunc_checked"],
                                             json.dumps(other_yn["afp_othergenefunc_details"]))
@@ -273,15 +281,19 @@ class CuratorDashboardReader:
                                                  must_be_autclass_positive_data_types=svm_filters,
                                                  must_be_positive_manual_flag_data_types=manual_filters,
                                                  must_be_curation_negative_data_types=curation_filters,
-                                                 combine_filters=combine_filters, count=True)
+                                                 combine_filters=combine_filters, count=True,
+                                                 tazendra_user=self.tazendra_username,
+                                                 tazendra_password=self.tazendra_password)
                         ids = self.db.afp.get_paper_ids_afp_no_submission(
                                                  must_be_autclass_positive_data_types=svm_filters,
                                                  must_be_positive_manual_flag_data_types=manual_filters,
                                                  must_be_curation_negative_data_types=curation_filters,
                                                  combine_filters=combine_filters,
                                                  offset=from_offset,
-                                                 limit=count)
-                        pap_titles = self.db.paper.get_papers_titles(paper_ids=ids)
+                                                 limit=count,
+                                                 tazendra_user=self.tazendra_username,
+                                                 tazendra_password=self.tazendra_password)
+                        pap_titles = self.db.paper.get_papers_titles(paper_ids=ids) if ids else []
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "submitted":
@@ -289,7 +301,8 @@ class CuratorDashboardReader:
                             must_be_autclass_positive_data_types=svm_filters,
                             must_be_positive_manual_flag_data_types=manual_filters,
                             must_be_curation_negative_data_types=curation_filters,
-                            combine_filters=combine_filters, count=True)
+                            combine_filters=combine_filters, count=True, tazendra_user=self.tazendra_username,
+                            tazendra_password=self.tazendra_password)
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
                                              self.db.afp.get_paper_ids_afp_full_submission(
@@ -298,13 +311,15 @@ class CuratorDashboardReader:
                                                  must_be_curation_negative_data_types=curation_filters,
                                                  combine_filters=combine_filters,
                                                  offset=from_offset,
-                                                 limit=count)])
+                                                 limit=count, tazendra_user=self.tazendra_username,
+                                                 tazendra_password=self.tazendra_password)])
                     elif list_type == "partial":
                         num_papers = self.db.afp.get_paper_ids_afp_partial_submission(
                             must_be_autclass_positive_data_types=svm_filters,
                             must_be_positive_manual_flag_data_types=manual_filters,
                             must_be_curation_negative_data_types=curation_filters,
-                            combine_filters=combine_filters, count=True)
+                            combine_filters=combine_filters, count=True, tazendra_user=self.tazendra_username,
+                            tazendra_password=self.tazendra_password)
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
                                              self.db.afp.get_paper_ids_afp_partial_submission(
@@ -313,7 +328,8 @@ class CuratorDashboardReader:
                                                  must_be_curation_negative_data_types=curation_filters,
                                                  combine_filters=combine_filters,
                                                  offset=from_offset,
-                                                 limit=count)])
+                                                 limit=count, tazendra_user=self.tazendra_username,
+                                                 tazendra_password=self.tazendra_password)])
                     elif list_type == "empty":
                         num_papers = self.db.afp.get_num_papers_no_entities()
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
@@ -338,7 +354,8 @@ class CuratorDashboardReader:
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=None, limit=None)])
+                                                offset=None, limit=None, tazendra_user=self.tazendra_username,
+                                                tazendra_password=self.tazendra_password)])
                     elif list_type == "submitted":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_paper_ids_afp_full_submission(
@@ -346,7 +363,8 @@ class CuratorDashboardReader:
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=None, limit=None)])
+                                                offset=None, limit=None, tazendra_user=self.tazendra_username,
+                                                tazendra_password=self.tazendra_password)])
                     elif list_type == "partial":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_paper_ids_afp_partial_submission(
@@ -354,7 +372,8 @@ class CuratorDashboardReader:
                                                 must_be_positive_manual_flag_data_types=manual_filters,
                                                 must_be_curation_negative_data_types=curation_filters,
                                                 combine_filters=combine_filters,
-                                                offset=None, limit=None)])
+                                                offset=None, limit=None, tazendra_user=self.tazendra_username,
+                                                tazendra_password=self.tazendra_password)])
                     elif list_type == "empty":
                         all_ids = ",".join(["\"" + pap_id + "\"" for pap_id in
                                             self.db.afp.get_list_papers_no_entities(0, 0)])

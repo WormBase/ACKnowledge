@@ -30,6 +30,9 @@ class FlaggedDataTypesTab extends React.Component {
             svm_overexpr_checked: "no",
             afp_overexpr_checked: "no",
             afp_overexpr_details: "",
+            svm_catalyticact_checked: "no",
+            afp_catalyticact_checked: "no",
+            afp_catalyticact_details: "",
             isLoading: false
         };
         this.loadDataFromAPI = this.loadDataFromAPI.bind(this);
@@ -95,6 +98,9 @@ class FlaggedDataTypesTab extends React.Component {
                     svm_overexpr_checked: data["svm_overexpr_checked"],
                     afp_overexpr_checked: data["afp_overexpr_checked"],
                     afp_overexpr_details: data["afp_overexpr_details"],
+                    svm_catalyticact_checked: data["svm_catalyticact_checked"],
+                    afp_catalyticact_checked: data["afp_catalyticact_checked"],
+                    afp_catalyticact_details: data["afp_catalyticact_details"],
                     isLoading: false
                 })
             }).catch((err) => {
@@ -158,6 +164,8 @@ class FlaggedDataTypesTab extends React.Component {
                                     tfpChecked={this.state.svm_rnai_checked} afpDetails={this.state.afp_rnai_details}/>
                     <FlaggedDiffRow title="Transgene overexpression phenotype" afpChecked={this.state.afp_overexpr_checked}
                                     tfpChecked={this.state.svm_overexpr_checked} afpDetails={this.state.afp_overexpr_details}/>
+                    <FlaggedDiffRow title="Enzymatic activity" afpChecked={this.state.afp_catalyticact_checked}
+                                    tfpChecked={this.state.svm_catalyticact_checked} afpDetails={this.state.afp_catalyticact_details}/>
                 </div>
             </LoadingOverlay>
         );

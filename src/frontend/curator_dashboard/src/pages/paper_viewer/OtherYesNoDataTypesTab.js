@@ -24,8 +24,6 @@ class OtherYesNoDataTypesTab extends React.Component {
             afp_chemphen_details: "",
             afp_envpheno_checked: "",
             afp_envpheno_details: "",
-            afp_catalyticact_checked: "",
-            afp_catalyticact_details: "",
             afp_humdis_checked: "",
             afp_humdis_details: "",
             afp_additionalexpr: "",
@@ -86,8 +84,6 @@ class OtherYesNoDataTypesTab extends React.Component {
                     afp_chemphen_details: data["afp_chemphen_details"],
                     afp_envpheno_checked: data["afp_envpheno_checked"],
                     afp_envpheno_details: data["afp_envpheno_details"],
-                    afp_catalyticact_checked: data["afp_catalyticact_checked"],
-                    afp_catalyticact_details: data["afp_catalyticact_details"],
                     afp_humdis_checked: data["afp_humdis_checked"],
                     afp_humdis_details: data["afp_humdis_details"],
                     afp_additionalexpr: data["afp_additionalexpr"],
@@ -154,9 +150,6 @@ class OtherYesNoDataTypesTab extends React.Component {
                     />
                     <FlaggedInfoRow title="Environmental induced phenotype" afpChecked={this.state.afp_envpheno_checked}
                                     afpDetails={this.state.afp_envpheno_details}
-                    />
-                    <FlaggedInfoRow title="Enzymatic activity" afpChecked={this.state.afp_catalyticact_checked}
-                                    afpDetails={this.state.afp_catalyticact_details}
                     />
                     <FlaggedInfoRow title="Human disease model" afpChecked={this.state.afp_humdis_checked}
                                     afpDetails={this.state.afp_humdis_details}

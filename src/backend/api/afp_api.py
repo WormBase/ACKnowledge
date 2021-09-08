@@ -61,7 +61,9 @@ def main():
                                               email_passwd=args.email_passwd)
     app.add_route('/api/read', feedback_form_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
-                                                      afp_base_url=args.afp_base_url)
+                                                      afp_base_url=args.afp_base_url,
+                                                      tazendra_username=args.tazendra_user,
+                                                      tazendra_password=args.tazendra_password)
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager, afp_base_url=args.afp_base_url,
                                                   email_passwd=args.email_passwd)
@@ -89,7 +91,9 @@ else:
                                               email_passwd=os.environ['AFP_EMAIL_PASSWD'])
     app.add_route('/api/read', feedback_form_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
-                                                      afp_base_url=os.environ['AFP_BASE_URL'])
+                                                      afp_base_url=os.environ['AFP_BASE_URL'],
+                                                      tazendra_username=os.environ['TAZENDRA_USER'],
+                                                      tazendra_password=os.environ['TAZENDRA_PASSWORD'])
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager,
                                                   afp_base_url=os.environ['AFP_BASE_URL'],
