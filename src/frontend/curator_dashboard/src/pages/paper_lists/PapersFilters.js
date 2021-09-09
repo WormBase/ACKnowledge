@@ -138,6 +138,8 @@ class PapersFilters extends React.Component {
                                                                     onChange={() => this.props.addRemFilterCallback("humdis", "manual")}/>
                                                         <Form.Check type="checkbox" label="Additional type of expression data"
                                                                     onChange={() => this.props.addRemFilterCallback("additionalexpr", "manual")}/>
+                                                        <Form.Check type="checkbox" label="Other gene function"
+                                                                    onChange={() => this.props.addRemFilterCallback("othergenefunc", "manual")}/>
                                                     </Col>
                                                 </Row>
                                             </Container>
