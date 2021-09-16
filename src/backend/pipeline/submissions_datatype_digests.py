@@ -4,8 +4,9 @@ import argparse
 import logging
 import json
 
+from wbtools.db.dbmanager import WBDBManager
+
 from src.backend.common.config import load_config_from_file
-from src.backend.common.dbmanager import DBManager
 from src.backend.common.emailtools import EmailManager
 
 AFP_WATCHERS_TABLES = {
@@ -46,26 +47,33 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
-    db_manager = DBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host,
-                           tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
+    db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
-    for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
-        for table_to_watch in tables_to_watch:
-            positive_papers_val = db_manager.get_positive_paper_ids_sumbitted_last_month_for_data_type(
-                table_to_watch)
-            if len(positive_papers_val) > 0:
-                if table_to_watch == "afp_othertransgene":
-                    positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
-                                           pap_id, val in positive_papers_val.items()}
-                elif table_to_watch == "afp_otherantibody":
-                    positive_papers_val = {pap_id: ", ".join(["name: " + tr_data["name"] + " publicationId:" +
-                                                              tr_data["publicationId"] for tr_data in json.loads(val)])
-                                           for pap_id, val in positive_papers_val.items()}
-                email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
+    with db_manager:
+        for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
+            for table_to_watch in tables_to_watch:
+                positive_papers_val = db_manager.afp.get_positive_paper_ids_sumbitted_last_month_for_data_type(
+                    table_to_watch, tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
+                if len(positive_papers_val) > 0:
+                    if table_to_watch == "afp_othertransgene":
+                        positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
+                                               pap_id, val in positive_papers_val.items()}
+                    elif table_to_watch == "afp_otherantibody":
+                        positive_papers_val = {pap_id: ", ".join(["name: " + tr_data["name"] + " publicationId:" +
+                                                                  tr_data["publicationId"] for tr_data in json.loads(val)])
+                                               for pap_id, val in positive_papers_val.items()}
+                        email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                           [afp_watcher])
-    db_manager.close()
     logger.info("Pipeline finished successfully")
+
+                if len(positive_papers_val) > 0:
+                    if table_to_watch == "afp_othertransgene":
+                        positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
+                                               pap_id, val in positive_papers_val.items()}
+                    email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
+                                                                              [afp_watcher])
+        logger.info("Pipeline finished successfully")
 
 
 if __name__ == '__main__':

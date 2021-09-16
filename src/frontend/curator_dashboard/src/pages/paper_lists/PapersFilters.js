@@ -116,6 +116,8 @@ class PapersFilters extends React.Component {
                                                                     onChange={() => this.props.addRemFilterCallback("rnai", "svm")}/>
                                                         <Form.Check type="checkbox" label="Transgene overexpression phenotype"
                                                                     onChange={() => this.props.addRemFilterCallback("overexpr", "svm")}/>
+                                                        <Form.Check type="checkbox" label="Enzymatic activity"
+                                                                    onChange={() => this.props.addRemFilterCallback("catalyticact", "svm")}/>
                                                     </Col>
                                                     <Col sm="6">
                                                         <Form.Check type="checkbox" label="Gene model correction/update"
@@ -132,12 +134,12 @@ class PapersFilters extends React.Component {
                                                                     onChange={() => this.props.addRemFilterCallback("chemphen", "manual")}/>
                                                         <Form.Check type="checkbox" label="Environmental induced phenotype"
                                                                     onChange={() => this.props.addRemFilterCallback("envpheno", "manual")}/>
-                                                        <Form.Check type="checkbox" label="Enzymatic activity"
-                                                                    onChange={() => this.props.addRemFilterCallback("catalyticact", "manual")}/>
                                                         <Form.Check type="checkbox" label="Human disease model"
                                                                     onChange={() => this.props.addRemFilterCallback("humdis", "manual")}/>
                                                         <Form.Check type="checkbox" label="Additional type of expression data"
                                                                     onChange={() => this.props.addRemFilterCallback("additionalexpr", "manual")}/>
+                                                        <Form.Check type="checkbox" label="Other gene function"
+                                                                    onChange={() => this.props.addRemFilterCallback("othergenefunc", "manual")}/>
                                                     </Col>
                                                 </Row>
                                             </Container>

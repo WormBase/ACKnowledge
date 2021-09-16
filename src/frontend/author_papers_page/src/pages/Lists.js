@@ -9,9 +9,9 @@ class Lists extends React.Component {
         super(props, context);
         this.state = {
             token_valid: undefined,
-            num_waiting: 0,
-            num_completed: 0,
-            num_partial: 0
+            num_waiting: 'loading...',
+            num_completed: 'loading...',
+            num_partial: 'loading...'
         };
 
         this.getPapersFromToken = this.getPapersFromToken.bind(this);

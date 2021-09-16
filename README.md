@@ -11,6 +11,43 @@ data.
 
 # Release Notes
 
+## Version 3.0
+
+### Release Date
+09-16-2021
+
+### Introduction
+Based on valuable user feedback, we continue to improve the Author First Pass experience.  In addition to providing more 
+streamlined ways to enter entities, we’ve added further instructions for adding new entities, and a link to look up 
+specific entities in WormBase.  We now flag papers for enzymatic activity and include a free-text field to describe 
+other gene functions.  We updated the FAQs and provide a link to the Author First Pass webinar presented in February 2021. 
+Lastly, to thank authors for their valuable contributions, we now acknowledge authors on WormBase person and paper pages.
+
+We have implemented updates and improvements to our curator dashboard. The dashboard is a tool available to WormBase 
+curators to  keep track of submissions and perform quality control of submitted data.
+
+### Main Features
+
+#### User Updates
+- Acknowledge author contributions on WormBase [Paper](https://wormbase.org/resources/paper/WBPaper00059759#0--10) and [Person](https://wormbase.org/resources/person/WBPerson625#014--10) pages
+- Email all authors of a publication whenever possible
+- Added linkout to WB pages for entities in select components
+- Simplified add entities lists
+- Improved instructions for Allele, Strain, and Transgene sections
+- Added WormBase strain IDs
+- Expanded exclusion lists (e.g. M9 buffer not recognized as strain)
+- Included enzymatic activity neural network
+- Added other gene function checkbox
+- Created link to 'WormBase AFP Webinar' video
+- Updated the FAQ section
+
+#### Curator Dashboard Updates
+- Created summary page with sortable lists of entities removed and added by authors
+- Generated a pre-populated spreadsheet of all flagged data for each processed paper to allow authors an alternative data submission pipeline
+- Updated dashboard thresholds with new [TFIDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus.) values
+- Sorted contributors by number of submissions
+- Added download button for lists of papers
+
 ## Version 2.0
 
 ### Release Date

@@ -34,7 +34,7 @@ class NumElemPerPageSelector extends React.Component {
                                         if (event.target.value !== "" && !isNaN(parseFloat(event.target.value)) &&
                                             isFinite(event.target.value) && parseFloat(event.target.value) > 0) {
                                             this.setState({
-                                                elemPerPage: event.target.value,
+                                                elemPerPage: parseInt(event.target.value),
                                                 countValidationState: null
                                             })
                                         } else if (event.target.value !== "") {

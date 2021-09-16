@@ -4,7 +4,9 @@ import { SET_PERSON } from "../actions/personActions";
 const initialState = {
   person: {
     name: '',
-    personId: undefined
+    personId: undefined,
+    isLoading: false,
+    loadError: null
   }
 };
 
