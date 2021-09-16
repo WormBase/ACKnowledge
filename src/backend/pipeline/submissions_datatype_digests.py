@@ -63,17 +63,9 @@ def main():
                         positive_papers_val = {pap_id: ", ".join(["name: " + tr_data["name"] + " publicationId:" +
                                                                   tr_data["publicationId"] for tr_data in json.loads(val)])
                                                for pap_id, val in positive_papers_val.items()}
-                        email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
-                                                                          [afp_watcher])
-    logger.info("Pipeline finished successfully")
-
-                if len(positive_papers_val) > 0:
-                    if table_to_watch == "afp_othertransgene":
-                        positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
-                                               pap_id, val in positive_papers_val.items()}
                     email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                               [afp_watcher])
-        logger.info("Pipeline finished successfully")
+    logger.info("Pipeline finished successfully")
 
 
 if __name__ == '__main__':
