@@ -92,8 +92,8 @@ else:
     app.add_route('/api/read', feedback_form_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=os.environ['AFP_BASE_URL'],
-                                                      tazendra_username=os.environ['TAZENDRA_USER'],
-                                                      tazendra_password=os.environ['TAZENDRA_PASSWORD'])
+                                                      tazendra_username=os.environ['AFP_TAZENDRA_USER'],
+                                                      tazendra_password=os.environ['AFP_TAZENDRA_PASSWORD'])
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager,
                                                   afp_base_url=os.environ['AFP_BASE_URL'],
