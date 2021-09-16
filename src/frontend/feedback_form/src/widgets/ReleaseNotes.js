@@ -4,7 +4,7 @@ const ReleaseNotes = () => {
     return (
         <div>
             <h3>Release 3.0</h3>
-            Release date: 09-14-2021
+            Release date: 09-16-2021
             <h4>Introduction</h4>
             <p>Based on valuable user feedback, we continue to improve the Author First Pass experience.  In addition
                 to providing more streamlined ways to enter entities, we’ve added further instructions for adding new
