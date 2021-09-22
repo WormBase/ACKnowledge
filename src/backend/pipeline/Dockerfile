@@ -19,6 +19,8 @@ ENV AFP_BASE_URL="http://textpressocentral.org:3000"
 ENV TAZENDRA_USER=""
 ENV TAZENDRA_PASSWD=""
 ENV TPC_TOKEN=""
+ENV SSH_USER=""
+ENV SSH_PASSWD=""
 
 ADD src/backend/pipeline/crontab /etc/cron.d/afp-cron
 RUN chmod 0644 /etc/cron.d/afp-cron
@@ -39,4 +41,6 @@ CMD echo $EMAIL_PASSWD > /etc/afp_email_passwd && \
     echo $TAZENDRA_USER > /etc/afp_tazendra_user && \
     echo $TAZENDRA_PASSWD > /etc/afp_tazendra_passwd && \
     echo $TPC_TOKEN > /etc/afp_tpc_token && \
+    echo $SSH_USER > /etc/afp_ssh_user && \
+    echo $SSH_PASSWD > /etc/afp_ssh_passwd && \
     cron && tail -f /dev/null
