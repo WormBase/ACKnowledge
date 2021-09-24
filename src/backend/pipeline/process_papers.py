@@ -42,6 +42,8 @@ def main():
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
     parser.add_argument("-t", "--textpresso-apitoken", metavar="tpc_token", dest="tpc_token", type=str)
+    parser.add_argument("-i", "--paper-ids", metavar="paper_ids", dest="paper_ids", type=str, nargs="+",
+                        help="process the provided list of papers instead of reading them from db")
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
@@ -54,13 +56,20 @@ def main():
         api_url="https://textpressocentral.org:18080/v1/textpresso/api/", api_token=args.tpc_token,
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
-    cm.load_from_wb_database(
-        args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
-        ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
-        from_date=(datetime.now() - timedelta(days=2*365))
-            .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
-        exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
-        exclude_no_author_email=True, exclude_temp_pdf=True)
+    if args.paper_ids:
+        cm.load_from_wb_database(
+            args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
+            ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
+            must_be_autclass_flagged=True, exclude_no_main_text=True,
+            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=args.paper_ids)
+    else:
+        cm.load_from_wb_database(
+            args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
+            ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
+            from_date=(datetime.now() - timedelta(days=2*365))
+                .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
+            exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
+            exclude_no_author_email=True, exclude_temp_pdf=True)
     logging.info("getting lists of entities")
     curated_genes = ntt_extractor.get_curated_entities(EntityType.GENE, exclude_id_used_as_name=False)
     gene_name_id_map = db_manager.generic.get_gene_name_id_map()
