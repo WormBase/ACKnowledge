@@ -135,12 +135,12 @@ class Lists extends React.Component {
                                     <PaginatedSearchList endpoint="get_processed_papers" papersPerPage="10"
                                                          passwd={this.props.token}/>
                                 </Tab>
-                                <Tab eventKey="2" title={completed_title}>
-                                    <PaginatedSearchList endpoint="get_submitted_papers" papersPerPage="10"
-                                                         passwd={this.props.token}/>
-                                </Tab>
                                 <Tab eventKey="3" title={partial_title}>
                                     <PaginatedSearchList endpoint="get_partial_papers" papersPerPage="10"
+                                                         passwd={this.props.token}/>
+                                </Tab>
+                                <Tab eventKey="2" title={completed_title}>
+                                    <PaginatedSearchList endpoint="get_submitted_papers" papersPerPage="10"
                                                          passwd={this.props.token}/>
                                 </Tab>
                             </Tabs>
