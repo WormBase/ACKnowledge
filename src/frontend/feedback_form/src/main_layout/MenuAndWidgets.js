@@ -44,7 +44,7 @@ const MenuAndWidgets = (props) => {
     const goToNextSection = () => {
         const newSelectedMenu = Math.min(useSelector((state) => state.widget.selectedWidget) + 1, pages.length);
         dispatch(setSelectedWidget(newSelectedMenu));
-        props.hideDataSaved();
+        dispatch(hideDataSaved());
         props.history.push(pages[newSelectedMenu - 1] + props.location.search);
         window.scrollTo(0, 0)
     }
@@ -53,7 +53,7 @@ const MenuAndWidgets = (props) => {
         setShowPopup(false);
     }
 
-    let data_fetch_err_alert = props.fetchDataError ?
+    let data_fetch_err_alert = useSelector((state) => state.display.showDataFetchError) ?
         <Alert bsStyle="danger">
             <Glyphicon glyph="warning-sign"/>
             <strong>Error</strong><br/>
@@ -90,30 +90,24 @@ const MenuAndWidgets = (props) => {
                     </div>
                 </div>
                 <WelcomeModal show={showPopup} onHide={handleClosePopup}/>
-                <DataSavedModal show={props.dataSaved.showMessage} goToNextSection={goToNextSection}
-                                success={props.dataSaved.success}
-                                last_widget={props.dataSaved.lastWidget}/>
-                <SectionsNotCompletedModal show={props.sectionsNotCompleted}
-                                           onHide={() => props.hideSectionsNotCompleted()}
-                                           sections={[props.isOverviewSavedToDB ? -1 : WIDGET.OVERVIEW, props.isGeneticsSavedToDB ? -1 : WIDGET.GENETICS, props.isReagentSavedToDB ? -1 : WIDGET.REAGENT, props.isExpressionSavedToDB ? -1 : WIDGET.EXPRESSION, props.isInteractionsSavedToDB ? -1 : WIDGET.INTERACTIONS, props.isPhenotypesSavedToDB ? -1 : WIDGET.PHENOTYPES, props.isDiseaseSavedToDB ? -1 : WIDGET.DISEASE, props.isCommentsSavedToDB ? -1 : WIDGET.COMMENTS].filter((widgetIdx) => widgetIdx !== -1 && widgetIdx !== WIDGET.COMMENTS).map((idx) => WIDGET_TITLE[idx])}/>
+                <DataSavedModal show={useSelector((state) => state.display.dataSaved).showMessage} goToNextSection={goToNextSection}
+                                success={useSelector((state) => state.display.dataSaved).success}
+                                last_widget={useSelector((state) => state.display.dataSaved).lastWidget}/>
+                <SectionsNotCompletedModal show={useSelector((state) => state.display.sectionsNotCompleted)}
+                                           onHide={() => dispatch(hideSectionsNotCompleted())}
+                                           sections={[
+                                               useSelector((state) => state.overview.isSavedToDB) ? -1 : WIDGET.OVERVIEW,
+                                               useSelector((state) => state.genetics.isSavedToDB) ? -1 : WIDGET.GENETICS,
+                                               useSelector((state) => state.reagent.isSavedToDB) ? -1 : WIDGET.REAGENT,
+                                               useSelector((state) => state.expression.isSavedToDB) ? -1 : WIDGET.EXPRESSION,
+                                               useSelector((state) => state.interactions.isSavedToDB) ? -1 : WIDGET.INTERACTIONS,
+                                               useSelector((state) => state.phenotypes.isSavedToDB) ? -1 : WIDGET.PHENOTYPES,
+                                               useSelector((state) => state.disease.isSavedToDB) ? -1 : WIDGET.DISEASE,
+                                               useSelector((state) => state.comments.isSavedToDB) ? -1 : WIDGET.COMMENTS
+                                           ].filter((widgetIdx) => widgetIdx !== -1 && widgetIdx !== WIDGET.COMMENTS).map((idx) => WIDGET_TITLE[idx])}/>
             </div>
         </div>
     );
 }
 
-const mapStateToProps = state => ({
-    isOverviewSavedToDB: isOverviewSavedToDB(state),
-    isGeneticsSavedToDB: isGeneticsSavedToDB(state),
-    isReagentSavedToDB: isReagentSavedToDB(state),
-    isExpressionSavedToDB: isExpressionSavedToDB(state),
-    isInteractionsSavedToDB: isInteractionsSavedToDB(state),
-    isPhenotypesSavedToDB: isPhenotypesSavedToDB(state),
-    isDiseaseSavedToDB: isDiseaseSavedToDB(state),
-    isCommentsSavedToDB: isCommentsSavedToDB(state),
-    sectionsNotCompleted: getSectionsNotCompleted(state),
-    dataSaved: getDataSaved(state),
-    isLoading: getIsLoading(state),
-    fetchDataError: getDataFetchError(state)
-});
-
-export default connect(mapStateToProps, {hideSectionsNotCompleted, hideDataSaved})(withRouter(MenuAndWidgets));
+export default withRouter(MenuAndWidgets);
