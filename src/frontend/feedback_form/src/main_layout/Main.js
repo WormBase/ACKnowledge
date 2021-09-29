@@ -1,36 +1,26 @@
 import React, {useEffect} from 'react';
 import queryString from 'query-string';
-import {connect} from "react-redux";
+import {useDispatch} from "react-redux";
 import MenuAndWidgets from "./MenuAndWidgets";
-import withRouter from "react-router/withRouter";
 import {fetchPaperData, storePaperInfo} from "../redux/actions/paperActions";
-import {getPaperFetchError, getPaperFetchIsLoading} from "../redux/selectors/paperSelectors";
-import {getPersonFetchError, getPersonFetchIsLoading} from "../redux/selectors/personSelectors";
 import {fetchPersonData} from "../redux/actions/personActions";
-import {showDataFetchError} from "../redux/actions/displayActions";
+import {withRouter} from "react-router-dom";
 
-const Main = (props) => {
+const Main = ({location}) => {
 
-    useEffect(() => {
-        let parameters = queryString.parse(props.location.search);
-        props.storePaperInfo(parameters.paper, parameters.passwd);
-        props.fetchPersonData(parameters.passwd, parameters.personid);
-        props.fetchPaperData(parameters.paper, parameters.passwd);
-    }, []);
+    const dispatch = useDispatch();
+    const parameters = queryString.parse(location.search);
 
     useEffect(() => {
-        if (props.personFetchError || props.paperFetchError) {
-            props.showDataFetchError()
-        }
-    }, [props.paperFetchError, props.personFetchError]);
+        dispatch(storePaperInfo(parameters.paper, parameters.passwd));
+        dispatch(fetchPersonData(parameters.passwd, parameters.personid));
+        dispatch(fetchPaperData(parameters.paper, parameters.passwd));
+    }, [parameters]);
 
-    let developmentBanner = "";
-    if (process.env.NODE_ENV === "development") {
-        developmentBanner = <div id="devBanner"><h3>Development Site</h3></div>;
-    }
     return (
         <div>
-            {developmentBanner}
+            {process.env.NODE_ENV === "development" ?
+                <div id="devBanner"><h3>Development Site</h3></div> : null}
             <div className="container">
                 <div className="row">
                     <div className="col-sm-12">
@@ -42,11 +32,4 @@ const Main = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    paperFetchError: getPaperFetchError(state),
-    personFetchError: getPersonFetchError(state),
-    paperIsLoading: getPaperFetchIsLoading(state),
-    personIsLoading: getPersonFetchIsLoading(state),
-});
-
-export default connect(mapStateToProps, {fetchPaperData, fetchPersonData, storePaperInfo, showDataFetchError})(withRouter(Main));
+export default withRouter(Main);

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {showDataFetchError} from "./displayActions";
 
 export const FETCH_PERSON_DATA_REQUEST = "FETCH_PERSON_DATA_REQUEST";
 export const FETCH_PERSON_DATA_SUCCESS = "FETCH_PERSON_DATA_SUCCESS";
@@ -17,6 +18,7 @@ export const fetchPersonData = (passwd, personId) => {
             })
             .catch(error => {
                 dispatch(fetchPersonDataError(error));
+                dispatch(showDataFetchError());
             });
     }
 }

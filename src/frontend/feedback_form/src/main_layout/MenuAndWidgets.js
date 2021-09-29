@@ -8,21 +8,7 @@ import {SectionsNotCompletedModal, WelcomeModal} from "../components/modals/Main
 import DataSavedModal from "../components/modals/DataSavedModal";
 import PersonSelector from "../components/PersonSelector";
 import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
-import {connect, useDispatch, useSelector} from "react-redux";
-import {isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
-import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
-import {isReagentSavedToDB} from "../redux/selectors/reagentSelectors";
-import {isExpressionSavedToDB} from "../redux/selectors/expressionSelectors";
-import {isInteractionsSavedToDB} from "../redux/selectors/interactionsSelectors";
-import {isPhenotypesSavedToDB} from "../redux/selectors/phenotypesSelectors";
-import {isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
-import {isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
-import {
-    getDataFetchError,
-    getDataSaved,
-    getIsLoading,
-    getSectionsNotCompleted
-} from "../redux/selectors/displaySelectors";
+import {useDispatch, useSelector} from "react-redux";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Menu from "./Menu";
 import {setSelectedWidget} from "../redux/actions/widgetActions";
@@ -53,23 +39,22 @@ const MenuAndWidgets = (props) => {
         setShowPopup(false);
     }
 
-    let data_fetch_err_alert = useSelector((state) => state.display.showDataFetchError) ?
-        <Alert bsStyle="danger">
-            <Glyphicon glyph="warning-sign"/>
-            <strong>Error</strong><br/>
-            We are having problems retrieving your data from the server and some components may
-            behave incorrectly. This could be caused by wrong credentials or by a network issue.
-            Please try again later or contact <a href="mailto:help@wormbase.org">
-            Wormbase Helpdesk</a>.
-        </Alert> : false;
-    let title = parameters.title !== undefined ? "\"" + parameters.title + "\"" : "";
     return (
         <div className="container">
             <div className="row">
-                {data_fetch_err_alert}
+                {useSelector((state) => state.display.showDataFetchError) ?
+                    <Alert bsStyle="danger">
+                        <Glyphicon glyph="warning-sign"/>
+                        <strong>Error</strong><br/>
+                        We are having problems retrieving your data from the server and some components may
+                        behave incorrectly. This could be caused by wrong credentials or by a network issue.
+                        Please try again later or contact <a href="mailto:help@wormbase.org">
+                        Wormbase Helpdesk</a>.
+                    </Alert> : null}
                 <div id="whiteBanner"/>
                 <Header {...props}/>
-                <Title title={title} journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
+                <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
+                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
                 <div>
                     <div>
                         <div className="col-sm-4">

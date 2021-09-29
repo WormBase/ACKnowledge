@@ -43,6 +43,7 @@ import {
 } from "./phenotypesActions";
 import {setDisease, setIsDiseaseSavedToDB} from "./diseaseActions";
 import {setComments, setIsCommentsSavedToDB} from "./commentsActions";
+import {showDataFetchError} from "./displayActions";
 
 export const STORE_PAPER_INFO = "STORE_PAPER_INFO";
 export const FETCH_PAPER_DATA_REQUEST = "FETCH_DATA_REQUEST";
@@ -168,6 +169,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
         .catch((error) => {
             console.log(error);
             dispatch(fetchPaperDataError(error));
+            dispatch(showDataFetchError());
         });
     }
 }
