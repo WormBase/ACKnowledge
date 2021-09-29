@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
-import InstructionsAlert from "../main_layout/InstructionsAlert";
+import InstructionsAlert from "../components/InstructionsAlert";
 import {
     getAllelePhenotype,
     getChemicalPhenotype, getEnvironmentalPhenotype, getEnzymaticActivity, getOthergenefunc, getOverexprPhenotype,

@@ -10,6 +10,9 @@ import {setIsDiseaseSavedToDB} from "./diseaseActions";
 import {setIsCommentsSavedToDB} from "./commentsActions";
 import {WIDGET} from "../../constants";
 
+export const SET_SELECTED_WIDGET = "SET_SELECTED_WIDGET";
+
+
 export const saveWidgetData = (dataToSave, widget) => {
     return dispatch => {
         dispatch(setLoading());
@@ -50,3 +53,8 @@ export const saveWidgetData = (dataToSave, widget) => {
             });
     }
 }
+
+export const setSelectedWidget = (selectedWidget) => ({
+  type: SET_SELECTED_WIDGET,
+  payload: { selectedWidget }
+})

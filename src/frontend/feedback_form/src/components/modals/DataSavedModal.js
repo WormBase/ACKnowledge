@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Modal} from "react-bootstrap";
 import {connect} from "react-redux";
-import {hideDataSaved} from "../redux/actions/displayActions";
+import {hideDataSaved} from "../../redux/actions/displayActions";
 
 
 const DataSavedModal = (props) => {

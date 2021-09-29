@@ -4,7 +4,7 @@ import {
     Checkbox, Col, ControlLabel, Form, FormControl, FormGroup, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import InstructionsAlert from "../main_layout/InstructionsAlert";
+import InstructionsAlert from "../components/InstructionsAlert";
 import {
     getAdditionalExpr,
     getExpression,

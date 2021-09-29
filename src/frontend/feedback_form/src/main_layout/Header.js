@@ -1,9 +1,8 @@
 import React from 'react';
 import {Image} from "react-bootstrap";
 import Badge from "react-bootstrap/lib/Badge";
-import Button from "react-bootstrap/lib/Button";
 
-const Title = () => {
+const Header = () => {
     return (
         <div className="container">
             <div className="row">
@@ -22,4 +21,4 @@ const Title = () => {
     );
 }
 
-export default Title;
+export default Header;

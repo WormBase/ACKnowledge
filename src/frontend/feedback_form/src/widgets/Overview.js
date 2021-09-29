@@ -5,7 +5,7 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
-import InstructionsAlert from "../main_layout/InstructionsAlert";
+import InstructionsAlert from "../components/InstructionsAlert";
 import {
     addGene,
     addSpecies,

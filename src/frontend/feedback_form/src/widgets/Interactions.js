@@ -3,7 +3,7 @@ import {
     Button, Checkbox, FormControl, FormGroup, Form,
     Panel, Tooltip, Image, OverlayTrigger
 } from "react-bootstrap";
-import InstructionsAlert from "../main_layout/InstructionsAlert";
+import InstructionsAlert from "../components/InstructionsAlert";
 import {
     getGeneticInteractions,
     getPhysicalInteractions,

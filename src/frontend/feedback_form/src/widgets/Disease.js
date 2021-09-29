@@ -3,7 +3,7 @@ import Button from "react-bootstrap/es/Button";
 import {
     Checkbox, Form, FormControl, Panel
 } from "react-bootstrap";
-import InstructionsAlert from "../main_layout/InstructionsAlert";
+import InstructionsAlert from "../components/InstructionsAlert";
 import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
 import {setDisease, setIsDiseaseSavedToDB, toggleDisease} from "../redux/actions/diseaseActions";
 import {connect} from "react-redux";
