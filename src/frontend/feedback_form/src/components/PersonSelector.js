@@ -6,17 +6,20 @@ import {
     Glyphicon,
     Modal
 } from "react-bootstrap";
-import {getPerson} from "../redux/selectors/personSelectors";
-import {connect} from "react-redux";
 import {setPerson} from "../redux/actions/personActions";
+import {useDispatch, useSelector} from "react-redux";
 
-const PersonSelector = (props) => {
+const PersonSelector = () => {
+    const dispatch = useDispatch();
+
     const [show_fetch_data_error, setShow_fetch_data_error] = useState(false);
     const [show, setShow] = useState(false);
     const [tmp_person_name, setTmp_person_name] = useState(undefined);
     const [tmp_person_id, setTmp_person_id] = useState(undefined);
     const [availableItems, setAvailableItems] = useState(new Set());
     const [showMore, setShowMore] = useState(false);
+
+    const person = useSelector((state) => state.person.person);
 
     const sampleQuery = "Type your name";
 
@@ -89,7 +92,7 @@ const PersonSelector = (props) => {
         <div className="container-fluid">
             <div className="row">
                 <div className="col-sm-8">
-                    WormBase User: <strong>{props.person.name}</strong> (WBPerson{props.person.personId})
+                    WormBase User: <strong>{person.name}</strong> (WBPerson{person.personId})
                     &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
                 </div>
                 <div className="col-sm-4" align="right">
@@ -132,7 +135,7 @@ const PersonSelector = (props) => {
                                                  let wbRx = / \( WBPerson([0-9]+) \)/;
                                                  let arr = wbRx.exec(fullData);
                                                  fullData = fullData.replace(wbRx, "");
-                                                 props.setPerson(fullData, arr[1]);
+                                                 dispatch(setPerson(fullData, arr[1]));
                                                  handleClose();
                                              }}
                                              onClick={(e) => {
@@ -155,7 +158,7 @@ const PersonSelector = (props) => {
                 <Modal.Footer>
                     <Button onClick={() =>{
                         if (tmp_person_id !== undefined && tmp_person_name !== undefined) {
-                            props.setPerson(tmp_person_name, tmp_person_id);
+                            dispatch(setPerson(tmp_person_name, tmp_person_id));
                             handleClose();
                         }
                     }}>Select</Button>
@@ -165,10 +168,6 @@ const PersonSelector = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    person: getPerson(state)
-});
-
-export default connect(mapStateToProps, {getPerson, setPerson})(PersonSelector);
+export default PersonSelector;
 
 
