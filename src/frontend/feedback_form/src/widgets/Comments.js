@@ -1,23 +1,30 @@
 import React from 'react';
 import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {connect} from "react-redux";
-import {setComments, setIsCommentsSavedToDB} from "../redux/actions/commentsActions";
-import {getComments, isCommentsSavedToDB} from "../redux/selectors/commentsSelectors";
-import {showDataSaved, showSectionsNotCompleted} from "../redux/actions/displayActions";
-import {isOverviewSavedToDB} from "../redux/selectors/overviewSelectors";
-import {isGeneticsSavedToDB} from "../redux/selectors/geneticsSelectors";
-import {isReagentSavedToDB} from "../redux/selectors/reagentSelectors";
-import {isExpressionSavedToDB} from "../redux/selectors/expressionSelectors";
-import {isInteractionsSavedToDB} from "../redux/selectors/interactionsSelectors";
-import {isPhenotypesSavedToDB} from "../redux/selectors/phenotypesSelectors";
-import {isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
-import {getPerson} from "../redux/selectors/personSelectors";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
+import {useDispatch, useSelector} from "react-redux";
+import {setComments} from "../redux/actions/commentsActions";
+import {showSectionsNotCompleted} from "../redux/actions/displayActions";
 import {WIDGET} from "../constants";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 
-const Other = (props) => {
+const Other = () => {
+    const dispatch = useDispatch();
+
+    const overviewSaved = useSelector((state) => state.overview.isSavedToDB);
+    const geneticsSaved = useSelector((state) => state.genetics.isSavedToDB);
+    const reagentSaved = useSelector((state) => state.reagent.isSavedToDB);
+    const expressionSaved = useSelector((state) => state.expression.isSavedToDB);
+    const interactionsSaved = useSelector((state) => state.interactions.isSavedToDB);
+    const phenotypesSaved = useSelector((state) => state.phenotypes.isSavedToDB);
+    const diseaseSaved = useSelector((state) => state.disease.isSavedToDB);
+
+    const isSavedToDB = useSelector((state) => state.comments.isSavedToDB);
+    const allOtherWidgetsSavedToDB =  overviewSaved && geneticsSaved && reagentSaved && expressionSaved &&
+        interactionsSaved && phenotypesSaved && diseaseSaved
+
+    const comments = useSelector((state) => state.comments.comments);
+    const person = useSelector((state) => state.person.person);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     return (
         <div>
@@ -27,7 +34,7 @@ const Other = (props) => {
                 alertTextNotSaved="In this page you can update your contact info, submit your unpublished data to
                     microPublication, send comments to the WormBase team and finalize the data submission process."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <form>
                 <Panel>
@@ -47,7 +54,7 @@ const Other = (props) => {
                             <div className="row">
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + props.personId}
+                                            href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
                                             target={"_blank"}>
                                         Update contact info</Button>
                                 </div>
@@ -72,7 +79,7 @@ const Other = (props) => {
                             <div className="row">
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + props.personId}
+                                            href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
                                             target={"_blank"}>
                                         Update lineage</Button>
                                 </div>
@@ -117,8 +124,8 @@ const Other = (props) => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
-                                                 value={props.comments}
-                                                 onChange={(event) => {props.setComments(event.target.value)}}
+                                                 value={comments}
+                                                 onChange={(event) => {dispatch(setComments(event.target.value))}}
                                     />
                                 </div>
                             </div>
@@ -128,15 +135,15 @@ const Other = (props) => {
             </form>
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
-                    if (props.allOtherWidgetsSavedToDB) {
+                    if (allOtherWidgetsSavedToDB) {
                         const payload = {
-                            comments: props.comments,
-                            person_id: "two" + props.person.personId,
-                            passwd: props.paperPasswd
+                            comments: comments,
+                            person_id: "two" + person.personId,
+                            passwd: paperPassword
                         };
-                        props.saveWidgetData(payload, WIDGET.COMMENTS);
+                        dispatch(saveWidgetData(payload, WIDGET.COMMENTS));
                     } else {
-                        props.showSectionsNotCompleted();
+                        dispatch(showSectionsNotCompleted());
                     }
                 }}>Finish and submit
                 </Button>
@@ -145,14 +152,4 @@ const Other = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    comments: getComments(state),
-    isSavedToDB: isCommentsSavedToDB(state),
-    person: getPerson(state),
-    allOtherWidgetsSavedToDB: isOverviewSavedToDB(state) && isGeneticsSavedToDB(state) && isReagentSavedToDB(state) &&
-        isExpressionSavedToDB(state) && isInteractionsSavedToDB(state) && isPhenotypesSavedToDB(state) &&
-        isDiseaseSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
-});
-
-export default connect(mapStateToProps, {setComments, showDataSaved, showSectionsNotCompleted, setIsCommentsSavedToDB, saveWidgetData})(Other);
+export default Other;
