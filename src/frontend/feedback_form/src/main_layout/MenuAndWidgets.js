@@ -27,8 +27,10 @@ const MenuAndWidgets = (props) => {
     const pages = [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION,
         WIDGET.INTERACTIONS, WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS];
 
+    const selectedWidget = useSelector((state) => state.widget.selectedWidget);
+
     const goToNextSection = () => {
-        const newSelectedMenu = Math.min(useSelector((state) => state.widget.selectedWidget) + 1, pages.length);
+        const newSelectedMenu = Math.min(selectedWidget + 1, pages.length);
         dispatch(setSelectedWidget(newSelectedMenu));
         dispatch(hideDataSaved());
         props.history.push(pages[newSelectedMenu - 1] + props.location.search);

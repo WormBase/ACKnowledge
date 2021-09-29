@@ -25,6 +25,7 @@ const WidgetArea = ({urlQuery, history}) => {
     const [hideAlleles, setHideAlleles] = useState(parameters.hide_alleles === "true");
     const [hideStrains, setHideStrains] = useState(parameters.hide_strains === "true");
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
+    const isLoading = useSelector((state) => state.display.loading);
 
     const enableEntityListVisibility = (entityType) => {
         let curParams = queryString.parse(urlQuery);
@@ -37,7 +38,7 @@ const WidgetArea = ({urlQuery, history}) => {
 
     return (
         <LoadingOverlay
-            active={useSelector((state) => state.display.isLoading)}
+            active={isLoading}
             spinner
             text='Sending data ...'
         >
