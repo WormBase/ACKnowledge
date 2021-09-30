@@ -21,6 +21,7 @@ import {WIDGET} from "../constants";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
+import PropTypes from "prop-types";
 
 const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
@@ -221,6 +222,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             </Modal>
         </div>
     );
+}
+
+Genetics.propTypes = {
+    hideAlleles: PropTypes.bool,
+    hideStrains: PropTypes.bool,
+    toggleEntityVisibilityCallback: PropTypes.func.isRequired
+}
+
+Genetics.defaultProps = {
+    hideAlleles: false,
+    hideStrains: false
 }
 
 export default Genetics;
