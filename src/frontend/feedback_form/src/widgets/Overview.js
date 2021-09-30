@@ -19,7 +19,6 @@ import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
-import {bool} from "prop-types";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();

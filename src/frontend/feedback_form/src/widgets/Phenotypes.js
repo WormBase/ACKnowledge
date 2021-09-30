@@ -3,33 +3,35 @@ import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip
 import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
-    getAllelePhenotype,
-    getChemicalPhenotype, getEnvironmentalPhenotype, getEnzymaticActivity, getOthergenefunc, getOverexprPhenotype,
-    getRnaiPhenotype,
-    isPhenotypesSavedToDB
-} from "../redux/selectors/phenotypesSelectors";
-import {
     setAllelePhenotype,
-    setChemicalPhenotype,
-    setEnvironmentalPhenotype,
-    setEnzymaticActivity, setIsPhenotypesSavedToDB, setOthergenefunc,
+    setEnzymaticActivity,
+    setOthergenefunc,
     setOverexprPhenotype,
     setRnaiPhenotype,
     toggleAllelePhenotype,
     toggleChemicalPhenotype,
     toggleEnvironmentalPhenotype,
-    toggleEnzymaticActivity, toggleOthergenefunc,
+    toggleEnzymaticActivity,
+    toggleOthergenefunc,
     toggleOverexprPhenotype,
     toggleRnaiPhenotype
 } from "../redux/actions/phenotypesActions";
-import {connect} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
 import {WIDGET} from "../constants";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
+import {useDispatch, useSelector} from "react-redux";
 
-const Phenotypes = (props) => {
+const Phenotypes = () => {
+    const dispatch = useDispatch();
+    const allelePheno = useSelector((state) => state.phenotypes.allelePheno);
+    const rnaiPheno = useSelector((state) => state.phenotypes.rnaiPheno);
+    const overexprPheno = useSelector((state) => state.phenotypes.overexprPheno);
+    const chemPheno = useSelector((state) => state.phenotypes.chemPheno);
+    const envPheno = useSelector((state) => state.phenotypes.envPheno);
+    const enzymaticAct = useSelector((state) => state.phenotypes.enzymaticAct);
+    const othergenefunc = useSelector((state) => state.phenotypes.othergenefunc);
+    const isSavedToDB = useSelector((state) => state.phenotypes.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     const svmTooltip = (
         <Tooltip id="tooltip">
@@ -44,7 +46,7 @@ const Phenotypes = (props) => {
                 alertTextNotSaved="Here you can find phenotype and functional data that have been identified in
                     your paper. Please select/deselect the appropriate checkboxes and add any additional information."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <Panel>
                 <Panel.Heading>
@@ -54,15 +56,15 @@ const Phenotypes = (props) => {
                     <div className="container-fluid">
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={props.allelePheno.checked}
-                                          onClick={() => props.toggleAllelePhenotype()}>
+                                <Checkbox checked={allelePheno.checked}
+                                          onClick={() => dispatch(toggleAllelePhenotype())}>
                                     <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
                                                                                       overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    props.setAllelePhenotype(true, '');
+                                    dispatch(setAllelePhenotype(true, ''));
                                     window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                 }}>
                                     Add details in online form
@@ -71,15 +73,15 @@ const Phenotypes = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={props.rnaiPheno.checked}
-                                          onClick={() => props.toggleRnaiPhenotype()}>
+                                <Checkbox checked={rnaiPheno.checked}
+                                          onClick={() => dispatch(toggleRnaiPhenotype())}>
                                     <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
                                                                                     overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    props.setRnaiPhenotype(true, '');
+                                    dispatch(setRnaiPhenotype(true, ''));
                                     window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                 }}>
                                     Add details in online form
@@ -88,15 +90,15 @@ const Phenotypes = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={props.overexprPheno.checked}
-                                          onClick={() => props.toggleOverexprPhenotype()}>
+                                <Checkbox checked={overexprPheno.checked}
+                                          onClick={() => dispatch(toggleOverexprPhenotype())}>
                                     <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
                                                                                                         overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    props.setOverexprPhenotype(true, '')
+                                    dispatch(setOverexprPhenotype(true, ''))
                                     window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
                                 }}>
                                     Add details in online form
@@ -105,16 +107,16 @@ const Phenotypes = (props) => {
                         </div>
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={props.chemPheno.checked}
-                                          onClick={() => props.toggleChemicalPhenotype()}><strong>Chemical Induced Phenotype</strong></Checkbox>
+                                <Checkbox checked={chemPheno.checked}
+                                          onClick={() => dispatch(toggleChemicalPhenotype())}><strong>Chemical Induced Phenotype</strong></Checkbox>
                             </div>
                             <div className="col-sm-5">
                             </div>
                         </div>
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={props.envPheno.checked}
-                                          onClick={() => props.toggleEnvironmentalPhenotype()}><strong>Environmental Induced Phenotype</strong></Checkbox>
+                                <Checkbox checked={envPheno.checked}
+                                          onClick={() => dispatch(toggleEnvironmentalPhenotype())}><strong>Environmental Induced Phenotype</strong></Checkbox>
                             </div>
                             <div className="col-sm-5">
                             </div>
@@ -129,28 +131,28 @@ const Phenotypes = (props) => {
                 <Panel.Body>
                     <Form>
                         <FormGroup>
-                            <Checkbox checked={props.enzymaticAct.checked} onClick={() => props.toggleEnzymaticActivity()}>
+                            <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
                                 <strong>Enzymatic Activity</strong> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => props.setEnzymaticActivity(true, props.enzymaticAct.details)}
-                                         value={props.enzymaticAct.details}
+                                         onClick={() => dispatch(setEnzymaticActivity(true, enzymaticAct.details))}
+                                         value={enzymaticAct.details}
                                          onChange={(event) => {
-                                             props.setEnzymaticActivity(true, event.target.value);
+                                             dispatch(setEnzymaticActivity(true, event.target.value));
                                          }}
                             />
                             <FormControl.Feedback />
                         </FormGroup>
                         <FormGroup>
-                            <Checkbox checked={props.othergenefunc.checked} onClick={() => props.toggleOthergenefunc()}>
+                            <Checkbox checked={othergenefunc.checked} onClick={() => dispatch(toggleOthergenefunc())}>
                                 <strong>Other Gene Function</strong>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => props.setOthergenefunc(true, props.othergenefunc.details)}
-                                         value={props.othergenefunc.details}
+                                         onClick={() => dispatch(setOthergenefunc(true, othergenefunc.details))}
+                                         value={othergenefunc.details}
                                          onChange={(event) => {
-                                             props.setOthergenefunc(true, event.target.value);
+                                             dispatch(setOthergenefunc(true, event.target.value));
                                          }}
                             />
                             <FormControl.Feedback />
@@ -161,16 +163,16 @@ const Phenotypes = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     let payload = {
-                        allele_pheno: getCheckboxDBVal(props.allelePheno.checked),
-                        rnai_pheno: getCheckboxDBVal(props.rnaiPheno.checked),
-                        transover_pheno: getCheckboxDBVal(props.overexprPheno.checked),
-                        chemical: getCheckboxDBVal(props.chemPheno.checked),
-                        env: getCheckboxDBVal(props.envPheno.checked),
-                        protein: getCheckboxDBVal(props.enzymaticAct.checked, props.enzymaticAct.details),
-                        othergenefunc: getCheckboxDBVal(props.othergenefunc.checked, props.othergenefunc.details),
-                        passwd: props.paperPasswd
+                        allele_pheno: getCheckboxDBVal(allelePheno.checked),
+                        rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
+                        transover_pheno: getCheckboxDBVal(overexprPheno.checked),
+                        chemical: getCheckboxDBVal(chemPheno.checked),
+                        env: getCheckboxDBVal(envPheno.checked),
+                        protein: getCheckboxDBVal(enzymaticAct.checked, enzymaticAct.details),
+                        othergenefunc: getCheckboxDBVal(othergenefunc.checked, othergenefunc.details),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.PHENOTYPES);
+                    dispatch(saveWidgetData(payload, WIDGET.PHENOTYPES));
                 }}>Save and continue
                 </Button>
             </div>
@@ -178,20 +180,4 @@ const Phenotypes = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    allelePheno: getAllelePhenotype(state),
-    rnaiPheno: getRnaiPhenotype(state),
-    overexprPheno: getOverexprPhenotype(state),
-    chemPheno: getChemicalPhenotype(state),
-    envPheno: getEnvironmentalPhenotype(state),
-    enzymaticAct: getEnzymaticActivity(state),
-    othergenefunc: getOthergenefunc(state),
-    isSavedToDB: isPhenotypesSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
-});
-
-export default connect(mapStateToProps, {setAllelePhenotype,
-    toggleAllelePhenotype, setRnaiPhenotype, toggleRnaiPhenotype, setOverexprPhenotype, toggleOverexprPhenotype,
-    setChemicalPhenotype, toggleChemicalPhenotype, setEnvironmentalPhenotype, toggleEnvironmentalPhenotype,
-    setEnzymaticActivity, toggleEnzymaticActivity, setOthergenefunc, toggleOthergenefunc, showDataSaved,
-    setIsPhenotypesSavedToDB, saveWidgetData})(Phenotypes);
+export default Phenotypes;
