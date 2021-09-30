@@ -56,13 +56,9 @@ def main():
                 positive_papers_val = db_manager.afp.get_positive_paper_ids_sumbitted_last_month_for_data_type(
                     table_to_watch, tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
                 if len(positive_papers_val) > 0:
-                    if table_to_watch == "afp_othertransgene":
+                    if table_to_watch == "afp_othertransgene" or table_to_watch == "afp_otherantibody":
                         positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
                                                pap_id, val in positive_papers_val.items()}
-                    elif table_to_watch == "afp_otherantibody":
-                        positive_papers_val = {pap_id: ", ".join(["name: " + tr_data["name"] + " publicationId:" +
-                                                                  tr_data["publicationId"] for tr_data in json.loads(val)])
-                                               for pap_id, val in positive_papers_val.items()}
                     email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
                                                                               [afp_watcher])
     logger.info("Pipeline finished successfully")
