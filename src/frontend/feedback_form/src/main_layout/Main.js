@@ -9,6 +9,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import FetchErrorBanner from "./FetchErrorBanner";
 import Header from "./Header";
 import Title from "./Title";
+import DevBanner from "./DevBanner";
 
 const Main = ({location}) => {
 
@@ -25,18 +26,14 @@ const Main = ({location}) => {
 
     return (
         <div>
-            {process.env.NODE_ENV === "development" ?
-                <div id="devBanner"><h3>Development Site</h3></div> : null}
-            <LoadingOverlay
-                active={personIsLoading || paperIsLoading}
-                spinner
-                text='Loading data ...'>
+            <DevBanner />
+            <LoadingOverlay active={personIsLoading || paperIsLoading} spinner text='Loading data ...'>
                 <FetchErrorBanner />
                 <div id="whiteBanner"/>
                 <Header />
                 <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
-                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
-                <MenuAndWidgets/>
+                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi} /><br/>
+                <MenuAndWidgets />
             </LoadingOverlay>
         </div>
     );
