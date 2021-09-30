@@ -4,36 +4,34 @@ import {
     Checkbox,
     Form,
     FormControl,
-    FormGroup, FormLabel,
+    FormGroup,
     Glyphicon,
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
-    addOtherAntibody, addOtherTransgene,
-    addTransgene, removeOtherAntibody, removeOtherTransgene,
-    removeTransgene, setIsReagentSavedToDB,
+    addTransgene,
+    removeTransgene,
     setNewAntibodies, setOtherAntibodies, setOtherTransgenes,
     toggleNewAntibodies
 } from "../redux/actions/reagentActions";
-import {
-    getAddedTransgenes,
-    getNewAntibodies,
-    getOtherAntibodies,
-    getOtherTransgenes,
-    getTransgenes, isReagentSavedToDB
-} from "../redux/selectors/reagentSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import {WIDGET} from "../constants";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 
-const Reagent = (props) => {
+const Reagent = () => {
+    const dispatch = useDispatch();
+    const transgenes = useSelector((state) => state.reagent.transgenes.elements);
+    const addedTransgenes = useSelector((state) => state.reagent.addedTransgenes);
+    const newAntibodies = useSelector((state) => state.reagent.newAntibodies);
+    const otherTransgenes = useSelector((state) => state.reagent.otherTransgenes.elements);
+    const otherAntibodies = useSelector((state) => state.reagent.otherAntibodies.elements);
+    const isSavedToDB = useSelector((state) => state.reagent.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     const transgenesTooltip = (
         <Tooltip id="tooltip">
@@ -57,7 +55,7 @@ const Reagent = (props) => {
                     validate the list as for the previous section. You can also submit information about antibodies
                     mentioned or generated in the study."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <form>
                 <Panel>
@@ -71,10 +69,10 @@ const Reagent = (props) => {
                             linkWB={"https://wormbase.org/species/c_elegans/transgene"}
                             itemsNameSingular={"transgene"}
                             itemsNamePlural={"transgenes"}
-                            items={props.transgenes}
-                            addedItems={props.addedTransgenes}
-                            addItemFunction={(transgene) => props.addTransgene(transgene)}
-                            remItemFunction={(transgene) => props.removeTransgene(transgene)}
+                            items={transgenes}
+                            addedItems={addedTransgenes}
+                            addItemFunction={(transgene) => dispatch(addTransgene(transgene))}
+                            remItemFunction={(transgene) => dispatch(removeTransgene(transgene))}
                             searchType={"transgene"}
                             sampleQuery={"e.g. ctIs40"}
                             autocompletePlaceholder={"Enter one or more Transgene name or ID, e.g. inIs179 or WBTransgene00000647, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
@@ -95,9 +93,9 @@ const Reagent = (props) => {
                                         For extrachromosomal arrays: <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
                                     </ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here, one per line"
-                                                 value={props.otherTransgenes.map(a => a.name).join("\n")}
-                                                 onChange={e => props.setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
-                                                     return {id: index + 1, name: a}}))}/>
+                                                 value={otherTransgenes.map(a => a.name).join("\n")}
+                                                 onChange={e => dispatch(setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
+                                                     return {id: index + 1, name: a}})))}/>
                                 </div>
                             </div>
                         </div>
@@ -112,25 +110,25 @@ const Reagent = (props) => {
                     <Panel.Body>
                         <Form>
                             <FormGroup>
-                                <Checkbox checked={props.newAntibodies.checked} onClick={props.toggleNewAntibodies}>
+                                <Checkbox checked={newAntibodies.checked} onClick={dispatch(toggleNewAntibodies)}>
                                     <strong>Newly generated antibodies</strong>
                                 </Checkbox>
                                 <FormControl type="text" placeholder="Enter antibody name and details here"
-                                             onClick={props.setNewAntibodies}
-                                             value={props.newAntibodies.details}
-                                             onChange={(event) => {props.setNewAntibodies(true, event.target.value);}}/>
+                                             onClick={() => dispatch(setNewAntibodies())}
+                                             value={newAntibodies.details}
+                                             onChange={(event) => {dispatch(setNewAntibodies(true, event.target.value))}}/>
                                 <br/>
                                 <ControlLabel>Other Antibodies Used</ControlLabel>
                                 <FormControl componentClass="textarea" rows="5" placeholder="Insert antibodies here (optionally followed by PMID: 'antibody_name || PMID'), one per line"
-                                             value={props.otherAntibodies.map(a => {
+                                             value={otherAntibodies.map(a => {
                                                  if (a.name) {
                                                      if (a.publicationId !== undefined) {
                                                          return a.name + " || " + a.publicationId
                                                      } else {
                                                          return a.name
                                                      }}}).join("\n")}
-                                             onChange={e => props.setOtherAntibodies(e.target.value.split("\n").map((a, index) => {
-                                                 return {id: index + 1, name: a.split(" || ")[0], publicationId: a.split(" || ")[1]}}))}/>
+                                             onChange={e => dispatch(setOtherAntibodies(e.target.value.split("\n").map((a, index) => {
+                                                 return {id: index + 1, name: a.split(" || ")[0], publicationId: a.split(" || ")[1]}})))}/>
                                 <FormControl.Feedback />
                             </FormGroup>
                         </Form>
@@ -140,13 +138,13 @@ const Reagent = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     const payload = {
-                        transgenes_list: transformEntitiesIntoAfpString(props.transgenes, ""),
-                        new_transgenes: JSON.stringify(props.otherTransgenes),
-                        new_antibody: getCheckboxDBVal(props.newAntibodies.checked, props.newAntibodies.details),
-                        other_antibodies: JSON.stringify(props.otherAntibodies),
-                        passwd: props.paperPasswd
+                        transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
+                        new_transgenes: JSON.stringify(otherTransgenes),
+                        new_antibody: getCheckboxDBVal(newAntibodies.checked, newAntibodies.details),
+                        other_antibodies: JSON.stringify(otherAntibodies),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.REAGENT);
+                    dispatch(saveWidgetData(payload, WIDGET.REAGENT));
                 }}>Save and continue
                 </Button>
             </div>
@@ -154,16 +152,4 @@ const Reagent = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    transgenes: getTransgenes(state).elements,
-    otherTransgenes: getOtherTransgenes(state).elements,
-    newAntibodies: getNewAntibodies(state),
-    otherAntibodies: getOtherAntibodies(state).elements,
-    isSavedToDB: isReagentSavedToDB(state),
-    paperPasswd: getPaperPassword(state),
-    addedTransgenes: getAddedTransgenes(state)
-});
-
-export default connect(mapStateToProps, {addTransgene, removeTransgene, setNewAntibodies, toggleNewAntibodies,
-    addOtherTransgene, removeOtherTransgene, setOtherTransgenes, addOtherAntibody, removeOtherAntibody,
-    setOtherAntibodies, showDataSaved, setIsReagentSavedToDB, saveWidgetData})(Reagent);
+export default Reagent;
