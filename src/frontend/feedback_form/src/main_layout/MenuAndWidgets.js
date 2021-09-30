@@ -7,7 +7,7 @@ import Header from "./Header";
 import {SectionsNotCompletedModal, WelcomeModal} from "../components/modals/MainModals";
 import DataSavedModal from "../components/modals/DataSavedModal";
 import PersonSelector from "../components/PersonSelector";
-import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
+import {MENU_INDEX, pages, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Menu from "./Menu";
@@ -24,9 +24,6 @@ const MenuAndWidgets = (props) => {
     const [showPopup, setShowPopup] = useState(true);
 
     let parameters = queryString.parse(props.location.search);
-    const pages = [WIDGET.OVERVIEW, WIDGET.GENETICS, WIDGET.REAGENT, WIDGET.EXPRESSION,
-        WIDGET.INTERACTIONS, WIDGET.PHENOTYPES, WIDGET.DISEASE, WIDGET.COMMENTS];
-
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
 
     const goToNextSection = () => {
