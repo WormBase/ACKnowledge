@@ -5,29 +5,29 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {
-    getAdditionalExpr,
-    getExpression,
-    getRnaseq,
-    getSiteOfAction,
-    getTimeOfAction, isExpressionSavedToDB
-} from "../redux/selectors/expressionSelectors";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
     setAdditionalExpr,
-    setExpression, setIsExpressionSavedToDB, setRnaseq,
+    setExpression, setRnaseq,
     setSiteOfAction,
     setTimeOfAction,
     toggleExpression, toggleRnaseq,
     toggleSiteOfAction, toggleTimeOfAction
 } from "../redux/actions/expressionActions";
-import {showDataSaved} from "../redux/actions/displayActions";
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 
-const Expression = (props) =>{
+const Expression = () =>{
+    const dispatch = useDispatch();
+    const expression = useSelector((state) => state.expression.expression);
+    const siteOfAction = useSelector((state) => state.expression.siteOfAction);
+    const timeOfAction = useSelector((state) => state.expression.timeOfAction);
+    const rnaSeq = useSelector((state) => state.expression.rnaseq);
+    const additionalExpr = useSelector((state) => state.expression.additionalExpr);
+    const isSavedToDB = useSelector((state) => state.expression.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+
 
     const tooltip = (
         <Tooltip id="tooltip">
@@ -70,7 +70,7 @@ const Expression = (props) =>{
                 alertTextNotSaved="Here you can find expression data that have been identified in your paper. Please
                     select/deselect the appropriate checkboxes and add any additional information."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <Panel>
                 <Panel.Heading>
@@ -78,7 +78,7 @@ const Expression = (props) =>{
                 </Panel.Heading>
                 <Panel.Body>
                     <Form>
-                        <Checkbox checked={props.expression.checked} onClick={() => props.toggleExpression()}>
+                        <Checkbox checked={expression.checked} onClick={() => dispatch(toggleExpression())}>
                             <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                                       overlay={tooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top"
@@ -86,44 +86,44 @@ const Expression = (props) =>{
                             <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                         </Checkbox>
                         <FormControl type="text" placeholder="Add details here"
-                                     onClick={() => props.setExpression(true, props.expression.details)}
-                                     value={props.expression.details}
+                                     onClick={() => dispatch(setExpression(true, expression.details))}
+                                     value={expression.details}
                                      onChange={(event) => {
-                                         props.setExpression(true, event.target.value);
+                                         dispatch(setExpression(true, event.target.value));
                                      }}
                         />
-                        <Checkbox checked={props.siteOfAction.checked} onClick={() => props.toggleSiteOfAction()}>
+                        <Checkbox checked={siteOfAction.checked} onClick={() => dispatch(toggleSiteOfAction())}>
                             <strong>Site of action data</strong> <OverlayTrigger placement="top"
                                                                                  overlay={siteTooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger>
                         </Checkbox>
                         <FormControl type="text" placeholder="Add details here"
-                                     onClick={() => props.setSiteOfAction(true, props.siteOfAction.details)}
-                                     value={props.siteOfAction.details}
+                                     onClick={() => dispatch(setSiteOfAction(true, siteOfAction.details))}
+                                     value={siteOfAction.details}
                                      onChange={(event) => {
-                                         props.setSiteOfAction(true, event.target.value);
+                                         dispatch(setSiteOfAction(true, event.target.value));
                                      }}
                         />
-                        <Checkbox checked={props.timeOfAction.checked} onClick={() => props.toggleTimeOfAction()}>
+                        <Checkbox checked={timeOfAction.checked} onClick={() => dispatch(toggleTimeOfAction())}>
                             <strong>Time of action data</strong> <OverlayTrigger placement="top"
                                                                                  overlay={timeTooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger>
                         </Checkbox>
                         <FormControl type="text" placeholder="Add details here"
-                                     onClick={() => props.setTimeOfAction(true, props.timeOfAction.details)}
-                                     value={props.timeOfAction.details}
+                                     onClick={() => dispatch(setTimeOfAction(true, timeOfAction.details))}
+                                     value={timeOfAction.details}
                                      onChange={(event) => {
-                                         props.setTimeOfAction(true, event.target.value);
+                                         dispatch(setTimeOfAction(true, event.target.value));
                                      }}
                         />
-                        <Checkbox checked={props.rnaSeq.checked} onClick={() => props.toggleRnaseq()}>
+                        <Checkbox checked={rnaSeq.checked} onClick={() => dispatch(toggleRnaseq())}>
                             <strong>RNAseq data</strong>
                         </Checkbox>
                         <FormControl type="text" placeholder="Add details here"
-                                     onClick={() => props.setRnaseq(true, props.rnaSeq.details)}
-                                     value={props.rnaSeq.details}
+                                     onClick={() => dispatch(setRnaseq(true, rnaSeq.details))}
+                                     value={rnaSeq.details}
                                      onChange={(event) => {
-                                         props.setRnaseq(true, event.target.value);
+                                         dispatch(setRnaseq(true, event.target.value));
                                      }}
                         />
                     </Form>
@@ -151,10 +151,10 @@ const Expression = (props) =>{
                         <Col componentClass={ControlLabel} sm={7}>
                             <FormControl
                                 type="text"
-                                value={props.additionalExpr}
+                                value={additionalExpr}
                                 placeholder="Add details here (e.g., qPCR, Proteomics)"
                                 onChange={(event) => {
-                                    props.setAdditionalExpr(event.target.value);
+                                    dispatch(setAdditionalExpr(event.target.value));
                                 }}
                             />
                         </Col>
@@ -164,14 +164,14 @@ const Expression = (props) =>{
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     let payload = {
-                        anatomic_expr: getCheckboxDBVal(props.expression.checked, props.expression.details),
-                        site_action: getCheckboxDBVal(props.siteOfAction.checked, props.siteOfAction.details),
-                        time_action: getCheckboxDBVal(props.timeOfAction.checked, props.timeOfAction.details),
-                        rnaseq: getCheckboxDBVal(props.rnaSeq.checked, props.rnaSeq.details),
-                        additional_expr: props.additionalExpr,
-                        passwd: props.paperPasswd
+                        anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
+                        site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
+                        time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
+                        rnaseq: getCheckboxDBVal(rnaSeq.checked, rnaSeq.details),
+                        additional_expr: additionalExpr,
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.EXPRESSION);
+                    dispatch(saveWidgetData(payload, WIDGET.EXPRESSION));
                 }}>Save and continue
                 </Button>
             </div>
@@ -179,16 +179,4 @@ const Expression = (props) =>{
     );
 }
 
-const mapStateToProps = state => ({
-    expression: getExpression(state),
-    siteOfAction: getSiteOfAction(state),
-    timeOfAction: getTimeOfAction(state),
-    rnaSeq: getRnaseq(state),
-    additionalExpr: getAdditionalExpr(state),
-    isSavedToDB: isExpressionSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
-});
-
-export default connect(mapStateToProps, {setExpression, toggleExpression, setSiteOfAction, toggleSiteOfAction,
-    setTimeOfAction, toggleTimeOfAction, setRnaseq, toggleRnaseq, setAdditionalExpr, showDataSaved,
-    setIsExpressionSavedToDB, saveWidgetData})(Expression);
+export default Expression;
