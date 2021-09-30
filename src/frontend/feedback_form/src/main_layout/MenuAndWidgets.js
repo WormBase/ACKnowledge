@@ -1,9 +1,5 @@
 import React, {useState} from 'react';
 import {withRouter} from "react-router-dom";
-import {Alert} from "react-bootstrap";
-import Glyphicon from "react-bootstrap/es/Glyphicon";
-import Title from "./Title";
-import Header from "./Header";
 import {SectionsNotCompletedModal, WelcomeModal} from "../components/modals/MainModals";
 import DataSavedModal from "../components/modals/DataSavedModal";
 import PersonSelector from "../components/PersonSelector";
@@ -13,7 +9,6 @@ import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayA
 import Menu from "./Menu";
 import {setSelectedWidget} from "../redux/actions/widgetActions";
 import WidgetArea from "./WidgetArea";
-import queryString from "query-string";
 
 const MenuAndWidgets = (props) => {
     const dispatch = useDispatch();
@@ -22,8 +17,6 @@ const MenuAndWidgets = (props) => {
         dispatch(setSelectedWidget(MENU_INDEX[currentLocation.substring(1)]));
     }
     const [showPopup, setShowPopup] = useState(true);
-
-    let parameters = queryString.parse(props.location.search);
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
 
     const goToNextSection = () => {
@@ -34,46 +27,25 @@ const MenuAndWidgets = (props) => {
         window.scrollTo(0, 0)
     }
 
-    const handleClosePopup = () => {
-        setShowPopup(false);
-    }
-
     return (
         <div className="container">
             <div className="row">
-                {useSelector((state) => state.display.showDataFetchError) ?
-                    <Alert bsStyle="danger">
-                        <Glyphicon glyph="warning-sign"/>
-                        <strong>Error</strong><br/>
-                        We are having problems retrieving your data from the server and some components may
-                        behave incorrectly. This could be caused by wrong credentials or by a network issue.
-                        Please try again later or contact <a href="mailto:help@wormbase.org">
-                        Wormbase Helpdesk</a>.
-                    </Alert> : null}
-                <div id="whiteBanner"/>
-                <Header {...props}/>
-                <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
-                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
-                <div>
-                    <div>
-                        <div className="col-sm-4">
-                            <Menu urlQuery={props.location.search}/>
+                <div className="col-sm-4">
+                    <Menu urlQuery={props.location.search}/>
+                </div>
+                <div className="col-sm-8">
+                    <div className="panel panel-default">
+                        <div className="panel-body">
+                            <PersonSelector/>
                         </div>
-                        <div className="col-sm-8">
-                            <div className="panel panel-default">
-                                <div className="panel-body">
-                                    <PersonSelector/>
-                                </div>
-                            </div>
-                            <div className="panel panel-default">
-                                <div className="panel-body">
-                                    <WidgetArea urlQuery={props.location.search} history={props.history}/>
-                                </div>
-                            </div>
+                    </div>
+                    <div className="panel panel-default">
+                        <div className="panel-body">
+                            <WidgetArea urlQuery={props.location.search} history={props.history}/>
                         </div>
                     </div>
                 </div>
-                <WelcomeModal show={showPopup} onHide={handleClosePopup}/>
+                <WelcomeModal show={showPopup} onHide={() => setShowPopup(false)}/>
                 <DataSavedModal show={useSelector((state) => state.display.dataSaved).showMessage} goToNextSection={goToNextSection}
                                 success={useSelector((state) => state.display.dataSaved).success}
                                 last_widget={useSelector((state) => state.display.dataSaved).lastWidget}/>

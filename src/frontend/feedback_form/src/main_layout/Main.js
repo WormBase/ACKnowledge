@@ -6,6 +6,9 @@ import {fetchPaperData, storePaperInfo} from "../redux/actions/paperActions";
 import {fetchPersonData} from "../redux/actions/personActions";
 import {withRouter} from "react-router-dom";
 import LoadingOverlay from 'react-loading-overlay';
+import FetchErrorBanner from "./FetchErrorBanner";
+import Header from "./Header";
+import Title from "./Title";
 
 const Main = ({location}) => {
 
@@ -25,18 +28,15 @@ const Main = ({location}) => {
             {process.env.NODE_ENV === "development" ?
                 <div id="devBanner"><h3>Development Site</h3></div> : null}
             <LoadingOverlay
-                            active={personIsLoading || paperIsLoading}
-                            spinner
-                            text='Loading data ...'
-            >
-                <div className="container">
-                    <div className="row">
-                        <div className="col-sm-12">
-
-                            <MenuAndWidgets/>
-                        </div>
-                    </div>
-                </div>
+                active={personIsLoading || paperIsLoading}
+                spinner
+                text='Loading data ...'>
+                <FetchErrorBanner />
+                <div id="whiteBanner"/>
+                <Header />
+                <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
+                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi}/><br/>
+                <MenuAndWidgets/>
             </LoadingOverlay>
         </div>
     );
