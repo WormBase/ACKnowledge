@@ -6,7 +6,7 @@ import {
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {
     addAllele, addOtherAllele, addOtherStrain,
     addStrain,
@@ -33,7 +33,18 @@ import {saveWidgetData} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
 
-const Genetics = (props) => {
+const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) => {
+    const dispatch = useDispatch();
+    const alleles = useSelector((state) => state.genetics.alleles.elements);
+    const addedAlleles = useSelector((state) => state.genetics.addedAlleles);
+    const otherAlleles = useSelector((state) => state.genetics.otherAlleles.elements);
+    const strains = useSelector((state) => state.genetics.strains.elements);
+    const addedStrains = useSelector((state) => state.genetics.addedStrains);
+    const otherStrains = useSelector((state) => state.genetics.otherStrains.elements);
+    const sequenceChange = useSelector((state) => state.genetics.sequenceChange);
+    const strainAlreadyPresentError = useSelector((state) => state.genetics.strainAlreadyPresentError);
+    const isSavedToDB = useSelector((state) => state.genetics.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     const allelesTooltip = (
         <Tooltip id="tooltip">
@@ -52,9 +63,9 @@ const Genetics = (props) => {
         </Tooltip>
     );
     let allelesListComponent;
-    if (props.hideAlleles) {
+    if (hideAlleles) {
         allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of alleles click <a onClick={() => {
-            props.toggleEntityVisibilityCallback("hide_alleles")
+            toggleEntityVisibilityCallback("hide_alleles")
         }}>here</a>. If you prefer not to, all the alleles extracted will be associated to this paper in WormBase</Alert>);
     } else {
         allelesListComponent = (
@@ -62,10 +73,10 @@ const Genetics = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/variation"}
                 itemsNameSingular={"allele"}
                 itemsNamePlural={"alleles"}
-                items={props.alleles}
-                addedItems={props.addedAlleles}
-                addItemFunction={(allele) => props.addAllele(allele)}
-                remItemFunction={(allele) => props.removeAllele(allele)}
+                items={alleles}
+                addedItems={addedAlleles}
+                addItemFunction={(allele) => dispatch(addAllele(allele))}
+                remItemFunction={(allele) => dispatch(removeAllele(allele))}
                 searchType={"variation"}
                 sampleQuery={"e.g. e1000"}
                 defaultExactMatchOnly={true}
@@ -73,9 +84,9 @@ const Genetics = (props) => {
             />);
     }
     let strainsListComponent;
-    if (props.hideStrains) {
+    if (hideStrains) {
         strainsListComponent = (<Alert bsStyle="warning">More than 100 strains were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of strains click <a onClick={() => {
-            props.toggleEntityVisibilityCallback("hide_strains")
+            toggleEntityVisibilityCallback("hide_strains")
         }}>here</a>. If you prefer not to, all the strains extracted will be associated to this paper in WormBase</Alert>);
     } else {
         strainsListComponent = (
@@ -83,10 +94,10 @@ const Genetics = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/strain"}
                 itemsNameSingular={"strain"}
                 itemsNamePlural={"strains"}
-                items={props.strains}
-                addedItems={props.addedStrains}
-                addItemFunction={(strain) => props.addStrain(strain)}
-                remItemFunction={(strain) => props.removeStrain(strain)}
+                items={strains}
+                addedItems={addedStrains}
+                addItemFunction={(strain) => dispatch(addStrain(strain))}
+                remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}
                 sampleQuery={"e.g. CB4856"}
                 autocompletePlaceholder={"Enter one or more Strain name or ID, e.g. CB1001 or WBStrain00004222, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
@@ -100,7 +111,7 @@ const Genetics = (props) => {
                 alertTextNotSaved="Here you can find alleles and strains that have been identified in your paper.
                     Please validate the list as for the previous section. You can also submit a new allele name and indicate an allele sequence change."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <form>
                 <Panel>
@@ -128,9 +139,9 @@ const Genetics = (props) => {
                                         e.g. <i>hmg-3(bar24[hmg-3::3xHA])</i>, BAT1560, <i>C. elegans</i>
                                     </ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert new alleles here, one per line"
-                                                 value={props.otherAlleles.map(a => a.name).join("\n")}
-                                                 onChange={e => props.setOtherAlleles(e.target.value.split("\n").map((a, index) => {
-                                                     return {id: index + 1, name: a}}))}/>
+                                                 value={otherAlleles.map(a => a.name).join("\n")}
+                                                 onChange={e => dispatch(setOtherAlleles(e.target.value.split("\n").map((a, index) => {
+                                                     return {id: index + 1, name: a}})))}/>
                                 </div>
                             </div>
                         </div>
@@ -144,9 +155,9 @@ const Genetics = (props) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-7">
-                                    <Checkbox checked={props.sequenceChange.checked}
+                                    <Checkbox checked={sequenceChange.checked}
                                               onClick={() => {
-                                                  props.toggleSequenceChange();
+                                                  dispatch(toggleSequenceChange());
                                               }}><strong>Allele sequence change</strong> <OverlayTrigger placement="top"
                                                                                                          overlay={svmTooltip}>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
@@ -154,7 +165,7 @@ const Genetics = (props) => {
                                 <div className="col-sm-5">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info"
                                             onClick={() => {
-                                                props.setSequenceChange(true, '');
+                                                dispatch(setSequenceChange(true, ''));
                                                 window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
                                             }}>
                                         Add details in online form
@@ -187,9 +198,9 @@ const Genetics = (props) => {
                                         e.g. PMD153, (<i>vhp-1(sa366) II; egIs1 [dat-1p::GFP]</i>), <i>C. elegans</i>
                                     </ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert new strains here, one per line"
-                                                 value={props.otherStrains.map(a => a.name).join("\n")}
-                                                 onChange={e => props.setOtherStrains(e.target.value.split("\n").map((a, index) => {
-                                                     return {id: index + 1, name: a}}))}/>
+                                                 value={otherStrains.map(a => a.name).join("\n")}
+                                                 onChange={e => dispatch(setOtherStrains(e.target.value.split("\n").map((a, index) => {
+                                                     return {id: index + 1, name: a}})))}/>
                                 </div>
                             </div>
                         </div>
@@ -199,44 +210,28 @@ const Genetics = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     let payload = {
-                        alleles_list: transformEntitiesIntoAfpString(props.alleles, ""),
-                        allele_seq_change: getCheckboxDBVal(props.sequenceChange.checked),
-                        other_alleles: JSON.stringify(props.otherAlleles),
-                        strains_list: transformEntitiesIntoAfpString(props.strains, ""),
-                        other_strains: JSON.stringify(props.otherStrains),
-                        passwd: props.paperPasswd
+                        alleles_list: transformEntitiesIntoAfpString(alleles, ""),
+                        allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
+                        other_alleles: JSON.stringify(otherAlleles),
+                        strains_list: transformEntitiesIntoAfpString(strains, ""),
+                        other_strains: JSON.stringify(otherStrains),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.GENETICS);
+                    dispatch(saveWidgetData(payload, WIDGET.GENETICS));
                 }}>Save and continue
                 </Button>
             </div>
-            <Modal show={props.strainAlreadyPresentError} onHide={()=>props.setStrainAlreadyPresentError(false)}>
+            <Modal show={strainAlreadyPresentError} onHide={() => dispatch(setStrainAlreadyPresentError(false))}>
                 <Modal.Header closeButton>
                     <Modal.Title>One or more strains were replaced by the added strain(s)</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Some of the added strains were already present in the final list and were replaced by the added strains</Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={()=>props.setStrainAlreadyPresentError(false)}>Close</Button>
+                    <Button onClick={() => dispatch(setStrainAlreadyPresentError(false))}>Close</Button>
                 </Modal.Footer>
             </Modal>
         </div>
     );
 }
 
-
-const mapStateToProps = state => ({
-    alleles: getAlleles(state).elements,
-    sequenceChange: getSequenceChange(state),
-    otherAlleles: getOtherAlleles(state).elements,
-    strains: getStrains(state).elements,
-    otherStrains: getOtherStrains(state).elements,
-    isSavedToDB: isGeneticsSavedToDB(state),
-    paperPasswd: getPaperPassword(state),
-    addedStrains: getAddedStrains(state),
-    addedAlleles: getAddedAlleles(state),
-    strainAlreadyPresentError: getStrainAlreadyPresentError(state)
-});
-
-export default connect(mapStateToProps, {addAllele, removeAllele, addStrain, removeStrain, setSequenceChange,
-    toggleSequenceChange, addOtherAllele, removeOtherAllele, addOtherStrain, removeOtherStrain, setOtherAlleles,
-    setOtherStrains, showDataSaved, setIsGeneticsSavedToDB, saveWidgetData, setStrainAlreadyPresentError})(Genetics);
+export default Genetics;
