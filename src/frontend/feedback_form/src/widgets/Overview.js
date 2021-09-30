@@ -11,23 +11,24 @@ import {
     addSpecies,
     removeGene,
     removeSpecies,
-    setGeneModel, setIsOverviewSavedToDB,
+    setGeneModel,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
-import {
-    getAddedGenes, getAddedSpecies,
-    getGeneModel,
-    getGenes,
-    getSpecies,
-    isOverviewSavedToDB
-} from "../redux/selectors/overviewSelectors";
-import {connect} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData} from "../redux/actions/widgetActions";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {WIDGET} from "../constants";
 
-const Overview = (props) => {
+const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
+    const dispatch = useDispatch();
+    const genes = useSelector((state) => state.overview.genes.elements);
+    const addedGenes = useSelector((state) => state.overview.addedGenes);
+    const species = useSelector((state) => state.overview.species.elements);
+    const addedSpecies = useSelector((state) => state.overview.addedSpecies);
+    const geneModel = useSelector((state) => state.overview.geneModel);
+    const isSavedToDB = useSelector((state) => state.overview.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+
     const geneTooltip = (
         <Tooltip id="tooltip">
             Please validate the list of genes experimentally studied in the paper in the box below by adding or removing genes if required.
@@ -40,9 +41,9 @@ const Overview = (props) => {
         </Tooltip>
     );
     let geneListComponent;
-    if (props.hideGenes) {
+    if (hideGenes) {
         geneListComponent = (<Alert bsStyle="warning">More than 100 genes were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of genes click <a onClick={() => {
-            props.toggleEntityVisibilityCallback("hide_genes")
+            toggleEntityVisibilityCallback("hide_genes")
         }}>here</a>. If you prefer not to, all the genes extracted will be associated to this paper in WormBase</Alert>);
     } else {
         geneListComponent = (
@@ -50,10 +51,10 @@ const Overview = (props) => {
                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
                 itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
-                items={props.genes}
-                addedItems={props.addedGenes}
-                addItemFunction={(gene) => props.addGene(gene)}
-                remItemFunction={(gene) => props.removeGene(gene)}
+                items={genes}
+                addedItems={addedGenes}
+                addItemFunction={(gene) => dispatch(addGene(gene))}
+                remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
                 sampleQuery={"e.g. dbl-1"}
                 defaultExactMatchOnly={true}
@@ -70,7 +71,7 @@ const Overview = (props) => {
                     paper. Please validate the list by adding/removing entries in the identified lists. You can also
                     notify us for gene model updates."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <form>
                 <Panel>
@@ -91,7 +92,7 @@ const Overview = (props) => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        props.setGeneModel();
+                                        dispatch(setGeneModel());
                                         window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                     }}>
                                         Request New Gene Name
@@ -110,7 +111,7 @@ const Overview = (props) => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        props.setGeneModel();
+                                        dispatch(setGeneModel());
                                         window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
                                     }}>
                                         Report Gene-Sequence
@@ -119,18 +120,18 @@ const Overview = (props) => {
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Checkbox checked={props.geneModel.checked}
-                                              onClick={() => props.toggleGeneModel()}>
+                                    <Checkbox checked={geneModel.checked}
+                                              onClick={() => dispatch(toggleGeneModel())}>
                                         <strong>Gene model correction/update</strong></Checkbox>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
                                     <FormControl type="text" placeholder="Add details here"
-                                                 value={props.geneModel.details}
-                                                 onClick={() => props.setGeneModel(true, props.geneModel.details)}
+                                                 value={geneModel.details}
+                                                 onClick={() => dispatch(setGeneModel(true, geneModel.details))}
                                                  onChange={(event) => {
-                                                     props.setGeneModel(true, event.target.value)
+                                                     dispatch(setGeneModel(true, event.target.value))
                                                  }}
                                     />
                                 </div>
@@ -151,10 +152,10 @@ const Overview = (props) => {
                         <MultipleSelect
                             itemsNameSingular={"species"}
                             itemsNamePlural={"species"}
-                            items={props.species}
-                            addedItems={props.addedSpecies}
-                            addItemFunction={(species) => props.addSpecies(species)}
-                            remItemFunction={(species) => props.removeSpecies(species)}
+                            items={species}
+                            addedItems={addedSpecies}
+                            addItemFunction={(species) => dispatch(addSpecies(species))}
+                            remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}
                             sampleQuery={"e.g. Caenorhabditis"}
                             defaultExactMatchOnly={false}
@@ -167,12 +168,12 @@ const Overview = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     const payload = {
-                        gene_list: transformEntitiesIntoAfpString(props.genes, "WBGene"),
-                        gene_model_update: getCheckboxDBVal(props.geneModel.checked, props.geneModel.details),
-                        species_list: transformEntitiesIntoAfpString(props.species, ""),
-                        passwd: props.paperPasswd
+                        gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
+                        gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
+                        species_list: transformEntitiesIntoAfpString(species, ""),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.OVERVIEW);
+                    dispatch(saveWidgetData(payload, WIDGET.OVERVIEW));
                 }}>Save and continue
                 </Button>
             </div>
@@ -180,15 +181,5 @@ const Overview = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    genes: getGenes(state).elements,
-    geneModel: getGeneModel(state),
-    species: getSpecies(state).elements,
-    isSavedToDB: isOverviewSavedToDB(state),
-    paperPasswd: getPaperPassword(state),
-    addedGenes: getAddedGenes(state),
-    addedSpecies: getAddedSpecies(state)
-});
+export default Overview;
 
-export default connect(mapStateToProps, {addGene, removeGene, addSpecies, removeSpecies, setGeneModel, toggleGeneModel,
-    setIsOverviewSavedToDB, saveWidgetData})(Overview);
