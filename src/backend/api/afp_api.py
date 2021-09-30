@@ -51,7 +51,7 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
-    app = falcon.API(middleware=[HandleCORS()])
+    app = falcon.App(middleware=[HandleCORS()])
     db_manager = WBDBManager(dbname=args.db_name, host=args.db_host, password=args.db_password, user=args.db_user)
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager, admin_emails=args.admin_emails,
                                               email_passwd=args.email_passwd, afp_base_url=args.afp_base_url,
@@ -78,7 +78,7 @@ if __name__ == '__main__':
 
 else:
     import os
-    app = falcon.API(middleware=[HandleCORS()])
+    app = falcon.App(middleware=[HandleCORS()])
     db_manager = WBDBManager(dbname=os.environ['AFP_DB_NAME'], user=os.environ['AFP_DB_USER'],
                              password=os.environ['AFP_DB_PASSWD'], host=os.environ['AFP_DB_HOST'])
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager,
