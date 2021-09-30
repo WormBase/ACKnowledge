@@ -5,24 +5,23 @@ import {
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
-    getGeneticInteractions,
-    getPhysicalInteractions,
-    getRegulatoryInteractions, isInteractionsSavedToDB
-} from "../redux/selectors/interactionsSelectors";
-import {
-    setGeneticInteractions, setIsInteractionsSavedToDB,
+    setGeneticInteractions,
     setPhysicalInteractions, setRegulatoryInteractions,
     toggleGeneticInteractions, togglePhysicalInteractions, toggleRegulatoryInteractions
 } from "../redux/actions/interactionsActions";
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {WIDGET} from "../constants";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 
-const Interactions = (props) => {
+const Interactions = () => {
+    const dispatch = useDispatch();
+    const geneint = useSelector((state) => state.interactions.geneint);
+    const genereg = useSelector((state) => state.interactions.genereg);
+    const geneprod = useSelector((state) => state.interactions.geneprod);
+    const isSavedToDB = useSelector((state) => state.interactions.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     const svmTooltip = (
         <Tooltip id="tooltip">
@@ -57,7 +56,7 @@ const Interactions = (props) => {
                 alertTextNotSaved="Here you can find interaction data that have been identified in your paper.
                     Please select/deselect the appropriate checkboxes and add any additional information."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <Panel>
                 <Panel.Heading>
@@ -66,38 +65,38 @@ const Interactions = (props) => {
                 <Panel.Body>
                     <Form>
                         <FormGroup>
-                            <Checkbox checked={props.geneint.checked} onClick={() => props.toggleGeneticInteractions()}>
+                            <Checkbox checked={geneint.checked} onClick={() => dispatch(toggleGeneticInteractions())}>
                                 <strong>Genetic Interactions</strong> <OverlayTrigger placement="top" overlay={geneticIntTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                 <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => props.setGeneticInteractions(true, props.geneint.details)}
-                                         value={props.geneint.details}
+                                         onClick={() => dispatch(setGeneticInteractions(true, geneint.details))}
+                                         value={geneint.details}
                                          onChange={(event) => {
-                                             props.setGeneticInteractions(true, event.target.value);
+                                             dispatch(setGeneticInteractions(true, event.target.value));
                                          }}/>
-                            <Checkbox checked={props.geneprod.checked} onClick={() => props.togglePhysicalInteractions()}>
+                            <Checkbox checked={geneprod.checked} onClick={() => dispatch(togglePhysicalInteractions())}>
                                 <strong>Physical Interactions</strong> <OverlayTrigger placement="top" overlay={physicalIntTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                 <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => props.setPhysicalInteractions(true, props.geneprod.details)}
-                                         value={props.geneprod.details}
+                                         onClick={() => dispatch(setPhysicalInteractions(true, geneprod.details))}
+                                         value={geneprod.details}
                                          onChange={(event) => {
-                                             props.setPhysicalInteractions(true, event.target.value);
+                                             dispatch(setPhysicalInteractions(true, event.target.value));
                                          }}/>
-                            <Checkbox checked={props.genereg.checked} onClick={() => props.toggleRegulatoryInteractions()}>
+                            <Checkbox checked={genereg.checked} onClick={() => dispatch(toggleRegulatoryInteractions())}>
                                 <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top" overlay={regulatoryIntTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
                                 <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
-                                         onClick={() => props.setRegulatoryInteractions(true, props.genereg.details)}
-                                         value={props.genereg.details}
+                                         onClick={() => dispatch(setRegulatoryInteractions(true, genereg.details))}
+                                         value={genereg.details}
                                          onChange={(event) => {
-                                             props.setRegulatoryInteractions(true, event.target.value);
+                                             dispatch(setRegulatoryInteractions(true, event.target.value));
                                          }}/>
                             <FormControl.Feedback />
                         </FormGroup>
@@ -107,12 +106,12 @@ const Interactions = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     let payload = {
-                        gene_int: getCheckboxDBVal(props.geneint.checked, props.geneint.details),
-                        phys_int: getCheckboxDBVal(props.geneprod.checked, props.geneprod.details),
-                        gene_reg: getCheckboxDBVal(props.genereg.checked, props.genereg.details),
-                        passwd: props.paperPasswd
+                        gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
+                        phys_int: getCheckboxDBVal(geneprod.checked, geneprod.details),
+                        gene_reg: getCheckboxDBVal(genereg.checked, genereg.details),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.INTERACTIONS);
+                    dispatch(saveWidgetData(payload, WIDGET.INTERACTIONS));
                 }}>Save and continue
                 </Button>
             </div>
@@ -120,14 +119,4 @@ const Interactions = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    geneint: getGeneticInteractions(state),
-    geneprod: getPhysicalInteractions(state),
-    genereg: getRegulatoryInteractions(state),
-    isSavedToDB: isInteractionsSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
-});
-
-export default connect(mapStateToProps, {setGeneticInteractions, toggleGeneticInteractions, setPhysicalInteractions,
-    togglePhysicalInteractions, setRegulatoryInteractions, toggleRegulatoryInteractions, showDataSaved,
-    setIsInteractionsSavedToDB, saveWidgetData})(Interactions);
+export default Interactions;
