@@ -12,6 +12,35 @@ class EmailLogin extends React.Component {
         };
 
         this.requestEmailLink = this.requestEmailLink.bind(this);
+        this.getToken = this.getToken.bind(this);
+    }
+
+    getToken() {
+        let payload = { email: this.state.email_address };
+        if (payload.email !== undefined && payload.email !== "undefined") {
+            this.setState({isLoading: true});
+            fetch(process.env.REACT_APP_API_DB_READ_ENDPOINT + "/get_token_from_email", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'text/html',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            }).then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    this.setState({showError: true});
+                }
+            }).then(data => {
+                if (data === undefined) {
+                } else {
+                    this.props.callback(data["token"]);
+                }
+            }).catch((err) => {
+                alert(err);
+            });
+        }
     }
 
     requestEmailLink() {
@@ -37,6 +66,14 @@ class EmailLogin extends React.Component {
             }).catch((err) => {
                 alert(err);
             });
+        }
+    }
+
+    logIn() {
+        if (process.env.REACT_APP_REQUEST_AUTH === "true") {
+            this.requestEmailLink()
+        } else {
+            this.getToken();
         }
     }
 
@@ -86,9 +123,9 @@ class EmailLogin extends React.Component {
                                         <FormLabel>Email address</FormLabel>
                                         <FormControl type="text" placeholder="Enter your email address" style={{ width: '100%' }}
                                                      onChange={(e) => {this.setState({email_address: e.target.value})}} onSubmit=""
-                                                     onKeyPress={(target) => {if (target.key === 'Enter') { this.requestEmailLink() }}}/>
+                                                     onKeyPress={(target) => {if (target.key === 'Enter') {this.logIn()}}}/>
                                         {error_message}<br/>
-                                        <Button onClick={() => { this.requestEmailLink() }}>Request Access</Button>
+                                        <Button onClick={() => { this.logIn() }}>Request Access</Button>
                                     </Form>
                                 </Card.Text>
                             </Card.Body>

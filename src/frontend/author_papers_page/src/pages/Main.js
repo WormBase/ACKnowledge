@@ -26,7 +26,7 @@ class Main extends React.Component {
         if (this.state.token !== undefined) {
             content = <Lists token={this.state.token}/>;
         } else {
-            content = <EmailLogin/>;
+            content = <EmailLogin callback={(token) => this.setState({token: token})}/>;
         }
         return (
             <Container fluid>
