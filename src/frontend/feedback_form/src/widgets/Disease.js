@@ -4,16 +4,17 @@ import {
     Checkbox, Form, FormControl, Panel
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {getDisease, isDiseaseSavedToDB} from "../redux/selectors/diseaseSelectors";
-import {setDisease, setIsDiseaseSavedToDB, toggleDisease} from "../redux/actions/diseaseActions";
-import {connect} from "react-redux";
+import {setDisease, toggleDisease} from "../redux/actions/diseaseActions";
+import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
 
-const Disease = (props) => {
+const Disease = () => {
+    const dispatch = useDispatch();
+    const disease = useSelector((state) => state.disease.disease);
+    const isSavedToDB = useSelector((state) => state.disease.isSavedToDB);
+    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
     return (
         <div>
@@ -22,7 +23,7 @@ const Disease = (props) => {
                 alertTitleSaved="Well done!"
                 alertTextNotSaved="If this paper reports a disease model, please choose one or more that it describes."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
-                saved={props.isSavedToDB}
+                saved={isSavedToDB}
             />
             <Panel>
                 <Panel.Heading>
@@ -30,7 +31,7 @@ const Disease = (props) => {
                 </Panel.Heading>
                 <Panel.Body>
                     <Form>
-                        <Checkbox checked={props.disease.checked} onClick={() => props.toggleDisease()}>
+                        <Checkbox checked={disease.checked} onClick={() => dispatch(toggleDisease())}>
                             <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson’s disease) by employing at least one of the following:</strong>
                         </Checkbox>
                         <ul>
@@ -57,10 +58,10 @@ const Disease = (props) => {
                         <div className="row">
                             <div className="col-sm-12">
                                 <FormControl componentClass="textarea" multiple
-                                             value={props.disease.details}
-                                             onClick={() => props.setDisease(true, props.disease.details)}
+                                             value={disease.details}
+                                             onClick={() => dispatch(setDisease(true, disease.details))}
                                              onChange={(event) => {
-                                                 props.setDisease(true, event.target.value);
+                                                 dispatch(setDisease(true, event.target.value));
                                              }}
                                 />
                             </div>
@@ -71,10 +72,10 @@ const Disease = (props) => {
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
                     let payload = {
-                        disease: getCheckboxDBVal(props.disease.checked, props.disease.details),
-                        passwd: props.paperPasswd
+                        disease: getCheckboxDBVal(disease.checked, disease.details),
+                        passwd: paperPassword
                     };
-                    props.saveWidgetData(payload, WIDGET.DISEASE);
+                    dispatch(saveWidgetData(payload, WIDGET.DISEASE));
                 }}>Save and continue
                 </Button>
             </div>
@@ -82,10 +83,4 @@ const Disease = (props) => {
     );
 }
 
-const mapStateToProps = state => ({
-    disease: getDisease(state),
-    isSavedToDB: isDiseaseSavedToDB(state),
-    paperPasswd: getPaperPassword(state)
-});
-
-export default connect(mapStateToProps, {setDisease, toggleDisease, showDataSaved, setIsDiseaseSavedToDB, saveWidgetData})(Disease);
+export default Disease;
