@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
     Alert,
     Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
@@ -14,10 +15,11 @@ import {
     setGeneModel,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
+import {bool} from "prop-types";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
@@ -179,6 +181,15 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
             </div>
         </div>
     );
+}
+
+Overview.propTypes = {
+    hideGenes: PropTypes.bool,
+    toggleEntityVisibilityCallback: PropTypes.func.isRequired
+}
+
+Overview.defaultProps = {
+    hideGenes: false
 }
 
 export default Overview;
