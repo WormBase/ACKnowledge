@@ -6,29 +6,18 @@ import {
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {
-    addAllele, addOtherAllele, addOtherStrain,
+    addAllele,
     addStrain,
-    removeAllele, removeOtherAllele, removeOtherStrain,
-    removeStrain, setIsGeneticsSavedToDB, setOtherAlleles, setOtherStrains,
+    removeAllele,
+    removeStrain, setOtherAlleles, setOtherStrains,
     setSequenceChange, setStrainAlreadyPresentError,
     toggleSequenceChange
 } from "../redux/actions/geneticsActions";
-import {
-    getAddedAlleles,
-    getAddedStrains,
-    getAlleles,
-    getOtherAlleles,
-    getOtherStrains,
-    getSequenceChange, getStrainAlreadyPresentError,
-    getStrains, isGeneticsSavedToDB
-} from "../redux/selectors/geneticsSelectors";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {showDataSaved} from "../redux/actions/displayActions";
 import FormControl from "react-bootstrap/lib/FormControl";
 import {WIDGET} from "../constants";
-import {getPaperPassword} from "../redux/selectors/paperSelectors";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
