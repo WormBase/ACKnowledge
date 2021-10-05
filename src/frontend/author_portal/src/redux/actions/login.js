@@ -1,8 +1,9 @@
 import axios from "axios";
 
-export const SET_IS_LOADING = "SET_IS_LOADING";
+export const SET_LOGIN_IS_LOADING = "SET_LOGIN_IS_LOADING";
 export const SET_TOKEN = "SET_TOKEN";
-export const SET_ERROR = "SET_ERROR";
+export const SET_LOGIN_ERROR = "SET_LOGIN_ERROR";
+export const SET_LOGIN_EMAIL_SENT = "SET_LOGIN_EMAIL_SENT";
 
 
 export const logIn = (emailAddress) => {
@@ -39,7 +40,7 @@ export const requestEmailLink = (emailAddress) => {
             dispatch(setIsLoading());
             axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT + "/send_link", { email: emailAddress })
                 .then(res => {
-                    dispatch(setToken(undefined));
+                    dispatch(setLoginEmailSent());
                 })
                 .catch((err) => {
                     dispatch(setError("can't send email link"));
@@ -49,7 +50,7 @@ export const requestEmailLink = (emailAddress) => {
 }
 
 export const setIsLoading = () => ({
-    type: SET_IS_LOADING
+    type: SET_LOGIN_IS_LOADING
 });
 
 export const setToken = (token) => ({
@@ -58,6 +59,10 @@ export const setToken = (token) => ({
 });
 
 export const setError = (error) => ({
-    type: SET_ERROR,
+    type: SET_LOGIN_ERROR,
     payload: { error }
+});
+
+export const setLoginEmailSent = () => ({
+    type: SET_LOGIN_EMAIL_SENT
 });

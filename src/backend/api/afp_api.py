@@ -7,9 +7,9 @@ from wsgiref import simple_server
 from falcon import HTTPStatus
 from wbtools.db.dbmanager import WBDBManager
 
-from src.backend.api.endpoints.author_papers_page import AuthorPapersPageReader
+from src.backend.api.endpoints.author_portal import AuthorPapersPageReader
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
-from src.backend.api.endpoints.feedback_form import FeedbackFormWriter, FeedbackFormReader
+from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader
 
 
 class HandleCORS(object):

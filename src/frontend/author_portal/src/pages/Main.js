@@ -16,7 +16,7 @@ const Main = () => {
         }
     }
     if (token === undefined) {
-        token = useSelector((state) => state.token);
+        token = useSelector((state) => state.login.token);
     }
 
     return (

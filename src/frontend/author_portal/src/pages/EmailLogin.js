@@ -3,14 +3,14 @@ import {Alert, Button, Card, Col, Container, Form, FormControl, FormLabel, Row, 
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons'
 import {useDispatch, useSelector} from "react-redux";
-import {logIn} from "../redux/actions";
+import {logIn} from "../redux/actions/login";
 
 const EmailLogin = () => {
     const dispatch = useDispatch();
     const [emailAddress, setEmailAddress] = useState(undefined);
-    const error = useSelector((state) => state.error);
-    const success = useSelector((state) => state.success);
-    const isLoading = useSelector((state) => state.isLoading);
+    const error = useSelector((state) => state.login.error);
+    const success = useSelector((state) => state.login.emailSent);
+    const isLoading = useSelector((state) => state.login.isLoading);
 
     return(
         <Container fluid>

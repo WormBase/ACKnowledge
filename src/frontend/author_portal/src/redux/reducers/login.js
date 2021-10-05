@@ -1,9 +1,10 @@
-import {SET_ERROR, SET_IS_LOADING, SET_TOKEN} from "./actions";
+import {SET_LOGIN_EMAIL_SENT, SET_LOGIN_ERROR, SET_LOGIN_IS_LOADING, SET_TOKEN} from "../actions/login";
 
 const initialState = {
-    isLoading: false,
-    error: false,
-    token: undefined
+  isLoading: false,
+  error: false,
+  token: undefined,
+  emailSent: false
 }
 
 export default function(state = initialState, action) {
@@ -13,23 +14,30 @@ export default function(state = initialState, action) {
         ...state,
         token: action.payload.token,
         error: false,
-        isLoading: false,
-        success: true
+        isLoading: false
       };
     }
-    case SET_ERROR: {
+    case SET_LOGIN_ERROR: {
       return {
         ...state,
         error: action.payload.error,
         isLoading: false,
-        success: false
+        emailSent: false
       };
     }
-    case SET_IS_LOADING: {
+    case SET_LOGIN_IS_LOADING: {
       return {
         ...state,
         isLoading: true,
-        success: false,
+        emailSent: false,
+        error: false
+      }
+    }
+    case SET_LOGIN_EMAIL_SENT: {
+      return {
+        ...state,
+        isLoading: false,
+        emailSent: true,
         error: false
       }
     }
