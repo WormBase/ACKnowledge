@@ -1,19 +1,17 @@
 import React, {useState} from 'react';
-import {Alert, Button, Card, Col, Container, Form, FormControl, FormLabel, Row} from "react-bootstrap";
+import {Alert, Button, Card, Col, Container, Form, FormControl, FormLabel, Row, Spinner} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons'
+import {useDispatch, useSelector} from "react-redux";
+import {logIn} from "../redux/actions";
 
 const EmailLogin = () => {
+    const dispatch = useDispatch();
     const [emailAddress, setEmailAddress] = useState(undefined);
-    const [showError, setShowError] = useState(undefined);
+    const error = useSelector((state) => state.error);
+    const success = useSelector((state) => state.success);
+    const isLoading = useSelector((state) => state.isLoading);
 
-
-    let error_message = "";
-    if (this.state.showError) {
-        error_message = <Alert variant="danger">Email not found in the AFP system</Alert>;
-    } else if (this.state.showSuccess) {
-        error_message = <Alert variant="success">Email sent</Alert>;
-    }
     return(
         <Container fluid>
             <Row>
@@ -52,10 +50,16 @@ const EmailLogin = () => {
                                 <Form onSubmit={e => e.preventDefault()}>
                                     <FormLabel>Email address</FormLabel>
                                     <FormControl type="text" placeholder="Enter your email address" style={{ width: '100%' }}
-                                                 onChange={(e) => {this.setState({email_address: e.target.value})}} onSubmit=""
-                                                 onKeyPress={(target) => {if (target.key === 'Enter') {this.logIn()}}}/>
-                                    {error_message}<br/>
-                                    <Button onClick={() => { this.logIn() }}>Request Access</Button>
+                                                 onChange={(e) => {setEmailAddress(e.target.value)}} onSubmit=""
+                                                 onKeyPress={(target) => {if (target.key === 'Enter') {dispatch(logIn(emailAddress))}}}/>
+                                    {error ?
+                                        <Alert variant="danger">Email not found in the AFP system</Alert>
+                                        : success ?
+                                            <Alert variant="success">Email sent. Check your inbox and follow the link we
+                                                sent you</Alert>
+                                            : <br/>
+                                    }
+                                    <Button onClick={() => dispatch(logIn(emailAddress))}>Request Access {isLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
                                 </Form>
                             </Card.Text>
                         </Card.Body>
