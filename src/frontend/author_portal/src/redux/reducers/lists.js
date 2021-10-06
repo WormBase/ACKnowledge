@@ -16,7 +16,7 @@ const initialState = {
   isLoading: false,
   error: false,
   listCounters: listCounters,
-  tokenIsValid: false
+  tokenIsValid: undefined
 }
 
 export default function(state = initialState, action) {

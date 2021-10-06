@@ -4,9 +4,12 @@ import Lists from "./Lists";
 import queryString from "query-string";
 import {Col, Container, Nav, Navbar, Row} from "react-bootstrap";
 import logo from '../images/worm.png'
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {setToken} from "../redux/actions/login";
 
 const Main = () => {
+    const dispatch = useDispatch();
+
     let token;
     let url = document.location.toString();
     if (url.match("\\?")) {
@@ -15,7 +18,9 @@ const Main = () => {
             token = undefined;
         }
     }
-    if (token === undefined) {
+    if (token !== undefined) {
+        dispatch(setToken(token));
+    } else {
         token = useSelector((state) => state.login.token);
     }
 
@@ -38,7 +43,7 @@ const Main = () => {
             <Row>
                 <Col>
                     {token !== undefined ?
-                        <Lists token={token}/>
+                        <Lists/>
                         :
                         <EmailLogin/>
                     }

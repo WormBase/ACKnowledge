@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import {Col, Container, Row, Spinner, Tab, Tabs} from "react-bootstrap";
-import Message from "../components/Message";
 import PaginatedSearchList from "../components/PaginatedSearchList";
 import Badge from "react-bootstrap/Badge";
 import {useDispatch, useSelector} from "react-redux";
@@ -23,7 +22,7 @@ const Lists = () => {
     return(
         <div>
             {isLoading ? <Spinner animation="banner"/> : null}
-            {error ? <Message title="Error" subtitle="The provided token is not valid or expired" /> : null}
+            {error ? <div><h4>Error</h4><br/><h5>Can't validate account token</h5></div> : null}
             {tokenIsValid ?
                 <Container fluid>
                     <Row>
@@ -64,7 +63,9 @@ const Lists = () => {
                         </Col>
                     </Row>
                 </Container>
-                : null}
+                : tokenIsValid === false ?
+                <div><h4>Error</h4><br/><h5>The provided token is not valid or expired</h5></div> : null
+            }
         </div>
     );
 }
