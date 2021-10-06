@@ -3,9 +3,10 @@ import EmailLogin from "./EmailLogin";
 import Lists from "./Lists";
 import queryString from "query-string";
 import {Col, Container, Nav, Navbar, Row} from "react-bootstrap";
-import logo from '../images/worm.png'
 import {useDispatch, useSelector} from "react-redux";
 import {setToken} from "../redux/actions/login";
+import Header from "../components/Header";
+
 
 const Main = () => {
     const dispatch = useDispatch();
@@ -25,31 +26,29 @@ const Main = () => {
     }
 
     return (
-        <Container fluid>
-            <Navbar bg="primary" variant="dark">
-                <Navbar.Brand>
-                    <img src={logo} height="30" width="30" />
-                    &nbsp; Author First Pass
-                </Navbar.Brand>
-                <Nav className="mr-auto">
-                    <Nav.Link href="?token=">Login</Nav.Link>
-                </Nav>
-            </Navbar>
-            <Row>
-                <Col>
-                    &nbsp;
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    {token !== undefined ?
-                        <Lists/>
-                        :
-                        <EmailLogin/>
-                    }
-                </Col>
-            </Row>
-        </Container>
+        <div>
+            <Header/>
+            <Container fluid>
+                <Row>
+                    <Col sm={2}>&nbsp;</Col>
+                    <Col sm={8}>
+                        <Container fluid>
+                            <Row><Col>&nbsp;</Col></Row>
+                            <Row>
+                                <Col>
+                                    {token !== undefined ?
+                                        <Lists/>
+                                        :
+                                        <EmailLogin/>
+                                    }
+                                </Col>
+                            </Row>
+                        </Container>
+                    </Col>
+                    <Col sm={2}>&nbsp;</Col>
+                </Row>
+            </Container>
+        </div>
     );
 }
 

@@ -25,10 +25,7 @@ const EmailLogin = () => {
                 </Col>
             </Row>
             <Row>
-                <Col sm="2">
-                    &nbsp;
-                </Col>
-                <Col sm="8">
+                <Col sm="12">
                     <Card>
                         <Card.Header>
                             <h2 className="text-center">Request access to your AFP page</h2>
@@ -64,9 +61,6 @@ const EmailLogin = () => {
                             </Card.Text>
                         </Card.Body>
                     </Card>
-                </Col>
-                <Col sm="2">
-                    &nbsp;
                 </Col>
             </Row>
         </Container>
