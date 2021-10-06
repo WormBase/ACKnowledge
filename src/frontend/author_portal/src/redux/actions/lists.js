@@ -1,9 +1,10 @@
 import axios from "axios";
 
-export const SET_LIST_IS_LOADING = "SET_LIST_IS_LOADING";
+export const SET_TOKEN_IS_VALIDATING = "SET_TOKEN_IS_VALIDATING";
 export const SET_LIST_ERROR = "SET_LIST_ERROR";
 export const SET_TOKEN_VALIDITY = "SET_TOKEN_VALIDITY";
-export const SET_NUM_PAPERS_IN_LIST = "SET_NUM_PAPERS_IN_LIST";
+export const SET_LIST = "SET_LIST";
+export const SET_LIST_IS_LOADING = "SET_LIST_IS_LOADING";
 
 export const listTypes = Object.freeze({
     WAITING: 1,
@@ -11,34 +12,20 @@ export const listTypes = Object.freeze({
     SUBMITTED: 3
 });
 
+const baseEndpoint = process.env.REACT_APP_API_DB_READ_ENDPOINT;
 
-export const validateTokenAndGetCounts = (token) => {
-    return dispatch => {
-        if (token !== undefined && token !== "undefined") {
-            dispatch(setIsLoading());
-            axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT + "/is_token_valid", {passwd: token})
-                .then(res => {
-                    if (res.data["token_valid"] === "True") {
-                        dispatch(setTokenValidity(true));
-                        dispatch(getTitleBadgeNum("get_processed_papers", listTypes.WAITING, token));
-                        dispatch(getTitleBadgeNum("get_submitted_papers", listTypes.SUBMITTED, token));
-                        dispatch(getTitleBadgeNum("get_partial_papers", listTypes.PARTIAL, token));
-                    } else {
-                        dispatch(setTokenValidity(false));
-                    }
-                })
-                .catch((err) => {
-                    dispatch(setError(err));
-                });
-        }
-    }
-}
+const listEndPoints = {};
+listEndPoints[listTypes.WAITING] = baseEndpoint + "/get_processes_papers";
+listEndPoints[listTypes.PARTIAL] = baseEndpoint + "/get_partial_papers";
+listEndPoints[listTypes.SUBMITTED] = baseEndpoint + "/get_submitted_papers";
 
-const getTitleBadgeNum = (endpoint, listType, token) => {
+
+export const fetchPaperList = (listType, offset, limit, token) => {
     return dispatch => {
-        axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT + "/" + endpoint, {from: 0, count: 1, passwd: token})
+        dispatch(setListIsLoading(listType))
+        axios.post(listEndPoints[listType], {from: offset, count: limit, passwd: token})
             .then(res => {
-                dispatch(setNumPapersInList(listType, res.data["total_num_ids"]));
+                dispatch(setList(listType, res.data["list_ids"], res.data["total_num_ids"]));
             })
             .catch((err) => {
                 dispatch(setError(err));
@@ -46,8 +33,27 @@ const getTitleBadgeNum = (endpoint, listType, token) => {
     }
 }
 
-export const setIsLoading = () => ({
-    type: SET_LIST_IS_LOADING
+export const validateToken = (token) => {
+    return dispatch => {
+        if (token !== undefined && token !== "undefined") {
+            dispatch(setTokenIsValidating());
+            axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT + "/is_token_valid", {passwd: token})
+                .then(res => {
+                    if (res.data["token_valid"] === "True") {
+                        dispatch(setTokenValidity(true));
+                    }
+                })
+                .catch((err) => {
+                    dispatch(setError(err));
+                });
+        } else {
+            dispatch(setTokenValidity(false));
+        }
+    }
+}
+
+export const setTokenIsValidating = () => ({
+    type: SET_TOKEN_IS_VALIDATING
 });
 
 export const setError = (error) => ({
@@ -60,7 +66,12 @@ export const setTokenValidity = (validity) => ({
     payload: { validity }
 });
 
-export const setNumPapersInList = (list, num) => ({
-    type: SET_NUM_PAPERS_IN_LIST,
-    payload: {list: list, num: num}
+export const setList = (listType, elements, totNumElements) => ({
+    type: SET_LIST,
+    payload: {listType: listType, elements: elements, totNumElements: totNumElements}
+});
+
+export const setListIsLoading = (listType) => ({
+    type: SET_LIST_IS_LOADING,
+    payload: {listType}
 });

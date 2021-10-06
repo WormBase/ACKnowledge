@@ -1,21 +1,27 @@
 import {
-  listTypes,
-  SET_LIST_ERROR,
-  SET_LIST_IS_LOADING,
-  SET_NUM_PAPERS_IN_LIST,
+  listTypes, SET_LIST,
+  SET_LIST_ERROR, SET_LIST_IS_LOADING,
+  SET_LIST_TOKEN_IS_LOADING, SET_TOKEN_IS_VALIDATING,
   SET_TOKEN_VALIDITY
 } from "../actions/lists";
 import _ from "lodash";
 
-const listCounters = {};
-listCounters[listTypes.WAITING] = "loading...";
-listCounters[listTypes.PARTIAL] = "loading...";
-listCounters[listTypes.SUBMITTED] = "loading...";
+const initialPaperProps = {
+  elements: [],
+  totNumElements: 0,
+  isLoading: false
+};
+
+const paperLists = {};
+paperLists[listTypes.WAITING] = {...initialPaperProps};
+paperLists[listTypes.PARTIAL] = {...initialPaperProps}
+paperLists[listTypes.SUBMITTED] = {...initialPaperProps};
+
 
 const initialState = {
-  isLoading: false,
+  tokenIsLoading: false,
   error: false,
-  listCounters: listCounters,
+  paperLists: paperLists,
   tokenIsValid: undefined
 }
 
@@ -25,30 +31,45 @@ export default function(state = initialState, action) {
       return {
         ...state,
         error: action.payload.error,
-        isLoading: false
+        tokenIsLoading: false
       };
     }
-    case SET_LIST_IS_LOADING: {
+    case SET_TOKEN_IS_VALIDATING: {
       return {
         ...state,
-        isLoading: true,
+        tokenIsValidating: true,
         error: false
       }
     }
     case SET_TOKEN_VALIDITY: {
       return {
         ...state,
-        isLoading: false,
+        tokenIsLoading: false,
         error: false,
         tokenIsValid: action.payload.validity
       }
     }
-    case SET_NUM_PAPERS_IN_LIST: {
-      let listCountersMod = _.cloneDeep(state.listCounters);
-      listCountersMod[action.payload.list] = action.payload.num;
+    case SET_LIST: {
+      let paperListsMod = _.cloneDeep(state.paperLists);
+      paperListsMod[action.payload.listType] = {
+        elements: action.payload.elements,
+        totNumElements: action.payload.totNumElements,
+        isLoading: false
+      };
       return {
         ...state,
-        listCounters: listCountersMod
+        paperLists: paperListsMod
+      }
+    }
+    case SET_LIST_IS_LOADING: {
+      let paperListsMod = _.cloneDeep(state.paperLists);
+      paperListsMod[action.payload.listType] = {
+        ...paperListsMod[action.payload.listType],
+        isLoading: true
+      };
+      return {
+        ...state,
+        paperLists: paperListsMod
       }
     }
     default:
