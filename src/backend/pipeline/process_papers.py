@@ -87,6 +87,9 @@ def main():
         logging.info("processing paper " + str(paper.paper_id))
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
         fulltext = fulltext.replace('\n', ' ')
+        paper.abstract = paper.abstract if paper.abstract else ""
+        paper.title = paper.title if paper.title else ""
+        title_abs = paper.title + " " + paper.abstract
 
         logger.info("Getting list of genes")
 
@@ -101,7 +104,7 @@ def main():
 
         meaningful_genes_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
             keywords=curated_genes,
-            text=paper.title + " " + paper.abstract,
+            text=title_abs,
             blacklist=config["ntt_extraction"]["exclusion_list"]["gene"],
             match_uppercase=True)
 
@@ -117,7 +120,7 @@ def main():
             tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["allele"])
 
         meaningful_alleles_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
-            keywords=curated_alleles, text=paper.title + " " + paper.abstract,
+            keywords=curated_alleles, text=title_abs,
             blacklist=config["ntt_extraction"]["exclusion_list"]["allele"])
 
         meaningful_alleles = list(set(meaningful_alleles_fulltext) | set(meaningful_alleles_title_abstract))
@@ -132,7 +135,7 @@ def main():
             tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["strain"])
 
         meaningful_strains_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
-            keywords=curated_strains, text=paper.title + " " + paper.abstract,
+            keywords=curated_strains, text=title_abs,
             blacklist=config["ntt_extraction"]["exclusion_list"]["strain"])
 
         meaningful_strains = list(set(meaningful_strains_fulltext) | set(meaningful_strains_title_abstract))
@@ -147,7 +150,7 @@ def main():
             tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["transgene"])
 
         meaningful_transgenes_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
-            keywords=curated_transgenes, text=paper.title + " " + paper.abstract,
+            keywords=curated_transgenes, text=title_abs,
             blacklist=config["ntt_extraction"]["exclusion_list"]["transgene"])
 
         meaningful_transgenes = list(set(meaningful_transgenes_fulltext) | set(meaningful_transgenes_title_abstract))
@@ -163,7 +166,7 @@ def main():
             tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["species"])
 
         meaningful_species_title_abstract = ntt_extractor.extract_species_regex(
-            text=paper.title + " " + paper.abstract,
+            text=title_abs,
             taxon_id_name_map=taxon_id_species_name,
             blacklist=config["ntt_extraction"]["exclusion_list"]["species"],
             whitelist=config["ntt_extraction"]["inclusion_list"]["species"])
