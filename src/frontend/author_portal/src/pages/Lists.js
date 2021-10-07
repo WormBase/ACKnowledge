@@ -11,7 +11,9 @@ const Lists = () => {
     const tokenIsValid = useSelector((state) => state.lists.tokenIsValid);
     const tokenIsValidating = useSelector((state) => state.lists.tokenIsValidating);
     const error = useSelector((state) => state.lists.error);
-    const paperLists = useSelector((state) => state.lists.paperLists);
+    const totNumPapersWaiting = useSelector((state) => state.lists.totNumWaiting);
+    const totNumPapersPartial = useSelector((state) => state.lists.totNumPartial);
+    const totNumPapersSubmitted = useSelector((state) => state.lists.totNumSubmitted);
 
     useEffect(() => {
         dispatch(validateToken(token));
@@ -45,17 +47,17 @@ const Lists = () => {
                     <Row>
                         <Col sm="12">
                             <Tabs defaultActiveKey="1" id="uncontrolled-tab-example">
-                                <Tab eventKey="1" title={<span>Papers waiting for data submission <Badge variant="danger">{paperLists[listTypes.WAITING].totNumElements}</Badge></span>}>
+                                <Tab eventKey="1" title={<span>Papers waiting for data submission <Badge variant="danger">{totNumPapersWaiting}</Badge></span>}>
                                     <br/>
                                     <PaginatedPaperList listType={listTypes.WAITING}/>
                                 </Tab>
-                                <Tab eventKey="3" title={<span>Partial data submission <Badge variant="warning">{paperLists[listTypes.PARTIAL].totNumElements}</Badge></span>}>
+                                <Tab eventKey="3" title={<span>Partial data submission <Badge variant="warning">{totNumPapersPartial}</Badge></span>}>
                                     <br/>
-                                    <PaginatedPaperList listType={listTypes.PARTIAL} />
+                                    <PaginatedPaperList listType={listTypes.PARTIAL}/>
                                 </Tab>
-                                <Tab eventKey="2" title={<span>Data submission completed <Badge variant="success">{paperLists[listTypes.SUBMITTED].totNumElements}</Badge></span>}>
+                                <Tab eventKey="2" title={<span>Data submission completed <Badge variant="success">{totNumPapersSubmitted}</Badge></span>}>
                                     <br/>
-                                    <PaginatedPaperList listType={listTypes.SUBMITTED} />
+                                    <PaginatedPaperList listType={listTypes.SUBMITTED}/>
                                 </Tab>
                             </Tabs>
                         </Col>

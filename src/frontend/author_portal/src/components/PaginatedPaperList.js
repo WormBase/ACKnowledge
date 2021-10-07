@@ -1,35 +1,34 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import withPaginatedList from "paginated-list";
 import ListElement from "./ListElement";
-import {fetchPaperList, listTypes} from "../redux/actions/lists";
+import {listEndPoints, setError, setTotNumElements} from "../redux/actions/lists";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 const PaginatedPaperList = ({listType}) => {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.login.token);
-    const paperList = useSelector((state) => state.lists.paperLists[listType]);
-    const [curOffsetLimit, setCurOffsetLimit] = useState([0, 10]);
-
-    useEffect(() => {
-        dispatch(fetchPaperList(listType, curOffsetLimit[0], curOffsetLimit[1], token))
-    }, [curOffsetLimit, token]);
 
     const PaginatedList = withPaginatedList(ListElement, (offset, limit) => {
         return new Promise((resolve, reject) => {
-            if (offset !== curOffsetLimit[0] ||  limit !== curOffsetLimit[1]) {
-                setCurOffsetLimit([offset, limit]);
-            }
-            resolve({
-                items: paperList.elements,
-                totNumItems: paperList.totNumElements
-            });
+            axios.post(listEndPoints[listType], {from: offset, count: limit, passwd: token})
+                .then(res => {
+                    dispatch(setTotNumElements(listType, res.data["total_num_ids"]));
+                    resolve({
+                        items: res.data["list_ids"],
+                        totNumItems: res.data["total_num_ids"]
+                    });
+                })
+                .catch((err) => {
+                    dispatch(setError(err));
+                });
         });
-    }, 10, 5, false, false);
+    }, 5, 5, false, false);
 
     return(
         <div>
-            {paperList.isLoading ? <p>Loading...</p> : paperList.totNumElements > 0 ? <PaginatedList /> : null}
+            <PaginatedList />
         </div>
     );
 }

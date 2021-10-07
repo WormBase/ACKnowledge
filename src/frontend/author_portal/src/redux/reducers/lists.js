@@ -2,26 +2,16 @@ import {
   listTypes, SET_LIST,
   SET_LIST_ERROR, SET_LIST_IS_LOADING,
   SET_LIST_TOKEN_IS_LOADING, SET_TOKEN_IS_VALIDATING,
-  SET_TOKEN_VALIDITY
+  SET_TOKEN_VALIDITY, SET_TOT_NUM_ELEMENTS
 } from "../actions/lists";
 import _ from "lodash";
-
-const initialPaperProps = {
-  elements: [],
-  totNumElements: 0,
-  isLoading: false
-};
-
-const paperLists = {};
-paperLists[listTypes.WAITING] = {...initialPaperProps};
-paperLists[listTypes.PARTIAL] = {...initialPaperProps}
-paperLists[listTypes.SUBMITTED] = {...initialPaperProps};
-
 
 const initialState = {
   tokenIsLoading: false,
   error: false,
-  paperLists: paperLists,
+  totNumWaiting: 0,
+  totNumPartial: 0,
+  totNumSubmitted: 0,
   tokenIsValid: undefined
 }
 
@@ -49,28 +39,20 @@ export default function(state = initialState, action) {
         tokenIsValid: action.payload.validity
       }
     }
-    case SET_LIST: {
-      let paperListsMod = _.cloneDeep(state.paperLists);
-      paperListsMod[action.payload.listType] = {
-        elements: action.payload.elements,
-        totNumElements: action.payload.totNumElements,
-        isLoading: false
-      };
-      return {
-        ...state,
-        paperLists: paperListsMod
+    case SET_TOT_NUM_ELEMENTS: {
+      let stateMod = _.cloneDeep(state);
+      switch (action.payload.listType) {
+        case (listTypes.WAITING):
+          stateMod.totNumWaiting = action.payload.totNumElements;
+          break;
+        case (listTypes.PARTIAL):
+          stateMod.totNumPartial = action.payload.totNumElements;
+          break;
+        case (listTypes.SUBMITTED):
+          stateMod.totNumSubmitted = action.payload.totNumElements;
+          break;
       }
-    }
-    case SET_LIST_IS_LOADING: {
-      let paperListsMod = _.cloneDeep(state.paperLists);
-      paperListsMod[action.payload.listType] = {
-        ...paperListsMod[action.payload.listType],
-        isLoading: true
-      };
-      return {
-        ...state,
-        paperLists: paperListsMod
-      }
+      return stateMod;
     }
     default:
       return state;
