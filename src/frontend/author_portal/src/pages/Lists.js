@@ -20,7 +20,7 @@ const Lists = () => {
             {tokenIsValidating ? <Alert variant="info">Validating token...</Alert> : null}
             {error ? <Alert variant="danger">Error: An error occurred</Alert> : null}
             {tokenIsValid ? <TabbedPaperLists/> : null}
-            {!tokenIsValid ? <Alert variant="danger">Error: The provided token is not valid or expired</Alert> : null}
+            {tokenIsValid === false ? <Alert variant="danger">Error: The provided token is not valid or expired</Alert> : null}
         </div>
     );
 }
