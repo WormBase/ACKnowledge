@@ -15,14 +15,14 @@ export const listTypes = Object.freeze({
 const baseEndpoint = process.env.REACT_APP_API_DB_READ_ENDPOINT;
 
 const listEndPoints = {};
-listEndPoints[listTypes.WAITING] = baseEndpoint + "/get_processes_papers";
+listEndPoints[listTypes.WAITING] = baseEndpoint + "/get_processed_papers";
 listEndPoints[listTypes.PARTIAL] = baseEndpoint + "/get_partial_papers";
 listEndPoints[listTypes.SUBMITTED] = baseEndpoint + "/get_submitted_papers";
 
 
 export const fetchPaperList = (listType, offset, limit, token) => {
     return dispatch => {
-        dispatch(setListIsLoading(listType))
+        dispatch(setListIsLoading(listType));
         axios.post(listEndPoints[listType], {from: offset, count: limit, passwd: token})
             .then(res => {
                 dispatch(setList(listType, res.data["list_ids"], res.data["total_num_ids"]));

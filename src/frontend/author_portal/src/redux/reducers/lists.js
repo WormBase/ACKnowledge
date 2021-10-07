@@ -44,7 +44,7 @@ export default function(state = initialState, action) {
     case SET_TOKEN_VALIDITY: {
       return {
         ...state,
-        tokenIsLoading: false,
+        tokenIsValidating: false,
         error: false,
         tokenIsValid: action.payload.validity
       }
