@@ -1,9 +1,8 @@
 import React, {useEffect} from 'react';
-import {Alert, Col, Container, Row, Tab, Tabs} from "react-bootstrap";
-import Badge from "react-bootstrap/Badge";
+import {Alert} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {listTypes, validateToken} from "../redux/actions/lists";
-import PaginatedPaperList from "../components/PaginatedPaperList";
+import {validateToken} from "../redux/actions/lists";
+import TabbedPaperLists from "../components/TabbedPaperLists";
 
 const Lists = () => {
     const dispatch = useDispatch();
@@ -11,9 +10,6 @@ const Lists = () => {
     const tokenIsValid = useSelector((state) => state.lists.tokenIsValid);
     const tokenIsValidating = useSelector((state) => state.lists.tokenIsValidating);
     const error = useSelector((state) => state.lists.error);
-    const totNumPapersWaiting = useSelector((state) => state.lists.totNumWaiting);
-    const totNumPapersPartial = useSelector((state) => state.lists.totNumPartial);
-    const totNumPapersSubmitted = useSelector((state) => state.lists.totNumSubmitted);
 
     useEffect(() => {
         dispatch(validateToken(token));
@@ -23,49 +19,8 @@ const Lists = () => {
         <div>
             {tokenIsValidating ? <Alert variant="info">Validating token...</Alert> : null}
             {error ? <Alert variant="danger">Error: An error occurred</Alert> : null}
-            {tokenIsValid ?
-                <Container fluid>
-                    <Row>
-                        <Col sm="12">
-                            &nbsp;
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm="12">
-                            <p>
-                                Below is a list of papers for which you are an author and that have been processed by the new WormBase Author First Pass data flagging pipeline.
-                            </p>
-                            <p>To verify the flagged data, please click on the link to your paper.</p>
-                            <p>Thank you for helping WormBase curate your paper!</p>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm="12">
-                            &nbsp;
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm="12">
-                            <Tabs defaultActiveKey="1" id="uncontrolled-tab-example">
-                                <Tab eventKey="1" title={<span>Papers waiting for data submission <Badge variant="danger">{totNumPapersWaiting}</Badge></span>}>
-                                    <br/>
-                                    <PaginatedPaperList listType={listTypes.WAITING}/>
-                                </Tab>
-                                <Tab eventKey="3" title={<span>Partial data submission <Badge variant="warning">{totNumPapersPartial}</Badge></span>}>
-                                    <br/>
-                                    <PaginatedPaperList listType={listTypes.PARTIAL}/>
-                                </Tab>
-                                <Tab eventKey="2" title={<span>Data submission completed <Badge variant="success">{totNumPapersSubmitted}</Badge></span>}>
-                                    <br/>
-                                    <PaginatedPaperList listType={listTypes.SUBMITTED}/>
-                                </Tab>
-                            </Tabs>
-                        </Col>
-                    </Row>
-                </Container>
-                : tokenIsValid === false ?
-                    <Alert variant="danger">Error: The provided token is not valid or expired</Alert> : null
-            }
+            {tokenIsValid ? <TabbedPaperLists/> : null}
+            {!tokenIsValid ? <Alert variant="danger">Error: The provided token is not valid or expired</Alert> : null}
         </div>
     );
 }
