@@ -78,6 +78,8 @@ if __name__ == '__main__':
 
 else:
     import os
+    logging.basicConfig(filename='/var/log/afp.log', level='INFO',
+                        format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
     app = falcon.API(middleware=[HandleCORS()])
     db_manager = WBDBManager(dbname=os.environ['AFP_DB_NAME'], user=os.environ['AFP_DB_USER'],
                              password=os.environ['AFP_DB_PASSWD'], host=os.environ['AFP_DB_HOST'])
