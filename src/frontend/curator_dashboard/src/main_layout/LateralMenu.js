@@ -83,6 +83,14 @@ class LateralMenu extends React.Component {
                 </Row>
                 <Row>
                     <Col sm="10">
+                        <IndexLinkContainer to={"papers_stats" + args}
+                                            active={true}>
+                            <a className="aw"><h6>Papers stats</h6></a>
+                        </IndexLinkContainer>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col sm="10">
                         <IndexLinkContainer to={"lists" + args}
                                             active={true}>
                             <a className="aw"><h6>Paper Lists</h6></a>

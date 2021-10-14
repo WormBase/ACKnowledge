@@ -6,6 +6,7 @@ import Lists from "../pages/PaperLists";
 import Home from "../pages/Home";
 import Contributors from "../pages/Contributors";
 import Entities from "../pages/Entities";
+import PaperStats from "../pages/stats/PaperStats";
 
 class PageArea extends React.Component {
 
@@ -25,6 +26,8 @@ class PageArea extends React.Component {
                        render={() => <Contributors/>}/>
                 <Route path={"/entities"}
                        render={() => <Entities/>}/>
+                <Route path={"/papers_stats"}
+                       render={() => <PaperStats/>}/>
             </div>
         );
     }

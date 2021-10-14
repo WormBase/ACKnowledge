@@ -145,8 +145,9 @@ class CuratorDashboardReader:
 
     def on_post(self, req, resp, req_type):
         with self.db:
-            if req_type != "stats" and req_type != "papers" and req_type != "contributors" \
-                    and req_type != "most_emailed" and req_type != "all_papers" and req_type != "entities_count":
+            if req_type != "stats_totals" and req_type != "papers" and req_type != "contributors" \
+                    and req_type != "most_emailed" and req_type != "all_papers" and req_type != "entities_count" and \
+                    req_type != "paper_stats" and req_type != "stats_timeseries":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -242,7 +243,7 @@ class CuratorDashboardReader:
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
             else:
-                if req_type == "stats":
+                if req_type == "stats_totals":
                     num_no_submission = self.db.afp.get_paper_ids_afp_no_submission(count=True)
                     num_full_submission = self.db.afp.get_paper_ids_afp_full_submission(count=True)
                     num_partial_submission = self.db.afp.get_paper_ids_afp_partial_submission(count=True)
@@ -250,23 +251,26 @@ class CuratorDashboardReader:
 
                     num_papers_old_afp_processed = self.db.afp.get_num_papers_old_afp_processed()
                     num_papers_old_afp_author_submitted = self.db.afp.get_num_papers_old_afp_author_submitted()
+
+                    resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
+                                '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
+                                '"{}", "num_papers_new_afp_partial_sub": "{}"}}'\
+                        .format(num_processed, num_papers_old_afp_processed,
+                                num_full_submission, num_papers_old_afp_author_submitted,
+                                num_partial_submission)
+                    resp.status = falcon.HTTP_200
+                elif req_type == "paper_stats":
                     num_extracted_genes_per_paper = self.db.afp.get_num_entities_per_paper("genestudied")
                     num_extracted_species_per_paper = self.db.afp.get_num_entities_per_paper("species")
                     num_extracted_alleles_per_paper = self.db.afp.get_num_entities_per_paper("variation")
                     num_extracted_strains_per_paper = self.db.afp.get_num_entities_per_paper("strain")
                     num_extracted_transgenes_per_paper = self.db.afp.get_num_entities_per_paper("transgene")
-                    resp.body = '{{"num_papers_new_afp_processed": "{}", "num_papers_old_afp_processed": "{}", ' \
-                                '"num_papers_new_afp_author_submitted": "{}", "num_papers_old_afp_author_submitted": ' \
-                                '"{}", "num_papers_new_afp_partial_sub": ' \
-                                '"{}", "num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
+                    resp.body = '{{"num_extracted_genes_per_paper": {}, "num_extracted_species_per_paper": {}, ' \
                                 '"num_extracted_alleles_per_paper": {}, "num_extracted_strains_per_paper": {}, ' \
-                                '"num_extracted_transgenes_per_paper": {}}}'\
-                        .format(num_processed, num_papers_old_afp_processed,
-                                num_full_submission, num_papers_old_afp_author_submitted,
-                                num_partial_submission,
-                                num_extracted_genes_per_paper, num_extracted_species_per_paper,
-                                num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
-                                num_extracted_transgenes_per_paper)
+                                '"num_extracted_transgenes_per_paper": {}}}'.format(
+                        num_extracted_genes_per_paper, num_extracted_species_per_paper,
+                        num_extracted_alleles_per_paper, num_extracted_strains_per_paper,
+                        num_extracted_transgenes_per_paper)
                     resp.status = falcon.HTTP_200
                 elif req_type == "papers":
                     from_offset = req.media["from"]
@@ -423,4 +427,10 @@ class CuratorDashboardReader:
                     list_entities = ",".join(["{\"name\":\"" + elem[1] + "\",\"id\":\"" + elem[2] +
                                              "\",\"count\":\"" + str(elem[0]) + "\"}" for elem in sorted_list])
                     resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(list_entities, total_len)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "stats_timeseries":
+                    bin_size = req.media["bin_size"]
+                    stats_ts = self.db.afp.get_stats_timeseries(bin_period=bin_size)
+                    resp.body = json.dumps(stats_ts)
                     resp.status = falcon.HTTP_200
