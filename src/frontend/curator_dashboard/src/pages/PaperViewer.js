@@ -1,12 +1,9 @@
 import React from 'react';
-import {
-    Button, Col, Container,
-    Form,
-    FormControl, Nav, Navbar, NavDropdown, Row
-} from "react-bootstrap";
-import {Link, withRouter} from "react-router-dom";
+import {Col, Container, Row} from "react-bootstrap";
+import {withRouter} from "react-router-dom";
 import queryString from "query-string";
 import StatusArea from "./paper_viewer/StatusArea";
+import TopSearchBar from "./paper_viewer/TopSearchBar";
 
 
 class PaperViewer extends React.Component {
@@ -111,47 +108,26 @@ class PaperViewer extends React.Component {
 
     render() {
         return(
-            <Container fluid>
-                <Row>
-                    <Col sm="12">
-                        <Navbar bg="light" expand="lg">
-                            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                            <Navbar.Collapse id="basic-navbar-nav">
-                                <Nav className="mr-auto">
-                                </Nav>
-                                <Form inline onSubmit={e => e.preventDefault()}>
-                                    <FormControl type="text" placeholder="Paper ID - 8 digits" className="mr-sm-2"
-                                                 onChange={(e) => {this.setPaperId(e.target.value)}} onSubmit=""
-                                                 onKeyPress={(target) => {if (target.key === 'Enter') {
-                                                     this.props.history.push('?paper_id=' + this.state.paper_id);
-                                                     this.loadPaper()}}}/>
-                                    <Link to={
-                                        {
-                                            pathname: '/paper',
-                                            search: '?paper_id=' + this.state.paper_id
-                                        }
-                                    }><Button variant="outline-primary">Load Paper</Button></Link>
-                                </Form>
-                            </Navbar.Collapse>
-                        </Navbar>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm="12">
-                        <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
-                                    isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
-                                    paper_afp_processed={this.state.paper_afp_processed}
-                                    paper_afp_processed_date={this.state.paper_afp_processed_date}
-                                    paper_author_submitted={this.state.paper_author_submitted}
-                                    paper_author_modified={this.state.paper_author_modified}
-                                    paper_title={this.state.paper_title}
-                                    paper_journal={this.state.paper_journal}
-                                    email={this.state.author_address}
-                                    pmid={this.state.pmid}
-                                    doi={this.state.doi} />
-                    </Col>
-                </Row>
-            </Container>
+            <div>
+                <TopSearchBar/>
+                <Container fluid>
+                    <Row>
+                        <Col sm="12">
+                            <StatusArea paper_id={this.state.paper_id_from_url} load_diff={this.state.load_diff}
+                                        isLoading={this.state.isLoading} link_to_afp_form={this.state.link_to_afp_form}
+                                        paper_afp_processed={this.state.paper_afp_processed}
+                                        paper_afp_processed_date={this.state.paper_afp_processed_date}
+                                        paper_author_submitted={this.state.paper_author_submitted}
+                                        paper_author_modified={this.state.paper_author_modified}
+                                        paper_title={this.state.paper_title}
+                                        paper_journal={this.state.paper_journal}
+                                        email={this.state.author_address}
+                                        pmid={this.state.pmid}
+                                        doi={this.state.doi} />
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
         );
     }
 }

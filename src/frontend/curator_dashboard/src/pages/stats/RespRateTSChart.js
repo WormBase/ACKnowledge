@@ -1,13 +1,14 @@
-import React from "react";
+import React, {useState} from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import {useQuery} from "react-query";
 import axios from "axios";
 
-const RespRateTSChart = ({bin_size = 'y'}) => {
-    const data = useQuery('respRateTS' + bin_size, () =>
-        axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/stats_timeseries", {bin_size: bin_size}))
-    const showYearOnly = bin_size.includes("y");
+const RespRateTSChart = () => {
+    const [binSize, setBinSize] = useState('y');
+    const data = useQuery('respRateTS' + binSize, () =>
+        axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/stats_timeseries", {bin_size: binSize}))
+    const showYearOnly = binSize.includes("y");
     const options = {
         title: {
             text: 'Response Rate over time'
@@ -66,6 +67,12 @@ const RespRateTSChart = ({bin_size = 'y'}) => {
               highcharts={Highcharts}
               options={options}
           />
+          Interval period
+          <br/>
+          <select onChange={(event) => setBinSize(event.target.value)}>
+              <option value="y">1 year</option>
+              <option value="m">1 month</option>
+          </select>
       </div>
     );
 }

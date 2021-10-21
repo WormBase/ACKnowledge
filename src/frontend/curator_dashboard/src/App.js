@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {BrowserRouter as Router} from "react-router-dom";
 import {QueryClientProvider, QueryClient} from "react-query";
-import Main from './main_layout/Main'
+import Main from './Main';
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 class App extends Component {
   render() {
@@ -14,9 +16,11 @@ class App extends Component {
           <div>
               {developmentBanner}
               <Router>
-                  <QueryClientProvider client={queryClient}>
-                      <Main/>
-                  </QueryClientProvider>
+                  <Provider store={store}>
+                      <QueryClientProvider client={queryClient}>
+                          <Main/>
+                      </QueryClientProvider>
+                  </Provider>
               </Router>
           </div>
       );

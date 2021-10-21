@@ -19,7 +19,10 @@
     "react-loading-overlay": "^1.0.1",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
-    "string-strip-html": "^4.3.15"
+    "string-strip-html": "^4.3.15",
+    "redux": "^4.1.1",
+    "redux-thunk": "^2.3.0",
+    "react-redux": "^7.2.5"
   },
   "scripts": {
     "start": "react-scripts start",
