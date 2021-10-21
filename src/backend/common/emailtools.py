@@ -67,7 +67,7 @@ class EmailManager(object):
 
     def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str]):
         if paper_ids:
-            paperid_list = "<br/>".join([paper_id + " <a href=" + url + ">" + url + "</a>" for paper_id, url in
+            paperid_list = "<br/>".join(["<a href=" + url + ">" + paper_id + "</a>" for paper_id, url in
                                          zip(paper_ids, urls)])
         else:
             paperid_list = "No papers processed this time"
@@ -115,5 +115,7 @@ class EmailManager(object):
               pmid + "&personid=" + corresponding_author_id.replace("two", "") + "&hide_genes=" + \
               hide_genes + "&hide_alleles=" + hide_alleles + "&hide_strains=" + hide_strains + "&doi=" + \
               urllib.parse.quote(doi)
-        data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
-        return data.read().decode('utf-8')
+        # Stopped using tinyurl after too many issues with the free api
+        # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
+        # return data.read().decode('utf-8')
+        return url
