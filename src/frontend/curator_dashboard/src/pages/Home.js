@@ -1,10 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Col, Container, Form, FormControl, Row, Card} from "react-bootstrap";
 import {Link, withRouter} from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faSearch, faChartBar, faList, faUsers, faUserEdit} from '@fortawesome/free-solid-svg-icons'
+import {useDispatch} from "react-redux";
+import {setSelectedPaperID} from "../redux/actions";
 
 const Home = () => {
+    const dispatch = useDispatch();
+    const [tmpPaperID, setTmpPaperID] = useState(undefined);
     let url = document.location.toString();
     let args = "";
     if (url.match('\\?')) {
@@ -49,16 +53,11 @@ const Home = () => {
                                 <Form inline onSubmit={e => e.preventDefault()}>
                                     <FormControl type="text" placeholder="Paper ID - 8 digits" size="sm" style={{ width: '60%' }}
                                                  autoComplete="off"
-                                                 onChange={(e) => {this.setState({paper_id: e.target.value})}} onSubmit=""
-                                                 onKeyPress={(target) => {if (target.key === 'Enter') { this.props.history.push("/paper?paper_id=" + this.state.paper_id)  }}}/>
-                                    <Link to={
-                                        {
-                                            pathname: '/paper',
-                                            search: '?paper_id=' + this.state.paper_id
-                                        }
-                                    }><Button bsStyle="primary" size="sm">
+                                                 onChange={(e) => setTmpPaperID(e.target.value)} onSubmit=""
+                                                 onKeyPress={(target) => {if (target.key === 'Enter') { dispatch(setSelectedPaperID(tmpPaperID)) }}}/>
+                                    <Button bsStyle="primary" size="sm" onClick={() => setSelectedPaperID(tmpPaperID)}>
                                         Load
-                                    </Button></Link>
+                                    </Button>
                                 </Form>
                             </Form.Group>
                         </Card.Body>

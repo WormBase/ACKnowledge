@@ -2,8 +2,11 @@ import React, {useState} from "react";
 import {Form, FormControl, Nav, Navbar} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import Button from "react-bootstrap/Button";
+import {useDispatch} from "react-redux";
+import {setSelectedPaperID} from "../../redux/actions";
 
 const TopSearchBar = () => {
+    const dispatch = useDispatch();
     const [paperID, setPaperID] = useState(undefined);
     return (
         <Navbar bg="light" expand="lg">
@@ -15,12 +18,12 @@ const TopSearchBar = () => {
                     <FormControl type="text" placeholder="Paper ID - 8 digits" className="mr-sm-2"
                                  onChange={(e) => {setPaperID(e.target.value)}} onSubmit=""
                                  onKeyPress={(target) => {if (target.key === 'Enter') {
-                                     this.props.history.push('?paper_id=' + paperID);
-                                     this.loadPaper()}}}/>
+                                     dispatch(setSelectedPaperID(paperID));
+                                 }}}/>
                     <Link to={
                         {
                             pathname: '/paper',
-                            search: '?paper_id=' + this.state.paper_id
+                            search: '?paper_id=' + paperID
                         }
                     }><Button variant="outline-primary">Load Paper</Button></Link>
                 </Form>
