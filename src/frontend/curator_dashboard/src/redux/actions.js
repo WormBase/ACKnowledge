@@ -97,6 +97,23 @@ export const fetchEntityLists = (paperID) => {
                 .catch((err) => {
                     reject(err);
                 });
+        } else {
+            reject("undefined paperID");
+        }
+    });
+}
+
+export const fetchFlaggedData = (paperID) => {
+    return new Promise((resolve, reject) => {
+        if (paperID !== undefined) {
+            axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/flagged", {paper_id: paperID})
+                .then(data => {
+                    resolve(data);
+                }).catch((err) => {
+                reject(err);
+            });
+        } else {
+            reject("undefined paperID");
         }
     });
 }

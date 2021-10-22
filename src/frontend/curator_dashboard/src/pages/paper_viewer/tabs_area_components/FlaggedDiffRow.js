@@ -17,7 +17,7 @@ class FlaggedDiffRow extends React.Component {
                         Details: <strong>{this.props.afpDetails !== "'null'" ? this.props.afpDetails : ""}</strong>
                     </div>
                     <div className="col-sm-3">
-                        <strong>{this.props.afpDetails !== "'null'" ? this.props.tfpChecked !== this.props.afpChecked ? "Yes" : "No" : "No"}</strong>
+                        <strong>{this.props.afpDetails !== "'null'" && this.props.afpDetails !== "null"? this.props.tfpChecked !== this.props.afpChecked ? "Yes" : "No" : "No"}</strong>
                     </div>
                 </div>
                 <div className="row">
