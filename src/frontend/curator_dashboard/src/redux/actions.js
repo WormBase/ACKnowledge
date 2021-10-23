@@ -117,3 +117,47 @@ export const fetchFlaggedData = (paperID) => {
         }
     });
 }
+
+export const fetchAuthorFlagged = (paperID) => {
+    return axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/other_yn", {paper_id: paperID});
+}
+
+export const fetchOtherData = (paperID) => {
+    return new Promise((resolve, reject) => {
+        if (paperID !== undefined) {
+            axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/others", {paper_id: paperID})
+            .then(data => {
+                let retData = {};
+                retData.afp_newalleles = data.data.afp_newalleles;
+                if (retData.afp_newalleles !== '') {
+                    retData.afp_newalleles = retData.afp_newalleles.split(" | ");
+                } else {
+                    retData.afp_newalleles = [];
+                }
+                retData.afp_newstrains = data.data.afp_newstrains;
+                if (retData.afp_newstrains !== '') {
+                    retData.afp_newstrains = retData.afp_newstrains.split(" | ");
+                } else {
+                    retData.afp_newstrains = [];
+                }
+                retData.afp_newtransgenes = data.data.afp_newtransgenes;
+                if (retData.afp_newtransgenes !== '') {
+                    retData.afp_newtransgenes = retData.afp_newtransgenes.split(" | ");
+                } else {
+                    retData.afp_newtransgenes = [];
+                }
+                retData.afp_otherantibodies = data.data.afp_otherantibodies;
+                if (retData.afp_otherantibodies !== '') {
+                    retData.afp_otherantibodies = extractEntitiesFromTfpString(retData.afp_otherantibodies, "");
+                } else {
+                    retData.afp_otherantibodies = [];
+                }
+                resolve(retData);
+            }).catch((err) => {
+                reject(err);
+            });
+        } else {
+            reject("undefined paperID");
+        }
+    });
+}
