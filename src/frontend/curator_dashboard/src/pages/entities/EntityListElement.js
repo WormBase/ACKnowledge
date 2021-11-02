@@ -4,18 +4,18 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Badge from "react-bootstrap/Badge";
 
-const EntityListElement = ({element}) => {
+const EntityListElement = ({item}) => {
     return (
         <Container>
             <Row>
                 <Col sm={1}>
-                    <Badge variant="secondary">{element.count}</Badge>
+                    <Badge variant="secondary">{item.count}</Badge>
                 </Col>
                 <Col>
-                    {element.name}
+                    {item.name}
                 </Col>
                 <Col>
-                    {element.id}
+                    {item.id}
                 </Col>
             </Row>
         </Container>

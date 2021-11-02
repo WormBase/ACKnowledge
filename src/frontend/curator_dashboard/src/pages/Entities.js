@@ -23,15 +23,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Added</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "gene",
-                                                count: elemPerPage,
-                                                added: true
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="gene" added={true} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -39,15 +31,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Removed</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "gene",
-                                                count: elemPerPage,
-                                                added: false
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="gene" added={false} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -66,15 +50,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Added</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "species",
-                                                count: elemPerPage,
-                                                added: true
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="species" added={true} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -82,15 +58,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Removed</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "species",
-                                                count: elemPerPage,
-                                                added: false
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="species" added={false} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -109,15 +77,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Added</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "strain",
-                                                count: elemPerPage,
-                                                added: true
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="strain" added={true} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -125,15 +85,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Removed</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "strain",
-                                                count: elemPerPage,
-                                                added: false
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="strain" added={false} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -152,15 +104,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Added</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "variation",
-                                                count: elemPerPage,
-                                                added: true
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="variation" added={true} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -168,15 +112,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Removed</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "variation",
-                                                count: elemPerPage,
-                                                added: false
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="variation" added={false} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -195,15 +131,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Added</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "transgenes",
-                                                count: elemPerPage,
-                                                added: true
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="transgenes" added={true} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -211,15 +139,7 @@ const Entities = () => {
                                 <Card className="listPanel">
                                     <Card.Header>Removed</Card.Header>
                                     <Card.Body>
-                                        <PaginatedEntityList
-                                            endpoint={process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/entities_count"}
-                                            payload={{
-                                                entity_type: "transgenes",
-                                                count: elemPerPage,
-                                                added: false
-                                            }}
-                                            elemPerPage={elemPerPage}
-                                        />
+                                        <PaginatedEntityList entityType="transgenes" added={false} numItemsPerPage={elemPerPage}/>
                                     </Card.Body>
                                 </Card>
                             </Col>
