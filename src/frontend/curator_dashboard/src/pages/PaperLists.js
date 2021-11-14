@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Card, Col, Container, Row, Tab, Tabs} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import Collapse from "react-bootstrap/Collapse";
@@ -16,38 +16,10 @@ const prepFilterString = filter => {
     return outFilters;
 }
 
-class PaperLists extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        let url = document.location.toString();
-        let activeTabKey = 1;
-        if (url.match('#')) {
-            activeTabKey = parseInt(url.split('#')[1])
-        }
-        this.state = {
-            cx: 0,
-            isLoading: false,
-            activeTabKey: activeTabKey,
-            papersPerPage: 10,
-            paper_id: undefined,
-            filterOpen: false,
-            svmFilter: new Set(),
-            manualFilter: new Set(),
-            curationFilter: new Set(),
-            combineFilters: 'AND'
-        };
+const PaperLists = () => {
+    const [showFilter, setShowFilter] = useState(false);
 
-        this.toggleFilter = this.toggleFilter.bind(this);
-        this.addRemFilter = this.addRemFilter.bind(this);
-        this.setNumPapersPerPage = this.setNumPapersPerPage.bind(this);
-        this.changeCombineFilters = this.changeCombineFilters.bind(this);
-    }
-
-    toggleFilter() {
-        this.setState({filterOpen: !this.state.filterOpen})
-    }
-
-    addRemFilter(Datatype, filterType) {
+    const addRemFilter = (datatype, filterType) => {
         let tempSet = new Set();
         if (filterType === "svm") {
             tempSet = this.state.svmFilter;
@@ -56,10 +28,10 @@ class PaperLists extends React.Component {
         } else if (filterType === "curation") {
             tempSet = this.state.curationFilter;
         }
-        if (tempSet.has(Datatype)) {
-            tempSet.delete(Datatype);
+        if (tempSet.has(datatype)) {
+            tempSet.delete(datatype);
         } else {
-            tempSet.add(Datatype);
+            tempSet.add(datatype);
         }
         if (filterType === "svm") {
             this.setState({svmFilter: tempSet})
