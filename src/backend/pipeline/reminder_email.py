@@ -49,11 +49,11 @@ def main():
                 paper_journal = db_manager.paper.get_paper_journal(paper_id)
                 afp_link = db_manager.afp.get_afp_form_link(paper_id, args.afp_base_url)
                 if afp_link:
-                    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
-                    tiny_url = data.read().decode('utf-8')
+                    # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
+                    # tiny_url = data.read().decode('utf-8')
                     if not args.dev_mode:
                         email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
-                                                              paper_journal=paper_journal, afp_link=tiny_url,
+                                                              paper_journal=paper_journal, afp_link=afp_link,
                                                               recipients=[author_email], final_call=options[1])
                         logger.info("going to sleep for ~15 minutes")
                         time.sleep(1000)
