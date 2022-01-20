@@ -2,10 +2,30 @@ import axios from "axios";
 import {extractEntitiesFromTfpString} from "../AFPValues";
 
 export const SET_SELECTED_PAPER_ID = "SET_SELECTED_PAPER_ID";
+export const TOGGLE_PAPER_LIST_FILTER = "TOGGLE_PAPER_LIST_FILTER";
+export const SET_COMBINE_FILTERS_BY = "SET_COMBINE_FILTERS_BY";
+export const RESET_PAPER_LIST_FILTERS = "RESET_PAPER_LIST_FILTERS";
 
 export const setSelectedPaperID = (paperID) => ({
     type: SET_SELECTED_PAPER_ID,
     payload: { paperID }
+});
+
+export const resetPaperListFilters = () => ({
+    type: RESET_PAPER_LIST_FILTERS
+});
+
+export const togglePaperListFilter = (dataType, filterType) => ({
+    type: TOGGLE_PAPER_LIST_FILTER,
+    payload: {
+        dataType: dataType,
+        filterType: filterType
+    }
+});
+
+export const setCombineFiltersBy = (combineFiltersBy) => ({
+    type: SET_COMBINE_FILTERS_BY,
+    payload: { combineFiltersBy }
 });
 
 export const fetchEntityLists = (paperID) => {

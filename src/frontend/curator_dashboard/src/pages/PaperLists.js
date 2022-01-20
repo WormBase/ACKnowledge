@@ -6,6 +6,8 @@ import PaginatedPapersList from "./paper_lists/PaginatedPapersList";
 import PapersFilters from "./paper_lists/PapersFilters";
 import axios from 'axios';
 import {downloadFile} from "../lib/file";
+import {useDispatch, useSelector} from "react-redux";
+import {resetPaperListFilters} from "../redux/actions";
 
 
 const prepFilterString = filter => {
@@ -17,35 +19,13 @@ const prepFilterString = filter => {
 }
 
 const PaperLists = () => {
+    const dispatch = useDispatch();
+    const svmFilters = useSelector((state) => state.paperListFilters.svmFilters);
+    const manualFilters = useSelector((state) => state.paperListFilters.manualFilters);
+    const curationFilters = useSelector((state) => state.paperListFilters.curationFilters);
+    const combineFilters = useSelector((state) => state.paperListFilters.combineFilters);
     const [showFilter, setShowFilter] = useState(false);
-    const [svmFilter, setSvmFilter] = useState(new Set());
-    const [manualFilter, setManualFilter] = useState(new Set());
-    const [curationFilter, setCurationFilter] = useState(new Set());
-    const [combineFilters, setCombineFilters] = useState("AND");
     const [numPapersPerPage, setNumPapersPerPage] = useState(10);
-
-    const addRemFilter = (datatype, filterType) => {
-        let tempSet = new Set();
-        if (filterType === "svm") {
-            tempSet = svmFilter;
-        } else if (filterType === "manual") {
-            tempSet = manualFilter;
-        } else if (filterType === "curation") {
-            tempSet = curationFilter;
-        }
-        if (tempSet.has(datatype)) {
-            tempSet.delete(datatype);
-        } else {
-            tempSet.add(datatype);
-        }
-        if (filterType === "svm") {
-            setSvmFilter(tempSet)
-        } else if (filterType === "manual") {
-            setManualFilter(tempSet)
-        } else if (filterType === "curation") {
-            setCurationFilter(tempSet)
-        }
-    }
 
     const downloadCSV = async (url, list_type, svm_filters, manual_filters, curation_filters, combine_filters) => {
         axios.post(url, {list_type: list_type, svm_filters: svm_filters, manual_filters: manual_filters, curation_filters: curation_filters, combine_filters: combine_filters})
@@ -62,10 +42,15 @@ const PaperLists = () => {
                 </Col>
             </Row>
             <Row>
-                <Col sm="12">
+                <Col sm="2">
                     <Button onClick={() => setShowFilter(!showFilter)} aria-controls="example-collapse-text"
                             variant="outline-primary" size="sm" aria-expanded={showFilter}>
                         {showFilter ? "Hide filters and options" : "Show filters and options"}
+                    </Button>
+                </Col>
+                <Col sm="2">
+                    <Button onClick={() => dispatch(resetPaperListFilters())} aria-controls="example-collapse-text"
+                            variant="outline-primary" size="sm">Reset filters
                     </Button>
                 </Col>
             </Row>
@@ -78,10 +63,8 @@ const PaperLists = () => {
                 <Col sm="12">
                     <Collapse in={showFilter}>
                         <Card border="secondary">
-                            <PapersFilters addRemFilterCallback={addRemFilter}
-                                           setNumPapersPerPageCallback={(num) => setNumPapersPerPage(num)}
+                            <PapersFilters setNumPapersPerPageCallback={(num) => setNumPapersPerPage(num)}
                                            papersPerPage={numPapersPerPage}
-                                           combineFiltersCallback={(cf) => setCombineFilters(cf)}
                             />
                         </Card>
                     </Collapse>
@@ -107,10 +90,10 @@ const PaperLists = () => {
                                         <Card className="listPanel">
                                             <Card.Header>Papers waiting for data submission</Card.Header>
                                             <Card.Body>
-                                                <PaginatedPapersList listType={'processed'} svmFilters={prepFilterString(svmFilter)} manualFilters={prepFilterString(manualFilter)} curationFilters={prepFilterString(curationFilter)} combineFilters={combineFilters}/>
+                                                <PaginatedPapersList listType={'processed'} svmFilters={prepFilterString(svmFilters)} manualFilters={prepFilterString(manualFilters)} curationFilters={prepFilterString(curationFilters)} combineFilters={combineFilters}/>
                                                 <br/>
                                                 <Button size="sm" variant="link" onClick={() => {
-                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "processed", [...svmFilter].join(','), [...manualFilter].join(','), [...curationFilter].join(','), combineFilters)
+                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "processed", [...svmFilters].join(','), [...manualFilters].join(','), [...curationFilters].join(','), combineFilters)
                                                 }}>Download CSV</Button>
                                             </Card.Body>
                                         </Card>
@@ -119,10 +102,10 @@ const PaperLists = () => {
                                         <Card className="listPanel">
                                             <Card.Header>Papers with final data submitted by authors</Card.Header>
                                             <Card.Body>
-                                                <PaginatedPapersList listType={'submitted'} svmFilters={prepFilterString(svmFilter)} manualFilters={prepFilterString(manualFilter)} curationFilters={prepFilterString(curationFilter)} combineFilters={combineFilters}/>
+                                                <PaginatedPapersList listType={'submitted'} svmFilters={prepFilterString(svmFilters)} manualFilters={prepFilterString(manualFilters)} curationFilters={prepFilterString(curationFilters)} combineFilters={combineFilters}/>
                                                 <br/>
                                                 <Button size="sm" variant="link" onClick={() => {
-                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "submitted", [...svmFilter].join(','), [...manualFilter].join(','), [...curationFilter].join(','), combineFilters)
+                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "submitted", [...svmFilters].join(','), [...manualFilters].join(','), [...curationFilters].join(','), combineFilters)
                                                 }}>Download CSV</Button>
                                             </Card.Body>
                                         </Card>
@@ -131,10 +114,10 @@ const PaperLists = () => {
                                         <Card className="listPanel">
                                             <Card.Header>Papers with partially submitted data</Card.Header>
                                             <Card.Body>
-                                                <PaginatedPapersList listType={'partial'} svmFilters={prepFilterString(svmFilter)} manualFilters={prepFilterString(manualFilter)} curationFilters={prepFilterString(curationFilter)} combineFilters={combineFilters}/>
+                                                <PaginatedPapersList listType={'partial'} svmFilters={prepFilterString(svmFilters)} manualFilters={prepFilterString(manualFilters)} curationFilters={prepFilterString(curationFilters)} combineFilters={combineFilters}/>
                                                 <br/>
                                                 <Button size="sm" variant="link" onClick={() => {
-                                                    this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "partial", [...svmFilter].join(','), [...manualFilter].join(','), [...curationFilter].join(','), combineFilters)
+                                                    this.downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "partial", [...svmFilters].join(','), [...manualFilters].join(','), [...curationFilters].join(','), combineFilters)
                                                 }}>Download CSV</Button>
                                             </Card.Body>
                                         </Card>
@@ -154,10 +137,10 @@ const PaperLists = () => {
                                         <Card className="listPanel">
                                             <Card.Header>Papers with empty entity lists</Card.Header>
                                             <Card.Body>
-                                                <PaginatedPapersList listType={'empty'} svmFilters={prepFilterString(svmFilter)} manualFilters={prepFilterString(manualFilter)} curationFilters={prepFilterString(curationFilter)} combineFilters={combineFilters}/>
+                                                <PaginatedPapersList listType={'empty'} svmFilters={prepFilterString(svmFilters)} manualFilters={prepFilterString(manualFilters)} curationFilters={prepFilterString(curationFilters)} combineFilters={combineFilters}/>
                                                 <br/>
                                                 <Button size="sm" variant="link" onClick={() => {
-                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "empty", prepFilterString(svmFilter), prepFilterString(manualFilter), prepFilterString(curationFilter), combineFilters)
+                                                    downloadCSV(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/all_papers", "empty", prepFilterString(svmFilters), prepFilterString(manualFilters), prepFilterString(curationFilters), combineFilters)
                                                 }}>Download CSV</Button>
                                             </Card.Body>
                                         </Card>
