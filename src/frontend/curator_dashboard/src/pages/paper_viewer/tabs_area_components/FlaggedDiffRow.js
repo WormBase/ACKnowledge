@@ -11,11 +11,11 @@ const FlaggedDiffRow = ({title, tfpChecked, afpChecked, afpDetails}) => {
                     Checked: <strong>{tfpChecked}</strong>
                 </div>
                 <div className="col-sm-3">
-                    Checked: <strong>{afpDetails !== "'null'" ? afpChecked: ""}<br/></strong>
-                    Details: <strong>{afpDetails !== "'null'" ? afpDetails : ""}</strong>
+                    Checked: <strong>{afpDetails !== "'null'" && afpDetails !== "null" ? afpChecked: "N/A"}<br/></strong>
+                    Details: <strong>{afpDetails !== "'null'" && afpDetails !== "null" ? afpDetails : "N/A"}</strong>
                 </div>
                 <div className="col-sm-3">
-                    <strong>{afpDetails !== "'null'" && afpDetails !== "null"? tfpChecked !== afpChecked ? "Yes" : "No" : "No"}</strong>
+                    <strong>{afpDetails !== "'null'" && afpDetails !== "null"? tfpChecked !== afpChecked ? "Yes" : "No" : "N/A"}</strong>
                 </div>
             </div>
             <div className="row">

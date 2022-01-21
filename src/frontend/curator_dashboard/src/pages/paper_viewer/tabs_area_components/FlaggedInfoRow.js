@@ -8,8 +8,8 @@ const FlaggedInfoRow = ({title, afpChecked, afpDetails}) => {
                     {title}
                 </div>
                 <div className="col-sm-6">
-                    Checked: <strong>{afpChecked}<br/></strong>
-                    Details: <strong>{afpDetails}</strong>
+                    Checked: <strong>{afpDetails !== "'null'" && afpDetails !== "null" ? afpChecked: "N/A"}<br/></strong>
+                    Details: <strong>{afpDetails !== "'null'" && afpDetails !== "null" ? afpDetails: "N/A"}</strong>
                 </div>
             </div>
             <div className="row">
