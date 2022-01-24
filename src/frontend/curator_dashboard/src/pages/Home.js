@@ -20,16 +20,11 @@ const Home = () => {
             <Row><Col sm="12">&nbsp;</Col></Row>
             <Row>
                 <Col sm="12">
-                    <h2 className="text-center">Welcome to the Author First Pass Admin Dashboard!</h2>
+                    <h2 className="text-center">Welcome to the Author First Pass Admin Dashboard</h2>
                 </Col>
             </Row>
             <Row><Col sm="12">&nbsp;</Col></Row>
             <Row><Col sm="12">&nbsp;</Col></Row>
-            <Row>
-                <Col sm="12">
-                    <h5 className="text-center">The dashboard includes the following pages:</h5>
-                </Col>
-            </Row>
             <Row><Col sm="12">&nbsp;</Col></Row>
             <Row><Col sm="12">&nbsp;</Col></Row>
             <Row>
@@ -73,10 +68,31 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faChartBar}/></h1>
                             <Card.Text>
-                                Read statistics about the data extracted by the AFP and get an overview of the papers processes by the pipeline
+                                Get an overview of the papers processes by the pipeline and the author response rate
                             </Card.Text>
                         </Card.Body>
                     </Card>
+                </Col>
+                <Col sm="3">
+                    <Card style={{ minHeight: '350px' }}>
+                        <Card.Header>
+                            <Link to={'/papers_stats' + args}>
+                                Extraction Stats
+                            </Link>
+                        </Card.Header>
+                        <Card.Body>
+                            <h1 className="text-center"><FontAwesomeIcon icon={faChartBar}/></h1>
+                            <Card.Text>
+                                Read statistics about the data extracted by the AFP
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+            <Row><Col sm="12">&nbsp;</Col></Row>
+            <Row>
+                <Col sm="1">
+                    &nbsp;
                 </Col>
                 <Col sm="3">
                     <Card style={{ minHeight: '350px' }}>
@@ -92,12 +108,6 @@ const Home = () => {
                             </Card.Text>
                         </Card.Body>
                     </Card>
-                </Col>
-            </Row>
-            <Row><Col sm="12">&nbsp;</Col></Row>
-            <Row>
-                <Col sm="1">
-                    &nbsp;
                 </Col>
                 <Col sm="3">
                     <Card style={{ minHeight: '350px' }}>
@@ -129,9 +139,6 @@ const Home = () => {
                             </Card.Text>
                         </Card.Body>
                     </Card>
-                </Col>
-                <Col sm="3">
-                    &nbsp;
                 </Col>
             </Row>
         </Container>
