@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import {Tab, Tabs} from "react-bootstrap";
-import PaginatedEntityList from "./entities/PaginatedEntityList";
+import PaginatedEntityList from "../components/paginated_lists/entities/PaginatedEntityList";
 
 const Entities = () => {
     const elemPerPage = 10;

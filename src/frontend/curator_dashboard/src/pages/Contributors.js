@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Card, Col, Container, Row,} from "react-bootstrap";
-import PaginatedAuthorsList from "./contributors/PaginatedAuthorsList";
+import PaginatedAuthorsList from "../components/paginated_lists/contributors/PaginatedAuthorsList";
 import NumElemPerPageSelector from "../components/NumElemPerPageSelector";
 
 
