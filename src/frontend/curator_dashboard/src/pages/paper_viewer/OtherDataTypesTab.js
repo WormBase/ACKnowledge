@@ -1,5 +1,5 @@
 import React from 'react';
-import ManualEntityRow from "./tabs_area_components/ManualEntityRow";
+import ManualEntityRow from "../../components/tabs_area/ManualEntityRow";
 import {useSelector} from "react-redux";
 import {useQuery} from "react-query";
 import {fetchOtherData} from "../../redux/actions";

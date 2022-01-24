@@ -1,5 +1,5 @@
 import React from 'react';
-import EntityDiffRow from "./tabs_area_components/EntityDiffRow";
+import EntityDiffRow from "../../components/tabs_area/EntityDiffRow";
 import {useSelector} from "react-redux";
 import {useQuery} from "react-query";
 import {fetchEntityLists} from "../../redux/actions";

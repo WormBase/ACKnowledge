@@ -1,5 +1,5 @@
 import React from 'react';
-import FlaggedInfoRow from "./tabs_area_components/FlaggedInfoRow";
+import FlaggedInfoRow from "../../components/tabs_area/FlaggedInfoRow";
 import {useSelector} from "react-redux";
 import {useQuery} from "react-query";
 import {fetchAuthorFlagged} from "../../redux/actions";

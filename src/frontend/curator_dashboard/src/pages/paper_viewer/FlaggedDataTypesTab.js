@@ -1,5 +1,5 @@
 import React from 'react';
-import FlaggedDiffRow from "./tabs_area_components/FlaggedDiffRow";
+import FlaggedDiffRow from "../../components/tabs_area/FlaggedDiffRow";
 import {withRouter} from "react-router-dom";
 import {fetchFlaggedData} from "../../redux/actions";
 import {useQuery} from "react-query";
