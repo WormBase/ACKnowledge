@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Card, Col, Container, Row, Tab, Tabs} from "react-bootstrap";
-import PaginatedPapersList from "../paper_lists/PaginatedPapersList";
+import PaginatedPapersList from "./PaginatedPapersList";
 import {downloadFile} from "../../lib/file";
 import axios from "axios";
 import {useSelector} from "react-redux";

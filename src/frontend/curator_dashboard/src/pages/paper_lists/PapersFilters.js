@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import NumElemPerPageSelector from "../../components/paginated_lists/NumElemPerPageSelector";
+import NumElemPerPageSelector from "../../components/NumElemPerPageSelector";
 import {useDispatch, useSelector} from "react-redux";
 import {resetPaperListFilters, setCombineFiltersBy, togglePaperListFilter} from "../../redux/actions";
 import Collapse from "react-bootstrap/Collapse";
