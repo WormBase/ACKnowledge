@@ -15,7 +15,7 @@ const TabsArea = () => {
                     <Tab eventKey={1} title="Automatically extracted entities">
                         <EntitiesListsComparisonTab/>
                     </Tab>
-                    <Tab eventKey={2} title="Automatically flagged (SVM)">
+                    <Tab eventKey={2} title="Automatically flagged (NN)">
                         <FlaggedDataTypesTab/>
                     </Tab>
                     <Tab eventKey={3} title="Author flagged">
