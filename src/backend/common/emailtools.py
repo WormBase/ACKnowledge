@@ -107,6 +107,9 @@ class EmailManager(object):
     @staticmethod
     def get_feedback_form_tiny_url(afp_base_url, paper_id, genes, alleles, strains, passwd, title, journal, pmid,
                                    corresponding_author_id, doi):
+        doi = doi if doi else ""
+        title = title if title else ""
+        journal = journal if journal else ""
         hide_genes = "true" if len(genes) > 100 else "false"
         hide_alleles = "true" if len(alleles) > 100 else "false"
         hide_strains = "true" if len(strains) > 100 else "false"
