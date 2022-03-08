@@ -7,7 +7,7 @@ emails:
 
   subject_to_author: "Help Wormbase curate your paper WBPaper{}"
   content_to_author: "Dear Author,<br/>
-                      We have identified you as the corresponding author for the recently published paper:<br/>
+                      We have identified you as an author for the recently published paper:<br/>
                       <br/>
                       \"{}\", {}<br/>
                       <br/>
@@ -63,7 +63,7 @@ emails:
                     Paper ID: {}<br/>
                     Title: {}<br/>
                     Journal: {}<br/>
-                    Corresponding Author email: {}<br/>
+                    Author email: {}<br/>
                     <br/>
                     <a href={}>AFP admin dashboard</a><br/>
                     <a href={}>AFP form for authors</a><br/>
