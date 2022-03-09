@@ -124,6 +124,7 @@ const Other = () => {
                             <div className="row">
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
+                                                 placeholder="Please let us know how we can make the submission easier for you"
                                                  value={comments}
                                                  onChange={(event) => {dispatch(setComments(event.target.value))}}
                                     />
