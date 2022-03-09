@@ -70,7 +70,7 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                     <Col sm="12">
                                                         <ul>
                                                             <li>
-                                                                SVM filters are applied to EXTRACTED data for 'waiting for
+                                                                NN filters are applied to EXTRACTED data for 'waiting for
                                                                 submissions' and 'partial submissions', and to SUBMITTED data for
                                                                 full submissions
                                                             </li>
@@ -108,7 +108,7 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                             </Row>
                                                             <Row>
                                                                 <Col sm="6">
-                                                                    <strong>Automatically flagged data types (SVMs)</strong>
+                                                                    <strong>Automatically flagged data types (NNs)</strong>
                                                                 </Col>
                                                                 <Col sm="6">
                                                                     <strong>Manually flagged data types</strong>
