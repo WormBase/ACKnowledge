@@ -33,7 +33,7 @@ const EmailLogin = () => {
                         <Card.Body>
                             <Card.Text>
                                 <h1 className="text-center"><FontAwesomeIcon icon={faAddressCard}/></h1>
-                                If you are a corresponding author and your email address is listed on WormBase, you
+                                If you are an author and your email address is listed on WormBase, you
                                 can access the list of your papers processed by the Author First Pass by providing
                                 the email address at which you received AFP contact emails. <br/><br/>
 

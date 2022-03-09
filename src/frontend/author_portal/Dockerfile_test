@@ -1,0 +1,8 @@
+FROM node:8.2.1
+WORKDIR /usr/src/app
+COPY src/frontend/author_portal .
+RUN npm install --silent
+
+# development environment
+EXPOSE 3000
+CMD ["npm", "start"]
