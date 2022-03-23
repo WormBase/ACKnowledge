@@ -16,7 +16,7 @@ const TabbedPaperLists = () => {
             <Row>
                 <Col sm="12">
                     <p>
-                        Below is a list of papers for which you are an author and that have been processed by the new WormBase Author First Pass data flagging pipeline.
+                        Below is a list of papers for which you are an author and that have been processed by the new WormBase ACKnowledge data flagging pipeline.
                     </p>
                     <p>To verify the flagged data, please click on the link to your paper.</p>
                     <p>Thank you for helping WormBase curate your paper!</p>

@@ -28,14 +28,14 @@ const EmailLogin = () => {
                 <Col sm="12">
                     <Card>
                         <Card.Header>
-                            <h2 className="text-center">Request access to your AFP page</h2>
+                            <h2 className="text-center">Request access to your ACKnowledge page</h2>
                         </Card.Header>
                         <Card.Body>
                             <Card.Text>
                                 <h1 className="text-center"><FontAwesomeIcon icon={faAddressCard}/></h1>
                                 If you are an author and your email address is listed on WormBase, you
                                 can access the list of your papers processed by the Author First Pass by providing
-                                the email address at which you received AFP contact emails. <br/><br/>
+                                the email address at which you received ACKnowledge contact emails. <br/><br/>
 
                                 The WormBase Author First Pass pipeline is a way for WormBase to identify entities
                                 (e.g. genes) and data types (e.g. genetic interactions) found in newly published
@@ -50,7 +50,7 @@ const EmailLogin = () => {
                                                  onChange={(e) => {setEmailAddress(e.target.value)}} onSubmit=""
                                                  onKeyPress={(target) => {if (target.key === 'Enter') {dispatch(logIn(emailAddress))}}}/>
                                     {error ?
-                                        <Alert variant="danger">Email not found in the AFP system</Alert>
+                                        <Alert variant="danger">Email not found in the ACKnowledge system</Alert>
                                         : success ?
                                             <Alert variant="success">Email sent. Check your inbox and follow the link we
                                                 sent you</Alert>
