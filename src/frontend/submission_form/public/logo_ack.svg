@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="106.31264mm"
+   height="13.401893mm"
+   viewBox="0 0 106.31264 13.401893"
+   version="1.1"
+   id="svg4725"
+   sodipodi:docname="logo_ack.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs4719">
+    <rect
+       x="-17.577209"
+       y="-6.5814209"
+       width="439.18867"
+       height="69.448242"
+       id="rect17922" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="247.14286"
+     inkscape:cy="106.42857"
+     inkscape:document-units="mm"
+     inkscape:current-layer="flowRoot831"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="1115"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
+  <metadata
+     id="metadata4722">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-9.5877219,-8.3288127)">
+    <g
+       aria-label="Author First Pass"
+       transform="matrix(0.35189316,0,0,0.31484613,9.7382937,8.9586172)"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#85a6ba;fill-opacity:1;stroke:none"
+       id="flowRoot831">
+      <text
+         xml:space="preserve"
+         transform="matrix(0.85793276,0,0,0.71052823,21.492212,6.0486299)"
+         id="text17920"
+         style="font-style:normal;font-weight:normal;font-size:48px;line-height:1.25;font-family:sans-serif;letter-spacing:1.39px;white-space:pre;shape-inside:url(#rect17922);fill:#000000;fill-opacity:1;stroke:none"><tspan
+           x="-17.578125"
+           y="35.886719"
+           id="tspan90682"><tspan
+             style="font-family:'DejaVu Sans';-inkscape-font-specification:'DejaVu Sans';fill:#85a6ba"
+             id="tspan90680">ACKnowledge</tspan></tspan></text>
+    </g>
+  </g>
+</svg>
