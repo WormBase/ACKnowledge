@@ -23,16 +23,16 @@ const EntitiesListsComparisonTab = () => {
                     </div>
                     <div className="row">
                         <div className="col-sm-3">
-                            <h5>Extracted by AFP</h5>
+                            <h5>Extracted by ACKnowledge</h5>
                         </div>
                         <div className="col-sm-3">
                             <h5>Final list submitted by author</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h5>Added by author w.r.t. AFP</h5>
+                            <h5>Added by author</h5>
                         </div>
                         <div className="col-sm-3">
-                            <h5>Removed by author w.r.t. AFP</h5>
+                            <h5>Removed by author</h5>
                         </div>
                     </div>
                     <EntityDiffRow title="Genes" tfpEntitiesList={queryRes.data.tfp_genestudied}

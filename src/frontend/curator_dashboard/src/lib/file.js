@@ -12,7 +12,7 @@ export const downloadFile = async (fileContent, fileName, fileType, fileExtensio
 }
 
 export const downloadCSVSpreadsheet = async (paperID) => {
-        let formContent = "WormBase Author First Pass\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
+        let formContent = "WormBase ACKnowledge\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
         let payload = {
                 paper_id: paperID
         };
@@ -105,6 +105,6 @@ export const downloadCSVSpreadsheet = async (paperID) => {
                 formContent += "Are there additional types of expression data? e.g. qPCR or proteomics\nNo\n\n";
                 formContent += "Add any additional comment here\n";
 
-                downloadFile(formContent, "AFP_manual_form", "text/plain", "csv");
+                downloadFile(formContent, "ACKnowledge_manual_form", "text/plain", "csv");
         }
 }

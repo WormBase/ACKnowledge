@@ -28,7 +28,7 @@ const LateralMenu = () => {
                     <IndexLinkContainer to={"home" + args}
                                         active={true}>
                         <a className="aw">
-                            <h5>Author First Pass</h5>
+                            <h5>ACKnowledge</h5>
                             <h6>Admin Dashboard</h6>
                         </a>
                     </IndexLinkContainer>

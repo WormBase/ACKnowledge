@@ -22,7 +22,7 @@ const PaperInfo = () => {
                     <strong>Email:</strong> &nbsp; {queryRes.data.data.email} <br/>
                     <strong>Link to pubmed source:</strong> &nbsp; <a href={"https://www.ncbi.nlm.nih.gov/pubmed/" + queryRes.data.data.pmid} target="blank_">{"https://www.ncbi.nlm.nih.gov/pubmed/" + queryRes.data.data.pmid}</a> <br/>
                     <strong>Link to doi source:</strong> &nbsp; <a href={"https://doi.org/" + queryRes.data.data.doi} target="blank_">{"https://doi.org/" + queryRes.data.data.doi}</a><br/>
-                    {queryRes.data.data.afp_form_link !== "" ? <div><br/><a href={queryRes.data.data.afp_form_link} target="_blank"><strong>Link to AFP form</strong></a></div> : null}
+                    {queryRes.data.data.afp_form_link !== "" ? <div><br/><a href={queryRes.data.data.afp_form_link} target="_blank"><strong>Link to ACKnowledge form</strong></a></div> : null}
                     <br/>
                     <Button size="sm" onClick={() => {
                         setIsSpreadsheetLoading(true);

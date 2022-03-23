@@ -9,7 +9,7 @@ import CommentsTab from "./CommentsTab";
 const TabsArea = () => {
     return (
         <Card>
-            <Card.Header>Data extracted by AFP and data submitted by author</Card.Header>
+            <Card.Header>Data extracted by ACKnowledge and data submitted by author</Card.Header>
             <Card.Body>
                 <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
                     <Tab eventKey={1} title="Automatically extracted entities">

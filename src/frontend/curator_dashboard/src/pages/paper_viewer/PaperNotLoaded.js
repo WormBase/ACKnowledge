@@ -26,7 +26,7 @@ const PaperNotLoaded = () => {
                       <Jumbotron>
                           <h3>Paper not loaded</h3>
                           <p>
-                              Enter the 8 digit ID of a paper to see its AFP curation status.
+                              Enter the 8 digit ID of a paper to see its ACKnowledge curation status.
                           </p>
                       </Jumbotron>
                   </Col>

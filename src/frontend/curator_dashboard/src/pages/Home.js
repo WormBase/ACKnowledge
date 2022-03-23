@@ -20,7 +20,7 @@ const Home = () => {
             <Row><Col sm="12">&nbsp;</Col></Row>
             <Row>
                 <Col sm="12">
-                    <h2 className="text-center">Welcome to the Author First Pass Admin Dashboard</h2>
+                    <h2 className="text-center">Welcome to the ACKnowledge Admin Dashboard</h2>
                 </Col>
             </Row>
             <Row><Col sm="12">&nbsp;</Col></Row>
@@ -41,7 +41,7 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faSearch}/></h1>
                             <Card.Text>
-                                Check if a specific paper has been processed by the AFP and see data submitted by authors
+                                Check if a specific paper has been processed by ACKnowledge and see data submitted by authors
                             </Card.Text>
                             <Form.Group controlId="formBasicEmail">
                                 <Form.Label>Load a Paper:</Form.Label>&nbsp;
@@ -83,7 +83,7 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faChartBar}/></h1>
                             <Card.Text>
-                                Read statistics about the data extracted by the AFP
+                                Read statistics about the data extracted by ACKnowledge
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -104,7 +104,7 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faList}/></h1>
                             <Card.Text>
-                                Browse the papers processed by the AFP and with data submitted by authors by navigating through dynamic lists
+                                Browse the papers processed by ACKnowledge and with data submitted by authors by navigating through dynamic lists
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -119,7 +119,7 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faUsers}/></h1>
                             <Card.Text>
-                                Find the top contributors to AFP submissions and the authors who received more AFP
+                                Find the top contributors to ACKnowledge submissions and the authors who received more ACKnowledge
                                 emails
                             </Card.Text>
                         </Card.Body>
