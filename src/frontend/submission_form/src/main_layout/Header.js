@@ -10,7 +10,7 @@ const Header = () => {
                     <a href="https://wormbase.org"><Image src="logo_wormbase_gradient.svg" width="100%" /></a>
                 </div>
                 <div className="col-sm-5">
-                    <Image src="logo_afp.svg" width="100%" />
+                    <Image src="logo_ack.svg" width="100%" />
                 </div>
                 <div className="col-sm-2" align="right">
                     <br/>
