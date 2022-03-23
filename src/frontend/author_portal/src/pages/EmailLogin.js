@@ -34,10 +34,10 @@ const EmailLogin = () => {
                             <Card.Text>
                                 <h1 className="text-center"><FontAwesomeIcon icon={faAddressCard}/></h1>
                                 If you are an author and your email address is listed on WormBase, you
-                                can access the list of your papers processed by the Author First Pass by providing
+                                can access the list of your papers processed by ACKnowledge by providing
                                 the email address at which you received ACKnowledge contact emails. <br/><br/>
 
-                                The WormBase Author First Pass pipeline is a way for WormBase to identify entities
+                                The WormBase ACKnowledge pipeline is a way for WormBase to identify entities
                                 (e.g. genes) and data types (e.g. genetic interactions) found in newly published
                                 papers. The pipeline uses the Textpresso Central text mining system and approved
                                 C. elegans nomenclature to flag papers for curation by WormBase curators.
