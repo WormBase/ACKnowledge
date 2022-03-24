@@ -1,6 +1,6 @@
 emails:
-  from_address: "Wormbase AFP<no-reply.afp@wormbase.org>"
-  reply_to_address: "Wormbase AFP<help.afp@wormbase.org>"
+  from_address: "Wormbase ACKnowledge<no-reply.acknowledge@wormbase.org>"
+  reply_to_address: "Wormbase ACKnowledge<help.acknowledge@wormbase.org>"
   email_user: "outreach@wormbase.org"
   server_host: "smtp.gmail.com"
   server_port: 465
@@ -26,7 +26,7 @@ emails:
                       unpublished data generated during this study, we encourage you to submit it
                       <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
                       <br/>
-                      Please contact <a href='mailto:help.afp@wormbase.org'>help.afp@wormbase.org</a> or
+                      Please contact <a href='mailto:help.acknowledge@wormbase.org'>help.acknowledge@wormbase.org</a> or
                       <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
                       information about flagging your paper for curation or Micropublication.<br/>
                       Please accept our congratulations on your publication!<br/>
@@ -35,13 +35,13 @@ emails:
                       WormBase<br/>
                       <br/>
                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                      We are happy to announce that we’ve released a new version of the Author First Pass (AFP) form.<br/>
+                      We are happy to announce that we’ve released a new version of the ACKnowledge form.<br/>
                       We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
                       to help guide you through the process. <br/> Full details are available in the
                       <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V2 Release Notes</a>.<br/>
                       Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>"
 
-  subject_empty: "Paper processed by AFP has empty entity lists: WBPaper{}"
+  subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
   content_empty: "The paper:<br/>
                   <br/>
                   \"{}\", {}<br/>
@@ -51,32 +51,32 @@ emails:
                   This is the <a href={}>link</a> to the form for the paper.<br/>
                   <br/>"
 
-  subject_summary: "New papers processed by AFP Pipeline"
-  content_summary: "New papers processed by the Author First Pass Pipeline:<br/>
+  subject_summary: "New papers processed by the ACKnowledge Pipeline"
+  content_summary: "New papers processed by the ACKnowledge Pipeline:<br/>
                     <br/>
                     {}<br/>
                     <br/>"
 
-  subject_new_sub: "New AFP data submitted by author"
-  content_new_sub: "New AFP data submission completed by author for the following paper:<br/>
+  subject_new_sub: "New ACKnowledge data submitted by author"
+  content_new_sub: "New ACKnowledge data submission completed by author for the following paper:<br/>
                     <br/>
                     Paper ID: {}<br/>
                     Title: {}<br/>
                     Journal: {}<br/>
                     Author email: {}<br/>
                     <br/>
-                    <a href={}>AFP admin dashboard</a><br/>
-                    <a href={}>AFP form for authors</a><br/>
+                    <a href={}>ACKnowledge admin dashboard</a><br/>
+                    <a href={}>ACKnowledge form for authors</a><br/>
                     <br/>"
 
-  subject_digest_alert: "New positive papers flagged by author through AFP for {}"
+  subject_digest_alert: "New positive papers flagged by author through ACKnowledge for {}"
   content_digest_alert: "New papers flagged 'positive' during the last week for data type {}: <br/><br><br/>
                          {}<br/>"
 
-  subject_author_dash: "Author First Pass - access link to author page"
-  content_author_dash: "Click here to retrieve the list of your papers processed by the Author First Pass: <br/><br/><br/>
+  subject_author_dash: "ACKnowledge - access link to author page"
+  content_author_dash: "Click here to retrieve the list of your papers processed by ACKnowledge: <br/><br/><br/>
                         <br/>
-                        <a href='https://mypapers.afp.textpressolab.com?token={}'>https://mypapers.afp.textpressolab.com?token={}</a><br/>
+                        <a href='https://acp.acknowledge.textpressolab.com?token={}'>https://acp.acknowledge.textpressolab.com?token={}</a><br/>
                         "
 
   subject_reminder: "Help Wormbase curate your paper WBPaper{}"
@@ -88,7 +88,7 @@ emails:
                      \"{}\", {}<br/>
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
-                     <a href={}>Author First Pass Form for your paper</a><br/>
+                     <a href={}>ACKnowledge Curation Form for your paper</a><br/>
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
                      <br/>
