@@ -1,6 +1,6 @@
 # WormBase ACKnowledge
 
-ACKnowledge is a semi-automated curation tool that periodically extracts biological entities from newly published research 
+ACKnowledge (previously known as "Author First Pass") is a semi-automated curation tool that periodically extracts biological entities from newly published research 
 articles on *C. elegans* and emails out authors, who can review and modify/confirm the extracted 
 information and submit curated data to WormBase through a dedicated web interface.
 
@@ -17,10 +17,10 @@ data.
 09-16-2021
 
 ### Introduction
-Based on valuable user feedback, we continue to improve the Author First Pass experience.  In addition to providing more 
+Based on valuable user feedback, we continue to improve the ACKnowledge experience.  In addition to providing more 
 streamlined ways to enter entities, we’ve added further instructions for adding new entities, and a link to look up 
 specific entities in WormBase.  We now flag papers for enzymatic activity and include a free-text field to describe 
-other gene functions.  We updated the FAQs and provide a link to the Author First Pass webinar presented in February 2021. 
+other gene functions.  We updated the FAQs and provide a link to the ACKnowledge webinar presented in February 2021. 
 Lastly, to thank authors for their valuable contributions, we now acknowledge authors on WormBase person and paper pages.
 
 We have implemented updates and improvements to our curator dashboard. The dashboard is a tool available to WormBase 
@@ -38,7 +38,7 @@ curators to  keep track of submissions and perform quality control of submitted 
 - Expanded exclusion lists (e.g. M9 buffer not recognized as strain)
 - Included enzymatic activity neural network
 - Added other gene function checkbox
-- Created link to 'WormBase AFP Webinar' video
+- Created link to 'WormBase ACKnowledge Webinar' video
 - Updated the FAQ section
 
 #### Curator Dashboard Updates
@@ -54,8 +54,8 @@ curators to  keep track of submissions and perform quality control of submitted 
 09-14-2020
            
 ### Introduction
-We improved the AFP system based on feedback received from authors and statistics
-collected during one year of AFP v1.0 author submissions. We improved the definition of
+We improved the ACKnowledge system based on feedback received from authors and statistics
+collected during one year of ACKnowledge v1.0 author submissions. We improved the definition of
 data types in the form and we refined our text mining algorithms to obtain better results.
 
 ### Main Features
@@ -69,7 +69,7 @@ data types in the form and we refined our text mining algorithms to obtain bette
 06-03-2019
 
 ### Introduction
-We are proud to introduce our new AFP system, which leverages text mining to help authors curate
+We are proud to introduce our new ACKnowledge system, which leverages text mining to help authors curate
 their papers and send data to WormBase! The system replaces the previous form which required authors
 to submit data manually through free-text forms.</p>
 
