@@ -9,6 +9,8 @@ their submissions, a notification system to inform curators at WormBase about ne
 data type of interest, and a dashboard for curators to monitor submissions and to 'diff' extracted vs. submitted 
 data.
 
+The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.
+
 # Release Notes
 
 ## Version 3.0
