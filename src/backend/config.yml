@@ -38,7 +38,7 @@ emails:
                       We are happy to announce that we’ve released a new version of the ACKnowledge form.<br/>
                       We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
                       to help guide you through the process. <br/> Full details are available in the
-                      <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V2 Release Notes</a>.<br/>
+                      <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V3 Release Notes</a>.<br/>
                       Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>"
 
   subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
