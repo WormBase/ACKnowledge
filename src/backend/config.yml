@@ -26,6 +26,9 @@ emails:
                       unpublished data generated during this study, we encourage you to submit it
                       <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
                       <br/>
+                      You can view all your papers already in the ACKnowledge system on the 
+                      <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a><br/>
+                      <br/>
                       Please contact <a href='mailto:help.acknowledge@wormbase.org'>help.acknowledge@wormbase.org</a> or
                       <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
                       information about flagging your paper for curation or Micropublication.<br/>
@@ -91,6 +94,8 @@ emails:
                      <a href={}>ACKnowledge Curation Form for your paper</a><br/>
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
+                     <br/>
+                     You can view all your papers already in the ACKnowledge system on the <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a><br/>
                      <br/>
                      If you have questions about completing the form, please feel free to reply to this email and we will be happy to assist<br/>
                      you. {}<br/>
