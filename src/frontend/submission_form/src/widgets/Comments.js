@@ -111,20 +111,20 @@ const Other = () => {
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">
-                            Have we missed anything? Do you have any comments?
+                            Please give us your feedback
                         </Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Write comments here
+                                    Please let us know about your experience with this submission. What did you like? What can we do to make the process easier? Did we miss anything?
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-sm-12">
                                     <FormControl componentClass="textarea" multiple
-                                                 placeholder="Please let us know how we can make the submission easier for you"
+                                                 placeholder="Write comments here"
                                                  value={comments}
                                                  onChange={(event) => {dispatch(setComments(event.target.value))}}
                                     />
