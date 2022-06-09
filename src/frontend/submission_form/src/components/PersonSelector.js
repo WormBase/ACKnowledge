@@ -91,14 +91,24 @@ const PersonSelector = () => {
     return (
         <div className="container-fluid">
             <div className="row">
-                <div className="col-sm-8">
+                <div className="col-sm-12">
                     WormBase User: <strong>{person.name}</strong> (WBPerson{person.personId})
                     &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
                 </div>
-                <div className="col-sm-4" align="right">
+            </div>
+            <div className="row">
+                <div>
+                    &nbsp;
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-sm-6" align="left">
                     <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
                         Request new WB Person
                     </a>
+                </div>
+                <div className="col-sm-6" align="right">
+                    <a href="https://acp.acknowledge.textpressolab.com" target="_blank">ACKnowledge author portal</a>
                 </div>
             </div>
             <div className="row">
