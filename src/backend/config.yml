@@ -14,9 +14,9 @@ emails:
                       We are contacting you for help in alerting a WormBase curator to data that need to be extracted<br/>
                       from your paper and entered into our database.<br/>
                       <br/>
-                      If you would like to flag* your paper for detailed curation, please click <a href={}>here</a><br/>
+                      If you would like to flag* your paper for detailed curation, please click <a href={}>here</a>.<br/>
                       <br/>
-                      *Flagging your paper involves identifying the types of data present and should take <20 minutes.<br/>
+                      *Flagging your paper involves validating automatically extracted entities and identifying the types of data present, and should take <20 minutes.<br/>
                       <br/>
                       Please feel free to forward the link to a co-author if you are unable to complete the form at this time.<br/>
                       <br/>
@@ -27,7 +27,7 @@ emails:
                       <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
                       <br/>
                       You can view all your papers already in the ACKnowledge system on the 
-                      <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a><br/>
+                      <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a>.<br/>
                       <br/>
                       Please contact <a href='mailto:help.acknowledge@wormbase.org'>help.acknowledge@wormbase.org</a> or
                       <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
