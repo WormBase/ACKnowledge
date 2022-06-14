@@ -4,7 +4,7 @@ import {
     Button,
     FormControl,
     Glyphicon,
-    Modal
+    Modal, OverlayTrigger, Tooltip
 } from "react-bootstrap";
 import {setPerson} from "../redux/actions/personActions";
 import {useDispatch, useSelector} from "react-redux";
@@ -91,9 +91,14 @@ const PersonSelector = () => {
     return (
         <div className="container-fluid">
             <div className="row">
-                <div className="col-sm-12">
+                <div className="col-sm-6">
                     WormBase User: <strong>{person.name}</strong> (WBPerson{person.personId})
-                    &nbsp;&nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
+                </div>
+                <div className="col-sm-6" align="right">
+                    <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
+                    &nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}>
+                        Request new WB Person
+                    </Button>
                 </div>
             </div>
             <div className="row">
@@ -102,13 +107,13 @@ const PersonSelector = () => {
                 </div>
             </div>
             <div className="row">
-                <div className="col-sm-6" align="left">
-                    <a href="https://wormbase.org/submissions/person.cgi" target="_blank">
-                        Request new WB Person
-                    </a>
-                </div>
-                <div className="col-sm-6" align="right">
-                    <a href="https://acp.acknowledge.textpressolab.com" target="_blank">ACKnowledge author portal</a>
+
+                <div className="col-sm-12" align="left">
+                    <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
+                        <Button
+                            onClick={() => {window.open('https://acp.acknowledge.textpressolab.com', '_blank')}}
+                        >ACKnowledge author portal</Button>
+                    </OverlayTrigger>
                 </div>
             </div>
             <div className="row">
