@@ -3,7 +3,7 @@ import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip
 import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
-    setAllelePhenotype,
+    setAllelePhenotype, setChemicalPhenotype, setEnvironmentalPhenotype,
     setEnzymaticActivity,
     setOthergenefunc,
     setOverexprPhenotype,
@@ -107,18 +107,36 @@ const Phenotypes = () => {
                         </div>
                         <div className="row">
                             <div className="col-sm-7">
-                                <Checkbox checked={chemPheno.checked}
-                                          onClick={() => dispatch(toggleChemicalPhenotype())}><strong>Chemical Induced Phenotype</strong></Checkbox>
-                            </div>
-                            <div className="col-sm-5">
+                                <FormGroup>
+                                    <Checkbox checked={chemPheno.checked} onClick={() => dispatch(toggleChemicalPhenotype())}>
+                                        <strong>Chemical Induced Phenotype</strong>
+                                    </Checkbox>
+                                    <FormControl type="text" placeholder="Add details here"
+                                                 onClick={() => dispatch(setChemicalPhenotype(true, chemPheno.details))}
+                                                 value={chemPheno.details}
+                                                 onChange={(event) => {
+                                                     dispatch(setChemicalPhenotype(true, event.target.value));
+                                                 }}
+                                    />
+                                    <FormControl.Feedback />
+                                </FormGroup>
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col-sm-7">
-                                <Checkbox checked={envPheno.checked}
-                                          onClick={() => dispatch(toggleEnvironmentalPhenotype())}><strong>Environmental Induced Phenotype</strong></Checkbox>
-                            </div>
-                            <div className="col-sm-5">
+                            <div className="col-sm-12">
+                                <FormGroup>
+                                    <Checkbox checked={envPheno.checked} onClick={() => dispatch(toggleEnvironmentalPhenotype())}>
+                                        <strong>Environmental Induced Phenotype</strong>
+                                    </Checkbox>
+                                    <FormControl type="text" placeholder="Add details here"
+                                                 onClick={() => dispatch(setEnvironmentalPhenotype(true, envPheno.details))}
+                                                 value={envPheno.details}
+                                                 onChange={(event) => {
+                                                     dispatch(setEnvironmentalPhenotype(true, event.target.value));
+                                                 }}
+                                    />
+                                    <FormControl.Feedback />
+                                </FormGroup>
                             </div>
                         </div>
                     </div>
