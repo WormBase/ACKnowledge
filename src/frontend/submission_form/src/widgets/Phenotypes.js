@@ -184,8 +184,8 @@ const Phenotypes = () => {
                         allele_pheno: getCheckboxDBVal(allelePheno.checked),
                         rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
                         transover_pheno: getCheckboxDBVal(overexprPheno.checked),
-                        chemical: getCheckboxDBVal(chemPheno.checked),
-                        env: getCheckboxDBVal(envPheno.checked),
+                        chemical: getCheckboxDBVal(chemPheno.checked, chemPheno.details),
+                        env: getCheckboxDBVal(envPheno.checked, envPheno.details),
                         protein: getCheckboxDBVal(enzymaticAct.checked, enzymaticAct.details),
                         othergenefunc: getCheckboxDBVal(othergenefunc.checked, othergenefunc.details),
                         passwd: paperPassword
