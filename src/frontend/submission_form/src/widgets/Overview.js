@@ -29,6 +29,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const geneModel = useSelector((state) => state.overview.geneModel);
     const isSavedToDB = useSelector((state) => state.overview.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+    const person = useSelector((state) => state.person.person);
 
     const geneTooltip = (
         <Tooltip id="tooltip">
@@ -172,6 +173,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
                         gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
                         species_list: transformEntitiesIntoAfpString(species, ""),
+                        person_id: "two" + person.personId,
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.OVERVIEW));
