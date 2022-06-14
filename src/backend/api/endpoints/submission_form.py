@@ -62,6 +62,12 @@ class FeedbackFormWriter:
                 # overview
                 if "gene_list" in req.media:
                     self.db.afp.set_gene_list(genes=req.media["gene_list"], paper_id=paper_id)
+                    if self.db.afp.author_has_submitted(paper_id=paper_id):
+                        person_id = req.media["person_id"]
+                        self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
+                        self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+                        self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
+                        self.db.afp.set_last_touched(paper_id=paper_id)
                 if "gene_model_update" in req.media:
                     self.db.afp.set_gene_model_update(gene_model_update=req.media["gene_model_update"],
                                                       paper_id=paper_id)
