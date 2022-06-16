@@ -103,6 +103,18 @@ emails:
                      Thank you for helping WormBase!<br/>
                      "
 
+  subject_new_sub_thanks: "Thank you for submitting your data to WormBase"
+  content_new_sub_thanks: "Thank you for your participation in ACKnowledge.<br/>
+                           <br/>
+                           We have received your data submission for the following publication:<br/>
+                           <br/>
+                           {}<br/>
+                           WBPaperID: {}<br/>
+                           <br/>
+                           We appreciate your time and effort.<br/>
+                           The ACKnowledge Team
+                           "
+
 ntt_extraction:
   min_occurrences:
     gene: 1

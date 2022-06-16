@@ -30,6 +30,8 @@ class EmailManager(object):
         self.subject_email_author_dash = config["emails"]["subject_author_dash"]
         self.content_email_reminder = config["emails"]["content_reminder"]
         self.subject_email_reminder = config["emails"]["subject_reminder"]
+        self.content_email_new_sub_thanks = config["emails"]["content_new_sub_thanks"]
+        self.subject_email_new_sub_thanks = config["emails"]["subject_new_sub_thanks"]
         self.email_user = config["emails"]["email_user"]
         self.email_user = config["emails"]["email_user"]
         self.server_host = config["emails"]["server_host"]
@@ -122,3 +124,12 @@ class EmailManager(object):
         # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
         # return data.read().decode('utf-8')
         return url
+
+    def send_new_sub_thanks_email(self, paper_id, paper_title, recipients: List[str], test: bool = False):
+        content = self.content_email_new_sub_thanks.format(paper_title, paper_id)
+        subject = self.subject_email_new_sub_thanks
+        if test:
+            subject = "[Dev Test] " + subject
+        self.send_email(subject=subject, content=content, recipients=recipients)
+
+
