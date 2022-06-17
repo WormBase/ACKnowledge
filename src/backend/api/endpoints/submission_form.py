@@ -166,7 +166,8 @@ class FeedbackFormWriter:
                         paper_id=paper_id, paper_title=paper_title, test=self.test,
                         recipients=([author_email] if not self.test else self.admin_emails))
 
-                if self.db.afp.author_has_submitted(paper_id=paper_id):
+                if self.db.afp.author_has_submitted(paper_id=paper_id) and ("gene_list" in req.media or
+                                                                            "species_list" in req.media):
                     person_id = req.media["person_id"]
                     self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
