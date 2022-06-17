@@ -62,12 +62,7 @@ class FeedbackFormWriter:
                 # overview
                 if "gene_list" in req.media:
                     self.db.afp.set_gene_list(genes=req.media["gene_list"], paper_id=paper_id)
-                    if self.db.afp.author_has_submitted(paper_id=paper_id):
-                        person_id = req.media["person_id"]
-                        self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_last_touched(paper_id=paper_id)
+
                 if "gene_model_update" in req.media:
                     self.db.afp.set_gene_model_update(gene_model_update=req.media["gene_model_update"],
                                                       paper_id=paper_id)
@@ -146,9 +141,6 @@ class FeedbackFormWriter:
                 if "comments" in req.media:
                     self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
                     person_id = req.media["person_id"]
-                    self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
-                    self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
-                    self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_version(paper_id=paper_id)
                     self.db.afp.set_last_touched(paper_id=paper_id)
                     paper_title = self.db.paper.get_paper_title(paper_id)
@@ -173,6 +165,14 @@ class FeedbackFormWriter:
                     self.email_manager.send_new_sub_thanks_email(
                         paper_id=paper_id, paper_title=paper_title, test=self.test,
                         recipients=([author_email] if not self.test else self.admin_emails))
+
+                if self.db.afp.author_has_submitted(paper_id=paper_id):
+                    person_id = req.media["person_id"]
+                    self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
+                    self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+                    self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
+                    self.db.afp.set_last_touched(paper_id=paper_id)
+
                 resp.body = '{"result": "success"}'
                 resp.status = falcon.HTTP_200
 
