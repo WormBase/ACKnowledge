@@ -26,8 +26,9 @@ def main():
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
     parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
     parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
-    parser.add_argument("-y", "--tazendra-ssh-username", metavar="tazendra_ssh_user", dest="tazendra_ssh_user", type=str)
-    parser.add_argument("-j", "--tazendra-ssh-password", metavar="tazendra_ssh_password", dest="tazendra_ssh_password", type=str)
+    parser.add_argument("-y", "--file-server-username", metavar="file_server_user", dest="file_server_user", type=str)
+    parser.add_argument("-j", "--file-server-password", metavar="file_server_password", dest="file_server_password",
+                        type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -58,14 +59,16 @@ def main():
     cm = CorpusManager()
     if args.paper_ids:
         cm.load_from_wb_database(
-            args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
-            ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
+            args.db_name, args.db_user, args.db_password, args.db_host, file_server_user=args.file_server_user,
+            file_server_passwd=args.file_server_password,
+            file_server_host="https://tazendra.caltech.edu/~acedb/daniel/",
             must_be_autclass_flagged=True, exclude_no_main_text=True,
             exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=args.paper_ids)
     else:
         cm.load_from_wb_database(
-            args.db_name, args.db_user, args.db_password, args.db_host, ssh_user=args.tazendra_ssh_user,
-            ssh_passwd=args.tazendra_ssh_password, ssh_host="tazendra.caltech.edu",
+            args.db_name, args.db_user, args.db_password, args.db_host, file_server_user=args.file_server_user,
+            file_server_passwd=args.file_server_password,
+            file_server_host="https://tazendra.caltech.edu/~acedb/daniel/",
             from_date=(datetime.now() - timedelta(days=2*365))
                 .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
             exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
