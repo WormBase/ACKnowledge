@@ -104,7 +104,7 @@ emails:
                      "
 
   subject_new_sub_thanks: "Thank you for submitting your data to WormBase"
-  content_new_sub_thanks: "Thank you for your participation in ACKnowledge.<br/>
+  content_new_sub_thanks: "Thank you for your participation in the Author Curation to Knowledgebase (ACKnowledge) project, previously known as Author First Pass.<br/>
                            <br/>
                            We have received your data submission for the following publication:<br/>
                            <br/>
