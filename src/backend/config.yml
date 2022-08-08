@@ -38,7 +38,7 @@ emails:
                       WormBase<br/>
                       <br/>
                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                      We are happy to announce that we’ve released a new version of the ACKnowledge form.<br/>
+                      We are happy to announce that we’ve released a new version of the ACKnowledge form (formerly known as Author First Pass).<br/>
                       We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
                       to help guide you through the process. <br/> Full details are available in the
                       <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V3 Release Notes</a>.<br/>
@@ -77,7 +77,7 @@ emails:
                          {}<br/>"
 
   subject_author_dash: "ACKnowledge - access link to author page"
-  content_author_dash: "Click here to retrieve the list of your papers processed by ACKnowledge: <br/><br/><br/>
+  content_author_dash: "Click here to retrieve the list of your papers processed by ACKnowledge (formerly known as Author First Pass): <br/><br/><br/>
                         <br/>
                         <a href='https://acp.acknowledge.textpressolab.com?token={}'>https://acp.acknowledge.textpressolab.com?token={}</a><br/>
                         "
@@ -91,7 +91,7 @@ emails:
                      \"{}\", {}<br/>
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
-                     <a href={}>ACKnowledge Curation Form for your paper</a><br/>
+                     <a href={}>ACKnowledge Curation Form for your paper</a> (formerly known as Author First Pass).<br/>
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
                      <br/>
