@@ -1,4 +1,4 @@
-# WormBase ACKnowledge
+![ACKnowledge logo](src/frontend/submission_form/public/Lockup-with-Rule-RGB-Color-1920px.jpg)
 
 ACKnowledge (previously known as "Author First Pass") is a semi-automated curation tool that periodically extracts biological entities from newly published research 
 articles on *C. elegans* and emails out authors, who can review and modify/confirm the extracted 
