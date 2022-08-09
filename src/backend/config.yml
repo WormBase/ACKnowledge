@@ -41,8 +41,10 @@ emails:
                       We are happy to announce that we’ve released a new version of the ACKnowledge form (formerly known as Author First Pass).<br/>
                       We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
                       to help guide you through the process. <br/> Full details are available in the
-                      <a href=\"https://github.com/WormBase/author-first-pass/tree/master#release-notes\">V3 Release Notes</a>.<br/>
-                      Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>"
+                      <a href=\"https://github.com/WormBase/ACKnowledge/tree/master#release-notes\">V4 Release Notes</a>.<br/>
+                      Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>
+                      <br/>
+                      The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>"
 
   subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
   content_empty: "The paper:<br/>
@@ -101,6 +103,9 @@ emails:
                      you. {}<br/>
                      <br/>
                      Thank you for helping WormBase!<br/>
+                     <br/>
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
+                     The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
                      "
 
   subject_new_sub_thanks: "Thank you for submitting your data to WormBase"
@@ -113,6 +118,9 @@ emails:
                            <br/>
                            We appreciate your time and effort.<br/>
                            The ACKnowledge Team
+                           <br/>
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
+                           The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
                            "
 
 ntt_extraction:
