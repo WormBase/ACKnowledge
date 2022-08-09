@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {IndexLinkContainer} from "react-router-bootstrap";
 import {withRouter} from "react-router-dom";
-import {Col, Container, Form, Row} from "react-bootstrap";
+import {Col, Container, Form, Image, Row} from "react-bootstrap";
 import {useDispatch} from "react-redux";
 import {setSelectedPaperID} from "../redux/actions";
 import {useHistory} from "react-router";
@@ -24,11 +24,11 @@ const LateralMenu = () => {
                 </Col>
             </Row>
             <Row>
-                <Col sm="10">
+                <Col sm="10" align="center">
                     <IndexLinkContainer to={"home" + args}
                                         active={true}>
                         <a className="aw">
-                            <h5>ACKnowledge</h5>
+                            <Image src="Combination-Mark-RGB-White.svg"/>
                             <h6>Admin Dashboard</h6>
                         </a>
                     </IndexLinkContainer>
