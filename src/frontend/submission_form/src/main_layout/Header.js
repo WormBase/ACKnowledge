@@ -6,11 +6,13 @@ const Header = () => {
     return (
         <div className="container">
             <div className="row">
-                <div className="col-sm-5">
-                    <a href="https://wormbase.org"><Image src="logo_wormbase_gradient.svg" width="100%" /></a>
+                <div className="col-sm-12">
+                    <Image src="Lockup-with-Rule-RGB-Color-1920px.jpg" width="100%" />
                 </div>
-                <div className="col-sm-5">
-                    <Image src="logo_ack.svg" width="100%" />
+            </div>
+            <div className="row">
+                <div className="col-sm-10">
+                    &nbsp;
                 </div>
                 <div className="col-sm-2" align="right">
                     <br/>
