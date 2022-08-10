@@ -82,6 +82,11 @@ const Menu = ({urlQuery}) => {
                     <div className="panel panel-default">
                         <div className="panel-body">
                             <Nav bsStyle="pills" stacked onSelect={(sel) => dispatch(setSelectedWidget(sel))}>
+                                <IndexLinkContainer to={WIDGET.ABOUT + urlQuery}
+                                                    active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.ABOUT]}>
+                                    <NavItem
+                                        eventKey={MENU_INDEX[WIDGET.ABOUT]}>{WIDGET_TITLE[WIDGET.ABOUT]}
+                                    </NavItem></IndexLinkContainer>
                                 <IndexLinkContainer to={WIDGET.HELP + urlQuery}
                                                     active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.HELP]}>
                                     <NavItem

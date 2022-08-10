@@ -14,6 +14,7 @@ import FAQ from "../widgets/FAQ";
 import ReleaseNotes from "../widgets/ReleaseNotes";
 import ContactInfo from "../widgets/Comments";
 import queryString from 'query-string';
+import About from "../widgets/About";
 
 
 
@@ -70,6 +71,7 @@ const WidgetArea = ({urlQuery, history}) => {
             <Route path={"/" + WIDGET.DISEASE}
                    render={() => <Disease />}/>
             <Route path={"/" + WIDGET.COMMENTS} render={() => <ContactInfo/>}/>
+            <Route path={"/" + WIDGET.ABOUT} render={() => <About/>}/>
             <Route path={"/" + WIDGET.HELP} render={() => <FAQ/>}/>
             <Route path={"/" + WIDGET.RELEASE_NOTES} render={() => <ReleaseNotes/>}/>
         </LoadingOverlay>

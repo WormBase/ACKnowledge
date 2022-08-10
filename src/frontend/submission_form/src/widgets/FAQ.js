@@ -91,33 +91,6 @@ const FAQ = () => {
                 <li><FAQsingle question={"What happens to the non-<i>C. elegans</i> data in my paper?"}
                                answer={"Currently, WormBase prioritizes curation of <i>C. elegans</i> data, with curation of other <i>Caenorhabditis</i> species added wherever possible.  If you have questions about data curation for other nematode species, please <a target='_blank' href='mailto:help.afp@wormbase.org'>contact us</a>.<br/><br/>To alert other model organism databases to curatable data, please contact the <a target='_blank' href='https://www.alliancegenome.org/contact-us'>Alliance of Genome Resources</a> or one of the member databases listed on that page.  If your paper contains data on species not included in the Alliance, please <a target='_blank' href='mailto:help.afp@wormbase.org'>contact us</a> for assistance in directing you to the appropriate curation resource."}/></li>
             </ol>
-            <br/><br/>
-            <Panel>
-                <Panel.Heading>
-                    <Panel.Title componentClass="h3">
-                        <p id='reference'>References</p>
-                    </Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
-                    <ol>
-                        <li>
-                            Valerio Arnaboldi, Daniela Raciti, Kimberly Van Auken, Juancarlos N Chan, Hans-Michael Müller,
-                            Paul W Sternberg, <i>Text mining meets community curation: a newly designed curation platform to
-                            improve author experience and participation at WormBase</i>, Database, Volume 2020, 2020, baaa006,
-                            <a target='_blank' href="https://doi.org/10.1093/database/baaa006"> https://doi.org/10.1093/database/baaa006</a>
-                        </li>
-                        <li>
-                            Ruihua Fang, Gary Schindelman, Kimberly Van Auken, Jolene Fernandes, Wen Chen, et al.,
-                            <i>Automatic categorization of diverse experimental information in the bioscience literature</i>, BMC Bioinformatics, 2012, <a target='_blank' href="https://doi.org/10.1186/1471-2105-13-16">https://doi.org/10.1186/1471-2105-13-16</a>
-                        </li>
-                        <li>
-                            Hans-Michael Müller, Kimberly Van Auken, Yuling Li, Paul W Sternberg,
-                            <i>Textpresso Central: a customizable platform for searching, text mining, viewing, and curating biomedical literature</i>,
-                            BMC Bioinformatics, 2018 9;19(1):94, <a target='_blank' href="https://doi.org/10.1186/s12859-018-2103-8">https://doi.org/10.1186/s12859-018-2103-8</a>
-                        </li>
-                    </ol>
-                </Panel.Body>
-            </Panel>
         </div>
     );
 }
