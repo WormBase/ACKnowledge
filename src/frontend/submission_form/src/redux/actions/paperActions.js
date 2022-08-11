@@ -4,7 +4,7 @@ import {
     getSetOfEntitiesFromWBAPIData,
     getTableValuesFromWBAPIData
 } from "../../AFPValues";
-import {setGeneModel, setGenes, setIsOverviewSavedToDB, setSpecies} from "./overviewActions";
+import {setGeneModel, setGenes, setIsOverviewSavedToDB, setOtherSpecies, setSpecies} from "./overviewActions";
 import {
     setAlleles,
     setIsGeneticsSavedToDB,
@@ -70,7 +70,9 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 dispatch(setSpecies(species.entities(), species.prevSaved()));
                 let structCorrCB = getCheckbxOrSingleFieldFromWBAPIData(result.data.structcorr, undefined);
                 dispatch(setGeneModel(structCorrCB.isChecked(), structCorrCB.details()));
-                if (genes.prevSaved() && species.prevSaved() && structCorrCB.prevSaved()) {
+                let otherSpecies = getTableValuesFromWBAPIData(result.data.otherspecies, false);
+                dispatch(setOtherSpecies(otherSpecies.entities(), otherSpecies.prevSaved()));
+                if (genes.prevSaved() && species.prevSaved() && structCorrCB.prevSaved() && otherSpecies.prevSaved()) {
                     dispatch(setIsOverviewSavedToDB());
                 }
 

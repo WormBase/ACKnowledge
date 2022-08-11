@@ -5,7 +5,7 @@ import {
     REMOVE_SPECIES,
     SET_GENE_MODEL,
     SET_SPECIES,
-    SET_GENES, SET_IS_OVERVIEW_SAVED_TO_DB, TOGGLE_GENE_MODEL
+    SET_GENES, SET_IS_OVERVIEW_SAVED_TO_DB, TOGGLE_GENE_MODEL, SET_OTHER_SPECIES
 } from "../actions/overviewActions";
 
 
@@ -24,6 +24,10 @@ const initialState = {
     },
     addedGenes: [],
     addedSpecies: [],
+    otherSpecies: {
+        elements: [ { id: 1, name: "" } ],
+        saved: false
+    },
     isSavedToDB: false
 };
 
@@ -138,6 +142,13 @@ export default function(state = initialState, action) {
                 addedGenes: state.addedGenes,
                 addedSpecies: state.addedSpecies,
                 isSavedToDB: true
+            };
+        }
+        case SET_OTHER_SPECIES: {
+            return {
+                ...state,
+                otherSpecies: action.payload,
+                isSavedToDB: false
             };
         }
         default:

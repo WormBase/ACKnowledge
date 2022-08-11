@@ -19,3 +19,5 @@ export const isOverviewSavedToDB = store => getOverviewState(store) ? getOvervie
 
 export const getAddedGenes = store => getOverviewState(store) ? getOverviewState(store).addedGenes : [];
 export const getAddedSpecies = store => getOverviewState(store) ? getOverviewState(store).addedSpecies : [];
+
+export const getOtherSpecies = store => getOverviewState(store) ? getOverviewState(store).otherSpecies : {elements: [ { id: 1, name: "" } ], saved: false};

@@ -7,6 +7,8 @@ export const REMOVE_SPECIES = "REMOVE_SPECIES";
 export const SET_GENE_MODEL = "SET_GENE_MODEL";
 export const TOGGLE_GENE_MODEL = "TOGGLE_GENE_MODEL";
 export const SET_IS_OVERVIEW_SAVED_TO_DB = "SET_IS_SAVED_TO_DB";
+export const SET_OTHER_SPECIES = "SET_OTHER_SPECIES";
+
 
 export const setGenes = (elements, saved) => ({
     type: SET_GENES,
@@ -68,4 +70,12 @@ export const toggleGeneModel = () => ({
 export const setIsOverviewSavedToDB = () => ({
     type: SET_IS_OVERVIEW_SAVED_TO_DB,
     payload: {}
+});
+
+export const setOtherSpecies = (elements, saved) => ({
+    type: SET_OTHER_SPECIES,
+    payload: {
+        elements: elements,
+        saved: saved
+    }
 });

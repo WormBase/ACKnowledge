@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
     Alert,
-    Button, Checkbox, FormControl, Glyphicon, OverlayTrigger,
+    Button, Checkbox, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import MultipleSelect from "../components/multiselect/MultiSelect";
@@ -12,7 +12,7 @@ import {
     addSpecies,
     removeGene,
     removeSpecies,
-    setGeneModel,
+    setGeneModel, setOtherSpecies,
     toggleGeneModel
 } from "../redux/actions/overviewActions";
 import {useDispatch, useSelector} from "react-redux";
@@ -30,6 +30,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const isSavedToDB = useSelector((state) => state.overview.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
     const person = useSelector((state) => state.person.person);
+    const otherSpecies = useSelector((state) => state.overview.otherSpecies.elements);
 
     const geneTooltip = (
         <Tooltip id="tooltip">
@@ -166,6 +167,26 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         />
                     </Panel.Body>
                 </Panel>
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">New species</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <div className="container-fluid">
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    <ControlLabel>
+                                        Enter new species and species not yet in our system, one per line.
+                                    </ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new species here, one per line"
+                                                 value={otherSpecies.map(a => a.name).join("\n")}
+                                                 onChange={e => dispatch(setOtherSpecies(e.target.value.split("\n").map((a, index) => {
+                                                     return {id: index + 1, name: a}})))}/>
+                                </div>
+                            </div>
+                        </div>
+                    </Panel.Body>
+                </Panel>
             </form>
             <div align="right">
                 <Button bsStyle="success" onClick={() => {
@@ -173,6 +194,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
                         gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
                         species_list: transformEntitiesIntoAfpString(species, ""),
+                        other_species: JSON.stringify(otherSpecies),
                         person_id: "two" + person.personId,
                         passwd: paperPassword
                     };

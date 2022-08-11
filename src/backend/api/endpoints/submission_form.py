@@ -79,6 +79,9 @@ class FeedbackFormWriter:
                         self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
                         self.db.afp.set_last_touched(paper_id=paper_id)
 
+                if "other_species" in req.media:
+                    self.db.afp.set_submitted_other_species(other_species=req.media["other_species"], paper_id=paper_id)
+
                 # genetics
                 if "alleles_list" in req.media:
                     self.db.afp.set_submitted_alleles_list(alleles=req.media["alleles_list"], paper_id=paper_id)
