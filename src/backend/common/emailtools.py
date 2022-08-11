@@ -39,21 +39,23 @@ class EmailManager(object):
         self.email_passwd = email_passwd
 
     def send_email(self, subject, content, recipients):
-        body = MIMEText(content, "html")
-        msg = MIMEMultipart('alternative')
-        msg.attach(body)
-        msg['Subject'] = subject
-        msg['From'] = self.from_addr
-        msg['reply-to'] = self.reply_to_addr
-        msg['To'] = ", ".join(recipients)
+        msg_alternative = MIMEMultipart('alternative')
+        msg_root = MIMEMultipart('related')
+        msg_root.attach(msg_alternative)
+        body_image = MIMEText(content + "<br/><br/><a href='https://wormbase.github.io/ACKnowledge/'><img src='https://github.com/WormBase/ACKnowledge/raw/develop/src/backend/images/Combination-Mark-RGB-Color-200px.jpg' height='100px'></a>", "html")
+        msg_alternative.attach(body_image)
+        msg_root['Subject'] = subject
+        msg_root['From'] = self.from_addr
+        msg_root['reply-to'] = self.reply_to_addr
+        msg_root['To'] = ", ".join(recipients)
 
         try:
             server_ssl = smtplib.SMTP_SSL(self.server_host, self.server_port)
             server_ssl.login(self.email_user, self.email_passwd)
-            server_ssl.send_message(msg)
+            server_ssl.sendmail(self.from_addr, ", ".join(recipients), msg_root.as_string())
             logger.info("Email sent to: " + ", ".join(recipients))
             server_ssl.quit()
-        except:
+        except Exception as e:
             logger.fatal("Can't connect to smtp server. AFP emails not sent.")
 
     def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
