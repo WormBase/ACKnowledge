@@ -17,7 +17,7 @@ AFP_WATCHERS_TABLES = {
        "raymond@caltech.edu": ["afp_siteaction", "afp_timeaction"],
        "jae.cho@wormbase.org": ["afp_geneprod"],
        "garys@caltech.edu": ["afp_newmutant", "afp_rnai", "afp_chemphen", "afp_envpheno"],
-       "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment"],
+       "vanauken@caltech.edu": ["afp_catalyticact", "afp_comment", "afp_otherspecies"],
        "ranjana@caltech.edu": ["afp_humdis"]
    }
 
@@ -56,7 +56,7 @@ def main():
                 positive_papers_val = db_manager.afp.get_positive_paper_ids_sumbitted_last_month_for_data_type(
                     table_to_watch, tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
                 if len(positive_papers_val) > 0:
-                    if table_to_watch == "afp_othertransgene" or table_to_watch == "afp_otherantibody":
+                    if table_to_watch == "afp_othertransgene" or table_to_watch == "afp_otherantibody" or table_to_watch == "afp_otherspecies":
                         positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
                                                pap_id, val in positive_papers_val.items()}
                     email_manager.send_new_data_notification_email_to_watcher(table_to_watch, positive_papers_val,
