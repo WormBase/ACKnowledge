@@ -17,6 +17,50 @@ If you have questions about the ACKnowledge project, please contact <a href="mai
 
 # Release Notes
 
+## Version 4.0
+
+### Release date
+09-01-2022
+
+### Introduction
+Release 4.0 marks an exciting transition for our project.  With support from the National Library of
+Medicine, the Author First Pass (AFP) project is now officially known as ACKnowledge (Author Curation to Knowledgebase).
+This change reflects our commitment to expanding artificial intelligence (AI)-enhanced community curation
+to capture more detailed experimental findings and to introduce our curation pipeline to additional model
+organism communities and their respective knowledgebases. While busy transitioning our project and enhancing
+our AI methods, we also implemented further improvements to the current pipeline based on continuing
+valuable feedback from authors. These improvements, listed below, will help authors add more information
+about their papers and readily find previously published papers processed by our pipeline for curation using
+our Author Curation Portal.
+
+### Main Updates
+- Renamed project to ACKnowledge (Author Curation to Knowledgebase)
+- Updated user facing communications and forms
+- Updated internal documentation
+- Created an ACKnowledge logo
+- Created an ‘About’ widget on the author curation form
+- Provided project description
+- Added NLM funding information
+- Listed published references
+- Created a project landing page: https://wormbase.github.io/ACKnowledge
+- Fully transitioned from Support Vector Machines (SVM) to Neural Networks (NN) for datatype flagging
+
+### User Updates
+- Enabled access to author’s additional publications (author curation portal - https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)
+- Added free text box for chemical- and environmental-induced phenotypes
+- Added a free text box for adding new species not in the current auto-complete list
+- Improved the comments section
+
+### Bug Fixes
+- Form now saves incremental updates to genes and species lists to database without requiring a full resubmission
+- Proof papers are now excluded by the processing pipeline
+- Improved authors’ email extraction
+- Additional minor bug fixes
+
+### Curator Dashboard Updates
+- Improved statistics page to keep track of response rate on a yearly and monthly basis</li>
+- Standardized representation of empty values in curator dashboard</li>
+
 ## Version 3.0
 
 ### Release Date
@@ -32,7 +76,7 @@ Lastly, to thank authors for their valuable contributions, we now acknowledge au
 We have implemented updates and improvements to our curator dashboard. The dashboard is a tool available to WormBase 
 curators to  keep track of submissions and perform quality control of submitted data.
 
-### Main Features
+### Main Updates
 
 #### User Updates
 - Acknowledge author contributions on WormBase [Paper](https://wormbase.org/resources/paper/WBPaper00059759#0--10) and [Person](https://wormbase.org/resources/person/WBPerson625#014--10) pages
@@ -64,7 +108,7 @@ We improved the ACKnowledge system based on feedback received from authors and s
 collected during one year of ACKnowledge v1.0 author submissions. We improved the definition of
 data types in the form and we refined our text mining algorithms to obtain better results.
 
-### Main Features
+### Main Updates
 - Implemented [TFIDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus.) in place of simple thresholds to improve precision of gene and allele recognition
 - Improved datatype descriptions in "?" mouse-overs
 - Added FAQs and Release Notes
@@ -79,7 +123,7 @@ We are proud to introduce our new ACKnowledge system, which leverages text minin
 their papers and send data to WormBase! The system replaces the previous form which required authors
 to submit data manually through free-text forms.</p>
 
-### Main Features
+### Main Updates
 - Automated extraction of biological entities from articles based on text mining
 - Extracted entities presented to author for validation through a newly designed web form
 - Additional data types can be manually entered by authors

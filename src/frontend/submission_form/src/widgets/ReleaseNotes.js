@@ -3,6 +3,52 @@ import React from 'react';
 const ReleaseNotes = () => {
     return (
         <div>
+            <h3>Version 4.0</h3>
+            Release date 09-01-2022
+            <h4>Introduction</h4>
+            <p>Release 4.0 marks an exciting transition for our project.  With support from the National Library of
+                Medicine, the Author First Pass (AFP) project is now officially known as ACKnowledge (Author Curation to Knowledgebase).
+                This change reflects our commitment to expanding artificial intelligence (AI)-enhanced community curation
+                to capture more detailed experimental findings and to introduce our curation pipeline to additional model
+                organism communities and their respective knowledgebases. While busy transitioning our project and enhancing
+                our AI methods, we also implemented further improvements to the current pipeline based on continuing
+                valuable feedback from authors. These improvements, listed below, will help authors add more information
+                about their papers and readily find previously published papers processed by our pipeline for curation using
+                our Author Curation Portal.</p>
+
+            <h4>Main Updates</h4>
+            <ul>
+                <li>Renamed project to ACKnowledge (Author Curation to Knowledgebase)</li>
+                <li>Updated user facing communications and forms</li>
+                <li>Updated internal documentation</li>
+                <li>Created an ACKnowledge logo</li>
+                <li>Created an ‘About’ widget on the author curation form</li>
+                <li>Provided project description</li>
+                <li>Added NLM funding information</li>
+                <li>Listed published references</li>
+                <li>Created a project landing page: https://wormbase.github.io/ACKnowledge</li>
+                <li>Fully transitioned from Support Vector Machines (SVM) to Neural Networks (NN) for datatype flagging</li>
+            </ul>
+            <h5><strong>User Updates</strong></h5>
+            <ul>
+                <li>Enabled access to author’s additional publications (author curation portal - https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)</li>
+                <li>Added free text box for chemical- and environmental-induced phenotypes</li>
+                <li>Added a free text box for adding new species not in the current auto-complete list</li>
+                <li>Improved the comments section</li>
+            </ul>
+            <h5><strong>Bug Fixes</strong></h5>
+            <ul>
+                <li>Form now saves incremental updates to genes and species lists to database without requiring a full resubmission</li>
+                <li>Proof papers are now excluded by the processing pipeline</li>
+                <li>Improved authors’ email extraction</li>
+                <li>Additional minor bug fixes</li>
+            </ul>
+            <h5><strong>Curator Dashboard Updates</strong></h5>
+            <ul>
+                <li>Improved statistics page to keep track of response rate on a yearly and monthly basis</li>
+                <li>Standardized representation of empty values in curator dashboard</li>
+            </ul>
+
             <h3>Release 3.0</h3>
             Release date: 09-16-2021
             <h4>Introduction</h4>
@@ -14,7 +60,7 @@ const ReleaseNotes = () => {
                 for their valuable contributions, we now acknowledge authors on WormBase person and paper pages. </p>
             <p>We have implemented updates and improvements to our curator dashboard. The dashboard is a tool available
                 to WormBase curators to  keep track of submissions and perform quality control of submitted data.</p>
-            <h4>Main Features</h4>
+            <h4>Main Updates</h4>
             <h5><strong>User Updates</strong></h5>
             <ul>
                 <li>Acknowledge author contributions on WormBase <a href="https://wormbase.org/resources/paper/WBPaper00059759#0--10" target="_blank">Paper</a> and <a href="https://wormbase.org/resources/person/WBPerson625#014--10" target="_blank">Person</a> pages</li>
@@ -45,7 +91,7 @@ const ReleaseNotes = () => {
                 collected during one year of AFP v1.0 author submissions. We improved the definition of
                 data types in the form and we refined our text mining algorithms to obtain better results.</p>
 
-            <h4>Main Features</h4>
+            <h4>Main Updates</h4>
             <ul>
                 <li>Implemented <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus." target="_blank">TFIDF</a> in place of simple thresholds to improve precision of gene and allele recognition</li>
                 <li>Improved datatype descriptions in <span className="glyphicon glyphicon-question-sign"/> mouse-overs</li>
@@ -58,7 +104,7 @@ const ReleaseNotes = () => {
                 their papers and send data to WormBase! The system replaces the previous form which required authors
                 to submit data manually through free-text forms.</p>
 
-            <h4>Main Features</h4>
+            <h4>Main Updates</h4>
             <ul>
                 <li>Automated extraction of biological entities from articles based on text mining</li>
                 <li>Extracted entities presented to author for validation through a newly designed web form</li>
