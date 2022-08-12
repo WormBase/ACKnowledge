@@ -31,7 +31,7 @@ const ReleaseNotes = () => {
             </ul>
             <h5><strong>User Updates</strong></h5>
             <ul>
-                <li>Enabled access to author’s additional publications (author curation portal - https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)</li>
+                <li>Enabled access to author’s additional publications via the author curation portal (https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)</li>
                 <li>Added free text box for chemical- and environmental-induced phenotypes</li>
                 <li>Added a free text box for adding new species not in the current auto-complete list</li>
                 <li>Improved the comments section</li>

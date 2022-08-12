@@ -46,7 +46,7 @@ our Author Curation Portal.
 - Fully transitioned from Support Vector Machines (SVM) to Neural Networks (NN) for datatype flagging
 
 ### User Updates
-- Enabled access to author’s additional publications (author curation portal - https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)
+- Enabled access to author’s additional publications via the author curation portal (https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)
 - Added free text box for chemical- and environmental-induced phenotypes
 - Added a free text box for adding new species not in the current auto-complete list
 - Improved the comments section
