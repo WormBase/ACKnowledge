@@ -42,7 +42,7 @@ class EmailManager(object):
         msg_alternative = MIMEMultipart('alternative')
         msg_root = MIMEMultipart('related')
         msg_root.attach(msg_alternative)
-        body_image = MIMEText(content + "<br/><br/><a href='https://wormbase.github.io/ACKnowledge/'><img src='https://github.com/WormBase/ACKnowledge/raw/develop/src/backend/images/Combination-Mark-RGB-Color-200px.jpg' height='100px'></a>", "html")
+        body_image = MIMEText(content + "<br/><br/><a href='https://wormbase.github.io/ACKnowledge/'><img src='https://github.com/WormBase/ACKnowledge/raw/develop/src/backend/images/lockup-without-rule-color-100.jpg' height='100px'></a>", "html")
         msg_alternative.attach(body_image)
         msg_root['Subject'] = subject
         msg_root['From'] = self.from_addr
