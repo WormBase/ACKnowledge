@@ -7,7 +7,7 @@ const Header = () => {
         <div className="container">
             <div className="row">
                 <div className="col-sm-12">
-                    <Image src="Lockup-with-Rule-RGB-Color-1920px.jpg" width="100%" />
+                    <Image src="lockup-with-rule-color-100.jpg" width="100%" />
                 </div>
             </div>
             <div className="row">
