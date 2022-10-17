@@ -92,7 +92,7 @@ const Menu = ({urlQuery}) => {
                                     <NavItem
                                         eventKey={MENU_INDEX[WIDGET.HELP]}>{WIDGET_TITLE[WIDGET.HELP]}
                                     </NavItem></IndexLinkContainer>
-                                <NavItem href="https://www.youtube.com/embed/ZONK4qe_-w8?start=86&end=1011" target="_blank">WormBase AFP Webinar</NavItem>
+                                <NavItem href="https://www.youtube.com/embed/ZONK4qe_-w8?start=86&end=1011" target="_blank">WormBase Community Curation Webinar</NavItem>
                                 <NavItem href="mailto:help.afp@wormbase.org">Contact us</NavItem>
                                 <IndexLinkContainer to={WIDGET.RELEASE_NOTES + urlQuery}
                                                     active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.RELEASE_NOTES]}>
