@@ -4,7 +4,7 @@ const ReleaseNotes = () => {
     return (
         <div>
             <h3>Version 4.0</h3>
-            Release date 09-01-2022
+            Release date 10-27-2022
             <h4>Introduction</h4>
             <p>Release 4.0 marks an exciting transition for our project.  With support from the National Library of
                 Medicine, the Author First Pass (AFP) project is now officially known as ACKnowledge (Author Curation to Knowledgebase).

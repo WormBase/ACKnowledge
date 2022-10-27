@@ -64,7 +64,7 @@ our Author Curation Portal.
 ## Version 3.0
 
 ### Release Date
-09-16-2021
+10-27-2021
 
 ### Introduction
 Based on valuable user feedback, we continue to improve the ACKnowledge experience.  In addition to providing more 
