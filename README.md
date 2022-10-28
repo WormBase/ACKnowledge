@@ -20,7 +20,7 @@ If you have questions about the ACKnowledge project, please contact <a href="mai
 ## Version 4.0
 
 ### Release date
-09-01-2022
+10-27-2022
 
 ### Introduction
 Release 4.0 marks an exciting transition for our project.  With support from the National Library of
