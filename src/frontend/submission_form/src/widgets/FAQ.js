@@ -8,7 +8,7 @@ const FAQ = () => {
     return (
         <div>
             <h4><strong>Frequently Asked Questions</strong></h4>
-            <h4>General Information on Author First Pass and Community Curation</h4>
+            <h4>General Information on ACKnowledge and Community Curation</h4>
             <ol>
                 <li><FAQsingle question={"What is ACKnowledge and why is it helpful to WB and the worm community?"}
                                answer={"ACKnowledge is a community curation pipeline that helps alert WormBase curators to relevant entities and data types in published papers.  Entity and data type identification is the first step in the WormBase curation process, so by participating in the ACKnowledge pipeline you ensure that published data becomes available in WormBase in a timely manner."}/></li>
