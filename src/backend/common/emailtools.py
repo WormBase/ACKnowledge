@@ -56,7 +56,7 @@ class EmailManager(object):
             logger.info("Email sent to: " + ", ".join(recipients))
             server_ssl.quit()
         except Exception as e:
-            logger.fatal("Can't connect to smtp server. AFP emails not sent.")
+            logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent.")
 
     def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
         content = self.content_email_to_author.format(paper_title, paper_journal, afp_link)
@@ -90,7 +90,7 @@ class EmailManager(object):
 
     def send_new_data_notification_email_to_watcher(self, data_type_table, paper_ids_val, recipients):
         content = self.content_email_digest.format(data_type_table, "<br/>".join(
-            ["<a href='https://dashboard.afp.textpressolab.com/paper?paper_id=" + paper_id + "'>" + paper_id + "</a>:  " +
+            ["<a href='https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id + "'>" + paper_id + "</a>:  " +
              paper_ids_val[paper_id] for paper_id in paper_ids_val.keys()]))
         subject = self.subject_email_digest.format(data_type_table)
         self.send_email(subject=subject, content=content, recipients=recipients)
