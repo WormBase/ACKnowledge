@@ -1,4 +1,4 @@
-![ACKnowledge logo](src/frontend/submission_form/public/Lockup-with-Rule-RGB-Color-1920px.jpg)
+![ACKnowledge logo](src/frontend/submission_form/public/lockup-with-rule-color-100.jpg)
 
 The Author Curation to Knowledgebase project (ACKnowledge, previously known as “Author First Pass”) aims at facilitating author curation to biological  knowledgebases.</p>
 
