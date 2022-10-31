@@ -172,7 +172,7 @@ class FeedbackFormWriter:
                           urllib.parse.quote(doi)
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
-                    dashboard_url = "https://dashboard.afp.textpressolab.com/paper?paper_id=" + paper_id
+                    dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
                     self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
                                                                                        paper_journal, author_email,
                                                                                        self.admin_emails, dashboard_url,
