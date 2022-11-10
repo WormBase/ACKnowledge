@@ -19,6 +19,8 @@ const FAQ = () => {
                                answer={"Authors who contribute to ACKnowledge are recognized on the relevant WormBase paper and person pages."}/></li>
                 <li><FAQsingle question={"Can I submit a paper for which I haven't received an ACKnowledge link?"}
                                answer={"If you would like to submit an ACKnowledge form for other papers, please <a target='_blank' href='mailto:help.acknowledge@wormbase.org'>contact us</a> with a list of PubMed identifiers (PMIDs, e.g. PMID:25281934) and/or WormBase paper identifiers (WBPaper IDs, e.g. WBPaper00045833) so we can process them and email you links to the corresponding ACKnowledge forms."}/></li>
+                <li><FAQsingle question={"How can I find my other papers that are in the ACKnowledge system?"}
+                               answer={"You can access the <a target='_blank' href='https://acp.acknowledge.textpressolab.com/'>Author Curation Portal</a>."}/></li>
                 <li><FAQsingle question={"Does ACKnowledge process supplementary data and text or only the main paper?"}
                                answer={"Supplementary data is processed by ACKnowledge, as long as it is in PDF format. Other formats (e.g., images, videos, Excel files) are not included."}/></li>
             </ol>
