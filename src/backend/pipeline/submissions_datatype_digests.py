@@ -21,9 +21,9 @@ AFP_WATCHERS_TABLES = {
        "ranjana@caltech.edu": ["afp_humdis"]
    }
 
-AFP_WATCHERS_TABLES = {
-     "valearna@caltech.edu": ["afp_otherspecies"],
- }
+# AFP_WATCHERS_TABLES = {
+#      "valearna@caltech.edu": ["afp_otherspecies"],
+#  }
 
 logger = logging.getLogger(__name__)
 

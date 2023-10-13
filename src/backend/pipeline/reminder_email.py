@@ -3,9 +3,6 @@
 import argparse
 import logging
 import time
-import urllib.parse
-
-from urllib.request import urlopen
 
 from wbtools.db.dbmanager import WBDBManager
 
