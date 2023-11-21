@@ -2,10 +2,12 @@ import json
 import re
 
 import joblib
+import numpy as np
 import sent2vec
 import falcon
 import logging
 
+from nltk import sent_tokenize
 from wbtools.db.dbmanager import WBDBManager
 from wbtools.lib.nlp.common import EntityType, PaperSections
 from wbtools.literature.corpus import CorpusManager
@@ -193,13 +195,24 @@ class CuratorDashboardReader:
             exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id])
         paper = cm.get_paper(paper_id)
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True,
-                                       remove_sections=[PaperSections.REFERENCES])
-        sentences = paper.get_text_docs(include_supplemental=True, split_sentences=True)
+                                       remove_sections=[PaperSections.RELATED_WORK,
+                                                        PaperSections.ACKNOWLEDGEMENTS,
+                                                        PaperSections.REFERENCES],
+                                       must_be_present=[PaperSections.RESULTS])
+        fulltext = fulltext.replace("Fig.", "Fig")
+        fulltext = fulltext.replace("et al.", "et al")
+        fulltext = fulltext.replace('.\n\n', '. ')
+        fulltext = fulltext.replace('\n\n', '. ')
+        fulltext = fulltext.replace('-\n', '')
+        fulltext = fulltext.replace('.\n', '. ')
+        fulltext = fulltext.replace('\n', ' ')
+        sentences = sent_tokenize(fulltext)
+        sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
         fulltext = fulltext.replace('\n', ' ')
         fulltext = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', fulltext)
         sentences = [sentence.replace('\n', ' ') for sentence in sentences]
         sentences = [re.sub(r'[\x00-\x1F\x7F-\x9F]', '', sentence) for sentence in sentences]
-        sentences = [sentence for sentence in sentences if len(sentence) > 10 and len(sentence.split(" ")) > 2]
+        sentences = [sentence for sentence in sentences if len(sentence) > 20 and len(sentence.split(" ")) > 2]
         paper.abstract = paper.abstract if paper.abstract else ""
         paper.title = paper.title if paper.title else ""
         sentence_embeddings = self.sent2vec_model.embed_sentences(sentences)
