@@ -7,7 +7,7 @@ import falcon
 import logging
 
 from wbtools.db.dbmanager import WBDBManager
-from wbtools.lib.nlp.common import EntityType
+from wbtools.lib.nlp.common import EntityType, PaperSections
 from wbtools.literature.corpus import CorpusManager
 
 
@@ -192,7 +192,8 @@ class CuratorDashboardReader:
             must_be_autclass_flagged=True, exclude_no_main_text=True,
             exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id])
         paper = cm.get_paper(paper_id)
-        fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
+        fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True,
+                                       remove_sections=[PaperSections.REFERENCES])
         sentences = paper.get_text_docs(include_supplemental=True, split_sentences=True)
         fulltext = fulltext.replace('\n', ' ')
         fulltext = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', fulltext)
@@ -203,9 +204,21 @@ class CuratorDashboardReader:
         paper.title = paper.title if paper.title else ""
         sentence_embeddings = self.sent2vec_model.embed_sentences(sentences)
         classes_all_info_expression = self.sentence_classifiers["expression"]["all_info"].predict(sentence_embeddings)
+        classes_curatable_expression = self.sentence_classifiers["expression"]["curatable"].predict(sentence_embeddings)
+        classes_language_expression = self.sentence_classifiers["expression"]["language"].predict(sentence_embeddings)
+        classes_all_info_kinase = self.sentence_classifiers["kinase"]["all_info"].predict(sentence_embeddings)
+        classes_curatable_kinase = self.sentence_classifiers["kinase"]["curatable"].predict(sentence_embeddings)
+        classes_language_kinase = self.sentence_classifiers["kinase"]["language"].predict(sentence_embeddings)
         classes = {
             "expression": {
-                "all_info": classes_all_info_expression.tolist()
+                "all_info": classes_all_info_expression.tolist(),
+                "curatable": classes_curatable_expression.tolist(),
+                "language": classes_language_expression.tolist()
+            },
+            "kinase": {
+                "all_info": classes_all_info_kinase.tolist(),
+                "curatable": classes_curatable_kinase.tolist(),
+                "language": classes_language_kinase.tolist()
             }
         }
         return fulltext, sentences, json.dumps(classes)
