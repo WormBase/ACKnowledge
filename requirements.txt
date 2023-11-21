@@ -7,3 +7,5 @@ numpy
 dataclasses
 pyyaml
 wbtools==2.0.3
+scikit-learn
+sent2vec-prebuilt

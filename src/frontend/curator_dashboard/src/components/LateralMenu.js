@@ -115,6 +115,14 @@ const LateralMenu = () => {
                     </IndexLinkContainer>
                 </Col>
             </Row>
+            <Row>
+                <Col sm="10">
+                    <IndexLinkContainer to={"sentence_classification" + args}
+                                        active={true}>
+                        <a className="aw"><h6>Sentence Level Classification</h6></a>
+                    </IndexLinkContainer>
+                </Col>
+            </Row>
         </Container>
     );
 }

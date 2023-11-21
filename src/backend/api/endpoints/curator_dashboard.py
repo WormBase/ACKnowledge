@@ -1,10 +1,15 @@
 import json
+import re
 
+import joblib
+import sent2vec
 import falcon
 import logging
 
 from wbtools.db.dbmanager import WBDBManager
 from wbtools.lib.nlp.common import EntityType
+from wbtools.literature.corpus import CorpusManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +19,36 @@ MIN_CLASS_VAL = "medium"
 
 class CuratorDashboardReader:
 
-    def __init__(self, db_manager: WBDBManager, afp_base_url: str, tazendra_username, tazendra_password):
+    def __init__(self, db_manager: WBDBManager, afp_base_url: str, tazendra_username, tazendra_password,
+                 sentence_classifiers_path):
         self.db = db_manager
         self.afp_base_url = afp_base_url
         self.tazendra_username = tazendra_username
         self.tazendra_password = tazendra_password
+        self.sentence_classifiers = self.load_sentence_classifiers(sentence_classifiers_path)
+        self.sent2vec_model = self.load_sent2vec_model(f"{sentence_classifiers_path}/biosentvec.bin")
+
+    @staticmethod
+    def load_sentence_classifiers(models_path):
+        logger.info("Loading sentence classifiers...")
+        sentence_classifier_all_info_expression = joblib.load(f"{models_path}/all_info_expression.joblib")
+        logger.info("All sentence classifiers loaded")
+        return {
+            "expression": {
+                "all_info": sentence_classifier_all_info_expression
+            }
+        }
+
+    @staticmethod
+    def load_sent2vec_model(sent2vec_model_path):
+        logger.info("Loading sentence embedding model...")
+        biosentvec_model = sent2vec.Sent2vecModel()
+        try:
+            biosentvec_model.load_model(sent2vec_model_path)
+        except Exception as e:
+            logger.error(e)
+        logger.info("Sentence embedding model loaded")
+        return biosentvec_model
 
     @staticmethod
     def transform_none_to_string(val):
@@ -143,6 +173,31 @@ class CuratorDashboardReader:
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
                 "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
 
+    def get_text_from_pdfs(self, paper_id):
+        cm = CorpusManager()
+        cm.load_from_wb_database(
+            self.db.db_name, self.db.user, self.db.password, self.db.host,
+            must_be_autclass_flagged=True, exclude_no_main_text=True,
+            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id])
+        paper = cm.get_paper(paper_id)
+        fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
+        sentences = paper.get_text_docs(include_supplemental=True, split_sentences=True)
+        fulltext = fulltext.replace('\n', ' ')
+        fulltext = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', fulltext)
+        sentences = [sentence.replace('\n', ' ') for sentence in sentences]
+        sentences = [re.sub(r'[\x00-\x1F\x7F-\x9F]', '', sentence) for sentence in sentences]
+        sentences = [sentence for sentence in sentences if len(sentence) > 10 and len(sentence.split(" ")) > 2]
+        paper.abstract = paper.abstract if paper.abstract else ""
+        paper.title = paper.title if paper.title else ""
+        sentence_embeddings = self.sent2vec_model.embed_sentences(sentences)
+        classes_all_info_expression = self.sentence_classifiers["expression"]["all_info"].predict(sentence_embeddings)
+        classes = {
+            "expression": {
+                "all_info": classes_all_info_expression.tolist()
+            }
+        }
+        return fulltext, sentences, json.dumps(classes)
+
     def on_post(self, req, resp, req_type):
         with self.db:
             if req_type != "stats_totals" and req_type != "papers" and req_type != "contributors" \
@@ -239,6 +294,12 @@ class CuratorDashboardReader:
                 elif req_type == "comments":
                     comments = json.dumps(self.db._get_single_field(paper_id, "afp_comment"))
                     resp.body = '{{"afp_comments": {}}}'.format(comments)
+                    resp.status = falcon.HTTP_200
+                elif req_type == "converted_text":
+                    fulltext, sentences, classes = self.get_text_from_pdfs(paper_id)
+                    sentences = ["\"" + sentence + "\"" for sentence in sentences]
+                    resp.body = (f'{{"fulltext": "{fulltext}", "sentences": [{", ".join(sentences)}],'
+                                 f' "classes": {classes}}}')
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)

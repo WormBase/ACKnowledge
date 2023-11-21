@@ -7,6 +7,7 @@ import Home from "../pages/Home";
 import Contributors from "../pages/Contributors";
 import Entities from "../pages/Entities";
 import PaperStats from "../pages/stats/PaperStats";
+import SentenceClassification from "../pages/SentenceClassification";
 
 class PageArea extends React.Component {
 
@@ -28,6 +29,8 @@ class PageArea extends React.Component {
                        render={() => <Entities/>}/>
                 <Route path={"/papers_stats"}
                        render={() => <PaperStats/>}/>
+                <Route path={"/sentence_classification"}
+                       render={() => <SentenceClassification/>}/>
             </div>
         );
     }
