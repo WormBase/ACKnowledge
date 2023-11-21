@@ -32,10 +32,22 @@ class CuratorDashboardReader:
     def load_sentence_classifiers(models_path):
         logger.info("Loading sentence classifiers...")
         sentence_classifier_all_info_expression = joblib.load(f"{models_path}/all_info_expression.joblib")
+        sentence_classifier_curatable_expression = joblib.load(f"{models_path}/curatable_expression.joblib")
+        sentence_classifier_language_expression = joblib.load(f"{models_path}/language_expression.joblib")
+        sentence_classifier_all_info_kinase = joblib.load(f"{models_path}/all_info_kinase.joblib")
+        sentence_classifier_curatable_kinase = joblib.load(f"{models_path}/curatable_kinase.joblib")
+        sentence_classifier_language_kinase = joblib.load(f"{models_path}/language_kinase.joblib")
         logger.info("All sentence classifiers loaded")
         return {
             "expression": {
-                "all_info": sentence_classifier_all_info_expression
+                "all_info": sentence_classifier_all_info_expression,
+                "curatable": sentence_classifier_curatable_expression,
+                "language": sentence_classifier_language_expression
+            },
+            "kinase": {
+                "all_info": sentence_classifier_all_info_kinase,
+                "curatable": sentence_classifier_curatable_kinase,
+                "language": sentence_classifier_language_kinase
             }
         }
 
