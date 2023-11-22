@@ -3,7 +3,7 @@
 import argparse
 import logging
 import falcon
-import joblib
+import os
 from wsgiref import simple_server
 from falcon import HTTPStatus
 from wbtools.db.dbmanager import WBDBManager
@@ -46,9 +46,11 @@ def main():
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
     parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
+    parser.add_argument("-c", "--sentence-cassification-api", metavar="sentence_classification_api",
+                        dest="sentence_classification_api", type=str)
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     args = parser.parse_args()
-
+    os.environ["SENTENCE_CLASSIFICATION_API"] = args.sentence_classification_api
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
 
@@ -65,8 +67,7 @@ def main():
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=args.afp_base_url,
                                                       tazendra_username=args.tazendra_user,
-                                                      tazendra_password=args.tazendra_password,
-                                                      sentence_classifiers_path=sentence_classifiers_path)
+                                                      tazendra_password=args.tazendra_password)
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager, afp_base_url=args.afp_base_url,
                                                   email_passwd=args.email_passwd)
@@ -99,8 +100,7 @@ else:
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=os.environ['AFP_BASE_URL'],
                                                       tazendra_username=os.environ['AFP_TAZENDRA_USER'],
-                                                      tazendra_password=os.environ['AFP_TAZENDRA_PASSWORD'],
-                                                      sentence_classifiers_path=sentence_classifier_path)
+                                                      tazendra_password=os.environ['AFP_TAZENDRA_PASSWORD'])
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager,
                                                   afp_base_url=os.environ['AFP_BASE_URL'],

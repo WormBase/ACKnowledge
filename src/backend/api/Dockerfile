@@ -20,8 +20,9 @@ ENV TAZENDRA_PASSWORD=""
 ENV DEV_MODE=""
 ENV LOG_FILE=/var/log/afp_db_api.log
 ENV INFO_FILE=/var/log/afp_db_api.info
+ENV SENTENCE_CLASSIFICATION_API=http://textpressocentral.org:8002
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
 EXPOSE ${PORT}
-CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -w ${TAZENDRA_USER} -z ${TAZENDRA_PASSWORD} ${DEV_MODE} -l ${LOG_FILE} -L DEBUG >> ${INFO_FILE} 2>&1
+CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -w ${TAZENDRA_USER} -z ${TAZENDRA_PASSWORD} ${DEV_MODE} -l ${LOG_FILE} -L DEBUG -c ${SENTENCE_CLASSIFICATION_API} >> ${INFO_FILE} 2>&1

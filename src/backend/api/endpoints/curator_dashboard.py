@@ -1,7 +1,8 @@
 import json
+import os
 import re
 
-import joblib
+import requests
 import numpy as np
 import sent2vec
 import falcon
@@ -21,48 +22,11 @@ MIN_CLASS_VAL = "medium"
 
 class CuratorDashboardReader:
 
-    def __init__(self, db_manager: WBDBManager, afp_base_url: str, tazendra_username, tazendra_password,
-                 sentence_classifiers_path):
+    def __init__(self, db_manager: WBDBManager, afp_base_url: str, tazendra_username, tazendra_password):
         self.db = db_manager
         self.afp_base_url = afp_base_url
         self.tazendra_username = tazendra_username
         self.tazendra_password = tazendra_password
-        self.sentence_classifiers = self.load_sentence_classifiers(sentence_classifiers_path)
-        self.sent2vec_model = self.load_sent2vec_model(f"{sentence_classifiers_path}/biosentvec.bin")
-
-    @staticmethod
-    def load_sentence_classifiers(models_path):
-        logger.info("Loading sentence classifiers...")
-        sentence_classifier_all_info_expression = joblib.load(f"{models_path}/all_info_expression.joblib")
-        sentence_classifier_curatable_expression = joblib.load(f"{models_path}/curatable_expression.joblib")
-        sentence_classifier_language_expression = joblib.load(f"{models_path}/language_expression.joblib")
-        sentence_classifier_all_info_kinase = joblib.load(f"{models_path}/all_info_kinase.joblib")
-        sentence_classifier_curatable_kinase = joblib.load(f"{models_path}/curatable_kinase.joblib")
-        sentence_classifier_language_kinase = joblib.load(f"{models_path}/language_kinase.joblib")
-        logger.info("All sentence classifiers loaded")
-        return {
-            "expression": {
-                "all_info": sentence_classifier_all_info_expression,
-                "curatable": sentence_classifier_curatable_expression,
-                "language": sentence_classifier_language_expression
-            },
-            "kinase": {
-                "all_info": sentence_classifier_all_info_kinase,
-                "curatable": sentence_classifier_curatable_kinase,
-                "language": sentence_classifier_language_kinase
-            }
-        }
-
-    @staticmethod
-    def load_sent2vec_model(sent2vec_model_path):
-        logger.info("Loading sentence embedding model...")
-        biosentvec_model = sent2vec.Sent2vecModel()
-        try:
-            biosentvec_model.load_model(sent2vec_model_path)
-        except Exception as e:
-            logger.error(e)
-        logger.info("Sentence embedding model loaded")
-        return biosentvec_model
 
     @staticmethod
     def transform_none_to_string(val):
@@ -215,26 +179,10 @@ class CuratorDashboardReader:
         sentences = [sentence for sentence in sentences if len(sentence) > 20 and len(sentence.split(" ")) > 2]
         paper.abstract = paper.abstract if paper.abstract else ""
         paper.title = paper.title if paper.title else ""
-        sentence_embeddings = self.sent2vec_model.embed_sentences(sentences)
-        classes_all_info_expression = self.sentence_classifiers["expression"]["all_info"].predict(sentence_embeddings)
-        classes_curatable_expression = self.sentence_classifiers["expression"]["curatable"].predict(sentence_embeddings)
-        classes_language_expression = self.sentence_classifiers["expression"]["language"].predict(sentence_embeddings)
-        classes_all_info_kinase = self.sentence_classifiers["kinase"]["all_info"].predict(sentence_embeddings)
-        classes_curatable_kinase = self.sentence_classifiers["kinase"]["curatable"].predict(sentence_embeddings)
-        classes_language_kinase = self.sentence_classifiers["kinase"]["language"].predict(sentence_embeddings)
-        classes = {
-            "expression": {
-                "all_info": classes_all_info_expression.tolist(),
-                "curatable": classes_curatable_expression.tolist(),
-                "language": classes_language_expression.tolist()
-            },
-            "kinase": {
-                "all_info": classes_all_info_kinase.tolist(),
-                "curatable": classes_curatable_kinase.tolist(),
-                "language": classes_language_kinase.tolist()
-            }
-        }
-        return fulltext, sentences, json.dumps(classes)
+        res = requests.post(f"{os.environ['SENTENCE_CLASSIFICATION_API']}/api/sentence_classification/"
+                            f"classify_sentences",
+                            {"sentences": sentences})
+        return fulltext, sentences, json.dumps(res.json()["classes"])
 
     def on_post(self, req, resp, req_type):
         with self.db:
