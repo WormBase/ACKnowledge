@@ -44,15 +44,15 @@ const SentenceClassification = () => {
                             <Form.Check inline label="Negative" name="group2" type="radio" onClick={()=> setResultType(0)}/>
                             <br/>
                             {queryRes.data.data.fulltext ?
-                                <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
-                                    <Tab eventKey="home" title="Gene Expression">
+                                <Tabs defaultActiveKey="expression" id="uncontrolled-tab-example">
+                                    <Tab eventKey="expression" title="Gene Expression">
                                         <Table>
                                             {queryRes.data.data.sentences.filter((sent, idx) =>
                                                 queryRes.data.data.classes["expression"][classifierType][idx] === resultType).map(sent => <tr><td>{sent}</td></tr>)
                                             }
                                         </Table>
                                     </Tab>
-                                    <Tab eventKey="profile" title="Kinase Activity">
+                                    <Tab eventKey="kinase" title="Kinase Activity">
                                         <Table>
                                             {queryRes.data.data.sentences.filter((sent, idx) =>
                                                 queryRes.data.data.classes["kinase"][classifierType][idx] === resultType).map(sent => <tr><td>{sent}</td></tr>)
