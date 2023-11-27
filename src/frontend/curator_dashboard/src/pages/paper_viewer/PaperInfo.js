@@ -6,12 +6,19 @@ import {useSelector} from "react-redux";
 import Button from "react-bootstrap/Button";
 import {downloadCSVSpreadsheet} from "../../lib/file";
 import {Card, Spinner} from "react-bootstrap";
+import {IndexLinkContainer} from "react-router-bootstrap";
 
 const PaperInfo = () => {
     const paperID = useSelector((state) => state.paperID);
     const [isSpreadsheetLoading, setIsSpreadsheetLoading] = useState(false);
     const queryRes = useQuery('paperData' + paperID, () =>
         axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/status", {paper_id: paperID}));
+    let url = document.location.toString();
+    let args = "";
+    if (url.match('\\?')) {
+        args = "?" + url.split('?')[1]
+    }
+
     return (
         <div>
             <Card>
@@ -28,6 +35,11 @@ const PaperInfo = () => {
                         setIsSpreadsheetLoading(true);
                         downloadCSVSpreadsheet(paperID).finally(() => setIsSpreadsheetLoading(false));
                     }} variant="outline-primary">Download manual submission form {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
+                    <br/>
+                    <IndexLinkContainer to={"sentence_classification" + args}
+                                        active={true}>
+                        <a className="aw"><h6>Sentence Level Classification</h6></a>
+                    </IndexLinkContainer>
                 </Card.Body>
             </Card>
         </div>
