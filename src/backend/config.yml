@@ -37,6 +37,7 @@ emails:
                       Best Wishes,<br/>
                       WormBase<br/>
                       <br/>
+                      <br/>
                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
                       Are you planning to attend The <a href='https://genetics-gsa.org/tagc-2024/'>Allied Genetics Conference (TAGC)</a> in Washington in March? If so, <br/>
                       come to the WormBase booth to learn more about the ACKnowledge project and community curation. <br/>
@@ -44,13 +45,8 @@ emails:
                       form and filling out a brief survey. To participate in the challenge sign up <a href='https://docs.google.com/forms/d/e/1FAIpQLSfWjVF0tUkg2iSx6sceaeQsr2QSnVsm4rnV0vUF2ypkeDKLsw/viewform'>here</a>. We look <br/>
                       forward to seeing you next March!
                       <br/>
-                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                      We are happy to announce that we’ve released a new version of the ACKnowledge form (formerly known as Author First Pass).<br/>
-                      We’ve improved our methods for identifying relevant genes and alleles, and added an FAQs section
-                      to help guide you through the process. <br/> Full details are available in the
-                      <a href=\"https://github.com/WormBase/ACKnowledge/tree/master#release-notes\">V4 Release Notes</a>.<br/>
-                      Thank you for your participation and feedback; we look forward to seeing your future submissions!<br/>
                       <br/>
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
                       The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>"
 
   subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
