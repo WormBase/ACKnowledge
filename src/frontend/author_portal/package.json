@@ -10,7 +10,7 @@
     "paginated-list": "^2.0.8",
     "axios": "^0.22.0",
     "lodash": "^4.17.21",
-    "query-string": "latest",
+    "query-string": "7.0.1",
     "react": "^16.8.6",
     "react-bootstrap": "^1.6.4",
     "react-dom": "^16.8.6",
