@@ -36,9 +36,10 @@ const PaperInfo = () => {
                         downloadCSVSpreadsheet(paperID).finally(() => setIsSpreadsheetLoading(false));
                     }} variant="outline-primary">Download manual submission form {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
                     <br/>
+                    <br/>
                     <IndexLinkContainer to={"sentence_classification" + args}
                                         active={true}>
-                        <a className="aw"><h6>Sentence Level Classification</h6></a>
+                        <a><h6>Sentence Level Classification</h6></a>
                     </IndexLinkContainer>
                 </Card.Body>
             </Card>
