@@ -89,12 +89,12 @@ else:
                              password=os.environ['DB_PASSWD'], host=os.environ['DB_HOST'])
     sentence_classifier_path = "/var/sentence_classification_models"
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager,
-                                              admin_emails=os.environ['ADMIN_EMAILS'].split(','),
+                                              admin_emails=os.environ['ADMINS'].split(','),
                                               email_passwd=os.environ['EMAIL_PASSWD'],
                                               afp_base_url=os.environ['AFP_BASE_URL'], test=False)
     app.add_route('/api/write', feedback_form_writer)
     feedback_form_reader = FeedbackFormReader(db_manager=db_manager,
-                                              admin_emails=os.environ['ADMIN_EMAILS'].split(','),
+                                              admin_emails=os.environ['ADMINS'].split(','),
                                               email_passwd=os.environ['EMAIL_PASSWD'])
     app.add_route('/api/read', feedback_form_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
