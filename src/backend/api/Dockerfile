@@ -28,6 +28,6 @@ ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
 EXPOSE ${PORT}
 
-CMD gunicorn -b unix:/usr/src/app/acknowledge.sock -t 1800 src.backend.api.afp_api:app >> /var/log/afp_api.log 2>&1
+CMD gunicorn -b 0.0.0.0:8001 -t 1800 src.backend.api.afp_api:app >> /var/log/afp_api.log 2>&1
 
 #CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -w ${TAZENDRA_USER} -z ${TAZENDRA_PASSWORD} ${DEV_MODE} -l ${LOG_FILE} -L DEBUG -c ${SENTENCE_CLASSIFICATION_API} >> ${INFO_FILE} 2>&1
