@@ -85,24 +85,24 @@ else:
     logging.basicConfig(filename='/var/log/afp.log', level='INFO',
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
     app = falcon.App(middleware=[HandleCORS()])
-    db_manager = WBDBManager(dbname=os.environ['AFP_DB_NAME'], user=os.environ['AFP_DB_USER'],
-                             password=os.environ['AFP_DB_PASSWD'], host=os.environ['AFP_DB_HOST'])
+    db_manager = WBDBManager(dbname=os.environ['DB_NAME'], user=os.environ['DB_USER'],
+                             password=os.environ['DB_PASSWD'], host=os.environ['DB_HOST'])
     sentence_classifier_path = "/var/sentence_classification_models"
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager,
-                                              admin_emails=os.environ['AFP_ADMIN_EMAILS'].split(','),
-                                              email_passwd=os.environ['AFP_EMAIL_PASSWD'],
+                                              admin_emails=os.environ['ADMIN_EMAILS'].split(','),
+                                              email_passwd=os.environ['EMAIL_PASSWD'],
                                               afp_base_url=os.environ['AFP_BASE_URL'], test=False)
     app.add_route('/api/write', feedback_form_writer)
     feedback_form_reader = FeedbackFormReader(db_manager=db_manager,
-                                              admin_emails=os.environ['AFP_ADMIN_EMAILS'].split(','),
-                                              email_passwd=os.environ['AFP_EMAIL_PASSWD'])
+                                              admin_emails=os.environ['ADMIN_EMAILS'].split(','),
+                                              email_passwd=os.environ['EMAIL_PASSWD'])
     app.add_route('/api/read', feedback_form_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=os.environ['AFP_BASE_URL'],
-                                                      tazendra_username=os.environ['AFP_TAZENDRA_USER'],
-                                                      tazendra_password=os.environ['AFP_TAZENDRA_PASSWORD'])
+                                                      tazendra_username=os.environ['TAZENDRA_USER'],
+                                                      tazendra_password=os.environ['TAZENDRA_PASSWORD'])
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager,
                                                   afp_base_url=os.environ['AFP_BASE_URL'],
-                                                  email_passwd=os.environ['AFP_EMAIL_PASSWD'])
+                                                  email_passwd=os.environ['EMAIL_PASSWD'])
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
