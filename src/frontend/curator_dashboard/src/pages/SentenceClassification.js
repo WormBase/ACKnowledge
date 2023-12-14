@@ -53,8 +53,8 @@ const SentenceClassification = () => {
                             <h6>Datatype</h6>
                             <Form.Control as="select" value={dataType}
                                           onChange={(e) => setDataType(e.target.value)}>
-                                <option>Expression</option>
-                                <option>Kinase Activity</option>
+                                <option value="expression">Expression</option>
+                                <option value="kinase">Kinase Activity</option>
                             </Form.Control>
                             <br/>
                             <Button size="sm" onClick={() => {
