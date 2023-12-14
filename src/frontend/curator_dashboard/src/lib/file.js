@@ -110,7 +110,7 @@ export const downloadCSVSpreadsheet = async (paperID) => {
 }
 
 export const downloadSentenceClassificationCSV = async (paperID, data, dataType) => {
-        let formContent = "SENTENCE\tHAS_ALL_INFO_FOR_CURATION\tIS_CURATABLE\tCONTAINS_LANGUAGE\n";
-        data.sentences.forEach((sentence, idx) => formContent += "\"" + sentence + "\"\t" + Boolean(data.classes[dataType]['all_info'][idx]) + "\t" + Boolean(data.classes[dataType]['curatable'][idx]) + "\t" + Boolean(data.classes[dataType]['language'][idx]) + "\t\n");
+        let formContent = "SENTENCE\tCOUNTER\tHAS_ALL_INFO_FOR_CURATION\tIS_CURATABLE\tCONTAINS_LANGUAGE\n";
+        data.sentences.forEach((sentence, idx) => formContent += "\"" + sentence + "\"\t" + data.counters[idx] + "\t" + Boolean(data.classes[dataType]['all_info'][idx]) + "\t" + Boolean(data.classes[dataType]['curatable'][idx]) + "\t" + Boolean(data.classes[dataType]['language'][idx]) + "\t\n");
         downloadFile(formContent, "Sentence_level_classification_" + dataType + "_" + paperID, "text/plain", "csv");
 }

@@ -65,11 +65,12 @@ const SentenceClassification = () => {
                             <br/>
                             {queryRes.data.data.fulltext ?
                                 <Table>
-                                    {queryRes.data.data.sentences.filter((sent, idx) =>
-                                        queryRes.data.data.classes[dataType][classifierType][idx] === resultType).map(sent =>
+                                    <th>Sentence</th><th>Counter</th>
+                                    {queryRes.data.data.sentences.map((sent, idx) =>
+                                        queryRes.data.data.classes[dataType][classifierType][idx] === resultType ?
                                         <tr>
-                                            <td>{sent}</td>
-                                        </tr>)
+                                            <td>{sent}</td><td>{queryRes.data.data.counters[idx]}</td>
+                                        </tr> : null )
                                     }
                                 </Table>
                                 : null

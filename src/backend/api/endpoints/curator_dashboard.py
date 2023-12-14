@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from collections import Counter
 
 import requests
 import numpy as np
@@ -179,10 +180,13 @@ class CuratorDashboardReader:
         sentences = [sentence for sentence in sentences if len(sentence) > 20 and len(sentence.split(" ")) > 2]
         paper.abstract = paper.abstract if paper.abstract else ""
         paper.title = paper.title if paper.title else ""
+        counter = Counter(sentences)
+        sentences = sorted(list(set(sentences)))
+        counter_list = [counter[sentence] for sentence in sentences]
         res = requests.post(f"{os.environ['SENTENCE_CLASSIFICATION_API']}/api/sentence_classification/"
                             f"classify_sentences",
                             {"sentences": sentences})
-        return fulltext, sentences, json.dumps(res.json()["classes"])
+        return fulltext, sentences, counter_list, json.dumps(res.json()["classes"])
 
     def on_post(self, req, resp, req_type):
         with self.db:
@@ -282,10 +286,10 @@ class CuratorDashboardReader:
                     resp.body = '{{"afp_comments": {}}}'.format(comments)
                     resp.status = falcon.HTTP_200
                 elif req_type == "converted_text":
-                    fulltext, sentences, classes = self.get_text_from_pdfs(paper_id)
+                    fulltext, sentences, counters, classes = self.get_text_from_pdfs(paper_id)
                     sentences = ["\"" + sentence + "\"" for sentence in sentences]
                     resp.body = (f'{{"fulltext": "{fulltext}", "sentences": [{", ".join(sentences)}],'
-                                 f' "classes": {classes}}}')
+                                 f' "counters": {counters}, "classes": {classes}}}')
                     resp.status = falcon.HTTP_200
                 else:
                     raise falcon.HTTPError(falcon.HTTP_NOT_FOUND)
