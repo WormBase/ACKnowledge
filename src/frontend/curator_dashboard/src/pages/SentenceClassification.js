@@ -8,7 +8,7 @@ import PaperNotLoaded from "./paper_viewer/PaperNotLoaded";
 import axios from "axios";
 import {useQuery} from "react-query";
 import Form from "react-bootstrap/Form";
-import {downloadSentenceClassificationCSV} from "../lib/file";
+import {downloadSentenceClassificationTSV} from "../lib/file";
 
 
 const SentenceClassification = () => {
@@ -59,8 +59,8 @@ const SentenceClassification = () => {
                             <br/>
                             <Button size="sm" onClick={() => {
                                 setIsSpreadsheetLoading(true);
-                                downloadSentenceClassificationCSV(paperID, queryRes.data.data, dataType).finally(() => setIsSpreadsheetLoading(false));
-                            }} variant="outline-primary">Download as CSV {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
+                                downloadSentenceClassificationTSV(paperID, queryRes.data.data, dataType).finally(() => setIsSpreadsheetLoading(false));
+                            }} variant="outline-primary">Download as TSV {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
                             <br/>
                             <br/>
                             {queryRes.data.data.fulltext ?
