@@ -92,7 +92,7 @@ else:
                                               admin_emails=os.environ['ADMINS'].split(','),
                                               email_passwd=os.environ['EMAIL_PASSWD'],
                                               afp_base_url=os.environ['AFP_BASE_URL'],
-                                              test=os.environ.get('DEV_MODE', False))
+                                              test=os.environ.get('DEV_MODE', False) in [True, 'True'])
     app.add_route('/api/write', feedback_form_writer)
     feedback_form_reader = FeedbackFormReader(db_manager=db_manager,
                                               admin_emails=os.environ['ADMINS'].split(','),
