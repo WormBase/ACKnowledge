@@ -79,6 +79,7 @@ class EmailManager(object):
     def send_new_submission_notification_email_to_admin(self, paper_id, paper_title, paper_journal, paper_email,
                                                         recipients: List[str], dashboard_url, form_url,
                                                         test: bool = False):
+        logger.info("Sending email to admins: " + ", ".join(recipients))
         content = self.content_email_new_sub.format(paper_id, paper_title, paper_journal, paper_email,
                                                     dashboard_url, form_url)
         subject = self.subject_email_new_sub
