@@ -171,6 +171,7 @@ class CuratorDashboardReader:
         fulltext = fulltext.replace('-\n', '')
         fulltext = fulltext.replace('.\n', '. ')
         fulltext = fulltext.replace('\n', ' ')
+        fulltext = fulltext.replace('"', '\"')
         sentences = sent_tokenize(fulltext)
         sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
         fulltext = fulltext.replace('\n', ' ')
