@@ -33,6 +33,9 @@ const RespRateTSChart = () => {
                 }
             }) : []
         },
+        yAxis: {
+            min: 0
+        },
         series: [
             {
                 name: "Response rate (%)",
