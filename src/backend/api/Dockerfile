@@ -25,7 +25,8 @@ ENV TAZENDRA_PASSWORD=""
 ENV DEV_MODE=""
 ENV LOG_FILE=/var/log/afp_db_api.log
 ENV INFO_FILE=/var/log/afp_db_api.info
-ENV SENTENCE_CLASSIFICATION_API=http://textpressocentral.org:8002
+ENV SENTENCE_CLASSIFICATION_API=http://cervino.caltech.edu:8002
+ENV GROBID_API_URL=http://cervino.caltech.edu:8070/api
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
