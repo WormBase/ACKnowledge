@@ -1,6 +1,9 @@
 FROM python:3.8-slim
 
 WORKDIR /usr/src/app/
+
+RUN apt-get update && apt-get install -y git
+
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
 RUN pip3 install gunicorn
