@@ -157,7 +157,7 @@ class CuratorDashboardReader:
         cm.load_from_wb_database(
             self.db.db_name, self.db.user, self.db.password, self.db.host,
             must_be_autclass_flagged=True, exclude_no_main_text=True,
-            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id])
+            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id], main_file_only=True)
         paper = cm.get_paper(paper_id)
         fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True,
                                        remove_sections=[PaperSections.RELATED_WORK,
@@ -172,6 +172,8 @@ class CuratorDashboardReader:
         fulltext = fulltext.replace('.\n', '. ')
         fulltext = fulltext.replace('\n', ' ')
         fulltext = fulltext.replace('"', '\'')
+        if fulltext.endswith(".."):
+            fulltext = fulltext[:-1]
         sentences = sent_tokenize(fulltext)
         sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
         fulltext = fulltext.replace('\n', ' ')
