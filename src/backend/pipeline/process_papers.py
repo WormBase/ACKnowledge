@@ -48,7 +48,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://textpressocentral.org:18080/v1/textpresso/api/", api_token=args.tpc_token,
+        api_url="https://www.alliancegenome.org/textpresso/wb/v1/textpresso/api/", api_token=args.tpc_token,
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
     if args.paper_ids:
