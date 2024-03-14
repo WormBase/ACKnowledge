@@ -6,6 +6,6 @@ requests
 numpy
 dataclasses
 pyyaml
-wbtools==2.0.3
+wbtools==2.0.4
 scikit-learn
 sent2vec-prebuilt
