@@ -160,6 +160,7 @@ class CuratorDashboardReader:
             exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=[paper_id], main_file_only=True)
         paper = cm.get_paper(paper_id)
         sentences = paper.get_text_docs(include_supplemental=False, split_sentences=True, return_concatenated=False)
+        sentences = [sentence.replace('"', "'") for sentence in sentences]
         fulltext = " ".join(sentences)
         sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
         fulltext = fulltext.replace('\n', ' ')
