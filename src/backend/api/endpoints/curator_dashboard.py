@@ -13,7 +13,7 @@ from nltk import sent_tokenize
 from wbtools.db.dbmanager import WBDBManager
 from wbtools.lib.nlp.common import EntityType, PaperSections
 from wbtools.literature.corpus import CorpusManager
-
+from wbtools.literature.paper import WBPaper
 
 logger = logging.getLogger(__name__)
 
@@ -187,16 +187,18 @@ class CuratorDashboardReader:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
                 if req_type == "status":
+                    paper = WBPaper(paper_id)
+                    paper.load_bib_info()
                     afp_processed = self.db.afp.paper_is_afp_processed(paper_id)
                     afp_processed_date = self.db.afp.get_processed_date(paper_id)
                     author_submitted = self.db.afp.author_has_submitted(paper_id)
                     author_modified = self.db.afp.author_has_modified(paper_id)
                     afp_form_link = self.db.afp.get_afp_form_link(paper_id, self.afp_base_url)
-                    title = self.db.paper.get_paper_title(paper_id)
-                    journal = self.db.paper.get_paper_journal(paper_id)
+                    title = paper.title
+                    journal = paper.journal
                     email = self.db.afp.get_contact_emails(paper_id)
-                    pmid = self.db.paper.get_pmid(paper_id)
-                    doi = self.db.paper.get_doi(paper_id)
+                    pmid = paper.pmid
+                    doi = paper.doi
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
                                 '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}", "pmid": "{}", ' \
                                 '"doi": "{}", "afp_processed_date": "{}"}}'.format(
@@ -338,7 +340,12 @@ class CuratorDashboardReader:
                                                  limit=count,
                                                  tazendra_user=self.tazendra_username,
                                                  tazendra_password=self.tazendra_password)
-                        pap_titles = self.db.paper.get_papers_titles(paper_ids=ids) if ids else []
+                        pap_titles = {}
+                        for paper_id in ids:
+                            paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
+                            paper_obj.load_bib_info()
+                            pap_titles[paper_id] = paper_obj.title
+                        #pap_titles = self.db.paper.get_papers_titles(paper_ids=ids) if ids else []
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "submitted":
@@ -348,16 +355,21 @@ class CuratorDashboardReader:
                             must_be_curation_negative_data_types=curation_filters,
                             combine_filters=combine_filters, count=True, tazendra_user=self.tazendra_username,
                             tazendra_password=self.tazendra_password)
+                        ids = self.db.afp.get_paper_ids_afp_full_submission(
+                            must_be_autclass_positive_data_types=svm_filters,
+                            must_be_positive_manual_flag_data_types=manual_filters,
+                            must_be_curation_negative_data_types=curation_filters,
+                            combine_filters=combine_filters,
+                            offset=from_offset,
+                            limit=count, tazendra_user=self.tazendra_username,
+                            tazendra_password=self.tazendra_password)
+                        pap_titles = {}
+                        for paper_id in ids:
+                            paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
+                            paper_obj.load_bib_info()
+                            pap_titles[paper_id] = paper_obj.title
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.afp.get_paper_ids_afp_full_submission(
-                                                 must_be_autclass_positive_data_types=svm_filters,
-                                                 must_be_positive_manual_flag_data_types=manual_filters,
-                                                 must_be_curation_negative_data_types=curation_filters,
-                                                 combine_filters=combine_filters,
-                                                 offset=from_offset,
-                                                 limit=count, tazendra_user=self.tazendra_username,
-                                                 tazendra_password=self.tazendra_password)])
+                                             pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "partial":
                         num_papers = self.db.afp.get_paper_ids_afp_partial_submission(
                             must_be_autclass_positive_data_types=svm_filters,
@@ -365,16 +377,21 @@ class CuratorDashboardReader:
                             must_be_curation_negative_data_types=curation_filters,
                             combine_filters=combine_filters, count=True, tazendra_user=self.tazendra_username,
                             tazendra_password=self.tazendra_password)
+                        ids = self.db.afp.get_paper_ids_afp_partial_submission(
+                            must_be_autclass_positive_data_types=svm_filters,
+                            must_be_positive_manual_flag_data_types=manual_filters,
+                            must_be_curation_negative_data_types=curation_filters,
+                            combine_filters=combine_filters,
+                            offset=from_offset,
+                            limit=count, tazendra_user=self.tazendra_username,
+                            tazendra_password=self.tazendra_password)
+                        pap_titles = {}
+                        for paper_id in ids:
+                            paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
+                            paper_obj.load_bib_info()
+                            pap_titles[paper_id] = paper_obj.title
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
-                                             self.db.paper.get_paper_title(pap_id) + "\"}" for pap_id in
-                                             self.db.afp.get_paper_ids_afp_partial_submission(
-                                                 must_be_autclass_positive_data_types=svm_filters,
-                                                 must_be_positive_manual_flag_data_types=manual_filters,
-                                                 must_be_curation_negative_data_types=curation_filters,
-                                                 combine_filters=combine_filters,
-                                                 offset=from_offset,
-                                                 limit=count, tazendra_user=self.tazendra_username,
-                                                 tazendra_password=self.tazendra_password)])
+                                             pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "empty":
                         num_papers = self.db.afp.get_num_papers_no_entities()
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
