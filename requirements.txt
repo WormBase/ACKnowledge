@@ -6,7 +6,7 @@ requests
 numpy
 dataclasses
 pyyaml
-wbtools==3.0.1
+wbtools==3.0.2
 #git+https://github.com/WormBase/wbtools.git@develop
 scikit-learn
 sent2vec-prebuilt
