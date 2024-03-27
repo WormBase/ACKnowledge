@@ -187,7 +187,7 @@ class CuratorDashboardReader:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
                 if req_type == "status":
-                    paper = WBPaper(paper_id)
+                    paper = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
                     paper.load_bib_info()
                     afp_processed = self.db.afp.paper_is_afp_processed(paper_id)
                     afp_processed_date = self.db.afp.get_processed_date(paper_id)
