@@ -344,7 +344,7 @@ class CuratorDashboardReader:
                         for paper_id in ids:
                             paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
                             paper_obj.load_bib_info()
-                            pap_titles[paper_id] = paper_obj.title
+                            pap_titles[paper_id] = paper_obj.title.replace("\"", "'")
                         #pap_titles = self.db.paper.get_papers_titles(paper_ids=ids) if ids else []
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              pap_titles[pap_id] + "\"}" for pap_id in ids])
@@ -367,7 +367,7 @@ class CuratorDashboardReader:
                         for paper_id in ids:
                             paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
                             paper_obj.load_bib_info()
-                            pap_titles[paper_id] = paper_obj.title
+                            pap_titles[paper_id] = paper_obj.title.replace("\"", "'")
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "partial":
@@ -389,7 +389,7 @@ class CuratorDashboardReader:
                         for paper_id in ids:
                             paper_obj = WBPaper(paper_id=paper_id, db_manager=self.db.paper)
                             paper_obj.load_bib_info()
-                            pap_titles[paper_id] = paper_obj.title
+                            pap_titles[paper_id] = paper_obj.title.replace("\"", "'")
                         list_ids = ",".join(["{\"paper_id\":\"" + pap_id + "\",\"title\":\"" +
                                              pap_titles[pap_id] + "\"}" for pap_id in ids])
                     elif list_type == "empty":
