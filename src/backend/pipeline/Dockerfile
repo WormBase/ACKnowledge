@@ -21,6 +21,7 @@ ENV TAZENDRA_PASSWD=""
 ENV TPC_TOKEN=""
 ENV SSH_USER=""
 ENV SSH_PASSWD=""
+ENV GROBID_API_URL="http://cervino.caltech.edu:8070/api"
 
 ADD src/backend/pipeline/crontab /etc/cron.d/afp-cron
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
