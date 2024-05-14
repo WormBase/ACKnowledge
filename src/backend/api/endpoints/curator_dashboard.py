@@ -194,7 +194,7 @@ class CuratorDashboardReader:
                     author_submitted = self.db.afp.author_has_submitted(paper_id)
                     author_modified = self.db.afp.author_has_modified(paper_id)
                     afp_form_link = self.db.afp.get_afp_form_link(paper_id, self.afp_base_url)
-                    title = paper.title
+                    title = paper.title.replace("\"", "'")
                     journal = paper.journal
                     email = self.db.afp.get_contact_emails(paper_id)
                     pmid = paper.pmid
