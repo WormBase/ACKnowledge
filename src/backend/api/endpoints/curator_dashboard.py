@@ -161,13 +161,11 @@ class CuratorDashboardReader:
         paper = cm.get_paper(paper_id)
         sentences = paper.get_text_docs(include_supplemental=False, split_sentences=True, return_concatenated=False)
         sentences = [sentence.replace('"', "'") for sentence in sentences]
-        fulltext = " ".join(sentences)
-        sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
-        fulltext = fulltext.replace('\n', ' ')
-        fulltext = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', fulltext)
         sentences = [sentence.replace('\n', ' ') for sentence in sentences]
         sentences = [re.sub(r'[\x00-\x1F\x7F-\x9F]', '', sentence) for sentence in sentences]
-        sentences = [sentence for sentence in sentences if len(sentence) > 10 and len(sentence.split(" ")) > 2]
+        fulltext = " ".join(sentences)
+        sentences = [sent for sent in sentences if np.average([len(w) for w in sent.split(' ')]) > 2]
+        sentences = [sentence for sentence in sentences if len(sentence) > 20 and len(sentence.split(" ")) > 2]
         paper.abstract = paper.abstract if paper.abstract else ""
         paper.title = paper.title if paper.title else ""
         counter = Counter(sentences)
