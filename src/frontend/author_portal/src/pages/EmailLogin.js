@@ -37,7 +37,8 @@ const EmailLogin = () => {
                                 can access the list of your papers processed by ACKnowledge by providing
                                 the email address at which you received ACKnowledge contact emails. <br/><br/>
 
-                                The WormBase ACKnowledge pipeline is a way for WormBase to identify entities
+                                <a href="https://wormbase.github.io/ACKnowledge/">The WormBase ACKnowledge
+                                    pipeline</a> is a way for WormBase to identify entities
                                 (e.g. genes) and data types (e.g. genetic interactions) found in newly published
                                 papers. The pipeline uses the Textpresso Central text mining system and approved
                                 C. elegans nomenclature to flag papers for curation by WormBase curators.
