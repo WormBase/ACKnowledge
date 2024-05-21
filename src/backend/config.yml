@@ -7,7 +7,7 @@ emails:
 
   subject_to_author: "Help Wormbase curate your paper WBPaper{}"
   content_to_author: "Dear Author,<br/>
-                      We have identified you as an author for the recently published paper:<br/>
+                      We have identified you as an author for the paper:<br/>
                       <br/>
                       \"{}\", {}<br/>
                       <br/>
@@ -91,7 +91,7 @@ emails:
   content_reminder: "Dear Author,<br/>
                      <br/>
                      We recently sent an email asking for your help in flagging entities and data types for WormBase curation for the<br/>
-                     recently published paper:<br/>
+                      paper:<br/>
                      <br/>
                      \"{}\", {}<br/>
                      <br/>
