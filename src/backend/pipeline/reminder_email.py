@@ -36,26 +36,24 @@ def main():
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     # first reminder after one month
-    for options in (((1, 2), False), ((2, 3), True)):
-        with db_manager:
-            for paper_id_email_arr in db_manager.afp.get_papers_emails_no_submission_emailed_between(options[0][0],
-                                                                                                     options[0][1]):
-                paper_id = paper_id_email_arr[0]
-                author_email = paper_id_email_arr[1]
-                paper_title = db_manager.paper.get_paper_title(paper_id)
-                paper_journal = db_manager.paper.get_paper_journal(paper_id)
-                afp_link = db_manager.afp.get_afp_form_link(paper_id, args.afp_base_url)
-                if afp_link:
-                    # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
-                    # tiny_url = data.read().decode('utf-8')
-                    if not args.dev_mode:
-                        email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
-                                                              paper_journal=paper_journal, afp_link=afp_link,
-                                                              recipients=[author_email], final_call=options[1])
-                        logger.info("going to sleep for ~15 minutes")
-                        time.sleep(1000)
-                else:
-                    logger.warning("skipping email address removed from db")
+    with db_manager:
+        for paper_id_email_arr in db_manager.afp.get_papers_emails_no_submission_emailed_between(1, 5):
+            paper_id = paper_id_email_arr[0]
+            author_email = paper_id_email_arr[1]
+            paper_title = db_manager.paper.get_paper_title(paper_id)
+            paper_journal = db_manager.paper.get_paper_journal(paper_id)
+            afp_link = db_manager.afp.get_afp_form_link(paper_id, args.afp_base_url)
+            if afp_link:
+                # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
+                # tiny_url = data.read().decode('utf-8')
+                if not args.dev_mode:
+                    email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
+                                                          paper_journal=paper_journal, afp_link=afp_link,
+                                                          recipients=[author_email], final_call=False)
+                    logger.info("going to sleep for ~15 minutes")
+                    time.sleep(1000)
+            else:
+                logger.warning("skipping email address removed from db")
     logger.info("Pipeline finished successfully")
 
 
