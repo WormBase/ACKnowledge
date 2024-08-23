@@ -7,16 +7,18 @@ emails:
 
   subject_to_author: "Help Wormbase curate your paper WBPaper{}"
   content_to_author: "Dear Author,<br/>
-                      We have identified you as an author for the paper:<br/>
+                      Congratulations on your recent publication!<br/>
                       <br/>
                       \"{}\", {}<br/>
                       <br/>
-                      We are contacting you for help in alerting a WormBase curator to data that need to be extracted<br/>
+                      <a href='https://wormbase.org'>WormBase</a> is contacting you for help in alerting our biocurators to data that need to be extracted<br/>
                       from your paper and entered into our database.<br/>
+                      <br/>
+                      This process is part of our <a href='https://wormbase.github.io/ACKnowledge/'>ACKnowledge</a> community curation project funded by the <a href='https://www.nlm.nih.gov/'>National Library of Medicine</a>.<br/>
                       <br/>
                       If you would like to flag* your paper for detailed curation, please click <a href={}>here</a>.<br/>
                       <br/>
-                      *Flagging your paper involves validating automatically extracted entities and identifying the types of data present, and should take <20 minutes.<br/>
+                      *Flagging your paper involves validating automatically extracted entities and identifying the types of data present.<br/>
                       <br/>
                       Please feel free to forward the link to a co-author if you are unable to complete the form at this time.<br/>
                       <br/>
