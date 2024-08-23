@@ -18,6 +18,7 @@ const TabbedPaperLists = () => {
                     <p>
                         Below is a list of papers for which you are an author and that have been processed by the new WormBase ACKnowledge data flagging pipeline.
                     </p>
+                    <p>Papers published prior to 2019 may not be listed. If you’d like to curate an older paper (pre-2019), please <a href="mailto:help.acknowledge@wormbase.org">contact us</a>.</p>
                     <p>To verify the flagged data, please click on the link to your paper.</p>
                     <p>Thank you for helping WormBase curate your paper!</p>
                 </Col>
