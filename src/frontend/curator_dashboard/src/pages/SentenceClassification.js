@@ -17,7 +17,6 @@ const SentenceClassification = () => {
     const [resultType, setResultType] = useState(1);
     const [dataType, setDataType] = useState('expression');
     const [isSpreadsheetLoading, setIsSpreadsheetLoading] = useState(false);
-    const [isQueryEnabled, setIsQueryEnabled] = useState(false);
 
     useEffect(() => {
         let paperID;
@@ -26,7 +25,6 @@ const SentenceClassification = () => {
             paperID = queryString.parse(document.location.search).paper_id
         }
         dispatch(setSelectedPaperID(paperID));
-        setIsQueryEnabled(true);
     }, [dispatch]);
 
     const paperID = queryString.parse(document.location.search).paper_id;
@@ -35,7 +33,7 @@ const SentenceClassification = () => {
         {
             referchOnWindowFocus: false,
             staleTime: 1000 * 60 * 5,
-            enabled: isQueryEnabled
+            enabled: !!paperID
         });
 
     return(
