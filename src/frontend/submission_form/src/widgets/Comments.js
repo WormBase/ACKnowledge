@@ -3,6 +3,7 @@ import {Button, FormControl, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {setComments} from "../redux/actions/commentsActions";
+import {setOtherCCContacts} from "../redux/actions/commentsActions";
 import {showSectionsNotCompleted} from "../redux/actions/displayActions";
 import {WIDGET} from "../constants";
 import {saveWidgetData} from "../redux/actions/widgetActions";
@@ -23,6 +24,7 @@ const Other = () => {
         interactionsSaved && phenotypesSaved && diseaseSaved
 
     const comments = useSelector((state) => state.comments.comments);
+    const otherCCContacts = useSelector((state) => state.comments.otherCCContacts);
     const person = useSelector((state) => state.person.person);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
@@ -111,6 +113,34 @@ const Other = () => {
                 <Panel>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3">
+                            Other Community Curation Contacts
+                        </Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <div className="container-fluid">
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    Have you received community curation requests from other groups or organizations?
+                                    If so, please specify from which organization and when.
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    <FormControl componentClass="textarea" multiple
+                                                 placeholder="Other community curation contacts"
+                                                 value={otherCCContacts}
+                                                 onChange={(event) => {
+                                                     dispatch(setOtherCCContacts(event.target.value))
+                                                 }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </Panel.Body>
+                </Panel>
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">
                             Please give us your feedback
                         </Panel.Title>
                     </Panel.Heading>
@@ -118,7 +148,8 @@ const Other = () => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Please let us know about your experience with this submission. What did you like? What can we do to make the process easier? Did we miss anything?
+                                    Please let us know about your experience with this submission. What did you like?
+                                    What can we do to make the process easier? Did we miss anything?
                                 </div>
                             </div>
                             <div className="row">
@@ -139,6 +170,7 @@ const Other = () => {
                     if (allOtherWidgetsSavedToDB) {
                         const payload = {
                             comments: comments,
+                            otherCCContacts: otherCCContacts,
                             person_id: "two" + person.personId,
                             passwd: paperPassword
                         };

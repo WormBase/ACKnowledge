@@ -153,6 +153,7 @@ class FeedbackFormWriter:
                 # comments
                 if "comments" in req.media:
                     self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
+                    self.db.afp.set_submitted_other_cc_contacts(comments=req.media["otherCCContacts"], paper_id=paper_id)
                     person_id = req.media["person_id"]
                     self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
