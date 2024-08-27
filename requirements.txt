@@ -12,3 +12,5 @@ scikit-learn
 sent2vec-prebuilt
 nltk~=3.6.3
 transformers~=4.35.2
+datasets
+optimum

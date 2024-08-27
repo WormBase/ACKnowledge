@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, FormControl, Spinner, Tab, Table, Tabs} from "react-bootstrap";
 import {withRouter} from "react-router-dom";
 import queryString from "query-string";
@@ -17,15 +17,26 @@ const SentenceClassification = () => {
     const [resultType, setResultType] = useState(1);
     const [dataType, setDataType] = useState('expression');
     const [isSpreadsheetLoading, setIsSpreadsheetLoading] = useState(false);
+    const [isQueryEnabled, setIsQueryEnabled] = useState(false);
 
-    let paperID = undefined;
-    let url = document.location.toString();
-    if (url.match("\\?")) {
-        paperID = queryString.parse(document.location.search).paper_id
-    }
-    dispatch(setSelectedPaperID(paperID));
-    const queryRes = useQuery('fulltext' + paperID, () =>
-        axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/converted_text", {paper_id: paperID}));
+    useEffect(() => {
+        let paperID;
+        let url = document.location.toString();
+        if (url.match("\\?")) {
+            paperID = queryString.parse(document.location.search).paper_id
+        }
+        dispatch(setSelectedPaperID(paperID));
+        setIsQueryEnabled(true);
+    }, [dispatch]);
+
+    const paperID = queryString.parse(document.location.search).paper_id;
+    const queryRes = useQuery(['fulltext', paperID], () =>
+            axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/converted_text", {paper_id: paperID}),
+        {
+            referchOnWindowFocus: false,
+            staleTime: 1000 * 60 * 5,
+            enabled: isQueryEnabled
+        });
 
     return(
         <div>
