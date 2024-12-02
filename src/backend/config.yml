@@ -139,7 +139,7 @@ ntt_extraction:
     #gene: ['act-1', 'cdc-42', 'dpy-7', 'eri-1', 'fem-1', 'ges-1', 'glp-4', 'him-5', 'hsp-16.2', 'lin-15B',
     #       'lin-35', 'lon-2', 'myo-2', 'myo-3', 'pha-1', 'pes-10', 'pie-1', 'rol-6', 'rrf-3', 'spe-11', 'sur-5',
     #       'tbb-2', 'unc-22', 'unc-54', 'unc-119', 'cbr-unc-119']
-    gene: []
+    gene: ['M3', 'M4']
     strain: ['M9', 'OH']
     allele: []
     transgene: []
