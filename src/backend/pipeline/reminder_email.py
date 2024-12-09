@@ -50,8 +50,8 @@ def main():
                     email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
                                                           paper_journal=paper_journal, afp_link=afp_link,
                                                           recipients=[author_email], final_call=False)
-                    logger.info("going to sleep for ~15 minutes")
-                    time.sleep(1000)
+                    logger.info("going to sleep for ~30 minutes")
+                    time.sleep(2000)
             else:
                 logger.warning("skipping email address removed from db")
     logger.info("Pipeline finished successfully")
