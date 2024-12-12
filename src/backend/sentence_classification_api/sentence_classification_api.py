@@ -147,7 +147,7 @@ def main():
     sentence_classification_reader = SentenceClassificationReader()
     app.add_route('/api/sentence_classification/{req_type}', sentence_classification_reader)
 
-    httpd = simple_server.make_server('0.0.0.0', int(8003), app)
+    httpd = simple_server.make_server('0.0.0.0', int(8002), app)
     httpd.serve_forever()
 
 
