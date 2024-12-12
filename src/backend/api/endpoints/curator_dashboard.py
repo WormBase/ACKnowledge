@@ -1,17 +1,14 @@
 import json
+import logging
 import os
 import re
 from collections import Counter
 
-import requests
-import numpy as np
-import sent2vec
 import falcon
-import logging
-
-from nltk import sent_tokenize
+import numpy as np
+import requests
 from wbtools.db.dbmanager import WBDBManager
-from wbtools.lib.nlp.common import EntityType, PaperSections
+from wbtools.lib.nlp.common import EntityType
 from wbtools.literature.corpus import CorpusManager
 from wbtools.literature.paper import WBPaper
 
