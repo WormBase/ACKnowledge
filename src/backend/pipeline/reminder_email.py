@@ -39,7 +39,7 @@ def main():
     with db_manager:
         for paper_id_email_arr in db_manager.afp.get_papers_emails_no_submission_emailed_between(1, 5):
             paper_id = paper_id_email_arr[0]
-            author_email = paper_id_email_arr[1]
+            authors_emails = paper_id_email_arr[1].split(" | ")
             paper_title = db_manager.paper.get_paper_title(paper_id)
             paper_journal = db_manager.paper.get_paper_journal(paper_id)
             afp_link = db_manager.afp.get_afp_form_link(paper_id, args.afp_base_url)
@@ -49,7 +49,7 @@ def main():
                 if not args.dev_mode:
                     email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
                                                           paper_journal=paper_journal, afp_link=afp_link,
-                                                          recipients=[author_email], final_call=False)
+                                                          recipients=authors_emails, final_call=False)
                     logger.info("going to sleep for ~30 minutes")
                     time.sleep(2000)
             else:
