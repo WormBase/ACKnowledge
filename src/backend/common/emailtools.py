@@ -54,7 +54,7 @@ class EmailManager(object):
             logger.info("Email sent to: " + ", ".join(recipients))
             server_ssl.quit()
         except Exception as e:
-            logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent.")
+            logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent. Exception message: " + str(e))
 
     def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
         content = self.content_email_to_author.format(paper_title, paper_journal, afp_link)
