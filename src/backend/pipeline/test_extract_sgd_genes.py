@@ -73,7 +73,7 @@ def main():
 
         logger.info("Storing matched SGD gene names in the database")
         with db_manager:
-            db_manager.generic.store_sgd_gene_list(paper_id=paper.paper_id, gene_list=meaningful_sgd_genes)
+            db_manager.afp.save_extracted_sgd_genes_to_db(paper_id=paper.paper_id, genes_sgd=meaningful_sgd_genes)
 
     logger.info("Test pipeline finished successfully")
 
