@@ -10,7 +10,8 @@ from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.api.endpoints.author_portal import AuthorPapersPageReader
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
-from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader
+from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader, PaperInfoReader, \
+    AutocompleteReader
 
 
 class HandleCORS(object):
@@ -63,6 +64,10 @@ def main():
     feedback_form_reader = FeedbackFormReader(db_manager=db_manager, admin_emails=args.admin_emails,
                                               email_passwd=args.email_passwd)
     app.add_route('/api/read', feedback_form_reader)
+    paper_info_reader = PaperInfoReader()
+    app.add_route('/api/read_paper_info', paper_info_reader)
+    autocomplete_reader = AutocompleteReader()
+    app.add_route('/api/read_autocomplete', autocomplete_reader)
     sentence_classifiers_path = "/var/sentence_classification_models/"
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=args.afp_base_url,

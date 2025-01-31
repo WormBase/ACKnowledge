@@ -27,6 +27,8 @@ ENV LOG_FILE=/var/log/afp_db_api.log
 ENV INFO_FILE=/var/log/afp_db_api.info
 ENV SENTENCE_CLASSIFICATION_API=http://cervino.caltech.edu:8003
 ENV GROBID_API_URL=http://cervino.caltech.edu:8070/api
+ENV PAPER_INFO_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper"
+ENV AUTOCOMPLETE_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR"
 
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 

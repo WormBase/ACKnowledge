@@ -1,4 +1,6 @@
 import logging
+import os
+
 import falcon
 import urllib.parse
 
@@ -11,6 +13,48 @@ from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import EmailManager
 
 logger = logging.getLogger(__name__)
+
+
+class PaperInfoReader:
+
+    def __init__(self):
+        self.base_url_autocomplete = os.getenv("PAPER_INFO_API", "https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper")
+
+    def on_get(self, req, resp):
+        paper_id = req.params["paper"]
+        paper_passwd = req.get_param("passwd")
+        if not paper_id or not paper_passwd:
+            raise falcon.HTTPBadRequest("Missing parameters", "Both 'paper' and 'passwd' parameters are required.")
+
+        url = f"{self.base_url_paper}&paper={paper_id}&passwd={paper_passwd}"
+        try:
+            data = urlopen(url)
+            resp.body = data.read().decode('utf-8')
+            resp.status = falcon.HTTP_200
+        except Exception as e:
+            logger.error(f"Error fetching paper data: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching paper data")
+
+
+class AutocompleteReader:
+
+    def __init__(self):
+        self.base_url_autocomplete = os.getenv("AUTOCOMPLETE_API", "https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR")
+
+    def on_get(self, req, resp):
+        search_type = req.get_param("objectType")
+        entity = req.get_param("userValue")
+        if not search_type or not entity:
+            raise falcon.HTTPBadRequest("Missing parameters", "Both 'objectType' and 'userValue' parameters are required.")
+
+        url = f"{self.base_url_autocomplete}&objectType={search_type}&userValue={entity}"
+        try:
+            data = urlopen(url)
+            resp.body = data.read().decode('utf-8')
+            resp.status = falcon.HTTP_200
+        except Exception as e:
+            logger.error(f"Error fetching autocomplete data: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching autocomplete data")
 
 
 class FeedbackFormReader:
