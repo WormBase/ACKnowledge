@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import csv
 
 from wbtools.db.dbmanager import WBDBManager
 from wbtools.lib.nlp.common import EntityType
@@ -27,6 +28,8 @@ def main():
     parser.add_argument("-t", "--textpresso-apitoken", metavar="tpc_token", dest="tpc_token", type=str)
     parser.add_argument("-i", "--paper-ids", metavar="paper_ids", dest="paper_ids", type=str, nargs="+",
                         help="list of WBPaper IDs to process")
+    parser.add_argument("-o", "--output-csv", metavar="output_csv", dest="output_csv", type=str, required=True,
+                        help="path to the output CSV file")
     args = parser.parse_args()
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
@@ -35,7 +38,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://www.alliancegenome.org/textpresso/sgs/v1/textpresso/api/", use_cache=True,
+        api_url="https://www.alliancegenome.org/textpresso/sgd/v1/textpresso/api/", use_cache=True,
         corpora=["S. cerevisiae"], api_token=args.tpc_token)
     cm = CorpusManager()
 
@@ -45,35 +48,35 @@ def main():
 
     sgd_gene_names = ntt_extractor.get_alliance_curated_entities(entity_type=EntityType.GENE, mod_abbreviation="SGD")
 
-    for paper in cm.get_all_papers():
-        logging.info("processing paper " + str(paper.paper_id))
-        fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
-        fulltext = fulltext.replace('\n', ' ')
-        paper.abstract = paper.abstract if paper.abstract else ""
-        paper.title = paper.title if paper.title else ""
-        title_abs = paper.title + " " + paper.abstract
+    with open(args.output_csv, mode='w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(["paper_id", "genes_extracted"])
 
-        logger.info("Extracting SGD gene names")
-        meaningful_sgd_genes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
-            keywords=sgd_gene_names,
-            text=fulltext,
-            lit_index=textpresso_lit_index,
-            match_uppercase=True,
-            min_matches=config["ntt_extraction"]["min_occurrences"]["gene"],
-            # blacklist=config["ntt_extraction"]["exclusion_list"]["gene"],
-            tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["gene"])
+        for paper in cm.get_all_papers():
+            logging.info("processing paper " + str(paper.paper_id))
+            fulltext = paper.get_text_docs(include_supplemental=True, tokenize=False, return_concatenated=True)
+            fulltext = fulltext.replace('\n', ' ')
+            paper.abstract = paper.abstract if paper.abstract else ""
+            paper.title = paper.title if paper.title else ""
+            title_abs = paper.title + " " + paper.abstract
 
-        meaningful_sgd_genes_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
-            keywords=sgd_gene_names,
-            text=title_abs,
-            # blacklist=config["ntt_extraction"]["exclusion_list"]["gene"],
-            match_uppercase=True)
+            logger.info("Extracting SGD gene names")
+            meaningful_sgd_genes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
+                keywords=sgd_gene_names,
+                text=fulltext,
+                lit_index=textpresso_lit_index,
+                match_uppercase=True,
+                min_matches=config["ntt_extraction"]["min_occurrences"]["gene"],
+                tfidf_threshold=config["ntt_extraction"]["min_tfidf"]["gene"])
 
-        meaningful_sgd_genes = list(set(meaningful_sgd_genes_fulltext) | set(meaningful_sgd_genes_title_abstract))
+            meaningful_sgd_genes_title_abstract = ntt_extractor.extract_meaningful_entities_by_keywords(
+                keywords=sgd_gene_names,
+                text=title_abs,
+                match_uppercase=True)
 
-        logger.info("Storing matched SGD gene names in the database")
-        with db_manager:
-            db_manager.afp.save_extracted_sgd_genes_to_db(paper_id=paper.paper_id, genes_sgd=meaningful_sgd_genes)
+            meaningful_sgd_genes = list(set(meaningful_sgd_genes_fulltext) | set(meaningful_sgd_genes_title_abstract))
+
+            csv_writer.writerow([paper.paper_id, ", ".join(meaningful_sgd_genes)])
 
     logger.info("Test pipeline finished successfully")
 
