@@ -103,6 +103,10 @@ else:
                                               admin_emails=os.environ['ADMINS'].split(','),
                                               email_passwd=os.environ['EMAIL_PASSWD'])
     app.add_route('/api/read', feedback_form_reader)
+    paper_info_reader = PaperInfoReader()
+    app.add_route('/api/read_paper_info', paper_info_reader)
+    autocomplete_reader = AutocompleteReader()
+    app.add_route('/api/read_autocomplete', autocomplete_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=os.environ['AFP_BASE_URL'],
                                                       tazendra_username=os.environ['TAZENDRA_USER'],
