@@ -24,7 +24,7 @@ const EntitiesFetchAndSelect = ({close, searchString, exactMatchOnly, searchType
     const apiQueries = useQueries(searchEntities.map(entity => ({
         queryKey: ['apiQuery', entity],
         queryFn: () => {
-            let url = process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '&objectType=' + searchType + '&userValue=' + entity;
+            let url = process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '?objectType=' + searchType + '&userValue=' + entity;
             return axios.get(url)
         }
     })));

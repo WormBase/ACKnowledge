@@ -61,7 +61,7 @@ export const storePaperInfo = (paperId, paperPasswd) => ({
 export const fetchPaperData = (paper_id, paper_passwd) => {
     return dispatch => {
         dispatch(fetchPaperDataRequest());
-        axios.get(process.env.REACT_APP_API_READ_ENDPOINT + '&paper=' + paper_id + '&passwd=' + paper_passwd)
+        axios.get(process.env.REACT_APP_API_READ_ENDPOINT + '?paper=' + paper_id + '&passwd=' + paper_passwd)
             .then(result => {
                 // Overview
                 let genes = getSetOfEntitiesFromWBAPIData(result.data.genestudied, result.data.genestudied, "WBGene");
