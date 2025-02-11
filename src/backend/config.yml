@@ -76,7 +76,7 @@ emails:
                          {}<br/>"
 
   subject_author_dash: "ACKnowledge - access link to author page"
-  content_author_dash: "Click here to retrieve the list of your papers processed by ACKnowledge (formerly known as Author First Pass): <br/><br/><br/>
+  content_author_dash: "Click here to retrieve the list of your papers processed by ACKnowledge: <br/><br/><br/>
                         <br/>
                         <a href='https://acp.acknowledge.textpressolab.com?token={}'>https://acp.acknowledge.textpressolab.com?token={}</a><br/>
                         "
@@ -90,7 +90,7 @@ emails:
                      \"{}\", {}<br/>
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
-                     <a href={}>ACKnowledge Curation Form for your paper</a> (formerly known as Author First Pass).<br/>
+                     <a href={}>ACKnowledge Curation Form for your paper</a>.<br/>
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
                      <br/>
@@ -107,7 +107,7 @@ emails:
                      "
 
   subject_new_sub_thanks: "Thank you for submitting your data to WormBase"
-  content_new_sub_thanks: "Thank you for your participation in the Author Curation to Knowledgebase (ACKnowledge) project, previously known as Author First Pass.<br/>
+  content_new_sub_thanks: "Thank you for your participation in the Author Curation to Knowledgebase (ACKnowledge) project.<br/>
                            <br/>
                            We have received your data submission for the following publication:<br/>
                            <br/>
