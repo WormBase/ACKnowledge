@@ -1,6 +1,6 @@
 ![ACKnowledge logo](src/frontend/submission_form/public/lockup-with-rule-color-100.jpg)
 
-The Author Curation to Knowledgebase project (ACKnowledge, previously known as “Author First Pass”) aims at facilitating author curation to biological  knowledgebases.</p>
+The Author Curation to Knowledgebase project (ACKnowledge) aims at facilitating author curation to biological knowledgebases.</p>
 
 Biological knowledgebases serve as a critical resource for researchers and accelerate scientific discoveries by providing manually curated, machine-readable data collections. At present, the aggregation and manual curation of biological data is a labor-intensive process that relies almost entirely on professional biocurators. Biocuration, however, is greatly aided when authors directly participate in the process.
 
@@ -16,6 +16,50 @@ If you have questions about the ACKnowledge project, please contact <a href="mai
 [ACKnowledge Github repository](https://github.com/WormBase/ACKnowledge)
 
 # Release Notes
+
+## Version 5.0
+
+### Release data
+02-11-2025
+
+## Introduction
+ACKnowledge 5.0 is a landmark update that brings advanced functionality and significant improvements to our system. 
+This release aligns our data access infrastructure with the Alliance of Genome Resources (Alliance) central repository. 
+By leveraging the Alliance, we can now seamlessly fetch PDFs and related bibliographic data, ensuring our users have access to 
+the most comprehensive and up-to-date resources.
+
+ACKnowledge 5.0 also introduces an enhanced backend architecture capable of extracting entities for multiple organisms. 
+This new modularity allows us to fetch entity lists directly from the Alliance, broadening our scope and making our 
+platform more versatile for diverse research needs.
+
+The release also brings new features, performance improvements, and crucial bug fixes, all designed to provide a more 
+robust and efficient user experience.
+
+### Main Updates
+- Multiple authors can now submit data for the same paper. Each author is recognized as a contributor on the WormBase paper page.
+- The author curation interface now works even for authors behind stringent firewalls and proxies.
+- PDFs and related bibliographic data are now accessed from the Alliance of Genome Resources (AGR) central repository.
+- PDF to text conversion is now performed through GROBID, a machine learning library for converting structured PDFs into TEI, a standard XML format specifically designed for scientific articles.
+- Curators can now identify sentences of interest for curation in articles using machine learning models integrated into the curator dashboard.
+- Reminder emails are now sent every two weeks to increase the response rate.
+- ACKnowledge can now extract data for multiple organisms.
+- ACKnowledge is now listed on the International Society for Biocuration (ISB) [curate page](https://www.biocuration.org/curate-now/).
+
+### User Updates
+- Non-curated transgenes are not automatically extracted from the text anymore.
+- Authors can now indicate if they contributed for the paper through other community curation initiatives.
+- Improved email exclusion list to consider preferences for receiving emails expressed by users on WormBase.
+- Removed images from all emails to improve accessibility and compatibility with email clients.
+- Added FAQ section for the 'new species' field.
+
+### Bug Fixes
+- Fixed links to PubMed using the new URL format.
+- The author portal login is now case-insensitive.
+- Fixed various issues with the author curation form.
+
+### Curator Dashboard Updates
+- Added a new page to view the sentences of interest identified by the machine learning models.
+- New button to download the sentences of interest in a CSV format.
 
 ## Version 4.0
 
