@@ -21,6 +21,7 @@ class App extends Component {
               isVerboseMode={false} //If true, the library writes verbose logs to console.
               loadingComponent={null} //If not pass, nothing appears at the time of new version check.
               metaFileDirectory={'.'} //If public assets are hosted somewhere other than root on your server.
+              onCacheClear={() => window.location.reload(true)}
           >
               <div>
                   {developmentBanner}
