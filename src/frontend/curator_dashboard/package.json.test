@@ -16,6 +16,7 @@
     "react": "^16.8.6",
     "react-query": "^3.26.0",
     "react-bootstrap": "^1.6.4",
+    "react-cache-buster": "^0.1.8",
     "react-dom": "^16.8.6",
     "react-loading-overlay": "^1.0.1",
     "react-router-dom": "^5.0.0",
@@ -26,8 +27,9 @@
     "react-redux": "^7.2.5"
   },
   "scripts": {
+    "generate-meta-tag": "node ./node_modules/react-cache-buster/dist/generate-meta-tag.js",
     "start": "PORT=3001 react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run generate-meta-tag && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
