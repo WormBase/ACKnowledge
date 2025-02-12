@@ -17,7 +17,7 @@
     "react-router": "^4.3.1",
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "^1.1.5",
+    "react-scripts": "2.1.8",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
   },
@@ -30,5 +30,11 @@
   },
   "devDependencies": {
     "react-loading-overlay": "^1.0.1"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

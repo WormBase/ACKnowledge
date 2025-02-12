@@ -10,10 +10,7 @@ import {QueryClient, QueryClientProvider} from "react-query";
 
 const App = () => {
 
-    const queryClient = new QueryClient()
-    const handleCacheClear = () => {
-        window.location.reload(true);
-    };
+    const queryClient = new QueryClient();
 
     return (
         <CacheBuster
@@ -22,7 +19,7 @@ const App = () => {
             isVerboseMode={false} //If true, the library writes verbose logs to console.
             loadingComponent={null} //If not pass, nothing appears at the time of new version check.
             metaFileDirectory={'.'} //If public assets are hosted somewhere other than root on your server.
-            onCacheClear={handleCacheClear}
+            onCacheClear={() => window.location.reload(true)}
         >
             <QueryClientProvider client={queryClient}>
                 <Provider store={store}>
