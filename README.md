@@ -36,30 +36,31 @@ The release also brings new features, performance improvements, and crucial bug 
 robust and efficient user experience.
 
 ### Main Updates
-- Multiple authors can now submit data for the same paper. Each author is recognized as a contributor on the WormBase paper page.
-- The author curation interface now works even for authors behind stringent firewalls and proxies.
-- PDFs and related bibliographic data are now accessed from the Alliance of Genome Resources (AGR) central repository.
-- PDF to text conversion is now performed through GROBID, a machine learning library for converting structured PDFs into TEI, a standard XML format specifically designed for scientific articles.
-- Curators can now identify sentences of interest for curation in articles using machine learning models integrated into the curator dashboard.
-- Reminder emails are now sent every two weeks to increase the response rate.
-- ACKnowledge can now extract data for multiple organisms.
-- ACKnowledge is now listed on the International Society for Biocuration (ISB) [curate page](https://www.biocuration.org/curate-now/).
+- Multiple authors can now submit data for the same paper. Each author is recognized as a contributor on the WormBase paper page
+- The author curation interface now works even for authors behind stringent firewalls and proxies
+- PDFs and related bibliographic data are now accessed from the Alliance of Genome Resources (AGR) central repository
+- PDF to text conversion is now performed through GROBID, a machine learning library for converting structured PDFs into TEI, a standard XML format specifically designed for scientific articles
+- Curators can now identify sentences of interest for curation in articles using machine learning models integrated into the curator dashboard
+- Reminder emails are now sent every two weeks to increase the response rate
+- ACKnowledge can now extract data for multiple organisms
+- ACKnowledge is now integrated into Caltech AWS infrastructure, with improved security and performance
+- ACKnowledge is now listed on the International Society for Biocuration (ISB) [curate page](https://www.biocuration.org/curate-now/)
 
 ### User Updates
-- Non-curated transgenes are not automatically extracted from the text anymore.
-- Authors can now indicate if they contributed for the paper through other community curation initiatives.
-- Improved email exclusion list to consider preferences for receiving emails expressed by users on WormBase.
-- Removed images from all emails to improve accessibility and compatibility with email clients.
-- Added FAQ section for the 'new species' field.
+- Non-curated transgenes are not automatically extracted from the text anymore
+- Authors can now indicate if they contributed for the paper through other community curation initiatives
+- Improved email exclusion list to consider preferences for receiving emails expressed by users on WormBase
+- Removed images from all emails to improve accessibility and compatibility with email clients
+- Added FAQ section for the 'new species' field
 
 ### Bug Fixes
-- Fixed links to PubMed using the new URL format.
-- The author portal login is now case-insensitive.
-- Fixed various issues with the author curation form.
+- Fixed links to PubMed using the new URL format
+- The author portal login is now case-insensitive
+- Fixed various issues with the author curation form
 
 ### Curator Dashboard Updates
-- Added a new page to view the sentences of interest identified by the machine learning models.
-- New button to download the sentences of interest in a CSV format.
+- Added a new page to view the sentences of interest identified by the machine learning models
+- New button to download the sentences of interest in a CSV format
 
 ## Version 4.0
 
