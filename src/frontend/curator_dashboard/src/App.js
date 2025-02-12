@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import CacheBuster from 'react-cache-buster';
+import {version} from '../package.json';
 import {BrowserRouter as Router} from "react-router-dom";
-import {QueryClientProvider, QueryClient} from "react-query";
+import {QueryClient, QueryClientProvider} from "react-query";
 import Main from './Main';
-import { Provider } from "react-redux";
+import {Provider} from "react-redux";
 import store from "./redux/store";
 
 class App extends Component {
@@ -13,16 +15,24 @@ class App extends Component {
       }
       const queryClient = new QueryClient();
       return (
-          <div>
-              {developmentBanner}
-              <Router>
-                  <Provider store={store}>
-                      <QueryClientProvider client={queryClient}>
-                          <Main/>
-                      </QueryClientProvider>
-                  </Provider>
-              </Router>
-          </div>
+          <CacheBuster
+              currentVersion={version}
+              isEnabled={process.env.NODE_ENV === "production"} //If false, the library is disabled.
+              isVerboseMode={false} //If true, the library writes verbose logs to console.
+              loadingComponent={null} //If not pass, nothing appears at the time of new version check.
+              metaFileDirectory={'.'} //If public assets are hosted somewhere other than root on your server.
+          >
+              <div>
+                  {developmentBanner}
+                  <Router>
+                      <Provider store={store}>
+                          <QueryClientProvider client={queryClient}>
+                              <Main/>
+                          </QueryClientProvider>
+                      </Provider>
+                  </Router>
+              </div>
+          </CacheBuster>
       );
   }
 }
