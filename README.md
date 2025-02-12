@@ -19,7 +19,7 @@ If you have questions about the ACKnowledge project, please contact <a href="mai
 
 ## Version 5.0
 
-### Release data
+### Release date
 02-11-2025
 
 ## Introduction
