@@ -36,7 +36,6 @@ def main():
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
-    parser.add_argument("-t", "--textpresso-apitoken", metavar="tpc_token", dest="tpc_token", type=str)
     parser.add_argument("-i", "--paper-ids", metavar="paper_ids", dest="paper_ids", type=str, nargs="+",
                         help="process the provided list of papers instead of reading them from db")
     args = parser.parse_args()
@@ -48,7 +47,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://www.alliancegenome.org/textpresso/wb/v1/textpresso/api/", api_token=args.tpc_token,
+        api_url="https://www.alliancegenome.org/textpresso/wb/v1/textpresso/api/", api_token="",
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
     if args.paper_ids:

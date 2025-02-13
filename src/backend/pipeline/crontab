@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 BASH_ENV=/container.env
 
-45 23 * * 3 /usr/local/bin/python3 /usr/src/app/src/backend/pipeline/process_papers.py -L INFO -n $NUM_PAPERS_PER_RUN -p $EMAIL_PASSWD -N $DB_NAME -U $DB_USER -P $DB_PASSWD -H $DB_HOST -a $ADMINS -t $TPC_TOKEN -u $AFP_BASE_URL >> /var/log/afp_pipeline 2>&1
+45 23 * * 3 /usr/local/bin/python3 /usr/src/app/src/backend/pipeline/process_papers.py -L INFO -n $NUM_PAPERS_PER_RUN -p $EMAIL_PASSWD -N $DB_NAME -U $DB_USER -P $DB_PASSWD -H $DB_HOST -a $ADMINS -u $AFP_BASE_URL >> /var/log/afp_pipeline 2>&1
 0 19 * * 4 /usr/local/bin/python3 /usr/src/app/src/backend/pipeline/submissions_datatype_digests.py -L INFO -p $EMAIL_PASSWD -N $DB_NAME -U $DB_USER -P $DB_PASSWD -H $DB_HOST -w $TAZENDRA_USER -z $TAZENDRA_PASSWD >> /var/log/afp_monthly_digest.log 2>&1
 0 20 * * 4 [ $(expr $(date +\%W) \% 2) -eq 0 ] && /usr/local/bin/python3 /usr/src/app/src/backend/pipeline/reminder_email.py -L INFO -p $EMAIL_PASSWD -N $DB_NAME -U $DB_USER -P $DB_PASSWD -H $DB_HOST -u $AFP_BASE_URL >> /var/log/afp_reminder_email.log 2>&1
