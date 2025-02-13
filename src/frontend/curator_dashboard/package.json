@@ -1,6 +1,6 @@
 {
   "name": "afp_curator_dashboard",
-  "version": "0.1.0",
+  "version": "5.0.1",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
