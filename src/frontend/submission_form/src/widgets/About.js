@@ -6,7 +6,7 @@ const About = () => {
     return (
         <div>
             <h4><strong>About</strong></h4>
-            <p>The Author Curation to Knowledgebase project (ACKnowledge, previously known as “Author First Pass”) aims at facilitating author curation to biological  knowledgebases.</p>
+            <p>The ACKnowledge project (Author Curation to Knowledgebase) aims at facilitating author curation to biological  knowledgebases.</p>
 
             <p>Biological knowledgebases serve as a critical resource for researchers and accelerate scientific discoveries by providing manually curated, machine-readable data collections. At present, the aggregation and manual curation of biological data is a labor-intensive process that relies almost entirely on professional biocurators. Biocuration, however, is greatly aided when authors directly participate in the process.</p>
 
