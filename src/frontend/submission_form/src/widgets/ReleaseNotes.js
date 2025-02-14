@@ -3,17 +3,87 @@ import React from 'react';
 const ReleaseNotes = () => {
     return (
         <div>
+            <h3>Version 5.0</h3>
+            Release date: 02-11-2025
+            <h4>Introduction</h4>
+            <p>ACKnowledge 5.0 is a landmark update that brings advanced functionality and significant improvements to
+                our system.
+                This release aligns our data access infrastructure with the Alliance of Genome Resources (Alliance)
+                central repository.
+                By leveraging the Alliance, we can now seamlessly fetch PDFs and related bibliographic data, ensuring
+                our users have access to
+                the most comprehensive and up-to-date resources.</p>
+
+            <p>ACKnowledge 5.0 also introduces an enhanced backend architecture capable of extracting entities for
+                multiple organisms.
+                This new modularity allows us to fetch entity lists directly from the Alliance, broadening our scope and
+                making our
+                platform more versatile for diverse research needs.</p>
+
+            <p>The release also brings new features, performance improvements, and crucial bug fixes, all designed to
+                provide a more
+                robust and efficient user experience.</p>
+
+            <h4>Main Updates</h4>
+            <ul>
+                <li>Multiple authors can now submit data for the same paper. Each author is recognized as a contributor
+                    on the WormBase paper page
+                </li>
+                <li>The author curation interface now works also for authors behind stringent firewalls and proxies</li>
+                <li>PDFs and related bibliographic data are now accessed from the Alliance of Genome Resources central
+                    repository
+                </li>
+                <li>PDF to text conversion is now performed through GROBID, a machine learning library for converting
+                    structured PDFs into TEI, a standard XML format specifically designed for scientific articles
+                </li>
+                <li>Curators can now identify sentences of interest for curation -- gene expression and protein kinase
+                    activity -- in articles using machine learning models integrated into the curator dashboard
+                </li>
+                <li>Reminder emails are now sent every two weeks to increase the response rate</li>
+                <li>ACKnowledge can now extract data for multiple organisms</li>
+                <li>ACKnowledge is now integrated into Caltech AWS infrastructure, with improved security and
+                    performance
+                </li>
+                <li>ACKnowledge is now listed on the International Society for Biocuration (ISB) <a
+                    href="https://www.biocuration.org/curate-now/">curate page</a></li>
+            </ul>
+            <h5><strong>User Updates</strong></h5>
+            <ul>
+                <li>Authors can now indicate if they contributed for the paper through other community curation
+                    initiatives
+                </li>
+                <li>Improved email exclusion list to consider user preferences from WormBase</li>
+                <li>Removed images from all emails to improve accessibility and compatibility with email clients</li>
+                <li>Added FAQ section for the 'new species' field</li>
+            </ul>
+            <h5><strong>Bug Fixes</strong></h5>
+            <ul>
+                <li>Fixed links to PubMed using the new URL format</li>
+                <li>The author portal login is now case-insensitive</li>
+                <li>Fixed other UI issues with the author curation form</li>
+            </ul>
+            <h5><strong>Curator Dashboard Updates</strong></h5>
+            <ul>
+                <li>Added a new page to view sentences of interest identified by machine learning</li>
+                <li>Added a new button to download sentences of interest in CSV format</li>
+            </ul>
+
             <h3>Version 4.0</h3>
             Release date 10-27-2022
             <h4>Introduction</h4>
-            <p>Release 4.0 marks an exciting transition for our project.  With support from the National Library of
-                Medicine, the Author First Pass (AFP) project is now officially known as ACKnowledge (Author Curation to Knowledgebase).
-                This change reflects our commitment to expanding artificial intelligence (AI)-enhanced community curation
-                to capture more detailed experimental findings and to introduce our curation pipeline to additional model
-                organism communities and their respective knowledgebases. While busy transitioning our project and enhancing
+            <p>Release 4.0 marks an exciting transition for our project. With support from the National Library of
+                Medicine, the Author First Pass (AFP) project is now officially known as ACKnowledge (Author Curation to
+                Knowledgebase).
+                This change reflects our commitment to expanding artificial intelligence (AI)-enhanced community
+                curation
+                to capture more detailed experimental findings and to introduce our curation pipeline to additional
+                model
+                organism communities and their respective knowledgebases. While busy transitioning our project and
+                enhancing
                 our AI methods, we also implemented further improvements to the current pipeline based on continuing
                 valuable feedback from authors. These improvements, listed below, will help authors add more information
-                about their papers and readily find previously published papers processed by our pipeline for curation using
+                about their papers and readily find previously published papers processed by our pipeline for curation
+                using
                 our Author Curation Portal.</p>
 
             <h4>Main Updates</h4>
@@ -27,18 +97,25 @@ const ReleaseNotes = () => {
                 <li>Added NLM funding information</li>
                 <li>Listed published references</li>
                 <li>Created a project landing page: https://wormbase.github.io/ACKnowledge</li>
-                <li>Fully transitioned from Support Vector Machines (SVM) to Neural Networks (NN) for datatype flagging</li>
+                <li>Fully transitioned from Support Vector Machines (SVM) to Neural Networks (NN) for datatype
+                    flagging
+                </li>
             </ul>
             <h5><strong>User Updates</strong></h5>
             <ul>
-                <li>Enabled access to author’s additional publications via the author curation portal (https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing communications (emails)</li>
+                <li>Enabled access to author’s additional publications via the author curation portal
+                    (https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing
+                    communications (emails)
+                </li>
                 <li>Added free text box for chemical- and environmental-induced phenotypes</li>
                 <li>Added a free text box for adding new species not in the current auto-complete list</li>
                 <li>Improved the comments section</li>
             </ul>
             <h5><strong>Bug Fixes</strong></h5>
             <ul>
-                <li>Form now saves incremental updates to genes and species lists to database without requiring a full resubmission</li>
+                <li>Form now saves incremental updates to genes and species lists to database without requiring a full
+                    resubmission
+                </li>
                 <li>Proof papers are now excluded by the processing pipeline</li>
                 <li>Improved authors’ email extraction</li>
                 <li>Additional minor bug fixes</li>
@@ -52,18 +129,21 @@ const ReleaseNotes = () => {
             <h3>Release 3.0</h3>
             Release date: 09-16-2021
             <h4>Introduction</h4>
-            <p>Based on valuable user feedback, we continue to improve the Author First Pass experience.  In addition
+            <p>Based on valuable user feedback, we continue to improve the Author First Pass experience. In addition
                 to providing more streamlined ways to enter entities, we’ve added further instructions for adding new
-                entities, and a link to look up specific entities in WormBase.  We now flag papers for enzymatic
-                activity and include a free-text field to describe other gene functions.  We updated the FAQs and
-                provide a link to the Author First Pass webinar presented in February 2021.  Lastly, to thank authors
+                entities, and a link to look up specific entities in WormBase. We now flag papers for enzymatic
+                activity and include a free-text field to describe other gene functions. We updated the FAQs and
+                provide a link to the Author First Pass webinar presented in February 2021. Lastly, to thank authors
                 for their valuable contributions, we now acknowledge authors on WormBase person and paper pages. </p>
             <p>We have implemented updates and improvements to our curator dashboard. The dashboard is a tool available
-                to WormBase curators to  keep track of submissions and perform quality control of submitted data.</p>
+                to WormBase curators to keep track of submissions and perform quality control of submitted data.</p>
             <h4>Main Updates</h4>
             <h5><strong>User Updates</strong></h5>
             <ul>
-                <li>Acknowledge author contributions on WormBase <a href="https://wormbase.org/resources/paper/WBPaper00059759#0--10" target="_blank">Paper</a> and <a href="https://wormbase.org/resources/person/WBPerson625#014--10" target="_blank">Person</a> pages</li>
+                <li>Acknowledge author contributions on WormBase <a
+                    href="https://wormbase.org/resources/paper/WBPaper00059759#0--10" target="_blank">Paper</a> and <a
+                    href="https://wormbase.org/resources/person/WBPerson625#014--10" target="_blank">Person</a> pages
+                </li>
                 <li>Email all authors of a publication whenever possible</li>
                 <li>Added linkout to WB pages for entities in select components</li>
                 <li>Simplified add entities lists</li>
@@ -79,8 +159,12 @@ const ReleaseNotes = () => {
             <ul>
                 <li>Created summary page with sortable lists of entities removed and added by authors</li>
                 <li>Generated a pre-populated spreadsheet of all flagged data for each processed paper to allow authors
-                    an alternative data submission pipeline</li>
-                <li>Updated dashboard thresholds with new <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus." target="_blank">TFIDF</a> values</li>
+                    an alternative data submission pipeline
+                </li>
+                <li>Updated dashboard thresholds with new <a
+                    href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus."
+                    target="_blank">TFIDF</a> values
+                </li>
                 <li>Sorted contributors by number of submissions</li>
                 <li>Added download button for lists of papers</li>
             </ul>
@@ -93,8 +177,13 @@ const ReleaseNotes = () => {
 
             <h4>Main Updates</h4>
             <ul>
-                <li>Implemented <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus." target="_blank">TFIDF</a> in place of simple thresholds to improve precision of gene and allele recognition</li>
-                <li>Improved datatype descriptions in <span className="glyphicon glyphicon-question-sign"/> mouse-overs</li>
+                <li>Implemented <a
+                    href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf#:~:text=In%20information%20retrieval%2C%20tf%E2%80%93idf,in%20a%20collection%20or%20corpus."
+                    target="_blank">TFIDF</a> in place of simple thresholds to improve precision of gene and allele
+                    recognition
+                </li>
+                <li>Improved datatype descriptions in <span className="glyphicon glyphicon-question-sign"/> mouse-overs
+                </li>
                 <li>Added FAQs and Release Notes</li>
             </ul>
             <h3>Release 1.0</h3>
@@ -112,7 +201,10 @@ const ReleaseNotes = () => {
                 <li>Dashboard for curators to monitor submissions</li>
                 <li>Monthly notifications to curators with newly submitted data</li>
                 <li>Periodic email reminders to authors</li>
-                <li>More details in <a href="https://academic.oup.com/database/article/doi/10.1093/database/baaa006/5809234" target="_blank">our paper</a> published on Database</li>
+                <li>More details in <a
+                    href="https://academic.oup.com/database/article/doi/10.1093/database/baaa006/5809234"
+                    target="_blank">our paper</a> published on Database
+                </li>
             </ul>
         </div>
     );
