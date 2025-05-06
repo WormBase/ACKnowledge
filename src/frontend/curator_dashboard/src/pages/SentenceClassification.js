@@ -44,9 +44,9 @@ const SentenceClassification = () => {
                     {queryRes.isSuccess ?
                         <div>
                             <h6>Classifier type</h6>
-                            <Form.Check inline label="Has all info for curation" defaultChecked={true} name="group1"
+                            <Form.Check inline label="Fully Curatable" defaultChecked={true} name="group1"
                                         type="radio" onClick={() => setClassifierType("all_info")}/>
-                            <Form.Check inline label="Curatable" name="group1" type="radio"
+                            <Form.Check inline label="Partially Curatable" name="group1" type="radio"
                                         onClick={() => setClassifierType("curatable")}/>
                             <Form.Check inline label="Contains language" name="group1" type="radio"
                                         onClick={() => setClassifierType("language")}/>
