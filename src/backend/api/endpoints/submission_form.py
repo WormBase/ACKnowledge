@@ -208,12 +208,13 @@ class FeedbackFormWriter:
                     paper_journal = self.db.paper.get_paper_journal(paper_id)
                     author_email = self.db.person.get_email(person_id)
                     doi = self.db.paper.get_doi(paper_id)
+                    doi = doi if doi else ""
                     url = self.afp_base_url + "?paper=" + paper_id + "&passwd=" + req.media["passwd"] + "&title=" + \
                           urllib.parse.quote(paper_title) + "&journal=" + \
                           urllib.parse.quote(paper_journal) + "&pmid=" + \
                           self.db.paper.get_pmid(paper_id) + "&personid=" + \
                           req.media["person_id"][3:] + \
-                          "&hide_genes=false&hide_alleles=false&hide_strains=false" + \
+                          "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
                           urllib.parse.quote(doi)
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
