@@ -38,7 +38,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://www.alliancegenome.org/textpresso/sgd/v1/textpresso/api/", use_cache=True,
+        api_url="https://sgd-textpresso.alliancegenome.org/v1/textpresso/api/", use_cache=True,
         corpora=["S. cerevisiae"], api_token=args.tpc_token)
     cm = CorpusManager()
 
