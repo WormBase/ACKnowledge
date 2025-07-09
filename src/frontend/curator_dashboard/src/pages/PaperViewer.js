@@ -36,7 +36,7 @@ const PaperViewer = () => {
                             <br/>
                             <PaperProcessingStatus/>
                             <br/>
-                            {queryRes.data.data.afp_processed ? <TabsArea/> : null}
+                            {queryRes.data.data.afp_processed && !queryRes.data.data.is_old_afp ? <TabsArea/> : null}
                         </div>
                         : null}
                 </div>

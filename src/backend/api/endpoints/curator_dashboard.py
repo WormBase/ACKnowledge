@@ -194,12 +194,16 @@ class CuratorDashboardReader:
                     email = self.db.afp.get_contact_emails(paper_id)
                     pmid = paper.pmid
                     doi = paper.doi
+                    # Check if paper is from old AFP system (no entry in afp_version table)
+                    afp_version_exists = self.db._get_single_field(paper_id, "afp_version")
+                    is_old_afp = author_submitted and afp_version_exists is None
                     resp.body = '{{"title": "{}", "journal": "{}", "email": "{}", "afp_processed": {}, ' \
                                 '"author_submitted": {}, "author_modified": {}, "afp_form_link": "{}", "pmid": "{}", ' \
-                                '"doi": "{}", "afp_processed_date": "{}"}}'.format(
+                                '"doi": "{}", "afp_processed_date": "{}", "is_old_afp": {}}}'.format(
                         title, journal, email,
-                        "true" if afp_processed else "false", "true" if author_submitted else "false", "true" if
-                        author_modified else "false", afp_form_link, pmid, doi, afp_processed_date)
+                        "true" if afp_processed else "false", "true" if author_submitted else "false", 
+                        "true" if author_modified else "false", afp_form_link, pmid, doi, afp_processed_date,
+                        "true" if is_old_afp else "false")
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
                     lists_dict = self.get_all_lists(paper_id)

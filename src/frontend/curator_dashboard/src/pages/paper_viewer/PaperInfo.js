@@ -29,18 +29,22 @@ const PaperInfo = () => {
                     <strong>Email:</strong> &nbsp; {queryRes.data.data.email} <br/>
                     <strong>Link to pubmed source:</strong> &nbsp; <a href={"https://www.ncbi.nlm.nih.gov/pubmed/" + queryRes.data.data.pmid.replace("PMID:", "")} target="blank_">{"https://www.ncbi.nlm.nih.gov/pubmed/" + queryRes.data.data.pmid}</a> <br/>
                     <strong>Link to doi source:</strong> &nbsp; <a href={"https://doi.org/" + queryRes.data.data.doi} target="blank_">{"https://doi.org/" + queryRes.data.data.doi}</a><br/>
-                    {queryRes.data.data.afp_form_link !== "" ? <div><br/><a href={queryRes.data.data.afp_form_link} target="_blank"><strong>Link to ACKnowledge form</strong></a></div> : null}
-                    <br/>
-                    <Button size="sm" onClick={() => {
-                        setIsSpreadsheetLoading(true);
-                        downloadCSVSpreadsheet(paperID).finally(() => setIsSpreadsheetLoading(false));
-                    }} variant="outline-primary">Download manual submission form {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
-                    <br/>
-                    <br/>
-                    <IndexLinkContainer to={"sentence_classification" + args}
-                                        active={true}>
-                        <a><h6>Sentence Level Classification</h6></a>
-                    </IndexLinkContainer>
+                    {!queryRes.data.data.is_old_afp && queryRes.data.data.afp_form_link !== "" ? <div><br/><a href={queryRes.data.data.afp_form_link} target="_blank"><strong>Link to ACKnowledge form</strong></a></div> : null}
+                    {!queryRes.data.data.is_old_afp ? (
+                        <>
+                            <br/>
+                            <Button size="sm" onClick={() => {
+                                setIsSpreadsheetLoading(true);
+                                downloadCSVSpreadsheet(paperID).finally(() => setIsSpreadsheetLoading(false));
+                            }} variant="outline-primary">Download manual submission form {isSpreadsheetLoading ? <Spinner animation="border" size="sm"/> : null}</Button>
+                            <br/>
+                            <br/>
+                            <IndexLinkContainer to={"sentence_classification" + args}
+                                                active={true}>
+                                <a><h6>Sentence Level Classification</h6></a>
+                            </IndexLinkContainer>
+                        </>
+                    ) : null}
                 </Card.Body>
             </Card>
         </div>
