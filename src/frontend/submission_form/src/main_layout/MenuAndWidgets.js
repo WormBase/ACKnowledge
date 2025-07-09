@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {withRouter} from "react-router-dom";
-import {SectionsNotCompletedModal, WelcomeModal} from "../components/modals/MainModals";
+import {SectionsNotCompletedModal, WelcomeModal, CompletedSubmissionModal} from "../components/modals/MainModals";
 import DataSavedModal from "../components/modals/DataSavedModal";
 import PersonSelector from "../components/PersonSelector";
 import {MENU_INDEX, pages, WIDGET, WIDGET_TITLE} from "../constants";
@@ -17,7 +17,41 @@ const MenuAndWidgets = (props) => {
         dispatch(setSelectedWidget(MENU_INDEX[currentLocation.substring(1)]));
     }
     const [showPopup, setShowPopup] = useState(true);
+    const [showCompletedModal, setShowCompletedModal] = useState(false);
+    const [initialPerson, setInitialPerson] = useState(null);
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
+    
+    // Check if all sections are saved
+    const allSectionsSaved = useSelector((state) => 
+        state.overview.isSavedToDB &&
+        state.genetics.isSavedToDB &&
+        state.reagent.isSavedToDB &&
+        state.expression.isSavedToDB &&
+        state.interactions.isSavedToDB &&
+        state.phenotypes.isSavedToDB &&
+        state.disease.isSavedToDB &&
+        state.comments.isSavedToDB
+    );
+    
+    // Get the current person from state
+    const currentPerson = useSelector((state) => state.person.person);
+    
+    // Check if data is loaded
+    const paperDataLoaded = useSelector((state) => !state.paper.paperData.isLoading);
+    const personDataLoaded = useSelector((state) => !state.person.person.isLoading);
+    
+    useEffect(() => {
+        // When data is loaded and we haven't set the initial person yet
+        if (paperDataLoaded && personDataLoaded && currentPerson.name && !initialPerson) {
+            setInitialPerson(currentPerson);
+            
+            // If all sections are saved, show the completed modal instead of welcome
+            if (allSectionsSaved) {
+                setShowCompletedModal(true);
+                setShowPopup(false);
+            }
+        }
+    }, [paperDataLoaded, personDataLoaded, allSectionsSaved, currentPerson, initialPerson]);
 
     const goToNextSection = () => {
         const newSelectedMenu = Math.min(selectedWidget + 1, pages.length);
@@ -45,7 +79,12 @@ const MenuAndWidgets = (props) => {
                         </div>
                     </div>
                 </div>
-                <WelcomeModal show={showPopup} onHide={() => setShowPopup(false)}/>
+                <WelcomeModal show={showPopup && !showCompletedModal} onHide={() => setShowPopup(false)}/>
+                <CompletedSubmissionModal 
+                    show={showCompletedModal} 
+                    onHide={() => setShowCompletedModal(false)}
+                    previousAuthor={initialPerson ? initialPerson.name : ""}
+                />
                 <DataSavedModal show={useSelector((state) => state.display.dataSaved).showMessage} goToNextSection={goToNextSection}
                                 success={useSelector((state) => state.display.dataSaved).success}
                                 last_widget={useSelector((state) => state.display.dataSaved).lastWidget}/>

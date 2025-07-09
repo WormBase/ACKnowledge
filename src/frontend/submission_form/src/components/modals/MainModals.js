@@ -32,6 +32,34 @@ export const WelcomeModal = (props) => {
     }
 }
 
+export const CompletedSubmissionModal = (props) => {
+    if (props["show"] !== undefined && props["show"]) {
+        return (
+            <Modal
+                {...props}
+                bsSize="large"
+                aria-labelledby="contained-modal-title-sm">
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-lg">Submission Already Completed</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        This form was already filled out and submitted by <strong>{props.previousAuthor}</strong>.
+                    </p>
+                    <p>
+                        If you wish to review and/or modify the submission, click on the "Continue" button below.
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button bsStyle="primary" onClick={props.onHide}>Continue</Button>
+                </Modal.Footer>
+            </Modal>
+        );
+    } else {
+        return ("");
+    }
+}
+
 export const SectionsNotCompletedModal = (props) => {
     if (props.show) {
         return (
