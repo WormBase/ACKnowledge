@@ -34,6 +34,8 @@ def main():
                         help="list of email addresses of administrators that will receive summary emails with pipeline "
                              "reports at each iterations")
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
+    parser.add_argument("-t", "--textpresso-token", metavar="textpresso_token", dest="textpresso_token", type=str,
+                        help="API token for Textpresso literature index")
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-s", "--stats", dest="print_stats", action="store_true")
     parser.add_argument("-i", "--paper-ids", metavar="paper_ids", dest="paper_ids", type=str, nargs="+",
@@ -47,7 +49,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
     textpresso_lit_index = TextpressoLiteratureIndex(
-        api_url="https://wb-textpresso.alliancegenome.org/v1/textpresso/api/", api_token="",
+        api_url="https://wb-textpresso.alliancegenome.org/v1/textpresso/api/", api_token=args.textpresso_token,
         use_cache=True, corpora=["C. elegans"])
     cm = CorpusManager()
     if args.paper_ids:
