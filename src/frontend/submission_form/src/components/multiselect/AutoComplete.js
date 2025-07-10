@@ -44,7 +44,7 @@ const AutoComplete = ({
             <div style={{marginBottom: '12px'}}>
                 <FormControl
                     componentClass="textarea"
-                    rows="3"
+                    rows="5"
                     bsSize="sm"
                     placeholder={autocompletePlaceholder}
                     value={searchString}
