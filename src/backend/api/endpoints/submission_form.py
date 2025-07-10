@@ -419,7 +419,16 @@ class FeedbackFormWriter:
 
                 # disease
                 if "disease" in req.media:
-                    self.db.afp.set_submitted_disease(disease=req.media["disease"], paper_id=paper_id)
+                    # Create structured JSON for disease data
+                    disease_value = req.media["disease"]
+                    comment = disease_value if disease_value != "Checked" and disease_value != "" else ""
+                    diseases = req.media.get("disease_list", []) if isinstance(req.media.get("disease_list"), list) else []
+                    disease_data = {
+                        "checked": disease_value != "" and disease_value != "Checked",
+                        "comment": comment,
+                        "diseases": diseases
+                    }
+                    self.db.afp.set_submitted_disease(disease=json.dumps(disease_data), paper_id=paper_id)
 
                 # comments
                 if "comments" in req.media:

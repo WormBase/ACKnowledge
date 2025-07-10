@@ -125,7 +125,7 @@ Diabetes"
                     
                     const payload = {
                         disease: getCheckboxDBVal(disease.checked, disease.details),
-                        disease_list: transformEntitiesIntoAfpString(diseaseNames, ""),
+                        disease_list: diseaseNames,
                         person_id: "two" + person.personId,
                         passwd: paperPassword
                     };

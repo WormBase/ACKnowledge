@@ -21,20 +21,24 @@ const MultiSelect = (props) => {
     const [showRemovalMode, setShowRemovalMode] = useState(false);
     const originalItemsRef = useRef(null);
     
+    // Ensure props.items is always an array
+    const items = Array.isArray(props.items) ? props.items : [];
+    
     // Capture original items only once on first render with data - normalize them
-    if (originalItemsRef.current === null && props.items.length > 0) {
-        originalItemsRef.current = new Set(props.items.map(item => item.trim()));
+    if (originalItemsRef.current === null && items.length > 0) {
+        originalItemsRef.current = new Set(items.map(item => item.trim()));
     }
     
     const originalItems = originalItemsRef.current || new Set();
 
     // Filter items based on search text
-    const filteredItems = props.items.filter(item => 
+    const filteredItems = items.filter(item => 
         item.toLowerCase().includes(filterText.toLowerCase())
     );
 
     // Calculate what's currently present (from any source) - normalize by trimming spaces
-    const normalizedCurrentItems = [...props.items, ...props.addedItems].map(item => item.trim());
+    const addedItems = Array.isArray(props.addedItems) ? props.addedItems : [];
+    const normalizedCurrentItems = [...items, ...addedItems].map(item => item.trim());
     const allCurrentItems = new Set(normalizedCurrentItems);
     
     // Net changes: compare current state vs original state (originalItems already normalized)
@@ -252,7 +256,7 @@ const MultiSelect = (props) => {
             )}
 
             {/* Filter input */}
-            {props.items.length > 5 && (
+            {items.length > 5 && (
                 <FormControl
                     type="text"
                     placeholder={`Filter ${props.itemsNamePlural}...`}
@@ -283,7 +287,7 @@ const MultiSelect = (props) => {
                         gap: '6px'
                     }}>
                         {filteredItems.sort().map((item, index) => {
-                            const isAddedItem = new Set(props.addedItems).has(item);
+                            const isAddedItem = new Set(addedItems).has(item);
                             const isSelectedForRemoval = selectedForRemoval.has(item);
                             const wasOriginallyPresent = originalItems.has(item.trim());
                             
@@ -347,7 +351,7 @@ const MultiSelect = (props) => {
             }}>
                 <span>
                     {filteredItems.length} {props.itemsNamePlural}
-                    {filterText && ` (filtered from ${props.items.length})`}
+                    {filterText && ` (filtered from ${items.length})`}
                 </span>
                 <div style={{display: 'flex', gap: '12px'}}>
                     <span style={{color: netAdditions.length > 0 ? '#28a745' : '#999', fontWeight: '600'}}>

@@ -41,7 +41,7 @@ import {
     setOverexprPhenotype,
     setRnaiPhenotype
 } from "./phenotypesActions";
-import {setDisease, setIsDiseaseSavedToDB} from "./diseaseActions";
+import {setDisease, setIsDiseaseSavedToDB, setDiseaseNames} from "./diseaseActions";
 import {setComments, setIsCommentsSavedToDB, setOtherCCContacts} from "./commentsActions";
 import {showDataFetchError} from "./displayActions";
 
@@ -155,7 +155,27 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
 
                 // Disease
                 let disease = getCheckbxOrSingleFieldFromWBAPIData(result.data.humdis, undefined);
-                dispatch(setDisease(disease.isChecked(), disease.details()));
+                let diseaseData = {};
+                let diseaseList = [];
+                
+                try {
+                    // Try to parse as JSON first
+                    const diseaseDetails = disease.details();
+                    if (diseaseDetails && diseaseDetails !== "null" && diseaseDetails !== "") {
+                        diseaseData = JSON.parse(diseaseDetails);
+                        dispatch(setDisease(diseaseData.checked || false, diseaseData.comment || ""));
+                        diseaseList = diseaseData.diseases || [];
+                    } else {
+                        dispatch(setDisease(disease.isChecked(), ""));
+                        diseaseList = [];
+                    }
+                } catch (e) {
+                    // Fallback to old format for backward compatibility
+                    dispatch(setDisease(disease.isChecked(), disease.details() || ""));
+                    diseaseList = [];
+                }
+                
+                dispatch(setDiseaseNames(Array.isArray(diseaseList) ? diseaseList : []));
                 if (disease.prevSaved()) {
                     dispatch(setIsDiseaseSavedToDB());
                 }

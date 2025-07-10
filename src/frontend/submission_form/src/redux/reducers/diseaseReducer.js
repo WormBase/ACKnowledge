@@ -60,7 +60,7 @@ export default function(state = initialState, action) {
     case SET_DISEASE_NAMES: {
       return {
         ...state,
-        diseaseNames: action.payload,
+        diseaseNames: Array.isArray(action.payload) ? action.payload : [],
         isSavedToDB: false
       };
     }
