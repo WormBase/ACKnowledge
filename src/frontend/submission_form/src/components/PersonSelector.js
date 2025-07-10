@@ -105,9 +105,8 @@ const PersonSelector = () => {
                 </Button>
                 <Button 
                     bsSize="xsmall" 
-                    bsStyle="default" 
+                    bsStyle="primary"
                     onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}
-                    style={{fontSize: '11px'}}
                 >
                     Request WBPerson
                 </Button>

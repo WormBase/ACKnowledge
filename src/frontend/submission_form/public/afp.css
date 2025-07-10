@@ -23,3 +23,103 @@ body {
 #whiteBanner {
     height: 20px;
 }
+
+/* Button color scheme overrides - using logo color */
+.btn-primary {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    background-image: none !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    background-image: none !important;
+}
+
+.btn-default {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-info {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    background-image: none !important;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    background-image: none !important;
+}
+
+/* All buttons use the same color as selected menu items (#337ab7) */
+.btn-success {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-warning {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-danger {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
