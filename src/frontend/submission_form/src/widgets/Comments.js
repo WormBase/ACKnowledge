@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, FormControl, Image, Panel} from "react-bootstrap";
+import {Button, FormControl, Glyphicon, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {setComments} from "../redux/actions/commentsActions";
@@ -49,16 +49,35 @@ const Other = () => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Please check that your contact info is up to date by clicking on the button below
+                                    Please check that your contact info is up to date by clicking on the link below
                                 </div>
                             </div>
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
-                                            target={"_blank"}>
-                                        Update contact info</Button>
+                                    <a 
+                                        href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                                        Update contact info
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -74,16 +93,35 @@ const Other = () => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Please check that your lineage is up to date by clicking on the button below
+                                    Please check that your lineage is up to date by clicking on the link below
                                 </div>
                             </div>
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
-                                            target={"_blank"}>
-                                        Update lineage</Button>
+                                    <a 
+                                        href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                                        Update lineage
+                                    </a>
                                 </div>
                             </div>
                         </div>

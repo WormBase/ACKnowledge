@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Checkbox, Form, FormGroup, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
+import {Button, Checkbox, Form, FormGroup, Glyphicon, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
@@ -63,12 +63,30 @@ const Phenotypes = () => {
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
-                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    dispatch(setAllelePhenotype(true, ''));
-                                    window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
-                                }}>
+                                <a 
+                                    href="https://wormbase.org/submissions/phenotype.cgi" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        fontSize: '13px',
+                                        color: '#0066cc',
+                                        textDecoration: 'none',
+                                        borderBottom: '1px solid #0066cc',
+                                        fontWeight: '500'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.target.style.color = '#004499';
+                                        e.target.style.borderBottomColor = '#004499';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.color = '#0066cc';
+                                        e.target.style.borderBottomColor = '#0066cc';
+                                    }}
+                                    onClick={() => dispatch(setAllelePhenotype(true, ''))}
+                                >
+                                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                     Add details in online form
-                                </Button>
+                                </a>
                             </div>
                         </div>
                         <div className="row">
@@ -80,12 +98,30 @@ const Phenotypes = () => {
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
-                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    dispatch(setRnaiPhenotype(true, ''));
-                                    window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
-                                }}>
+                                <a 
+                                    href="https://wormbase.org/submissions/phenotype.cgi" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        fontSize: '13px',
+                                        color: '#0066cc',
+                                        textDecoration: 'none',
+                                        borderBottom: '1px solid #0066cc',
+                                        fontWeight: '500'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.target.style.color = '#004499';
+                                        e.target.style.borderBottomColor = '#004499';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.color = '#0066cc';
+                                        e.target.style.borderBottomColor = '#0066cc';
+                                    }}
+                                    onClick={() => dispatch(setRnaiPhenotype(true, ''))}
+                                >
+                                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                     Add details in online form
-                                </Button>
+                                </a>
                             </div>
                         </div>
                         <div className="row">
@@ -97,12 +133,30 @@ const Phenotypes = () => {
                                     <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
-                                <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                    dispatch(setOverexprPhenotype(true, ''))
-                                    window.open("https://wormbase.org/submissions/phenotype.cgi", "_blank");
-                                }}>
+                                <a 
+                                    href="https://wormbase.org/submissions/phenotype.cgi" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        fontSize: '13px',
+                                        color: '#0066cc',
+                                        textDecoration: 'none',
+                                        borderBottom: '1px solid #0066cc',
+                                        fontWeight: '500'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.target.style.color = '#004499';
+                                        e.target.style.borderBottomColor = '#004499';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.color = '#0066cc';
+                                        e.target.style.borderBottomColor = '#0066cc';
+                                    }}
+                                    onClick={() => dispatch(setOverexprPhenotype(true, ''))}
+                                >
+                                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                     Add details in online form
-                                </Button>
+                                </a>
                             </div>
                         </div>
                         <div className="row">

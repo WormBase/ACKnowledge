@@ -4,7 +4,7 @@ import {
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -59,7 +59,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the alleles extracted will be associated to this paper in WormBase</Alert>);
     } else {
         allelesListComponent = (
-            <MultiSelectRedesigned
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/variation"}
                 itemsNamePlural={"alleles"}
                 items={alleles}
@@ -79,7 +79,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the strains extracted will be associated to this paper in WormBase</Alert>);
     } else {
         strainsListComponent = (
-            <MultiSelectRedesigned
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/strain"}
                 itemsNamePlural={"strains"}
                 items={strains}
@@ -152,13 +152,30 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            onClick={() => {
-                                                dispatch(setSequenceChange(true, ''));
-                                                window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
-                                            }}>
+                                    <a 
+                                        href="https://wormbase.org/submissions/allele_sequence.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setSequenceChange(true, ''))}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Add details in online form
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                         </div>

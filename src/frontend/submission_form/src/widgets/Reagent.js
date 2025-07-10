@@ -9,7 +9,7 @@ import {
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -65,7 +65,7 @@ const Reagent = () => {
                         </OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultiSelectRedesigned
+                        <MultiSelect
                             linkWB={"https://wormbase.org/species/c_elegans/transgene"}
                             itemsNamePlural={"transgenes"}
                             items={transgenes}

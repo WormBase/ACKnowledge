@@ -105,59 +105,86 @@ const MultiSelect = (props) => {
     return (
         <div className="multiselect-redesigned">
             {/* Header with title and TPC badge */}
-            <div className="multiselect-header" style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                <h5 style={{margin: 0, flex: 1}}>
+            <div className="multiselect-header" style={{display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
+                <h4 style={{margin: 0, flex: 1, fontWeight: '600'}}>
                     {props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)} identified in the paper
-                </h5>
+                </h4>
                 <OverlayTrigger placement="top" overlay={tpcTooltip}>
-                    <Image src="tpc_powered.svg" width="80px"/>
+                    <Image src="tpc_powered.svg" width="70px"/>
                 </OverlayTrigger>
             </div>
 
-            {/* Action buttons */}
-            <div className="multiselect-actions" style={{marginBottom: '12px'}}>
+            {/* Subtle action buttons */}
+            <div className="multiselect-actions" style={{marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <Button 
-                    bsStyle={showAddMode ? "success" : "primary"}
+                    bsStyle={showAddMode ? "success" : "default"}
                     bsSize="small"
                     onClick={() => {
                         setShowAddMode(!showAddMode);
                         setShowRemovalMode(false);
                         setSelectedForRemoval(new Set());
                     }}
-                    style={{marginRight: '8px'}}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px',
+                        backgroundColor: showAddMode ? '#d4edda' : '#f8f9fa',
+                        borderColor: '#dee2e6',
+                        color: showAddMode ? '#155724' : '#6c757d'
+                    }}
                 >
-                    <Glyphicon glyph="plus"/> Add {props.itemsNamePlural}
+                    <Glyphicon glyph="plus" style={{fontSize: '10px', marginRight: '4px'}}/> Add
                 </Button>
                 
                 <Button 
-                    bsStyle={showRemovalMode ? "warning" : "primary"}
+                    bsStyle={showRemovalMode ? "warning" : "default"}
                     bsSize="small"
                     onClick={() => {
                         setShowRemovalMode(!showRemovalMode);
                         setShowAddMode(false);
                         setSelectedForRemoval(new Set());
                     }}
-                    style={{marginRight: '8px'}}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px',
+                        backgroundColor: showRemovalMode ? '#f8d7da' : '#f8f9fa',
+                        borderColor: '#dee2e6',
+                        color: showRemovalMode ? '#721c24' : '#6c757d'
+                    }}
                 >
-                    <Glyphicon glyph="minus"/> Remove {props.itemsNamePlural}
+                    <Glyphicon glyph="minus" style={{fontSize: '10px', marginRight: '4px'}}/> Remove
                 </Button>
 
+                <div style={{flex: 1}}></div>
+
                 <Button 
-                    bsStyle="link" 
+                    bsStyle="link"
                     bsSize="small"
                     onClick={handleExport}
-                    style={{marginRight: '8px'}}
+                    style={{
+                        fontSize: '11px',
+                        color: '#999',
+                        padding: '2px 6px',
+                        textDecoration: 'none'
+                    }}
+                    title="Export list"
                 >
-                    <Glyphicon glyph="download"/> Export
+                    <Glyphicon glyph="download" style={{fontSize: '10px', marginRight: '4px'}}/> Export
                 </Button>
 
                 {props.linkWB && selectedForRemoval.size > 0 && (
                     <Button 
-                        bsStyle="link" 
+                        bsStyle="link"
                         bsSize="small"
                         onClick={handleViewInWB}
+                        style={{
+                            fontSize: '11px',
+                            color: '#999',
+                            padding: '2px 6px',
+                            textDecoration: 'none'
+                        }}
+                        title="View in WormBase"
                     >
-                        <Glyphicon glyph="new-window"/> View in WB
+                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/> View in WB
                     </Button>
                 )}
             </div>
@@ -217,17 +244,19 @@ const MultiSelect = (props) => {
                     placeholder={`Filter ${props.itemsNamePlural}...`}
                     value={filterText}
                     onChange={(e) => setFilterText(e.target.value)}
-                    style={{marginBottom: '10px'}}
+                    style={{marginBottom: '12px', fontSize: '13px', padding: '6px 10px'}}
                 />
             )}
 
-            {/* Items display */}
+            {/* Items display - now more prominent */}
             <div className="multiselect-items" style={{
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                maxHeight: '300px',
+                border: '2px solid #d1d5db',
+                borderRadius: '6px',
+                maxHeight: '350px',
                 overflowY: 'auto',
-                padding: filteredItems.length === 0 ? '20px' : '8px'
+                padding: filteredItems.length === 0 ? '30px' : '12px',
+                backgroundColor: '#f8f9fa',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)'
             }}>
                 {filteredItems.length === 0 ? (
                     <div style={{textAlign: 'center', color: '#999'}}>
@@ -237,62 +266,81 @@ const MultiSelect = (props) => {
                     <div className="items-grid" style={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '4px'
+                        gap: '6px'
                     }}>
                         {filteredItems.sort().map((item, index) => {
-                            const isAdded = new Set(props.addedItems).has(item);
+                            const isAddedItem = new Set(props.addedItems).has(item);
                             const isSelectedForRemoval = selectedForRemoval.has(item);
+                            const wasOriginallyPresent = originalItems.has(item.trim());
+                            
+                            // Only show as "added" if it's truly new (wasn't in original)
+                            const isNewlyAdded = isAddedItem && !wasOriginallyPresent;
                             
                             return (
-                                <Label
+                                <span
                                     key={index}
-                                    bsStyle={
-                                        isSelectedForRemoval ? "danger" :
-                                        isAdded ? "primary" : "default"
-                                    }
                                     style={{
                                         cursor: 'pointer',
                                         margin: '0',
-                                        fontSize: '12px',
-                                        padding: '4px 8px',
+                                        fontSize: '13px',
+                                        fontWeight: '500',
+                                        padding: '8px 12px',
                                         display: 'inline-block',
-                                        maxWidth: '200px',
+                                        maxWidth: '250px',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
-                                        border: showRemovalMode ? '2px solid transparent' : 'none',
-                                        borderColor: isSelectedForRemoval ? '#d9534f' : 'transparent'
+                                        borderRadius: '4px',
+                                        backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
+                                                        isNewlyAdded ? '#cce7f0' : '#e8f0fe',
+                                        border: `1px solid ${isSelectedForRemoval ? '#f5c6cb' : 
+                                                              isNewlyAdded ? '#7db8d1' : '#6f92c4'}`,
+                                        color: isSelectedForRemoval ? '#721c24' : 
+                                               isNewlyAdded ? '#0c5460' : '#1a365d',
+                                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                        transition: 'all 0.2s ease'
                                     }}
                                     onClick={() => handleItemClick(item)}
                                     title={item}
+                                    onMouseOver={(e) => {
+                                        e.target.style.transform = 'translateY(-1px)';
+                                        e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.target.style.transform = 'translateY(0)';
+                                        e.target.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+                                    }}
                                 >
-                                    {isAdded && <Glyphicon glyph="plus" style={{marginRight: '4px'}}/>}
-                                    {item.length > 25 ? item.substring(0, 25) + '...' : item}
-                                </Label>
+                                    {isNewlyAdded && <Glyphicon glyph="plus" style={{marginRight: '6px', fontSize: '11px'}}/>}
+                                    {item.length > 30 ? item.substring(0, 30) + '...' : item}
+                                </span>
                             );
                         })}
                     </div>
                 )}
             </div>
 
-            {/* Summary info */}
+            {/* Summary info - more prominent */}
             <div style={{
-                marginTop: '8px', 
+                marginTop: '10px', 
                 fontSize: '12px', 
                 color: '#666',
                 display: 'flex',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderTop: '1px solid #dee2e6',
+                backgroundColor: '#f8f9fa'
             }}>
                 <span>
-                    Total: {filteredItems.length} {props.itemsNamePlural}
+                    {filteredItems.length} {props.itemsNamePlural}
                     {filterText && ` (filtered from ${props.items.length})`}
                 </span>
-                <div style={{display: 'flex', gap: '15px'}}>
-                    <span>
-                        Added: {netAdditions.length}
+                <div style={{display: 'flex', gap: '12px'}}>
+                    <span style={{color: netAdditions.length > 0 ? '#28a745' : '#999', fontWeight: '600'}}>
+                        {netAdditions.length} added
                     </span>
-                    <span>
-                        Removed: {netRemovals.length}
+                    <span style={{color: netRemovals.length > 0 ? '#dc3545' : '#999', fontWeight: '600'}}>
+                        {netRemovals.length} removed
                     </span>
                 </div>
             </div>

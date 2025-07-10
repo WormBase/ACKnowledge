@@ -5,7 +5,7 @@ import {
     Button, Checkbox, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
     addGene,
@@ -50,7 +50,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
         }}>here</a>. If you prefer not to, all the genes extracted will be associated to this paper in WormBase</Alert>);
     } else {
         geneListComponent = (
-            <MultiSelectRedesigned
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
                 itemsNamePlural={"genes"}
                 items={genes}
@@ -92,12 +92,30 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        dispatch(setGeneModel());
-                                        window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
-                                    }}>
+                                    <a 
+                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setGeneModel())}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Request New Gene Name
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -111,12 +129,30 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        dispatch(setGeneModel());
-                                        window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
-                                    }}>
+                                    <a 
+                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setGeneModel())}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Report Gene-Sequence
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                             <div className="row">
@@ -150,7 +186,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultiSelectRedesigned
+                        <MultiSelect
                             itemsNamePlural={"species"}
                             items={species}
                             addedItems={addedSpecies}

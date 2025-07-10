@@ -99,29 +99,59 @@ const PersonSelector = () => {
                 </div>
             </div>
             
-            <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px'}}>
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
                 <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>
                     Change user
                 </Button>
-                <Button 
-                    bsSize="xsmall" 
-                    bsStyle="primary"
-                    onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}
+                
+                <a 
+                    href="https://wormbase.org/submissions/person.cgi" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                        fontSize: '13px',
+                        color: '#0066cc',
+                        textDecoration: 'none',
+                        borderBottom: '1px solid #0066cc',
+                        fontWeight: '500'
+                    }}
+                    onMouseOver={(e) => {
+                        e.target.style.color = '#004499';
+                        e.target.style.borderBottomColor = '#004499';
+                    }}
+                    onMouseOut={(e) => {
+                        e.target.style.color = '#0066cc';
+                        e.target.style.borderBottomColor = '#0066cc';
+                    }}
                 >
+                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                     Request WBPerson
-                </Button>
-            </div>
-            
-            <div>
+                </a>
+                
                 <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
-                    <Button
-                        bsSize="small"
-                        bsStyle="info"
-                        onClick={() => {window.open('https://acp.acknowledge.textpressolab.com', '_blank')}}
-                        style={{width: '100%', fontSize: '12px'}}
+                    <a 
+                        href="https://acp.acknowledge.textpressolab.com" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                            fontSize: '13px',
+                            color: '#0066cc',
+                            textDecoration: 'none',
+                            borderBottom: '1px solid #0066cc',
+                            fontWeight: '500'
+                        }}
+                        onMouseOver={(e) => {
+                            e.target.style.color = '#004499';
+                            e.target.style.borderBottomColor = '#004499';
+                        }}
+                        onMouseOut={(e) => {
+                            e.target.style.color = '#0066cc';
+                            e.target.style.borderBottomColor = '#0066cc';
+                        }}
                     >
+                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                         ACKnowledge Author Portal
-                    </Button>
+                    </a>
                 </OverlayTrigger>
             </div>
             <Modal show={show} onHide={handleClose}>
