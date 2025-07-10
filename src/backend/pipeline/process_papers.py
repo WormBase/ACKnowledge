@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import time
 from datetime import datetime, timedelta
 
 from wbtools.db.dbmanager import WBDBManager
@@ -13,6 +14,53 @@ from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import *
 
 logger = logging.getLogger(__name__)
+
+
+def retry_with_backoff(func, max_retries=3, base_delay=1, backoff_factor=2, *args, **kwargs):
+    """
+    Retry a function with exponential backoff in case of errors.
+    
+    Args:
+        func: Function to retry
+        max_retries: Maximum number of retry attempts (default: 3)
+        base_delay: Initial delay in seconds (default: 1)
+        backoff_factor: Multiplier for delay after each retry (default: 2)
+        *args, **kwargs: Arguments to pass to the function
+    
+    Returns:
+        Result of the function call
+    
+    Raises:
+        The last exception raised after all retries are exhausted
+    """
+    last_exception = None
+    
+    for attempt in range(max_retries + 1):  # +1 for the initial attempt
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            if attempt < max_retries:
+                delay = base_delay * (backoff_factor ** attempt)
+                logger.warning(f"Attempt {attempt + 1} failed: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                logger.error(f"All {max_retries + 1} attempts failed. Last error: {str(e)}")
+    
+    raise last_exception
+
+
+def extract_meaningful_entities_with_retry(ntt_extractor, **kwargs):
+    """
+    Wrapper for extract_meaningful_entities_by_keywords with retry logic for Textpresso failures.
+    """
+    return retry_with_backoff(
+        ntt_extractor.extract_meaningful_entities_by_keywords,
+        max_retries=5,
+        base_delay=2,
+        backoff_factor=2,
+        **kwargs
+    )
 
 
 def main():
@@ -87,7 +135,8 @@ def main():
 
         logger.info("Getting list of genes")
 
-        meaningful_genes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
+        meaningful_genes_fulltext = extract_meaningful_entities_with_retry(
+            ntt_extractor,
             keywords=curated_genes,
             text=fulltext,
             lit_index=textpresso_lit_index,
@@ -106,7 +155,8 @@ def main():
 
         logger.info("Getting list of alleles")
 
-        meaningful_alleles_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
+        meaningful_alleles_fulltext = extract_meaningful_entities_with_retry(
+            ntt_extractor,
             keywords=curated_alleles, text=fulltext,
             lit_index=textpresso_lit_index,
             min_matches=config["ntt_extraction"]["min_occurrences"]["allele"],
@@ -121,7 +171,8 @@ def main():
 
         logger.info("Getting list of strains")
 
-        meaningful_strains_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
+        meaningful_strains_fulltext = extract_meaningful_entities_with_retry(
+            ntt_extractor,
             keywords=curated_strains, text=fulltext,
             lit_index=textpresso_lit_index,
             min_matches=config["ntt_extraction"]["min_occurrences"]["strain"],
@@ -136,7 +187,8 @@ def main():
 
         logger.info("Getting list of transgenes")
 
-        meaningful_transgenes_fulltext = ntt_extractor.extract_meaningful_entities_by_keywords(
+        meaningful_transgenes_fulltext = extract_meaningful_entities_with_retry(
+            ntt_extractor,
             keywords=curated_transgenes, text=fulltext,
             lit_index=textpresso_lit_index,
             min_matches=config["ntt_extraction"]["min_occurrences"]["transgene"],
