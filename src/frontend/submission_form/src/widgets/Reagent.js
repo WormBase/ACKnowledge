@@ -9,7 +9,7 @@ import {
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -65,17 +65,17 @@ const Reagent = () => {
                         </OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultipleSelect
+                        <MultiSelectRedesigned
                             linkWB={"https://wormbase.org/species/c_elegans/transgene"}
-                            itemsNameSingular={"transgene"}
                             itemsNamePlural={"transgenes"}
                             items={transgenes}
                             addedItems={addedTransgenes}
                             addItemFunction={(transgene) => dispatch(addTransgene(transgene))}
                             remItemFunction={(transgene) => dispatch(removeTransgene(transgene))}
                             searchType={"transgene"}
-                            sampleQuery={"e.g. ctIs40"}
-                            autocompletePlaceholder={"Enter one or more Transgene name or ID, e.g. inIs179 or WBTransgene00000647, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                            defaultExactMatchOnly={false}
+                            exactMatchTooltip={"Check this to search for exact transgene names only"}
+                            autocompletePlaceholder={"Type transgene names, one per line or separated by commas. For example:\nctIs40\nWBTransgene00000647"}
                         />
                     </Panel.Body>
                 </Panel>

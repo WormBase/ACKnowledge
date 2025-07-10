@@ -5,7 +5,7 @@ import {
     Button, Checkbox, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
     addGene,
@@ -50,19 +50,17 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
         }}>here</a>. If you prefer not to, all the genes extracted will be associated to this paper in WormBase</Alert>);
     } else {
         geneListComponent = (
-            <MultipleSelect
+            <MultiSelectRedesigned
                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
-                itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
                 items={genes}
                 addedItems={addedGenes}
                 addItemFunction={(gene) => dispatch(addGene(gene))}
                 remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
-                sampleQuery={"e.g. dbl-1"}
-                defaultExactMatchOnly={true}
-                exactMatchTooltip={'Uncheck this option to see genes from more species'}
-                autocompletePlaceholder={"Enter one or more gene name or ID, e.g. unc-26 or WBGene00006763, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                defaultExactMatchOnly={false}
+                exactMatchTooltip={'Check this to search for exact gene names only'}
+                autocompletePlaceholder={"Type gene names, one per line or separated by commas. For example:\nunc-26\ndpy-5\nWBGene00001234"}
             />);
     }
     return (
@@ -152,18 +150,16 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultipleSelect
-                            itemsNameSingular={"species"}
+                        <MultiSelectRedesigned
                             itemsNamePlural={"species"}
                             items={species}
                             addedItems={addedSpecies}
                             addItemFunction={(species) => dispatch(addSpecies(species))}
                             remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}
-                            sampleQuery={"e.g. Caenorhabditis"}
-                            defaultExactMatchOnly={false}
-                            autocompletePlaceholder={"Enter one or more species name, e.g. Caenorhabditis elegans, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
-                            hideListIDs
+                            defaultExactMatchOnly={true}
+                            exactMatchTooltip={'Species searches require exact matches for accuracy'}
+                            autocompletePlaceholder={"Type species names, one per line. For example:\nCaenorhabditis elegans\nCaenorhabditis briggsae\nDrosophila melanogaster"}
                         />
                     </Panel.Body>
                 </Panel>

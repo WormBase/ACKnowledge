@@ -4,7 +4,7 @@ import {
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelectRedesigned from "../components/multiselect/MultiSelectRedesigned";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -59,18 +59,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the alleles extracted will be associated to this paper in WormBase</Alert>);
     } else {
         allelesListComponent = (
-            <MultipleSelect
+            <MultiSelectRedesigned
                 linkWB={"https://wormbase.org/species/c_elegans/variation"}
-                itemsNameSingular={"allele"}
                 itemsNamePlural={"alleles"}
                 items={alleles}
                 addedItems={addedAlleles}
                 addItemFunction={(allele) => dispatch(addAllele(allele))}
                 remItemFunction={(allele) => dispatch(removeAllele(allele))}
                 searchType={"variation"}
-                sampleQuery={"e.g. e1000"}
                 defaultExactMatchOnly={true}
-                autocompletePlaceholder={"Enter one or more allele name or ID, e.g. e1000 or WBVar00143672, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                exactMatchTooltip={"Check this to search for exact allele names only"}
+                autocompletePlaceholder={"Type allele names, one per line or separated by commas. For example:\ne1000\nWBVar00143672"}
             />);
     }
     let strainsListComponent;
@@ -80,17 +79,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the strains extracted will be associated to this paper in WormBase</Alert>);
     } else {
         strainsListComponent = (
-            <MultipleSelect
+            <MultiSelectRedesigned
                 linkWB={"https://wormbase.org/species/c_elegans/strain"}
-                itemsNameSingular={"strain"}
                 itemsNamePlural={"strains"}
                 items={strains}
                 addedItems={addedStrains}
                 addItemFunction={(strain) => dispatch(addStrain(strain))}
                 remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}
-                sampleQuery={"e.g. CB4856"}
-                autocompletePlaceholder={"Enter one or more Strain name or ID, e.g. CB1001 or WBStrain00004222, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                defaultExactMatchOnly={false}
+                exactMatchTooltip={"Check this to search for exact strain names only"}
+                autocompletePlaceholder={"Type strain names, one per line or separated by commas. For example:\nCB4856\nWBStrain00004222"}
             />);
     }
     return (

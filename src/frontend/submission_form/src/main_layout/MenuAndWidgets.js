@@ -62,19 +62,19 @@ const MenuAndWidgets = (props) => {
     }
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-sm-4">
-                    <Menu urlQuery={props.location.search}/>
-                </div>
-                <div className="col-sm-8">
-                    <div className="panel panel-default">
-                        <div className="panel-body">
+        <div className="container" style={{maxWidth: '1400px', padding: '0 10px'}}>
+            <div className="row" style={{margin: '0 -5px'}}>
+                <div className="col-sm-3" style={{padding: '0 5px'}}>
+                    <div className="panel panel-default" style={{marginBottom: '10px'}}>
+                        <div className="panel-body" style={{padding: '8px'}}>
                             <PersonSelector/>
                         </div>
                     </div>
+                    <Menu urlQuery={props.location.search}/>
+                </div>
+                <div className="col-sm-9" style={{padding: '0 5px', paddingLeft: '15px'}}>
                     <div className="panel panel-default">
-                        <div className="panel-body">
+                        <div className="panel-body" style={{padding: '12px'}}>
                             <WidgetArea urlQuery={props.location.search} history={props.history}/>
                         </div>
                     </div>

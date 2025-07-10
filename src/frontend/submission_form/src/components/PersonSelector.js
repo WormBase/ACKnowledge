@@ -89,36 +89,41 @@ const PersonSelector = () => {
             </div>
     }
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-sm-6">
-                    WormBase User: <strong>{person.name}</strong> (WBPerson{person.personId})
+        <div className="person-selector-compact">
+            <div style={{marginBottom: '8px'}}>
+                <div style={{fontSize: '12px', color: '#666', marginBottom: '2px'}}>
+                    WormBase User:
                 </div>
-                <div className="col-sm-6" align="right">
-                    <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
-                    &nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}>
-                        Request new WB Person
+                <div style={{fontSize: '14px', fontWeight: 'bold', color: '#333'}}>
+                    {person.name} (WBPerson{person.personId})
+                </div>
+            </div>
+            
+            <div style={{display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px'}}>
+                <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>
+                    Change user
+                </Button>
+                <Button 
+                    bsSize="xsmall" 
+                    bsStyle="default" 
+                    onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}
+                    style={{fontSize: '11px'}}
+                >
+                    Request WBPerson
+                </Button>
+            </div>
+            
+            <div>
+                <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
+                    <Button
+                        bsSize="small"
+                        bsStyle="info"
+                        onClick={() => {window.open('https://acp.acknowledge.textpressolab.com', '_blank')}}
+                        style={{width: '100%', fontSize: '12px'}}
+                    >
+                        ACKnowledge Author Portal
                     </Button>
-                </div>
-            </div>
-            <div className="row">
-                <div>
-                    &nbsp;
-                </div>
-            </div>
-            <div className="row">
-
-                <div className="col-sm-12" align="left">
-                    <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
-                        <Button
-                            onClick={() => {window.open('https://acp.acknowledge.textpressolab.com', '_blank')}}
-                        >ACKnowledge author portal</Button>
-                    </OverlayTrigger>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-12">
-                </div>
+                </OverlayTrigger>
             </div>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
