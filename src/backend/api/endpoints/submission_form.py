@@ -57,6 +57,64 @@ class AutocompleteReader:
             raise falcon.HTTPInternalServerError("Error fetching autocomplete data")
 
 
+class DiseaseAutocompleteReader:
+
+    def __init__(self):
+        # We'll use the Disease Ontology API or WormBase disease endpoint
+        self.base_url = "https://www.disease-ontology.org/api/metadata/DOID"
+        
+    def on_get(self, req, resp):
+        search_term = req.get_param("userValue")
+        if not search_term:
+            raise falcon.HTTPBadRequest("Missing parameter", "'userValue' parameter is required.")
+        
+        try:
+            # First try WormBase disease endpoint
+            wb_url = f"https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=disease&userValue={search_term}"
+            try:
+                data = urlopen(wb_url)
+                wb_results = data.read().decode('utf-8')
+                if wb_results and wb_results.strip():
+                    resp.body = wb_results
+                    resp.status = falcon.HTTP_200
+                    return
+            except Exception:
+                pass
+            
+            # If WormBase doesn't have results, try a simple list of common diseases
+            # In production, this should query the Disease Ontology API
+            common_diseases = [
+                "Parkinson's disease",
+                "Alzheimer's disease",
+                "Huntington's disease",
+                "Amyotrophic lateral sclerosis",
+                "Multiple sclerosis",
+                "Epilepsy",
+                "Schizophrenia",
+                "Autism spectrum disorder",
+                "Depression",
+                "Anxiety disorder",
+                "Cancer",
+                "Diabetes mellitus",
+                "Cardiovascular disease",
+                "Inflammatory bowel disease",
+                "Rheumatoid arthritis"
+            ]
+            
+            # Filter diseases based on search term
+            search_lower = search_term.lower()
+            matching_diseases = [d for d in common_diseases if search_lower in d.lower()]
+            
+            # Format response similar to WormBase autocomplete
+            results = "\n".join(matching_diseases[:10])  # Limit to 10 results
+            resp.body = results
+            resp.status = falcon.HTTP_200
+            
+        except Exception as e:
+            logger.error(f"Error fetching disease autocomplete data: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching disease autocomplete data")
+
+
 class FeedbackFormReader:
 
     def __init__(self, db_manager: WBDBManager, admin_emails: List[str], email_passwd: str):

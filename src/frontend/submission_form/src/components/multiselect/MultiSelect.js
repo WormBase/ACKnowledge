@@ -104,14 +104,16 @@ const MultiSelect = (props) => {
 
     return (
         <div className="multiselect-redesigned">
-            {/* Header with title and TPC badge */}
+            {/* Header with title and optional TPC badge */}
             <div className="multiselect-header" style={{display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
                 <h4 style={{margin: 0, flex: 1, fontWeight: '600'}}>
-                    {props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)} identified in the paper
+                    {props.customTitle || `${props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)} identified in the paper`}
                 </h4>
-                <OverlayTrigger placement="top" overlay={tpcTooltip}>
-                    <Image src="tpc_powered.svg" width="70px"/>
-                </OverlayTrigger>
+                {props.showTpcBadge && (
+                    <OverlayTrigger placement="top" overlay={tpcTooltip}>
+                        <Image src="tpc_powered.svg" width="70px"/>
+                    </OverlayTrigger>
+                )}
             </div>
 
             {/* Subtle action buttons */}
@@ -192,15 +194,27 @@ const MultiSelect = (props) => {
             {/* Add mode with alert banner */}
             {showAddMode && (
                 <Alert bsStyle="success" style={{marginBottom: '12px'}}>
-                    <AutoComplete 
-                        close={() => setShowAddMode(false)}
-                        addItemFunction={props.addItemFunction}
-                        searchType={props.searchType}
-                        defaultExactMatchOnly={props.defaultExactMatchOnly}
-                        exactMatchTooltip={props.exactMatchTooltip}
-                        autocompletePlaceholder={props.autocompletePlaceholder}
-                        itemsNamePlural={props.itemsNamePlural}
-                    />
+                    {props.customAutoComplete ? 
+                        props.customAutoComplete({
+                            close: () => setShowAddMode(false),
+                            addItemFunction: props.addItemFunction,
+                            searchType: props.searchType,
+                            defaultExactMatchOnly: props.defaultExactMatchOnly,
+                            exactMatchTooltip: props.exactMatchTooltip,
+                            autocompletePlaceholder: props.autocompletePlaceholder,
+                            itemsNamePlural: props.itemsNamePlural
+                        })
+                        :
+                        <AutoComplete 
+                            close={() => setShowAddMode(false)}
+                            addItemFunction={props.addItemFunction}
+                            searchType={props.searchType}
+                            defaultExactMatchOnly={props.defaultExactMatchOnly}
+                            exactMatchTooltip={props.exactMatchTooltip}
+                            autocompletePlaceholder={props.autocompletePlaceholder}
+                            itemsNamePlural={props.itemsNamePlural}
+                        />
+                    }
                 </Alert>
             )}
 
@@ -260,7 +274,7 @@ const MultiSelect = (props) => {
             }}>
                 {filteredItems.length === 0 ? (
                     <div style={{textAlign: 'center', color: '#999'}}>
-                        {filterText ? `No ${props.itemsNamePlural} match your filter` : `No ${props.itemsNamePlural} found`}
+                        {filterText ? `No ${props.itemsNamePlural} match your filter` : (props.emptyStateText || `No ${props.itemsNamePlural} found`)}
                     </div>
                 ) : (
                     <div className="items-grid" style={{
@@ -364,14 +378,19 @@ MultiSelect.propTypes = {
     searchType: PropTypes.string,
     defaultExactMatchOnly: PropTypes.bool,
     exactMatchTooltip: PropTypes.string,
-    autocompletePlaceholder: PropTypes.string.isRequired
+    autocompletePlaceholder: PropTypes.string.isRequired,
+    customAutoComplete: PropTypes.func,
+    customTitle: PropTypes.string,
+    showTpcBadge: PropTypes.bool,
+    emptyStateText: PropTypes.string
 };
 
 MultiSelect.defaultProps = {
     items: [],
     addedItems: [],
     removedItems: [],
-    defaultExactMatchOnly: false
+    defaultExactMatchOnly: false,
+    showTpcBadge: true
 };
 
 export default MultiSelect;

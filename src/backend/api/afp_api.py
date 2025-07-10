@@ -11,7 +11,7 @@ from wbtools.db.dbmanager import WBDBManager
 from src.backend.api.endpoints.author_portal import AuthorPapersPageReader
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
 from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader, PaperInfoReader, \
-    AutocompleteReader
+    AutocompleteReader, DiseaseAutocompleteReader
 
 
 class HandleCORS(object):
@@ -68,6 +68,8 @@ def main():
     app.add_route('/api/read_paper_info', paper_info_reader)
     autocomplete_reader = AutocompleteReader()
     app.add_route('/api/read_autocomplete', autocomplete_reader)
+    disease_autocomplete_reader = DiseaseAutocompleteReader()
+    app.add_route('/api/read_disease_autocomplete', disease_autocomplete_reader)
     sentence_classifiers_path = "/var/sentence_classification_models/"
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=args.afp_base_url,
@@ -107,6 +109,8 @@ else:
     app.add_route('/api/read_paper_info', paper_info_reader)
     autocomplete_reader = AutocompleteReader()
     app.add_route('/api/read_autocomplete', autocomplete_reader)
+    disease_autocomplete_reader = DiseaseAutocompleteReader()
+    app.add_route('/api/read_disease_autocomplete', disease_autocomplete_reader)
     curator_dashboard_reader = CuratorDashboardReader(db_manager=db_manager,
                                                       afp_base_url=os.environ['AFP_BASE_URL'],
                                                       tazendra_username=os.environ['TAZENDRA_USER'],
