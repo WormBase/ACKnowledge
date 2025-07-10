@@ -60,8 +60,7 @@ class AutocompleteReader:
 class DiseaseAutocompleteReader:
 
     def __init__(self):
-        # We'll use the Disease Ontology API or WormBase disease endpoint
-        self.base_url = "https://www.disease-ontology.org/api/metadata/DOID"
+        pass
         
     def on_get(self, req, resp):
         search_term = req.get_param("userValue")
@@ -69,23 +68,10 @@ class DiseaseAutocompleteReader:
             raise falcon.HTTPBadRequest("Missing parameter", "'userValue' parameter is required.")
         
         try:
-            # First try WormBase disease endpoint
-            wb_url = f"https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR&objectType=disease&userValue={search_term}"
-            try:
-                data = urlopen(wb_url)
-                wb_results = data.read().decode('utf-8')
-                if wb_results and wb_results.strip():
-                    resp.body = wb_results
-                    resp.status = falcon.HTTP_200
-                    return
-            except Exception:
-                pass
-            
-            # If WormBase doesn't have results, try a simple list of common diseases
-            # In production, this should query the Disease Ontology API
+            # Comprehensive list of common diseases for autocomplete
             common_diseases = [
                 "Parkinson's disease",
-                "Alzheimer's disease",
+                "Alzheimer's disease", 
                 "Huntington's disease",
                 "Amyotrophic lateral sclerosis",
                 "Multiple sclerosis",
@@ -94,25 +80,206 @@ class DiseaseAutocompleteReader:
                 "Autism spectrum disorder",
                 "Depression",
                 "Anxiety disorder",
+                "Bipolar disorder",
                 "Cancer",
+                "Breast cancer",
+                "Lung cancer",
+                "Colorectal cancer",
+                "Prostate cancer",
+                "Ovarian cancer",
+                "Pancreatic cancer",
+                "Leukemia",
+                "Lymphoma",
+                "Melanoma",
                 "Diabetes mellitus",
+                "Type 1 diabetes",
+                "Type 2 diabetes",
+                "Diabetes mellitus type 1",
+                "Diabetes mellitus type 2", 
                 "Cardiovascular disease",
+                "Heart disease",
+                "Coronary artery disease",
+                "Myocardial infarction",
+                "Stroke",
+                "Hypertension",
+                "Atherosclerosis",
                 "Inflammatory bowel disease",
-                "Rheumatoid arthritis"
+                "Crohn's disease",
+                "Ulcerative colitis",
+                "Rheumatoid arthritis",
+                "Osteoarthritis",
+                "Lupus",
+                "Systemic lupus erythematosus",
+                "Fibromyalgia",
+                "Osteoporosis",
+                "Asthma",
+                "Chronic obstructive pulmonary disease",
+                "COPD",
+                "Tuberculosis",
+                "HIV/AIDS",
+                "Hepatitis B",
+                "Hepatitis C",
+                "Influenza",
+                "COVID-19",
+                "Obesity",
+                "Metabolic syndrome",
+                "Kidney disease",
+                "Chronic kidney disease",
+                "Liver disease",
+                "Cirrhosis",
+                "Psoriasis",
+                "Eczema",
+                "Atopic dermatitis",
+                "Sickle cell disease",
+                "Thalassemia",
+                "Hemophilia",
+                "Muscular dystrophy",
+                "Cystic fibrosis",
+                "Spina bifida",
+                "Down syndrome",
+                "Fragile X syndrome",
+                "Marfan syndrome",
+                "Ehlers-Danlos syndrome",
+                "Neurofibromatosis",
+                "Retinitis pigmentosa",
+                "Macular degeneration",
+                "Glaucoma",
+                "Cataracts",
+                "Blindness",
+                "Deafness",
+                "Hearing loss",
+                "Migraine",
+                "Cluster headache",
+                "Tension headache",
+                "Neuropathy",
+                "Peripheral neuropathy",
+                "Guillain-Barre syndrome",
+                "Myasthenia gravis",
+                "Bell's palsy",
+                "Trigeminal neuralgia",
+                "Restless leg syndrome",
+                "Sleep apnea",
+                "Narcolepsy",
+                "Insomnia",
+                "Chronic fatigue syndrome",
+                "Irritable bowel syndrome",
+                "Celiac disease",
+                "Lactose intolerance",
+                "Food allergy",
+                "Anaphylaxis",
+                "Allergic rhinitis",
+                "Hay fever",
+                "Sinusitis",
+                "Bronchitis",
+                "Pneumonia",
+                "Emphysema",
+                "Pulmonary fibrosis",
+                "Sarcoidosis",
+                "Mesothelioma",
+                "Endometriosis",
+                "Polycystic ovary syndrome",
+                "PCOS",
+                "Infertility",
+                "Erectile dysfunction",
+                "Benign prostatic hyperplasia",
+                "Urinary tract infection",
+                "Bladder cancer",
+                "Kidney stones",
+                "Gallstones",
+                "Gastroesophageal reflux disease",
+                "GERD",
+                "Peptic ulcer",
+                "Gastritis",
+                "Pancreatitis",
+                "Appendicitis",
+                "Diverticulitis",
+                "Hemorrhoids",
+                "Varicose veins",
+                "Deep vein thrombosis",
+                "Pulmonary embolism",
+                "Anemia",
+                "Iron deficiency anemia",
+                "Vitamin B12 deficiency",
+                "Scurvy",
+                "Rickets",
+                "Osteomalacia",
+                "Hyperthyroidism",
+                "Hypothyroidism",
+                "Thyroid cancer",
+                "Goiter",
+                "Addison's disease",
+                "Cushing's syndrome",
+                "Acromegaly",
+                "Gigantism",
+                "Dwarfism",
+                "Growth hormone deficiency",
+                "Precocious puberty",
+                "Delayed puberty",
+                "Menopause",
+                "Osteopetrosis",
+                "Osteogenesis imperfecta",
+                "Achondroplasia",
+                "Turner syndrome",
+                "Klinefelter syndrome",
+                "Prader-Willi syndrome",
+                "Angelman syndrome",
+                "Williams syndrome",
+                "DiGeorge syndrome",
+                "Phenylketonuria",
+                "Galactosemia",
+                "Maple syrup urine disease",
+                "Tay-Sachs disease",
+                "Gaucher disease",
+                "Niemann-Pick disease",
+                "Fabry disease",
+                "Pompe disease",
+                "Hurler syndrome",
+                "Hunter syndrome",
+                "Sanfilippo syndrome",
+                "Morquio syndrome",
+                "Maroteaux-Lamy syndrome",
+                "Sly syndrome",
+                "Beta-thalassemia",
+                "Alpha-thalassemia",
+                "Sickle cell anemia",
+                "Hereditary spherocytosis",
+                "G6PD deficiency",
+                "Von Willebrand disease",
+                "Factor V Leiden",
+                "Protein C deficiency",
+                "Protein S deficiency",
+                "Antithrombin deficiency"
             ]
             
-            # Filter diseases based on search term
+            # Filter diseases based on search term (case insensitive)
             search_lower = search_term.lower()
-            matching_diseases = [d for d in common_diseases if search_lower in d.lower()]
+            matching_diseases = []
             
-            # Format response similar to WormBase autocomplete
-            results = "\n".join(matching_diseases[:10])  # Limit to 10 results
-            resp.body = results
+            # First add exact matches and those starting with search term
+            for disease in common_diseases:
+                disease_lower = disease.lower()
+                if disease_lower == search_lower or disease_lower.startswith(search_lower):
+                    matching_diseases.append(disease)
+            
+            # Then add partial matches
+            for disease in common_diseases:
+                disease_lower = disease.lower()
+                if search_lower in disease_lower and disease not in matching_diseases:
+                    matching_diseases.append(disease)
+            
+            # Limit to 15 results for better performance
+            results = "\n".join(matching_diseases[:15])
+            
+            # Always return some results, even if empty
+            resp.body = results if results else ""
             resp.status = falcon.HTTP_200
+            logger.info(f"Disease autocomplete for '{search_term}' returned {len(matching_diseases)} results")
             
         except Exception as e:
-            logger.error(f"Error fetching disease autocomplete data: {e}")
-            raise falcon.HTTPInternalServerError("Error fetching disease autocomplete data")
+            logger.error(f"Error in disease autocomplete: {e}")
+            # Return empty result instead of error to prevent frontend crashes
+            resp.body = ""
+            resp.status = falcon.HTTP_200
 
 
 class FeedbackFormReader:

@@ -233,7 +233,7 @@ const DiseaseFetchAndSelect = ({ searchString, exactMatchOnly, addItemFunction, 
 
             <NoEntitiesSelectedModal
                 show={showNoEntitiesSelected}
-                onHide={() => setShowNoEntitiesSelected(false)}
+                close={() => setShowNoEntitiesSelected(false)}
             />
         </div>
     );
