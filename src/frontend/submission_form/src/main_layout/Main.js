@@ -31,7 +31,7 @@ const Main = ({location}) => {
                 <FetchErrorBanner />
                 <Header />
                 <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
-                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi} /><br/>
+                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi} />
                 <MenuAndWidgets />
             </LoadingOverlay>
         </div>

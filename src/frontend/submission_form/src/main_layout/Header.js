@@ -4,7 +4,7 @@ import Badge from "react-bootstrap/lib/Badge";
 
 const Header = () => {
     return (
-        <div className="container">
+        <div className="container" style={{marginBottom: '5px'}}>
             <div className="row">
                 <div className="col-sm-12">
                     <Image src="lockup-with-rule-color-100.jpg" width="100%" />
@@ -12,10 +12,8 @@ const Header = () => {
             </div>
             <div className="row">
                 <div className="col-sm-10">
-                    &nbsp;
                 </div>
                 <div className="col-sm-2" align="right">
-                    <br/>
                     <Badge>Release {process.env.REACT_APP_VERSION}</Badge>
                 </div>
             </div>
