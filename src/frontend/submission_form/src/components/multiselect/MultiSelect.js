@@ -16,7 +16,6 @@ import NoEntitiesSelectedModal from './NoEntitiesSelectedModal';
 const MultiSelect = (props) => {
     const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
     const [showAddMode, setShowAddMode] = useState(false);
-    const [filterText, setFilterText] = useState('');
     const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
     const [showRemovalMode, setShowRemovalMode] = useState(false);
     const originalItemsRef = useRef(null);
@@ -31,10 +30,8 @@ const MultiSelect = (props) => {
     
     const originalItems = originalItemsRef.current || new Set();
 
-    // Filter items based on search text
-    const filteredItems = items.filter(item => 
-        item.toLowerCase().includes(filterText.toLowerCase())
-    );
+    // No filtering needed anymore
+    const filteredItems = items;
 
     // Calculate what's currently present (from any source) - normalize by trimming spaces
     const addedItems = Array.isArray(props.addedItems) ? props.addedItems : [];
@@ -123,7 +120,7 @@ const MultiSelect = (props) => {
             {/* Subtle action buttons */}
             <div className="multiselect-actions" style={{marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <Button 
-                    bsStyle={showAddMode ? "success" : "default"}
+                    bsStyle={showAddMode ? "success" : "primary"}
                     bsSize="small"
                     onClick={() => {
                         setShowAddMode(!showAddMode);
@@ -142,7 +139,7 @@ const MultiSelect = (props) => {
                 </Button>
                 
                 <Button 
-                    bsStyle={showRemovalMode ? "warning" : "default"}
+                    bsStyle={showRemovalMode ? "warning" : "primary"}
                     bsSize="small"
                     onClick={() => {
                         setShowRemovalMode(!showRemovalMode);
@@ -255,30 +252,21 @@ const MultiSelect = (props) => {
                 </Alert>
             )}
 
-            {/* Filter input */}
-            {items.length > 5 && (
-                <FormControl
-                    type="text"
-                    placeholder={`Filter ${props.itemsNamePlural}...`}
-                    value={filterText}
-                    onChange={(e) => setFilterText(e.target.value)}
-                    style={{marginBottom: '12px', fontSize: '13px', padding: '6px 10px'}}
-                />
-            )}
 
             {/* Items display - now more prominent */}
             <div className="multiselect-items" style={{
                 border: '2px solid #d1d5db',
                 borderRadius: '6px',
                 maxHeight: '350px',
+                minHeight: 'auto',
                 overflowY: 'auto',
-                padding: filteredItems.length === 0 ? '30px' : '12px',
+                padding: filteredItems.length === 0 ? '15px' : '8px',
                 backgroundColor: '#f8f9fa',
                 boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)'
             }}>
                 {filteredItems.length === 0 ? (
                     <div style={{textAlign: 'center', color: '#999'}}>
-                        {filterText ? `No ${props.itemsNamePlural} match your filter` : (props.emptyStateText || `No ${props.itemsNamePlural} found`)}
+                        {props.emptyStateText || `No ${props.itemsNamePlural} found`}
                     </div>
                 ) : (
                     <div className="items-grid" style={{
@@ -351,7 +339,6 @@ const MultiSelect = (props) => {
             }}>
                 <span>
                     {filteredItems.length} {props.itemsNamePlural}
-                    {filterText && ` (filtered from ${items.length})`}
                 </span>
                 <div style={{display: 'flex', gap: '12px'}}>
                     <span style={{color: netAdditions.length > 0 ? '#28a745' : '#999', fontWeight: '600'}}>

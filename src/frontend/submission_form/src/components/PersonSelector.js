@@ -100,7 +100,7 @@ const PersonSelector = () => {
             </div>
             
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
-                <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>
+                <Button bsSize="small" bsStyle="primary" onClick={() => setShow(true)}>
                     Change user
                 </Button>
                 
@@ -235,7 +235,7 @@ const PersonSelector = () => {
                     </div>
                     <div>
                         <Button 
-                            bsStyle="default" 
+                            bsStyle="primary"
                             onClick={handleClose}
                             style={{marginRight: '10px'}}
                         >

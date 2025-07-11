@@ -29,6 +29,7 @@ body {
     background-color: #337ab7 !important;
     border-color: #337ab7 !important;
     background-image: none !important;
+    color: #ffffff !important;
 }
 
 .btn-primary:hover,
@@ -38,6 +39,7 @@ body {
     background-color: #2a6496 !important;
     border-color: #2a6496 !important;
     background-image: none !important;
+    color: #ffffff !important;
 }
 
 .btn-default {
@@ -72,10 +74,10 @@ body {
     background-image: none !important;
 }
 
-/* All buttons use the same color as selected menu items (#337ab7) */
+/* Success button - green */
 .btn-success {
-    background-color: #337ab7 !important;
-    border-color: #337ab7 !important;
+    background-color: #5cb85c !important;
+    border-color: #5cb85c !important;
     color: white !important;
     background-image: none !important;
 }
@@ -84,15 +86,15 @@ body {
 .btn-success:focus,
 .btn-success:active,
 .btn-success.active {
-    background-color: #2a6496 !important;
-    border-color: #2a6496 !important;
+    background-color: #4cae4c !important;
+    border-color: #4cae4c !important;
     color: white !important;
     background-image: none !important;
 }
 
 .btn-warning {
-    background-color: #337ab7 !important;
-    border-color: #337ab7 !important;
+    background-color: #f0ad4e !important;
+    border-color: #f0ad4e !important;
     color: white !important;
     background-image: none !important;
 }
@@ -101,8 +103,8 @@ body {
 .btn-warning:focus,
 .btn-warning:active,
 .btn-warning.active {
-    background-color: #2a6496 !important;
-    border-color: #2a6496 !important;
+    background-color: #ec971f !important;
+    border-color: #ec971f !important;
     color: white !important;
     background-image: none !important;
 }
@@ -122,4 +124,140 @@ body {
     border-color: #2a6496 !important;
     color: white !important;
     background-image: none !important;
+}
+
+/* Remove focus outline from all buttons */
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove focus outline from all button types */
+.btn-primary:focus,
+.btn-success:focus,
+.btn-info:focus,
+.btn-warning:focus,
+.btn-danger:focus,
+.btn-default:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove gradients from alerts and panels */
+.alert {
+    background-image: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-left-width: 4px !important;
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border-color: #c3e6cb !important;
+    border-left-color: #28a745 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border-color: #bee5eb !important;
+    border-left-color: #17a2b8 !important;
+}
+
+.alert-warning {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+    border-color: #ffeaa7 !important;
+    border-left-color: #ffc107 !important;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+    border-left-color: #dc3545 !important;
+}
+
+/* Remove gradients from panel headers */
+.panel-default > .panel-heading {
+    background-image: none !important;
+    background-color: #f5f5f5 !important;
+}
+
+.panel-primary > .panel-heading {
+    background-image: none !important;
+    background-color: #337ab7 !important;
+}
+
+/* Softer body background */
+body {
+    background-color: #f8f9fa !important;
+}
+
+/* Softer white for panels and cards */
+.panel {
+    background-color: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+}
+
+.panel-body {
+    background-color: #ffffff !important;
+}
+
+/* Muted form control backgrounds */
+.form-control {
+    background-color: #f8f9fa !important;
+    border-color: #ced4da !important;
+}
+
+.form-control:focus {
+    background-color: #ffffff !important;
+    border-color: #80bdff !important;
+}
+
+/* Slightly larger font size for links */
+a {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure inline links in paragraphs maintain readability */
+p a, 
+.alert a,
+td a {
+    font-size: 14px !important;
+}
+
+/* Navigation and button links can stay their current size */
+.nav a,
+.btn-link {
+    font-size: 14px !important;
+}
+
+/* External link icons should scale appropriately */
+a .glyphicon {
+    font-size: 11px !important;
+    margin-right: 4px !important;
+}
+
+/* Specific styling for external linkouts */
+a[target="_blank"] {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Override inline styles for linkouts in PersonSelector */
+.person-selector-compact a {
+    font-size: 14px !important;
+}
+
+/* Remove border from multiselect container */
+.multiselect-redesigned {
+    border: none !important;
+    box-shadow: none !important;
 }
