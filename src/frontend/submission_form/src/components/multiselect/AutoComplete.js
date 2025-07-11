@@ -15,9 +15,29 @@ const AutoComplete = ({
 }) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState("");
+    const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
+    const [availableItems, setAvailableItems] = useState([]);
+    const [hasResults, setHasResults] = useState(false);
 
     const handleSearchChange = (e) => {
         setSearchString(e.target.value);
+    };
+
+    const addMultipleItems = (addAll) => {
+        let itemsToAdd = tmpSelectedItems;
+        
+        if (addAll) {
+            itemsToAdd = new Set(availableItems.map(item => item.trim()));
+        }
+        
+        if (itemsToAdd.size > 0) {
+            [...itemsToAdd].forEach((item) => {
+                addItemFunction(item);
+            });
+            setTmpSelectedItems(new Set()); // Clear selection after adding
+            // Close the add interface after successfully adding items
+            close();
+        }
     };
 
     const tooltipComponent = exactMatchTooltip ? (
@@ -30,7 +50,25 @@ const AutoComplete = ({
                 <span>
                     <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them
                 </span>
-                <div>
+                <div style={{display: 'flex', gap: '8px'}}>
+                    <Button
+                        bsStyle="primary"
+                        bsSize="small"
+                        onClick={() => addMultipleItems(false)}
+                        disabled={tmpSelectedItems.size === 0}
+                    >
+                        Add Selected ({tmpSelectedItems.size})
+                    </Button>
+                    
+                    <Button
+                        bsStyle="primary"
+                        bsSize="small"
+                        onClick={() => addMultipleItems(true)}
+                        disabled={!hasResults}
+                    >
+                        Add All ({availableItems.length})
+                    </Button>
+                    
                     <Button 
                         bsStyle="primary"
                         bsSize="small" 
@@ -84,6 +122,9 @@ const AutoComplete = ({
                     addItemFunction={addItemFunction}
                     searchType={searchType}
                     close={close}
+                    onSelectedItemsChange={setTmpSelectedItems}
+                    onAvailableItemsChange={setAvailableItems}
+                    onHasResultsChange={setHasResults}
                 />
             )}
         </div>
