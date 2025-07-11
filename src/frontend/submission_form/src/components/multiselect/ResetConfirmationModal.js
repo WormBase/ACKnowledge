@@ -11,7 +11,7 @@ const ResetConfirmationModal = ({ show, onHide, onConfirm, itemsNamePlural, netA
                 <Modal.Title>Reset {itemsNamePlural}?</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <p>Are you sure you want to reset the {itemsNamePlural} list to its last saved state?</p>
+                <p>Are you sure you want to reset the {itemsNamePlural} list to the last loaded state?</p>
                 
                 {hasChanges && (
                     <div style={{marginTop: '12px', padding: '8px', backgroundColor: '#f8f9fa', borderRadius: '4px', fontSize: '12px'}}>

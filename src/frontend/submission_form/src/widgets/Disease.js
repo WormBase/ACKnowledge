@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from "react-bootstrap/es/Button";
 import {
-    Alert, Checkbox, Form, FormControl, Panel
+    Alert, Checkbox, Form, FormControl, Glyphicon, Panel
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -10,7 +10,7 @@ import DiseaseRequiredModal from "../components/modals/DiseaseRequiredModal";
 import {setDisease, toggleDisease, addDiseaseName, removeDiseaseName} from "../redux/actions/diseaseActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
 
 const Disease = () => {
@@ -32,6 +32,20 @@ const Disease = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    const payload = {
+                        disease: getCheckboxDBVal(disease.checked, disease.details),
+                        disease_list: diseaseNames,
+                        person_id: "two" + person.personId,
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.DISEASE));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Disease model data in the paper</Panel.Title>
@@ -116,7 +130,7 @@ Diabetes"
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     // Validate that if disease is checked, at least one disease name is selected
                     if (disease.checked && diseaseNames.length === 0) {
                         setShowDiseaseRequiredModal(true);
@@ -130,7 +144,7 @@ Diabetes"
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.DISEASE));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
             

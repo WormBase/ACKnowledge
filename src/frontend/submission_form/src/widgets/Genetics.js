@@ -18,7 +18,7 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import FormControl from "react-bootstrap/lib/FormControl";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
 import PropTypes from "prop-types";
@@ -102,6 +102,22 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    let payload = {
+                        alleles_list: transformEntitiesIntoAfpString(alleles, ""),
+                        allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
+                        other_alleles: JSON.stringify(otherAlleles),
+                        strains_list: transformEntitiesIntoAfpString(strains, ""),
+                        other_strains: JSON.stringify(otherStrains),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.GENETICS));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -214,7 +230,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         alleles_list: transformEntitiesIntoAfpString(alleles, ""),
                         allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
@@ -224,7 +240,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.GENETICS));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
             <Modal show={strainAlreadyPresentError} onHide={() => dispatch(setStrainAlreadyPresentError(false))}>

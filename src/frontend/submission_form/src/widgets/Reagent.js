@@ -21,7 +21,7 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 
 const Reagent = () => {
     const dispatch = useDispatch();
@@ -57,6 +57,21 @@ const Reagent = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    const payload = {
+                        transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
+                        new_transgenes: JSON.stringify(otherTransgenes),
+                        new_antibody: getCheckboxDBVal(newAntibodies.checked, newAntibodies.details),
+                        other_antibodies: JSON.stringify(otherAntibodies),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.REAGENT));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -136,7 +151,7 @@ const Reagent = () => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     const payload = {
                         transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
                         new_transgenes: JSON.stringify(otherTransgenes),
@@ -145,7 +160,7 @@ const Reagent = () => {
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.REAGENT));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>

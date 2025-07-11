@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal} from "../AFPValues";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 
 const Interactions = () => {
     const dispatch = useDispatch();
@@ -58,6 +58,20 @@ const Interactions = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    let payload = {
+                        gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
+                        phys_int: getCheckboxDBVal(geneprod.checked, geneprod.details),
+                        gene_reg: getCheckboxDBVal(genereg.checked, genereg.details),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.INTERACTIONS));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Interaction data in the paper</Panel.Title>
@@ -104,7 +118,7 @@ const Interactions = () => {
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
                         phys_int: getCheckboxDBVal(geneprod.checked, geneprod.details),
@@ -112,7 +126,7 @@ const Interactions = () => {
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.INTERACTIONS));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>

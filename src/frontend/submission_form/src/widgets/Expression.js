@@ -16,7 +16,7 @@ import {
 } from "../redux/actions/expressionActions";
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 
 const Expression = () =>{
     const dispatch = useDispatch();
@@ -72,6 +72,22 @@ const Expression = () =>{
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    let payload = {
+                        anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
+                        site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
+                        time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
+                        rnaseq: getCheckboxDBVal(rnaSeq.checked, rnaSeq.details),
+                        additional_expr: additionalExpr,
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.EXPRESSION));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Expression data in the paper</Panel.Title>
@@ -162,7 +178,7 @@ const Expression = () =>{
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
                         site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
@@ -172,7 +188,7 @@ const Expression = () =>{
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.EXPRESSION));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>

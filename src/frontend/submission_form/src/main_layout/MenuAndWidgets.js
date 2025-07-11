@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {withRouter} from "react-router-dom";
 import {SectionsNotCompletedModal, WelcomeModal, CompletedSubmissionModal} from "../components/modals/MainModals";
 import DataSavedModal from "../components/modals/DataSavedModal";
+import ProgressSavedModal from "../components/modals/ProgressSavedModal";
 import PersonSelector from "../components/PersonSelector";
 import {MENU_INDEX, pages, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
@@ -100,6 +101,7 @@ const MenuAndWidgets = (props) => {
                                                useSelector((state) => state.disease.isSavedToDB) ? -1 : WIDGET.DISEASE,
                                                useSelector((state) => state.comments.isSavedToDB) ? -1 : WIDGET.COMMENTS
                                            ].filter((widgetIdx) => widgetIdx !== -1 && widgetIdx !== WIDGET.COMMENTS).map((idx) => WIDGET_TITLE[idx])}/>
+                <ProgressSavedModal show={useSelector((state) => state.display.progressSaved)} />
             </div>
         </div>
     );

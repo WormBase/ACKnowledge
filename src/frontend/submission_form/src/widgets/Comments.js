@@ -174,7 +174,7 @@ const Other = () => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     if (allOtherWidgetsSavedToDB) {
                         const payload = {
                             comments: comments,

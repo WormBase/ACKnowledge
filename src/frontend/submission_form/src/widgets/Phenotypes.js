@@ -18,7 +18,7 @@ import {
 } from "../redux/actions/phenotypesActions";
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {useDispatch, useSelector} from "react-redux";
 
 const Phenotypes = () => {
@@ -48,6 +48,24 @@ const Phenotypes = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    let payload = {
+                        allele_pheno: getCheckboxDBVal(allelePheno.checked),
+                        rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
+                        transover_pheno: getCheckboxDBVal(overexprPheno.checked),
+                        chemical: getCheckboxDBVal(chemPheno.checked, chemPheno.details),
+                        env: getCheckboxDBVal(envPheno.checked, envPheno.details),
+                        protein: getCheckboxDBVal(enzymaticAct.checked, enzymaticAct.details),
+                        othergenefunc: getCheckboxDBVal(othergenefunc.checked, othergenefunc.details),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.PHENOTYPES));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Phenotype data in the paper</Panel.Title>
@@ -233,7 +251,7 @@ const Phenotypes = () => {
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         allele_pheno: getCheckboxDBVal(allelePheno.checked),
                         rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
@@ -245,7 +263,7 @@ const Phenotypes = () => {
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.PHENOTYPES));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>
