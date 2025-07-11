@@ -112,6 +112,34 @@ const MultiSelect = (props) => {
         });
     };
 
+    const handleReset = () => {
+        if (originalItems.size === 0) {
+            return; // Nothing to reset to
+        }
+
+        // Reset to original state by removing all added items and re-adding all original items
+        const currentItems = new Set(items.map(item => item.trim()));
+        
+        // Remove all items that weren't in the original list
+        [...currentItems].forEach(item => {
+            if (!originalItems.has(item)) {
+                props.remItemFunction(item);
+            }
+        });
+        
+        // Add back all original items that aren't currently present
+        [...originalItems].forEach(item => {
+            if (!currentItems.has(item)) {
+                props.addItemFunction(item);
+            }
+        });
+        
+        // Clear any active modes
+        setShowAddMode(false);
+        setShowRemovalMode(false);
+        setSelectedForRemoval(new Set());
+    };
+
     return (
         <div className="multiselect-redesigned">
             {/* Header with title and optional TPC badge */}
@@ -158,6 +186,20 @@ const MultiSelect = (props) => {
                     }}
                 >
                     <Glyphicon glyph="minus" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Remove
+                </Button>
+
+                <Button 
+                    className="multiselect-btn-subtle"
+                    bsSize="small"
+                    onClick={handleReset}
+                    disabled={originalItems.size === 0 || (netAdditions.length === 0 && netRemovals.length === 0)}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px'
+                    }}
+                    title="Reset to original list"
+                >
+                    <Glyphicon glyph="refresh" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Reset
                 </Button>
 
                 <div style={{flex: 1}}></div>
