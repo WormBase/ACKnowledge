@@ -207,7 +207,7 @@ const MultiSelect = (props) => {
                         fontSize: '12px',
                         padding: '4px 8px'
                     }}
-                    title="Reset to original list"
+                    title="Reset to last saved list"
                 >
                     <Glyphicon glyph="refresh" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Reset
                 </Button>
@@ -420,7 +420,7 @@ const MultiSelect = (props) => {
                                         whiteSpace: 'nowrap',
                                         borderRadius: '3px',
                                         backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
-                                                        isNewlyAdded ? '#d4edda' : '#e9ecef',
+                                                        isNewlyAdded ? '#d4edda' : '#f5f5f5',
                                         border: `1px solid ${isSelectedForRemoval ? '#dc3545' : 
                                                               isNewlyAdded ? '#28a745' : '#868e96'}`,
                                         color: isSelectedForRemoval ? '#721c24' : 

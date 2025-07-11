@@ -52,7 +52,7 @@ const AutoComplete = ({
                 </span>
                 <div style={{display: 'flex', gap: '8px'}}>
                     <Button
-                        bsStyle="success"
+                        className="multiselect-btn-success"
                         bsSize="small"
                         onClick={() => addMultipleItems(false)}
                         disabled={tmpSelectedItems.size === 0}
@@ -62,7 +62,7 @@ const AutoComplete = ({
                     </Button>
                     
                     <Button
-                        bsStyle="success"
+                        className="multiselect-btn-success"
                         bsSize="small"
                         onClick={() => addMultipleItems(true)}
                         disabled={!hasResults}

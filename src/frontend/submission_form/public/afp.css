@@ -76,32 +76,22 @@ body {
 
 /* Success button - green */
 .btn-success {
-    background-color: #7ed37e !important;
-    border-color: #7ed37e !important;
-    color: #000000 !important;
+    background-color: #5cb85c !important;
+    border-color: #5cb85c !important;
+    color: white !important;
     background-image: none !important;
-    text-shadow: none !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3) !important;
 }
 
 .btn-success:hover,
 .btn-success:focus,
 .btn-success:active,
 .btn-success.active {
-    background-color: #6bc96b !important;
-    border-color: #6bc96b !important;
-    color: #000000 !important;
+    background-color: #4cae4c !important;
+    border-color: #4cae4c !important;
+    color: white !important;
     background-image: none !important;
-    text-shadow: none !important;
-}
-
-.btn-success:disabled,
-.btn-success.disabled {
-    background-color: #b8e6b8 !important;
-    border-color: #b8e6b8 !important;
-    color: #666666 !important;
-    background-image: none !important;
-    text-shadow: none !important;
-    opacity: 1 !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
 }
 
 .btn-warning {
@@ -404,34 +394,36 @@ a[target="_blank"] {
     background-image: none !important;
 }
 
-/* Better contrast for success (green) buttons */
-.btn-success {
+/* Multiselect-specific success button styling */
+.multiselect-btn-success {
     background-color: #7ed37e !important;
     border-color: #7ed37e !important;
     color: #000000 !important;
     background-image: none !important;
     text-shadow: none !important;
+    border: 1px solid #7ed37e !important;
 }
 
-.btn-success:hover,
-.btn-success:focus,
-.btn-success:active,
-.btn-success.active {
+.multiselect-btn-success:hover,
+.multiselect-btn-success:focus,
+.multiselect-btn-success:active {
     background-color: #6bc96b !important;
     border-color: #6bc96b !important;
     color: #000000 !important;
     background-image: none !important;
     text-shadow: none !important;
+    box-shadow: none !important;
 }
 
-.btn-success:disabled,
-.btn-success.disabled {
+.multiselect-btn-success:disabled,
+.multiselect-btn-success.disabled {
     background-color: #b8e6b8 !important;
     border-color: #b8e6b8 !important;
     color: #666666 !important;
     background-image: none !important;
     text-shadow: none !important;
     opacity: 1 !important;
+    box-shadow: none !important;
 }
 
 /* Better contrast for warning (yellow) buttons */
