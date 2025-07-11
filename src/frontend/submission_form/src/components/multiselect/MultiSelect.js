@@ -21,6 +21,7 @@ const MultiSelect = (props) => {
     const [showRemovalMode, setShowRemovalMode] = useState(false);
     const [isVerticalLayout, setIsVerticalLayout] = useState(false);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+    const [showWbIds, setShowWbIds] = useState(true);
     const originalItemsRef = useRef(null);
     
     // Ensure props.items is always an array
@@ -113,6 +114,15 @@ const MultiSelect = (props) => {
                 window.open(props.linkWB + "/" + itemNameIdArr[1].slice(0, -2));
             }
         });
+    };
+
+    const formatItemDisplay = (item) => {
+        if (!showWbIds) {
+            // Hide WB IDs - show only the name part
+            let itemNameIdArr = item.split(' ( ');
+            return itemNameIdArr[0]; // Return just the name part
+        }
+        return item; // Show full item with WB ID
     };
 
     const handleReset = () => {
@@ -232,6 +242,20 @@ const MultiSelect = (props) => {
                     </Button>
                 </div>
 
+                <Button 
+                    className="multiselect-btn-subtle"
+                    bsSize="small"
+                    onClick={() => setShowWbIds(!showWbIds)}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px'
+                    }}
+                    title={showWbIds ? "Hide WormBase IDs" : "Show WormBase IDs"}
+                >
+                    <Glyphicon glyph={showWbIds ? "eye-close" : "eye-open"} style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> 
+                    {showWbIds ? "Hide IDs" : "Show IDs"}
+                </Button>
+
                 <div style={{flex: 1}}></div>
 
                 <Button 
@@ -296,27 +320,49 @@ const MultiSelect = (props) => {
 
             {/* Removal mode actions */}
             {showRemovalMode && (
-                <Alert bsStyle="warning" style={{marginBottom: '12px', padding: '8px'}}>
+                <Alert bsStyle="warning" style={{marginBottom: '12px'}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                         <span>
                             <strong>Removal Mode:</strong> Click on items below to select them for removal
                         </span>
-                        <div>
+                        <div style={{display: 'flex', gap: '5px'}}>
                             <Button 
-                                bsStyle="primary"
+                                bsStyle="warning"
                                 bsSize="small" 
                                 onClick={handleRemoveSelected}
                                 disabled={selectedForRemoval.size === 0}
-                                style={{marginRight: '5px'}}
                             >
+                                <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
                                 Remove Selected ({selectedForRemoval.size})
                             </Button>
                             <Button 
-                                bsStyle="primary"
+                                bsStyle="warning"
+                                bsSize="small" 
+                                onClick={() => {
+                                    if (filteredItems.length > 0) {
+                                        // Select all items and remove them immediately
+                                        filteredItems.forEach(item => {
+                                            props.remItemFunction(item);
+                                        });
+                                        setSelectedForRemoval(new Set());
+                                        setShowRemovalMode(false);
+                                    }
+                                }}
+                                disabled={filteredItems.length === 0}
+                            >
+                                <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
+                                Remove All ({filteredItems.length})
+                            </Button>
+                            <Button 
+                                className="cancel-btn-subtle"
                                 bsSize="small" 
                                 onClick={() => {
                                     setShowRemovalMode(false);
                                     setSelectedForRemoval(new Set());
+                                }}
+                                style={{
+                                    fontSize: '12px',
+                                    padding: '4px 8px'
                                 }}
                             >
                                 Cancel
@@ -394,7 +440,10 @@ const MultiSelect = (props) => {
                                     }}
                                 >
                                     {isNewlyAdded && <Glyphicon glyph="plus" style={{marginRight: '6px', fontSize: '11px'}}/>}
-                                    {isVerticalLayout ? item : (item.length > 30 ? item.substring(0, 30) + '...' : item)}
+                                    {(() => {
+                                        const displayItem = formatItemDisplay(item);
+                                        return isVerticalLayout ? displayItem : (displayItem.length > 30 ? displayItem.substring(0, 30) + '...' : displayItem);
+                                    })()}
                                 </span>
                             );
                         })}

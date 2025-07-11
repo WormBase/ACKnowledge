@@ -52,27 +52,33 @@ const AutoComplete = ({
                 </span>
                 <div style={{display: 'flex', gap: '8px'}}>
                     <Button
-                        bsStyle="primary"
+                        bsStyle="success"
                         bsSize="small"
                         onClick={() => addMultipleItems(false)}
                         disabled={tmpSelectedItems.size === 0}
                     >
+                        <Glyphicon glyph="plus" style={{marginRight: '4px'}} />
                         Add Selected ({tmpSelectedItems.size})
                     </Button>
                     
                     <Button
-                        bsStyle="primary"
+                        bsStyle="success"
                         bsSize="small"
                         onClick={() => addMultipleItems(true)}
                         disabled={!hasResults}
                     >
+                        <Glyphicon glyph="plus" style={{marginRight: '4px'}} />
                         Add All ({availableItems.length})
                     </Button>
                     
                     <Button 
-                        bsStyle="primary"
+                        className="cancel-btn-subtle"
                         bsSize="small" 
                         onClick={close}
+                        style={{
+                            fontSize: '12px',
+                            padding: '4px 8px'
+                        }}
                     >
                         Cancel
                     </Button>

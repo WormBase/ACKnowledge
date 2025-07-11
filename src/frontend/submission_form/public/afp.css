@@ -76,20 +76,32 @@ body {
 
 /* Success button - green */
 .btn-success {
-    background-color: #5cb85c !important;
-    border-color: #5cb85c !important;
-    color: white !important;
+    background-color: #7ed37e !important;
+    border-color: #7ed37e !important;
+    color: #000000 !important;
     background-image: none !important;
+    text-shadow: none !important;
 }
 
 .btn-success:hover,
 .btn-success:focus,
 .btn-success:active,
 .btn-success.active {
-    background-color: #4cae4c !important;
-    border-color: #4cae4c !important;
-    color: white !important;
+    background-color: #6bc96b !important;
+    border-color: #6bc96b !important;
+    color: #000000 !important;
     background-image: none !important;
+    text-shadow: none !important;
+}
+
+.btn-success:disabled,
+.btn-success.disabled {
+    background-color: #b8e6b8 !important;
+    border-color: #b8e6b8 !important;
+    color: #666666 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
 }
 
 .btn-warning {
@@ -369,4 +381,69 @@ a[target="_blank"] {
 
 .modal-dialog {
     margin: 0 auto !important;
+}
+
+/* Subtle cancel button styling */
+.cancel-btn-subtle {
+    background-color: #e9ecef !important;
+    border: 1px solid #adb5bd !important;
+    color: #495057 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+.cancel-btn-subtle:hover,
+.cancel-btn-subtle:focus,
+.cancel-btn-subtle:active {
+    background-color: #dee2e6 !important;
+    border-color: #868e96 !important;
+    color: #343a40 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+/* Better contrast for success (green) buttons */
+.btn-success {
+    background-color: #7ed37e !important;
+    border-color: #7ed37e !important;
+    color: #000000 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active {
+    background-color: #6bc96b !important;
+    border-color: #6bc96b !important;
+    color: #000000 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+}
+
+.btn-success:disabled,
+.btn-success.disabled {
+    background-color: #b8e6b8 !important;
+    border-color: #b8e6b8 !important;
+    color: #666666 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* Better contrast for warning (yellow) buttons */
+.btn-warning {
+    color: #000000 !important;
+    text-shadow: none !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    color: #000000 !important;
+    text-shadow: none !important;
 }
