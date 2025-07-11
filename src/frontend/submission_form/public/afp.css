@@ -264,18 +264,18 @@ a[target="_blank"] {
 
 /* Subtle multiselect action buttons */
 .multiselect-btn-subtle {
-    background-color: #e9ecef !important;
-    border-color: #adb5bd !important;
-    color: #495057 !important;
-    border: 1px solid #adb5bd !important;
+    background-color: #e3f2fd !important;
+    border-color: #90caf9 !important;
+    color: #1565c0 !important;
+    border: 1px solid #90caf9 !important;
 }
 
 .multiselect-btn-subtle:hover,
 .multiselect-btn-subtle:focus,
 .multiselect-btn-subtle:active {
-    background-color: #dee2e6 !important;
-    border-color: #868e96 !important;
-    color: #343a40 !important;
+    background-color: #bbdefb !important;
+    border-color: #64b5f6 !important;
+    color: #0d47a1 !important;
     box-shadow: none !important;
 }
 
@@ -306,4 +306,48 @@ a[target="_blank"] {
     border-color: #868e96 !important;
     color: #343a40 !important;
     box-shadow: none !important;
+}
+
+/* Replace pill highlighting with underline for menu navigation */
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+    color: #337ab7 !important;
+    background-color: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-color: #337ab7 !important;
+    text-decoration-thickness: 3px !important;
+    text-underline-offset: 3px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Remove background/padding/shadow from nav-pills */
+.nav-pills {
+    background-color: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Hover effect for menu items */
+.nav-pills > li > a:hover {
+    color: #337ab7 !important;
+    background-color: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(51, 122, 183, 0.7) !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 3px !important;
+}
+
+/* Default state for menu items */
+.nav-pills > li > a {
+    color: #333 !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
+}
+
+/* Keep tick icons blue at all times */
+.nav-pills .glyphicon-ok {
+    color: #337ab7 !important;
 }

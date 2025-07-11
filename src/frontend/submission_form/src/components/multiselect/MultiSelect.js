@@ -292,11 +292,11 @@ const MultiSelect = (props) => {
                                         whiteSpace: 'nowrap',
                                         borderRadius: '3px',
                                         backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
-                                                        isNewlyAdded ? '#cce7f0' : '#e8f0fe',
+                                                        isNewlyAdded ? '#d4edda' : '#e9ecef',
                                         border: `1px solid ${isSelectedForRemoval ? '#f5c6cb' : 
-                                                              isNewlyAdded ? '#7db8d1' : '#6f92c4'}`,
+                                                              isNewlyAdded ? '#c3e6cb' : '#868e96'}`,
                                         color: isSelectedForRemoval ? '#721c24' : 
-                                               isNewlyAdded ? '#0c5460' : '#1a365d',
+                                               isNewlyAdded ? '#155724' : '#343a40',
                                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                                         transition: 'all 0.2s ease'
                                     }}
