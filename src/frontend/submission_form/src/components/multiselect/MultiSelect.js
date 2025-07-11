@@ -33,13 +33,22 @@ const MultiSelect = (props) => {
     // No filtering needed anymore
     const filteredItems = items;
 
-    // Calculate what's currently present (from any source) - normalize by trimming spaces
+    // Calculate what's currently present - normalize by trimming spaces
     const addedItems = Array.isArray(props.addedItems) ? props.addedItems : [];
-    const normalizedCurrentItems = [...items, ...addedItems].map(item => item.trim());
+    const normalizedCurrentItems = [...items].map(item => item.trim());
     const allCurrentItems = new Set(normalizedCurrentItems);
     
-    // Net changes: compare current state vs original state (originalItems already normalized)
+    // Calculate net changes by comparing current state vs original state
+    // This works correctly because:
+    // 1. originalItems = what was there initially
+    // 2. allCurrentItems = what's there now (items array reflects current reality)
+    // 3. Net additions = currently present items that weren't originally there
+    // 4. Net removals = originally present items that aren't currently there
+    
+    // Net additions: items currently present that weren't in the original set
     const netAdditions = [...allCurrentItems].filter(item => !originalItems.has(item));
+    
+    // Net removals: items that were originally present but aren't currently present
     const netRemovals = [...originalItems].filter(item => !allCurrentItems.has(item));
 
     const tpcTooltip = (
