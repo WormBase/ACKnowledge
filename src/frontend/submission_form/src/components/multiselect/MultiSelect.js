@@ -12,12 +12,15 @@ import {
 } from 'react-bootstrap';
 import AutoComplete from './AutoComplete';
 import NoEntitiesSelectedModal from './NoEntitiesSelectedModal';
+import ResetConfirmationModal from './ResetConfirmationModal';
 
 const MultiSelect = (props) => {
     const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
     const [showAddMode, setShowAddMode] = useState(false);
     const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
     const [showRemovalMode, setShowRemovalMode] = useState(false);
+    const [isVerticalLayout, setIsVerticalLayout] = useState(false);
+    const [showResetConfirmation, setShowResetConfirmation] = useState(false);
     const originalItemsRef = useRef(null);
     
     // Ensure props.items is always an array
@@ -117,21 +120,18 @@ const MultiSelect = (props) => {
             return; // Nothing to reset to
         }
 
-        // Reset to original state by removing all added items and re-adding all original items
-        const currentItems = new Set(items.map(item => item.trim()));
+        // Get all net additions and removals to undo them
+        const netAdditions = [...allCurrentItems].filter(item => !originalItems.has(item));
+        const netRemovals = [...originalItems].filter(item => !allCurrentItems.has(item));
         
-        // Remove all items that weren't in the original list
-        [...currentItems].forEach(item => {
-            if (!originalItems.has(item)) {
-                props.remItemFunction(item);
-            }
+        // Remove all net additions (items that were added)
+        netAdditions.forEach(item => {
+            props.remItemFunction(item);
         });
         
-        // Add back all original items that aren't currently present
-        [...originalItems].forEach(item => {
-            if (!currentItems.has(item)) {
-                props.addItemFunction(item);
-            }
+        // Add back all net removals (items that were removed)
+        netRemovals.forEach(item => {
+            props.addItemFunction(item);
         });
         
         // Clear any active modes
@@ -191,7 +191,7 @@ const MultiSelect = (props) => {
                 <Button 
                     className="multiselect-btn-subtle"
                     bsSize="small"
-                    onClick={handleReset}
+                    onClick={() => setShowResetConfirmation(true)}
                     disabled={originalItems.size === 0 || (netAdditions.length === 0 && netRemovals.length === 0)}
                     style={{
                         fontSize: '12px',
@@ -201,6 +201,36 @@ const MultiSelect = (props) => {
                 >
                     <Glyphicon glyph="refresh" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Reset
                 </Button>
+
+                <div style={{display: 'flex', gap: '2px'}}>
+                    <Button 
+                        className={`multiselect-btn-subtle ${!isVerticalLayout ? 'active-layout' : ''}`}
+                        bsSize="small"
+                        onClick={() => setIsVerticalLayout(false)}
+                        style={{
+                            fontSize: '12px',
+                            padding: '4px 8px'
+                        }}
+                        title="Grid layout"
+                    >
+                        <Glyphicon glyph="th" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> 
+                        Grid
+                    </Button>
+                    
+                    <Button 
+                        className={`multiselect-btn-subtle ${isVerticalLayout ? 'active-layout' : ''}`}
+                        bsSize="small"
+                        onClick={() => setIsVerticalLayout(true)}
+                        style={{
+                            fontSize: '12px',
+                            padding: '4px 8px'
+                        }}
+                        title="List layout"
+                    >
+                        <Glyphicon glyph="th-list" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> 
+                        List
+                    </Button>
+                </div>
 
                 <div style={{flex: 1}}></div>
 
@@ -270,7 +300,6 @@ const MultiSelect = (props) => {
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                         <span>
                             <strong>Removal Mode:</strong> Click on items below to select them for removal
-                            {selectedForRemoval.size > 0 && ` (${selectedForRemoval.size} selected)`}
                         </span>
                         <div>
                             <Button 
@@ -280,7 +309,7 @@ const MultiSelect = (props) => {
                                 disabled={selectedForRemoval.size === 0}
                                 style={{marginRight: '5px'}}
                             >
-                                Remove Selected
+                                Remove Selected ({selectedForRemoval.size})
                             </Button>
                             <Button 
                                 bsStyle="primary"
@@ -314,10 +343,11 @@ const MultiSelect = (props) => {
                         {props.emptyStateText || `No ${props.itemsNamePlural} found`}
                     </div>
                 ) : (
-                    <div className="items-grid" style={{
+                    <div className={isVerticalLayout ? "items-list" : "items-grid"} style={{
                         display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '4px'
+                        flexDirection: isVerticalLayout ? 'column' : 'row',
+                        flexWrap: isVerticalLayout ? 'nowrap' : 'wrap',
+                        gap: isVerticalLayout ? '2px' : '4px'
                     }}>
                         {filteredItems.sort().map((item, index) => {
                             const isAddedItem = new Set(addedItems).has(item);
@@ -335,17 +365,18 @@ const MultiSelect = (props) => {
                                         margin: '0',
                                         fontSize: '12px',
                                         fontWeight: '500',
-                                        padding: '6px 8px',
-                                        display: 'inline-block',
-                                        maxWidth: '250px',
+                                        padding: isVerticalLayout ? '4px 8px' : '6px 8px',
+                                        display: isVerticalLayout ? 'block' : 'inline-block',
+                                        maxWidth: isVerticalLayout ? 'none' : '250px',
+                                        width: isVerticalLayout ? '100%' : 'auto',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                         borderRadius: '3px',
                                         backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
                                                         isNewlyAdded ? '#d4edda' : '#e9ecef',
-                                        border: `1px solid ${isSelectedForRemoval ? '#f5c6cb' : 
-                                                              isNewlyAdded ? '#c3e6cb' : '#868e96'}`,
+                                        border: `1px solid ${isSelectedForRemoval ? '#dc3545' : 
+                                                              isNewlyAdded ? '#28a745' : '#868e96'}`,
                                         color: isSelectedForRemoval ? '#721c24' : 
                                                isNewlyAdded ? '#155724' : '#343a40',
                                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
@@ -354,16 +385,16 @@ const MultiSelect = (props) => {
                                     onClick={() => handleItemClick(item)}
                                     title={item}
                                     onMouseOver={(e) => {
-                                        e.target.style.transform = 'translateY(-1px)';
+                                        e.target.style.transform = isVerticalLayout ? 'translateX(2px)' : 'translateY(-1px)';
                                         e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
                                     }}
                                     onMouseOut={(e) => {
-                                        e.target.style.transform = 'translateY(0)';
+                                        e.target.style.transform = isVerticalLayout ? 'translateX(0)' : 'translateY(0)';
                                         e.target.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
                                     }}
                                 >
                                     {isNewlyAdded && <Glyphicon glyph="plus" style={{marginRight: '6px', fontSize: '11px'}}/>}
-                                    {item.length > 30 ? item.substring(0, 30) + '...' : item}
+                                    {isVerticalLayout ? item : (item.length > 30 ? item.substring(0, 30) + '...' : item)}
                                 </span>
                             );
                         })}
@@ -398,6 +429,18 @@ const MultiSelect = (props) => {
             <NoEntitiesSelectedModal 
                 show={showNoEntitiesSelected} 
                 close={() => setShowNoEntitiesSelected(false)}
+            />
+            
+            <ResetConfirmationModal
+                show={showResetConfirmation}
+                onHide={() => setShowResetConfirmation(false)}
+                onConfirm={() => {
+                    handleReset();
+                    setShowResetConfirmation(false);
+                }}
+                itemsNamePlural={props.itemsNamePlural}
+                netAdditions={netAdditions.length}
+                netRemovals={netRemovals.length}
             />
         </div>
     );

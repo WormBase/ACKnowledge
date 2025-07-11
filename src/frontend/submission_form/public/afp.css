@@ -291,6 +291,15 @@ a[target="_blank"] {
     color: #856404 !important;
 }
 
+.multiselect-btn-subtle.active-layout {
+    background-color: #bbdefb !important;
+    border-color: #64b5f6 !important;
+    color: #1565c0 !important;
+    font-weight: normal !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
 /* Subtle gray styling for change user button */
 .change-user-btn-subtle {
     background-color: #e9ecef !important;
@@ -350,4 +359,14 @@ a[target="_blank"] {
 /* Keep tick icons blue at all times */
 .nav-pills .glyphicon-ok {
     color: #337ab7 !important;
+}
+
+/* Center modal vertically */
+.modal {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.modal-dialog {
+    margin: 0 auto !important;
 }
