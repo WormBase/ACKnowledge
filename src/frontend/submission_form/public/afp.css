@@ -261,3 +261,49 @@ a[target="_blank"] {
     border: none !important;
     box-shadow: none !important;
 }
+
+/* Subtle multiselect action buttons */
+.multiselect-btn-subtle {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+    border: 1px solid #adb5bd !important;
+}
+
+.multiselect-btn-subtle:hover,
+.multiselect-btn-subtle:focus,
+.multiselect-btn-subtle:active {
+    background-color: #dee2e6 !important;
+    border-color: #868e96 !important;
+    color: #343a40 !important;
+    box-shadow: none !important;
+}
+
+.multiselect-btn-subtle.active-add {
+    background-color: #e8f5e8 !important;
+    border-color: #c8e6c9 !important;
+    color: #2d5a2d !important;
+}
+
+.multiselect-btn-subtle.active-remove {
+    background-color: #fff3cd !important;
+    border-color: #ffeaa7 !important;
+    color: #856404 !important;
+}
+
+/* Subtle gray styling for change user button */
+.change-user-btn-subtle {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+    border: 1px solid #adb5bd !important;
+}
+
+.change-user-btn-subtle:hover,
+.change-user-btn-subtle:focus,
+.change-user-btn-subtle:active {
+    background-color: #dee2e6 !important;
+    border-color: #868e96 !important;
+    color: #343a40 !important;
+    box-shadow: none !important;
+}

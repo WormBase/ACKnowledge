@@ -100,7 +100,15 @@ const PersonSelector = () => {
             </div>
             
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
-                <Button bsSize="small" bsStyle="primary" onClick={() => setShow(true)}>
+                <Button 
+                    className="change-user-btn-subtle"
+                    bsSize="small" 
+                    onClick={() => setShow(true)}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px'
+                    }}
+                >
                     Change user
                 </Button>
                 

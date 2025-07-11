@@ -120,7 +120,7 @@ const MultiSelect = (props) => {
             {/* Subtle action buttons */}
             <div className="multiselect-actions" style={{marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <Button 
-                    bsStyle={showAddMode ? "success" : "primary"}
+                    className={`multiselect-btn-subtle ${showAddMode ? 'active-add' : ''}`}
                     bsSize="small"
                     onClick={() => {
                         setShowAddMode(!showAddMode);
@@ -129,17 +129,14 @@ const MultiSelect = (props) => {
                     }}
                     style={{
                         fontSize: '12px',
-                        padding: '4px 8px',
-                        backgroundColor: showAddMode ? '#d4edda' : '#f8f9fa',
-                        borderColor: '#dee2e6',
-                        color: showAddMode ? '#155724' : '#6c757d'
+                        padding: '4px 8px'
                     }}
                 >
-                    <Glyphicon glyph="plus" style={{fontSize: '10px', marginRight: '4px'}}/> Add
+                    <Glyphicon glyph="plus" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Add
                 </Button>
                 
                 <Button 
-                    bsStyle={showRemovalMode ? "warning" : "primary"}
+                    className={`multiselect-btn-subtle ${showRemovalMode ? 'active-remove' : ''}`}
                     bsSize="small"
                     onClick={() => {
                         setShowRemovalMode(!showRemovalMode);
@@ -148,13 +145,10 @@ const MultiSelect = (props) => {
                     }}
                     style={{
                         fontSize: '12px',
-                        padding: '4px 8px',
-                        backgroundColor: showRemovalMode ? '#f8d7da' : '#f8f9fa',
-                        borderColor: '#dee2e6',
-                        color: showRemovalMode ? '#721c24' : '#6c757d'
+                        padding: '4px 8px'
                     }}
                 >
-                    <Glyphicon glyph="minus" style={{fontSize: '10px', marginRight: '4px'}}/> Remove
+                    <Glyphicon glyph="minus" style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> Remove
                 </Button>
 
                 <div style={{flex: 1}}></div>
