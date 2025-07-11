@@ -42,7 +42,7 @@ import {
     setRnaiPhenotype
 } from "./phenotypesActions";
 import {setDisease, setIsDiseaseSavedToDB, setDiseaseNames} from "./diseaseActions";
-import {setComments, setIsCommentsSavedToDB, setOtherCCContacts} from "./commentsActions";
+import {setComments, setIsCommentsSavedToDB} from "./commentsActions";
 import {showDataFetchError} from "./displayActions";
 
 export const STORE_PAPER_INFO = "STORE_PAPER_INFO";
@@ -183,9 +183,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 // Comments
                 let comments = getCheckbxOrSingleFieldFromWBAPIData(result.data.comment, undefined);
                 dispatch(setComments(comments.details()));
-                let otherCCContacts = getCheckbxOrSingleFieldFromWBAPIData(result.data.communitycontact, undefined);
-                dispatch(setOtherCCContacts(otherCCContacts.details()));
-                if (comments.prevSaved() && otherCCContacts.prevSaved()) {
+                if (comments.prevSaved()) {
                     dispatch(setIsCommentsSavedToDB());
                 }
                 dispatch(fetchPaperDataSuccess());

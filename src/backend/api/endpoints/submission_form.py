@@ -61,227 +61,21 @@ class AutocompleteReader:
 class DiseaseAutocompleteReader:
 
     def __init__(self):
-        # Using EMBL-EBI OLS API which provides access to Disease Ontology (DOID)
-        self.ols_api_base = "https://www.ebi.ac.uk/ols/api"
-        self.fallback_diseases = [
-            "Parkinson's disease",
-            "Alzheimer's disease", 
-            "Huntington's disease",
-            "Amyotrophic lateral sclerosis",
-            "Multiple sclerosis",
-            "Epilepsy",
-            "Schizophrenia",
-            "Autism spectrum disorder",
-            "Depression",
-            "Anxiety disorder",
-            "Cancer",
-            "Breast cancer",
-            "Diabetes mellitus",
-            "Cardiovascular disease",
-            "Inflammatory bowel disease",
-            "Rheumatoid arthritis",
-            "Asthma",
-            "COPD",
-            "HIV/AIDS",
-            "COVID-19"
-        ]
-        
-    def search_disease_ontology(self, search_term):
-        """Search Disease Ontology via multiple APIs for matching terms"""
-        # Try OLS API first
-        diseases = self._search_ols_api(search_term)
-        if diseases:
-            return diseases
-            
-        # Try simplified Disease Ontology search
-        diseases = self._search_simple_do(search_term)
-        if diseases:
-            return diseases
-            
-        return []
-        
-    def _search_ols_api(self, search_term):
-        """Search using OLS API"""
-        try:
-            # Search DOID (Disease Ontology) via OLS API
-            search_url = (f"{self.ols_api_base}/search?q={urllib.parse.quote(search_term)}"
-                         f"&ontology=doid&rows=15&exact=false")
-            
-            with urlopen(search_url, timeout=6) as response:
-                if response.status == 200:
-                    data = json.loads(response.read().decode('utf-8'))
-                    
-                    diseases = []
-                    if 'response' in data and 'docs' in data['response']:
-                        for doc in data['response']['docs']:
-                            if 'label' in doc:
-                                disease_name = doc['label']
-                                diseases.append(disease_name)
-                    
-                    return diseases
-                    
-        except Exception as e:
-            logger.warning(f"OLS Disease Ontology API error: {e}")
-            
-        return []
-        
-    def _search_simple_do(self, search_term):
-        """Fallback search using expanded disease terms"""
-        # Expanded disease terms database for better matching
-        extended_diseases = [
-            # Neurological diseases
-            "Parkinson's disease", "Parkinson disease",
-            "Alzheimer's disease", "Alzheimer disease", 
-            "Huntington's disease", "Huntington disease",
-            "Amyotrophic lateral sclerosis", "ALS", "Lou Gehrig's disease",
-            "Multiple sclerosis", "MS",
-            "Epilepsy", "Seizure disorder",
-            "Migraine", "Tension headache", "Cluster headache",
-            "Stroke", "Cerebrovascular accident", "CVA",
-            "Dementia", "Vascular dementia",
-            
-            # Psychiatric disorders
-            "Schizophrenia", "Schizoaffective disorder",
-            "Autism spectrum disorder", "Autism", "Asperger's syndrome",
-            "Depression", "Major depressive disorder", "Clinical depression",
-            "Anxiety disorder", "Generalized anxiety disorder",
-            "Bipolar disorder", "Manic depression",
-            "ADHD", "Attention deficit hyperactivity disorder",
-            
-            # Cancers
-            "Cancer", "Carcinoma", "Neoplasm", "Tumor", "Malignancy",
-            "Breast cancer", "Mammary carcinoma",
-            "Lung cancer", "Pulmonary carcinoma",
-            "Colorectal cancer", "Colon cancer", "Rectal cancer",
-            "Prostate cancer", "Prostatic carcinoma",
-            "Ovarian cancer", "Ovarian carcinoma",
-            "Pancreatic cancer", "Pancreatic carcinoma",
-            "Leukemia", "Blood cancer",
-            "Lymphoma", "Hodgkin's lymphoma", "Non-Hodgkin's lymphoma",
-            "Melanoma", "Skin cancer",
-            
-            # Metabolic and endocrine
-            "Diabetes mellitus", "Type 1 diabetes", "Type 2 diabetes", "Diabetes",
-            "Obesity", "Metabolic syndrome",
-            "Hyperthyroidism", "Hypothyroidism", "Thyroid disease",
-            "Addison's disease", "Cushing's syndrome",
-            
-            # Cardiovascular
-            "Cardiovascular disease", "Heart disease", "Cardiac disease",
-            "Coronary artery disease", "CAD",
-            "Myocardial infarction", "Heart attack", "MI",
-            "Hypertension", "High blood pressure",
-            "Atherosclerosis", "Arteriosclerosis",
-            "Arrhythmia", "Atrial fibrillation",
-            
-            # Autoimmune and inflammatory
-            "Inflammatory bowel disease", "IBD",
-            "Crohn's disease", "Crohn disease",
-            "Ulcerative colitis",
-            "Rheumatoid arthritis", "RA",
-            "Osteoarthritis", "Degenerative joint disease",
-            "Lupus", "Systemic lupus erythematosus", "SLE",
-            "Fibromyalgia", "Chronic fatigue syndrome",
-            
-            # Respiratory
-            "Asthma", "Bronchial asthma",
-            "COPD", "Chronic obstructive pulmonary disease",
-            "Emphysema", "Chronic bronchitis",
-            "Pneumonia", "Bronchitis",
-            "Tuberculosis", "TB",
-            "Pulmonary fibrosis",
-            
-            # Infectious diseases
-            "HIV/AIDS", "HIV", "AIDS",
-            "Hepatitis B", "Hepatitis C", "Viral hepatitis",
-            "Influenza", "Flu",
-            "COVID-19", "SARS-CoV-2", "Coronavirus disease",
-            
-            # Genetic disorders
-            "Cystic fibrosis", "CF",
-            "Sickle cell disease", "Sickle cell anemia",
-            "Thalassemia", "Beta-thalassemia",
-            "Hemophilia", "Bleeding disorder",
-            "Muscular dystrophy", "MD", "Duchenne muscular dystrophy",
-            "Down syndrome", "Trisomy 21",
-            "Turner syndrome", "Klinefelter syndrome"
-        ]
-        
-        search_lower = search_term.lower()
-        matching_diseases = []
-        
-        # Exact and prefix matches first
-        for disease in extended_diseases:
-            disease_lower = disease.lower()
-            if disease_lower == search_lower or disease_lower.startswith(search_lower):
-                if disease not in matching_diseases:
-                    matching_diseases.append(disease)
-        
-        # Partial matches
-        for disease in extended_diseases:
-            disease_lower = disease.lower()
-            if search_lower in disease_lower and disease not in matching_diseases:
-                matching_diseases.append(disease)
-        
-        return matching_diseases
-        
-    def search_fallback_diseases(self, search_term):
-        """Search fallback disease list when DO API is unavailable"""
-        search_lower = search_term.lower()
-        matching_diseases = []
-        
-        # First add exact matches and those starting with search term
-        for disease in self.fallback_diseases:
-            disease_lower = disease.lower()
-            if disease_lower == search_lower or disease_lower.startswith(search_lower):
-                matching_diseases.append(disease)
-        
-        # Then add partial matches
-        for disease in self.fallback_diseases:
-            disease_lower = disease.lower()
-            if search_lower in disease_lower and disease not in matching_diseases:
-                matching_diseases.append(disease)
-        
-        return matching_diseases
-        
+        self.base_url = os.getenv("AUTOCOMPLETE_API", "https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR")
+
     def on_get(self, req, resp):
         search_term = req.get_param("userValue")
         if not search_term:
             raise falcon.HTTPBadRequest("Missing parameter", "'userValue' parameter is required.")
-        
+
+        url = f"{self.base_url}&objectType=humandoid&userValue={urllib.parse.quote(search_term)}"
         try:
-            # Search using Disease Ontology (tries OLS API first, then extended list)
-            diseases = self.search_disease_ontology(search_term)
-            
-            # If still no results, use the original fallback
-            if not diseases:
-                diseases = self.search_fallback_diseases(search_term)
-                logger.info(f"Using original fallback disease list for '{search_term}'")
-            else:
-                logger.info(f"Found {len(diseases)} diseases for '{search_term}'")
-            
-            # Limit to 15 results for better performance and remove duplicates
-            unique_diseases = []
-            seen = set()
-            for disease in diseases:
-                if disease.lower() not in seen:
-                    unique_diseases.append(disease)
-                    seen.add(disease.lower())
-                if len(unique_diseases) >= 15:
-                    break
-            
-            results = "\n".join(unique_diseases)
-            
-            # Always return some results, even if empty
-            resp.body = results if results else ""
+            data = urlopen(url)
+            resp.body = data.read().decode('utf-8')
             resp.status = falcon.HTTP_200
-            logger.info(f"Disease autocomplete for '{search_term}' returned {len(unique_diseases)} unique results")
-            
         except Exception as e:
-            logger.error(f"Error in disease autocomplete: {e}")
-            # Return empty result instead of error to prevent frontend crashes
-            resp.body = ""
-            resp.status = falcon.HTTP_200
+            logger.error(f"Error fetching disease autocomplete data: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching disease autocomplete data")
 
 
 class FeedbackFormReader:
@@ -433,7 +227,6 @@ class FeedbackFormWriter:
                 # comments
                 if "comments" in req.media:
                     self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
-                    self.db.afp.set_submitted_other_cc_contacts(other_cc_contacts=req.media["otherCCContacts"], paper_id=paper_id)
                     person_id = req.media["person_id"]
                     self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
