@@ -30,6 +30,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background-color: #f5f6f8;
   color: var(--text-color);
@@ -38,12 +43,21 @@ body {
   line-height: 1.42857143;
 }
 
+/* Remove any top margin/padding from first elements */
+body > *:first-child,
+.container > *:first-child,
+#root > *:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
 /* ========================================
    Compact Container Layout
    ======================================== */
 .container {
   max-width: 1200px;
-  padding: 15px;
+  padding: 0 15px;
+  margin: 0 auto;
 }
 
 .row {

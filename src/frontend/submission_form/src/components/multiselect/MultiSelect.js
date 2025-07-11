@@ -272,7 +272,7 @@ const MultiSelect = (props) => {
                     <div className="items-grid" style={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '6px'
+                        gap: '4px'
                     }}>
                         {filteredItems.sort().map((item, index) => {
                             const isAddedItem = new Set(addedItems).has(item);
@@ -288,15 +288,15 @@ const MultiSelect = (props) => {
                                     style={{
                                         cursor: 'pointer',
                                         margin: '0',
-                                        fontSize: '13px',
+                                        fontSize: '12px',
                                         fontWeight: '500',
-                                        padding: '8px 12px',
+                                        padding: '6px 8px',
                                         display: 'inline-block',
                                         maxWidth: '250px',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
-                                        borderRadius: '4px',
+                                        borderRadius: '3px',
                                         backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
                                                         isNewlyAdded ? '#cce7f0' : '#e8f0fe',
                                         border: `1px solid ${isSelectedForRemoval ? '#f5c6cb' : 
