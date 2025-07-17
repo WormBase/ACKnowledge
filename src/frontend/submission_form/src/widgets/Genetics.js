@@ -4,7 +4,7 @@ import {
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -18,7 +18,7 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import FormControl from "react-bootstrap/lib/FormControl";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
 import PropTypes from "prop-types";
@@ -59,18 +59,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the alleles extracted will be associated to this paper in WormBase</Alert>);
     } else {
         allelesListComponent = (
-            <MultipleSelect
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/variation"}
-                itemsNameSingular={"allele"}
                 itemsNamePlural={"alleles"}
                 items={alleles}
                 addedItems={addedAlleles}
                 addItemFunction={(allele) => dispatch(addAllele(allele))}
                 remItemFunction={(allele) => dispatch(removeAllele(allele))}
                 searchType={"variation"}
-                sampleQuery={"e.g. e1000"}
                 defaultExactMatchOnly={true}
-                autocompletePlaceholder={"Enter one or more allele name or ID, e.g. e1000 or WBVar00143672, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                exactMatchTooltip={"Check this to search for exact allele names only"}
+                autocompletePlaceholder={"Type allele names, one per line or separated by commas. For example:\ne1000\nWBVar00143672"}
             />);
     }
     let strainsListComponent;
@@ -80,17 +79,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
         }}>here</a>. If you prefer not to, all the strains extracted will be associated to this paper in WormBase</Alert>);
     } else {
         strainsListComponent = (
-            <MultipleSelect
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/strain"}
-                itemsNameSingular={"strain"}
                 itemsNamePlural={"strains"}
                 items={strains}
                 addedItems={addedStrains}
                 addItemFunction={(strain) => dispatch(addStrain(strain))}
                 remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}
-                sampleQuery={"e.g. CB4856"}
-                autocompletePlaceholder={"Enter one or more Strain name or ID, e.g. CB1001 or WBStrain00004222, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                defaultExactMatchOnly={false}
+                exactMatchTooltip={"Check this to search for exact strain names only"}
+                autocompletePlaceholder={"Type strain names, one per line or separated by commas. For example:\nCB4856\nWBStrain00004222"}
             />);
     }
     return (
@@ -103,6 +102,22 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    let payload = {
+                        alleles_list: transformEntitiesIntoAfpString(alleles, ""),
+                        allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
+                        other_alleles: JSON.stringify(otherAlleles),
+                        strains_list: transformEntitiesIntoAfpString(strains, ""),
+                        other_strains: JSON.stringify(otherStrains),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.GENETICS));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -153,13 +168,30 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                         <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            onClick={() => {
-                                                dispatch(setSequenceChange(true, ''));
-                                                window.open("https://wormbase.org/submissions/allele_sequence.cgi", "_blank");
-                                            }}>
+                                    <a 
+                                        href="https://wormbase.org/submissions/allele_sequence.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setSequenceChange(true, ''))}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Add details in online form
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +230,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         alleles_list: transformEntitiesIntoAfpString(alleles, ""),
                         allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
@@ -208,7 +240,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.GENETICS));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
             <Modal show={strainAlreadyPresentError} onHide={() => dispatch(setStrainAlreadyPresentError(false))}>

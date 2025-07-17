@@ -37,23 +37,42 @@ body {
     overflow-y: auto;
 }
 
+/* Lateral menu link styling */
 .aw:link {
     color: white;
+    text-decoration: none;
 }
 
 /* visited link */
 .aw:visited {
     color: white;
+    text-decoration: none;
 }
 
 /* mouse over link */
 .aw:hover {
     color: white;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.7);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
 }
 
 /* selected link */
 .aw:active {
     color: white;
+    text-decoration: none;
+}
+
+/* Active/selected menu item with underline highlighting */
+#lateralMenu .active .aw,
+#lateralMenu .active .aw:link,
+#lateralMenu .active .aw:visited {
+    color: white;
+    text-decoration: underline;
+    text-decoration-color: white;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
 }
 
 .entityNav {

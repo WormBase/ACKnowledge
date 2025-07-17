@@ -1,13 +1,11 @@
 import {
   SET_COMMENTS,
-  SET_OTHER_CC_CONTACTS,
   SET_IS_COMMENTS_SAVED_TO_DB
 } from "../actions/commentsActions";
 
 
 const initialState = {
   comments: '',
-  otherCCContacts: '',
   isSavedToDB: false
 };
 
@@ -17,13 +15,6 @@ export default function(state = initialState, action) {
       return {
         ...state,
         comments: action.payload.details,
-        isSavedToDB: false
-      };
-    }
-    case SET_OTHER_CC_CONTACTS: {
-      return {
-        ...state,
-        otherCCContacts: action.payload.details,
         isSavedToDB: false
       };
     }

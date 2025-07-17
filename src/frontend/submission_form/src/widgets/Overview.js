@@ -5,7 +5,7 @@ import {
     Button, Checkbox, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {
     addGene,
@@ -17,7 +17,7 @@ import {
 } from "../redux/actions/overviewActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
@@ -50,19 +50,17 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
         }}>here</a>. If you prefer not to, all the genes extracted will be associated to this paper in WormBase</Alert>);
     } else {
         geneListComponent = (
-            <MultipleSelect
+            <MultiSelect
                 linkWB={"https://wormbase.org/species/c_elegans/gene"}
-                itemsNameSingular={"gene"}
                 itemsNamePlural={"genes"}
                 items={genes}
                 addedItems={addedGenes}
                 addItemFunction={(gene) => dispatch(addGene(gene))}
                 remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
-                sampleQuery={"e.g. dbl-1"}
-                defaultExactMatchOnly={true}
-                exactMatchTooltip={'Uncheck this option to see genes from more species'}
-                autocompletePlaceholder={"Enter one or more gene name or ID, e.g. unc-26 or WBGene00006763, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                defaultExactMatchOnly={false}
+                exactMatchTooltip={'Check this to search for exact gene names only'}
+                autocompletePlaceholder={"Type gene names, one per line or separated by commas. For example:\nunc-26\ndpy-5\nWBGene00001234"}
             />);
     }
     return (
@@ -76,6 +74,22 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    const payload = {
+                        gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
+                        gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
+                        species_list: transformEntitiesIntoAfpString(species, ""),
+                        other_species: JSON.stringify(otherSpecies),
+                        person_id: "two" + person.personId,
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.OVERVIEW));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -94,12 +108,30 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        dispatch(setGeneModel());
-                                        window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
-                                    }}>
+                                    <a 
+                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setGeneModel())}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Request New Gene Name
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -113,12 +145,30 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info" onClick={() => {
-                                        dispatch(setGeneModel());
-                                        window.open("http://www.wormbase.org/submissions/gene_name.cgi", "_blank");
-                                    }}>
+                                    <a 
+                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                        onClick={() => dispatch(setGeneModel())}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
                                         Report Gene-Sequence
-                                    </Button>
+                                    </a>
                                 </div>
                             </div>
                             <div className="row">
@@ -152,18 +202,16 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultipleSelect
-                            itemsNameSingular={"species"}
+                        <MultiSelect
                             itemsNamePlural={"species"}
                             items={species}
                             addedItems={addedSpecies}
                             addItemFunction={(species) => dispatch(addSpecies(species))}
                             remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}
-                            sampleQuery={"e.g. Caenorhabditis"}
-                            defaultExactMatchOnly={false}
-                            autocompletePlaceholder={"Enter one or more species name, e.g. Caenorhabditis elegans, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
-                            hideListIDs
+                            defaultExactMatchOnly={true}
+                            exactMatchTooltip={'Species searches require exact matches for accuracy'}
+                            autocompletePlaceholder={"Type species names, one per line. For example:\nCaenorhabditis elegans\nCaenorhabditis briggsae\nDrosophila melanogaster"}
                         />
                     </Panel.Body>
                 </Panel>
@@ -189,7 +237,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     const payload = {
                         gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
                         gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
@@ -199,7 +247,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.OVERVIEW));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>

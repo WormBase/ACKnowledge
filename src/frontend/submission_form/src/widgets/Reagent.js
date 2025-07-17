@@ -9,7 +9,7 @@ import {
     OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
-import MultipleSelect from "../components/multiselect/MultiSelect";
+import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {
@@ -21,7 +21,7 @@ import {
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import {WIDGET} from "../constants";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 
 const Reagent = () => {
     const dispatch = useDispatch();
@@ -57,6 +57,21 @@ const Reagent = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    const payload = {
+                        transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
+                        new_transgenes: JSON.stringify(otherTransgenes),
+                        new_antibody: getCheckboxDBVal(newAntibodies.checked, newAntibodies.details),
+                        other_antibodies: JSON.stringify(otherAntibodies),
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.REAGENT));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -65,17 +80,17 @@ const Reagent = () => {
                         </OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <MultipleSelect
+                        <MultiSelect
                             linkWB={"https://wormbase.org/species/c_elegans/transgene"}
-                            itemsNameSingular={"transgene"}
                             itemsNamePlural={"transgenes"}
                             items={transgenes}
                             addedItems={addedTransgenes}
                             addItemFunction={(transgene) => dispatch(addTransgene(transgene))}
                             remItemFunction={(transgene) => dispatch(removeTransgene(transgene))}
                             searchType={"transgene"}
-                            sampleQuery={"e.g. ctIs40"}
-                            autocompletePlaceholder={"Enter one or more Transgene name or ID, e.g. inIs179 or WBTransgene00000647, separated by comma, tab, or new line. Then, select from the autocomplete list and click on 'Add selected'"}
+                            defaultExactMatchOnly={false}
+                            exactMatchTooltip={"Check this to search for exact transgene names only"}
+                            autocompletePlaceholder={"Type transgene names, one per line or separated by commas. For example:\nctIs40\nWBTransgene00000647"}
                         />
                     </Panel.Body>
                 </Panel>
@@ -136,7 +151,7 @@ const Reagent = () => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     const payload = {
                         transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
                         new_transgenes: JSON.stringify(otherTransgenes),
@@ -145,7 +160,7 @@ const Reagent = () => {
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.REAGENT));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
         </div>

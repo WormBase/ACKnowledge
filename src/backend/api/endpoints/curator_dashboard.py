@@ -59,6 +59,23 @@ class CuratorDashboardReader:
             afp_val_details = 'null'
         return afp_val_checked, afp_val_details
 
+    def get_class_author_sub_val_json(self, table_name, paper_id):
+        afp_val = self.db._get_single_field(paper_id, table_name)
+        if afp_val is not None:
+            try:
+                # Try to parse as JSON
+                disease_data = json.loads(afp_val)
+                afp_val_checked = disease_data.get('checked', False)
+                afp_val_details = disease_data.get('comment', '')
+            except json.JSONDecodeError:
+                # Fallback to old format for backward compatibility
+                afp_val_checked = afp_val != ""
+                afp_val_details = afp_val if afp_val != "Checked" and afp_val != "checked" and afp_val != "" else ""
+        else:
+            afp_val_checked = 'null'
+            afp_val_details = 'null'
+        return afp_val_checked, afp_val_details
+
 
     def get_all_flagged_data_types(self, paper_id):
         classifications = self.db.paper.get_automated_classification_values(paper_id)
@@ -114,7 +131,7 @@ class CuratorDashboardReader:
         afp_chemphen_checked, afp_chemphen_details = self.get_class_author_sub_val("afp_chemphen", paper_id)
         afp_envpheno_checked, afp_envpheno_details = self.get_class_author_sub_val("afp_envpheno", paper_id)
         afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
-        afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val("afp_humdis", paper_id)
+        afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val_json("afp_humdis", paper_id)
         afp_additionalexpr = self.db._get_single_field(paper_id, "afp_additionalexpr")
         if afp_additionalexpr == 'null':
             afp_additionalexpr = ''

@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Button, FormControl, Glyphicon, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Checkbox from "react-bootstrap/lib/Checkbox";
-import EntitiesFetchAndSelect from "./EntitiesFetchAndSelect";
+import DiseaseFetchAndSelect from "./DiseaseFetchAndSelect";
 
-const AutoComplete = ({
+const DiseaseAutoComplete = ({
     close,
     addItemFunction,
-    searchType,
     defaultExactMatchOnly,
     exactMatchTooltip,
     autocompletePlaceholder,
@@ -15,29 +14,9 @@ const AutoComplete = ({
 }) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState("");
-    const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
-    const [availableItems, setAvailableItems] = useState([]);
-    const [hasResults, setHasResults] = useState(false);
 
     const handleSearchChange = (e) => {
         setSearchString(e.target.value);
-    };
-
-    const addMultipleItems = (addAll) => {
-        let itemsToAdd = tmpSelectedItems;
-        
-        if (addAll) {
-            itemsToAdd = new Set(availableItems.map(item => item.trim()));
-        }
-        
-        if (itemsToAdd.size > 0) {
-            [...itemsToAdd].forEach((item) => {
-                addItemFunction(item);
-            });
-            setTmpSelectedItems(new Set()); // Clear selection after adding
-            // Close the add interface after successfully adding items
-            close();
-        }
     };
 
     const tooltipComponent = exactMatchTooltip ? (
@@ -50,35 +29,11 @@ const AutoComplete = ({
                 <span>
                     <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them
                 </span>
-                <div style={{display: 'flex', gap: '8px'}}>
-                    <Button
-                        className="multiselect-btn-success"
-                        bsSize="small"
-                        onClick={() => addMultipleItems(false)}
-                        disabled={tmpSelectedItems.size === 0}
-                    >
-                        <Glyphicon glyph="plus" style={{marginRight: '4px'}} />
-                        Add Selected ({tmpSelectedItems.size})
-                    </Button>
-                    
-                    <Button
-                        className="multiselect-btn-success"
-                        bsSize="small"
-                        onClick={() => addMultipleItems(true)}
-                        disabled={!hasResults}
-                    >
-                        <Glyphicon glyph="plus" style={{marginRight: '4px'}} />
-                        Add All ({availableItems.length})
-                    </Button>
-                    
+                <div>
                     <Button 
-                        className="cancel-btn-subtle"
+                        bsStyle="primary"
                         bsSize="small" 
                         onClick={close}
-                        style={{
-                            fontSize: '12px',
-                            padding: '4px 8px'
-                        }}
                     >
                         Cancel
                     </Button>
@@ -122,34 +77,29 @@ const AutoComplete = ({
             </div>
 
             {searchString.trim() && (
-                <EntitiesFetchAndSelect
+                <DiseaseFetchAndSelect
                     searchString={searchString}
                     exactMatchOnly={exactMatchOnly}
                     addItemFunction={addItemFunction}
-                    searchType={searchType}
                     close={close}
-                    onSelectedItemsChange={setTmpSelectedItems}
-                    onAvailableItemsChange={setAvailableItems}
-                    onHasResultsChange={setHasResults}
                 />
             )}
         </div>
     );
 };
 
-AutoComplete.propTypes = {
+DiseaseAutoComplete.propTypes = {
     close: PropTypes.func.isRequired,
     addItemFunction: PropTypes.func.isRequired,
-    searchType: PropTypes.string.isRequired,
     defaultExactMatchOnly: PropTypes.bool,
     exactMatchTooltip: PropTypes.string,
     autocompletePlaceholder: PropTypes.string.isRequired,
     itemsNamePlural: PropTypes.string.isRequired
 };
 
-AutoComplete.defaultProps = {
+DiseaseAutoComplete.defaultProps = {
     defaultExactMatchOnly: false,
     exactMatchTooltip: null
 };
 
-export default AutoComplete;
+export default DiseaseAutoComplete;

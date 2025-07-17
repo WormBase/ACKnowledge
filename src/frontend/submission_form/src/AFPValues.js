@@ -96,6 +96,8 @@ export function transformEntitiesIntoAfpString(entitiesList, prefix) {
     let addInfo = "";
     let results = [];
     for (entity of entitiesList) {
+        // Trim whitespace to handle trailing spaces
+        entity = entity.trim();
         if (addInfoRegex.test(entity)) {
             addInfo = addInfoRegex.exec(entity)[1];
             entity = entity.replace(addInfoRegex, "");

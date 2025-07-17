@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import LoadingOverlay from 'react-loading-overlay';
 import PropTypes from "prop-types";
 import { Alert, Button, FormControl, Glyphicon } from "react-bootstrap";
@@ -6,21 +6,13 @@ import { useQueries } from "react-query";
 import axios from "axios";
 import NoEntitiesSelectedModal from "./NoEntitiesSelectedModal";
 
-const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addItemFunction, close, onSelectedItemsChange, onAvailableItemsChange, onHasResultsChange }) => {
+const DiseaseFetchAndSelect = ({ searchString, exactMatchOnly, addItemFunction, close }) => {
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
     const [showNoEntitiesSelected, setShowNoEntitiesSelected] = useState(false);
 
     useEffect(() => {
         setTmpSelectedItems(new Set());
     }, [searchString]);
-
-    // Notify parent component when selected items change
-    useEffect(() => {
-        if (onSelectedItemsChange) {
-            onSelectedItemsChange(tmpSelectedItems);
-        }
-    }, [tmpSelectedItems, onSelectedItemsChange]);
-
 
     const searchEntities = searchString
         .split(/[\t,/\n]+/)
@@ -29,76 +21,54 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
 
     const apiQueries = useQueries(
         searchEntities.map(entity => ({
-            queryKey: ['apiQuery', entity],
+            queryKey: ['diseaseQuery', entity],
             queryFn: () => {
-                const url = `${process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT}?objectType=${searchType}&userValue=${entity}`;
+                const url = `${process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT}?objectType=humandoid&userValue=${entity}`;
                 return axios.get(url);
             },
             enabled: entity.length > 0
         }))
     );
 
-    const { availableItems, showMore } = useMemo(() => {
-        let items = [];
-        let hasMore = false;
+    let availableItems = [];
+    let showMore = false;
 
-        if (apiQueries.length > 0 && apiQueries.every(result => result.status === "success")) {
-            const remAddInfo = searchType === "species";
-            let resultsMergedFirst = [];
-            let resultsMergedSecond = [];
-            const toMatch = new Set(searchEntities.map(entity => entity.toLowerCase()));
-            const unorderedResults = apiQueries
-                .map(res => res.data.data)
-                .join('\n')
-                .split('\n');
+    if (apiQueries.length > 0 && apiQueries.every(result => result.status === "success")) {
+        let resultsMergedFirst = [];
+        let resultsMergedSecond = [];
+        const toMatch = new Set(searchEntities.map(entity => entity.toLowerCase()));
+        const unorderedResults = apiQueries
+            .map(res => res.data.data || res.data)
+            .join('\n')
+            .split('\n');
 
-            unorderedResults.forEach(res => {
-                if (!exactMatchOnly) {
-                    resultsMergedSecond.push(res);
-                } else if (
-                    toMatch.has(res.split(' ( ')[0].toLowerCase()) ||
-                    (res.split(' ( ')[1] !== undefined && 
-                     toMatch.has(res.split(' ( ')[1].split(' )')[0].toLowerCase()))
-                ) {
-                    resultsMergedFirst.push(res);
-                }
-            });
-
-            const resultsMerged = [...resultsMergedFirst, ...resultsMergedSecond].join('\n');
-            const addInfoRegex = / \( ([^ ]+) \)[ ]+$/;
-
-            if (resultsMerged !== undefined && resultsMerged !== "\n") {
-                let newAvailItems = new Set(
-                    resultsMerged.split("\n").filter((item) => item !== '')
-                );
-
-                if (remAddInfo) {
-                    newAvailItems = new Set(
-                        [...newAvailItems].map((elem) => elem.replace(addInfoRegex, ""))
-                    );
-                }
-
-                if (newAvailItems.has("more ...")) {
-                    newAvailItems.delete("more ...");
-                    hasMore = true;
-                }
-
-                items = [...newAvailItems];
+        unorderedResults.forEach(res => {
+            if (!exactMatchOnly) {
+                resultsMergedSecond.push(res);
+            } else if (
+                toMatch.has(res.split(' ( ')[0].toLowerCase()) ||
+                (res.split(' ( ')[1] !== undefined && 
+                 toMatch.has(res.split(' ( ')[1].split(' )')[0].toLowerCase()))
+            ) {
+                resultsMergedFirst.push(res);
             }
-        }
+        });
 
-        return { availableItems: items, showMore: hasMore };
-    }, [apiQueries, exactMatchOnly, searchType, searchEntities]);
+        const resultsMerged = [...resultsMergedFirst, ...resultsMergedSecond].join('\n');
 
-    // Notify parent component when results change
-    useEffect(() => {
-        if (onAvailableItemsChange) {
-            onAvailableItemsChange(availableItems);
+        if (resultsMerged !== undefined && resultsMerged !== "\n") {
+            let newAvailItems = new Set(
+                resultsMerged.split("\n").filter((item) => item !== '')
+            );
+
+            if (newAvailItems.has("more ...")) {
+                newAvailItems.delete("more ...");
+                showMore = true;
+            }
+
+            availableItems = [...newAvailItems];
         }
-        if (onHasResultsChange) {
-            onHasResultsChange(availableItems.length > 0);
-        }
-    }, [availableItems.length]); // Only depend on the length, not the callback functions
+    }
 
     const handleSelectionChange = (e) => {
         const selectedOptions = new Set(
@@ -109,14 +79,27 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
 
     const handleDoubleClick = () => {
         if (tmpSelectedItems.size > 0) {
-            [...tmpSelectedItems].forEach((item) => {
+            addMultipleItems(false);
+        }
+    };
+
+    const addMultipleItems = (addAll) => {
+        let itemsToAdd = tmpSelectedItems;
+        
+        if (addAll) {
+            itemsToAdd = new Set(availableItems.map(item => item.trim()));
+        }
+        
+        if (itemsToAdd.size > 0) {
+            [...itemsToAdd].forEach((item) => {
                 addItemFunction(item);
             });
-            setTmpSelectedItems(new Set()); // Clear selection after adding
-            // Close the add interface after successfully adding items
+            setTmpSelectedItems(new Set());
             if (close) {
                 close();
             }
+        } else {
+            setShowNoEntitiesSelected(true);
         }
     };
 
@@ -127,7 +110,7 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
         return (
             <div className="text-center text-muted p-3">
                 <p className="text-small mb-0">
-                    Enter search terms above to find matching entities
+                    Enter search terms above to find matching diseases
                 </p>
             </div>
         );
@@ -162,7 +145,7 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
                         className="spinning-icon" 
                         style={{marginRight: '8px', color: '#007bff'}} 
                     />
-                    <span style={{fontSize: '12px', color: '#666'}}>Searching WormBase...</span>
+                    <span style={{fontSize: '12px', color: '#666'}}>Searching Disease Ontology...</span>
                 </div>
             )}
             
@@ -174,7 +157,7 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
                 {hasError && (
                     <Alert bsStyle="danger" className="mb-3">
                         <Glyphicon glyph="warning-sign" /> <strong>Error</strong><br />
-                        Can't download WormBase data. Try again later or contact{" "}
+                        Can't fetch disease data. Try again later or contact{" "}
                         <a href="mailto:help@wormbase.org">WormBase Helpdesk</a>.
                     </Alert>
                 )}
@@ -206,7 +189,7 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
                         {availableItems.length === 0 && !isLoading && (
                             <div className="text-center text-muted p-3">
                                 <p className="text-small mb-0">
-                                    No matching entities found
+                                    No matching diseases found
                                 </p>
                             </div>
                         )}
@@ -219,6 +202,30 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
                                 </small>
                             </div>
                         )}
+
+                        {availableItems.length > 0 && (
+                            <div style={{display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'flex-end'}}>
+                                <Button
+                                    bsStyle="success"
+                                    bsSize="small"
+                                    onClick={() => addMultipleItems(false)}
+                                    disabled={tmpSelectedItems.size === 0}
+                                >
+                                    <Glyphicon glyph="plus-sign" /> 
+                                    Add Selected ({tmpSelectedItems.size})
+                                </Button>
+                                
+                                <Button
+                                    bsStyle="success"
+                                    bsSize="small"
+                                    onClick={() => addMultipleItems(true)}
+                                    disabled={availableItems.length === 0}
+                                >
+                                    <Glyphicon glyph="plus-sign" /> 
+                                    Add All ({availableItems.length})
+                                </Button>
+                            </div>
+                        )}
                     </>
                 )}
             </LoadingOverlay>
@@ -226,21 +233,17 @@ const EntitiesFetchAndSelect = ({ searchString, exactMatchOnly, searchType, addI
 
             <NoEntitiesSelectedModal
                 show={showNoEntitiesSelected}
-                onHide={() => setShowNoEntitiesSelected(false)}
+                close={() => setShowNoEntitiesSelected(false)}
             />
         </div>
     );
 };
 
-EntitiesFetchAndSelect.propTypes = {
+DiseaseFetchAndSelect.propTypes = {
     searchString: PropTypes.string.isRequired,
     exactMatchOnly: PropTypes.bool.isRequired,
-    searchType: PropTypes.string.isRequired,
     addItemFunction: PropTypes.func.isRequired,
-    close: PropTypes.func,
-    onSelectedItemsChange: PropTypes.func,
-    onAvailableItemsChange: PropTypes.func,
-    onHasResultsChange: PropTypes.func
+    close: PropTypes.func
 };
 
-export default EntitiesFetchAndSelect;
+export default DiseaseFetchAndSelect;

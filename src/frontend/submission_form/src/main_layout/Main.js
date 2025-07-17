@@ -29,10 +29,9 @@ const Main = ({location}) => {
             <DevBanner />
             <LoadingOverlay active={personIsLoading || paperIsLoading} spinner text='Loading data ...'>
                 <FetchErrorBanner />
-                <div id="whiteBanner"/>
                 <Header />
                 <Title title={parameters.title !== undefined ? "\"" + parameters.title + "\"" : ""}
-                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi} /><br/>
+                       journal={parameters.journal} pmid={parameters.pmid} doi={parameters.doi} />
                 <MenuAndWidgets />
             </LoadingOverlay>
         </div>

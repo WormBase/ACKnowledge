@@ -41,8 +41,8 @@ import {
     setOverexprPhenotype,
     setRnaiPhenotype
 } from "./phenotypesActions";
-import {setDisease, setIsDiseaseSavedToDB} from "./diseaseActions";
-import {setComments, setIsCommentsSavedToDB, setOtherCCContacts} from "./commentsActions";
+import {setDisease, setIsDiseaseSavedToDB, setDiseaseNames} from "./diseaseActions";
+import {setComments, setIsCommentsSavedToDB} from "./commentsActions";
 import {showDataFetchError} from "./displayActions";
 
 export const STORE_PAPER_INFO = "STORE_PAPER_INFO";
@@ -155,7 +155,27 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
 
                 // Disease
                 let disease = getCheckbxOrSingleFieldFromWBAPIData(result.data.humdis, undefined);
-                dispatch(setDisease(disease.isChecked(), disease.details()));
+                let diseaseData = {};
+                let diseaseList = [];
+                
+                try {
+                    // Try to parse as JSON first
+                    const diseaseDetails = disease.details();
+                    if (diseaseDetails && diseaseDetails !== "null" && diseaseDetails !== "") {
+                        diseaseData = JSON.parse(diseaseDetails);
+                        dispatch(setDisease(diseaseData.checked || false, diseaseData.comment || ""));
+                        diseaseList = diseaseData.diseases || [];
+                    } else {
+                        dispatch(setDisease(disease.isChecked(), ""));
+                        diseaseList = [];
+                    }
+                } catch (e) {
+                    // Fallback to old format for backward compatibility
+                    dispatch(setDisease(disease.isChecked(), disease.details() || ""));
+                    diseaseList = [];
+                }
+                
+                dispatch(setDiseaseNames(Array.isArray(diseaseList) ? diseaseList : []));
                 if (disease.prevSaved()) {
                     dispatch(setIsDiseaseSavedToDB());
                 }
@@ -163,9 +183,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 // Comments
                 let comments = getCheckbxOrSingleFieldFromWBAPIData(result.data.comment, undefined);
                 dispatch(setComments(comments.details()));
-                let otherCCContacts = getCheckbxOrSingleFieldFromWBAPIData(result.data.communitycontact, undefined);
-                dispatch(setOtherCCContacts(otherCCContacts.details()));
-                if (comments.prevSaved() && otherCCContacts.prevSaved()) {
+                if (comments.prevSaved()) {
                     dispatch(setIsCommentsSavedToDB());
                 }
                 dispatch(fetchPaperDataSuccess());

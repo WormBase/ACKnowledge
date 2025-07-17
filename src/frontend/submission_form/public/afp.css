@@ -23,3 +23,419 @@ body {
 #whiteBanner {
     height: 20px;
 }
+
+/* Button color scheme overrides - using logo color */
+.btn-primary {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+.btn-default {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-default:hover,
+.btn-default:focus,
+.btn-default:active,
+.btn-default.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-info {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    background-image: none !important;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    background-image: none !important;
+}
+
+/* Success button - green */
+.btn-success {
+    background-color: #5cb85c !important;
+    border-color: #5cb85c !important;
+    color: white !important;
+    background-image: none !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3) !important;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active {
+    background-color: #4cae4c !important;
+    border-color: #4cae4c !important;
+    color: white !important;
+    background-image: none !important;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4) !important;
+}
+
+.btn-warning {
+    background-color: #f0ad4e !important;
+    border-color: #f0ad4e !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    background-color: #ec971f !important;
+    border-color: #ec971f !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-danger {
+    background-color: #337ab7 !important;
+    border-color: #337ab7 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active {
+    background-color: #2a6496 !important;
+    border-color: #2a6496 !important;
+    color: white !important;
+    background-image: none !important;
+}
+
+/* Remove focus outline from all buttons */
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove focus outline from all button types */
+.btn-primary:focus,
+.btn-success:focus,
+.btn-info:focus,
+.btn-warning:focus,
+.btn-danger:focus,
+.btn-default:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove gradients from alerts and panels */
+.alert {
+    background-image: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-left-width: 4px !important;
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border-color: #c3e6cb !important;
+    border-left-color: #28a745 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border-color: #bee5eb !important;
+    border-left-color: #17a2b8 !important;
+}
+
+.alert-warning {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+    border-color: #ffeaa7 !important;
+    border-left-color: #ffc107 !important;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+    border-left-color: #dc3545 !important;
+}
+
+/* Remove gradients from panel headers */
+.panel-default > .panel-heading {
+    background-image: none !important;
+    background-color: #f5f5f5 !important;
+}
+
+.panel-primary > .panel-heading {
+    background-image: none !important;
+    background-color: #337ab7 !important;
+}
+
+/* Softer body background */
+body {
+    background-color: #f8f9fa !important;
+}
+
+/* Softer white for panels and cards */
+.panel {
+    background-color: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+}
+
+.panel-body {
+    background-color: #ffffff !important;
+}
+
+/* Muted form control backgrounds */
+.form-control {
+    background-color: #f8f9fa !important;
+    border-color: #ced4da !important;
+}
+
+.form-control:focus {
+    background-color: #ffffff !important;
+    border-color: #80bdff !important;
+}
+
+/* Slightly larger font size for links */
+a {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure inline links in paragraphs maintain readability */
+p a, 
+.alert a,
+td a {
+    font-size: 14px !important;
+}
+
+/* Navigation and button links can stay their current size */
+.nav a,
+.btn-link {
+    font-size: 14px !important;
+}
+
+/* External link icons should scale appropriately */
+a .glyphicon {
+    font-size: 11px !important;
+    margin-right: 4px !important;
+}
+
+/* Specific styling for external linkouts */
+a[target="_blank"] {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Override inline styles for linkouts in PersonSelector */
+.person-selector-compact a {
+    font-size: 14px !important;
+}
+
+/* Remove border from multiselect container */
+.multiselect-redesigned {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Subtle multiselect action buttons */
+.multiselect-btn-subtle {
+    background-color: #e3f2fd !important;
+    border-color: #90caf9 !important;
+    color: #1565c0 !important;
+    border: 1px solid #90caf9 !important;
+}
+
+.multiselect-btn-subtle:hover,
+.multiselect-btn-subtle:focus,
+.multiselect-btn-subtle:active {
+    background-color: #bbdefb !important;
+    border-color: #64b5f6 !important;
+    color: #0d47a1 !important;
+    box-shadow: none !important;
+}
+
+.multiselect-btn-subtle.active-add {
+    background-color: #e8f5e8 !important;
+    border-color: #c8e6c9 !important;
+    color: #2d5a2d !important;
+}
+
+.multiselect-btn-subtle.active-remove {
+    background-color: #fff3cd !important;
+    border-color: #ffeaa7 !important;
+    color: #856404 !important;
+}
+
+.multiselect-btn-subtle.active-layout {
+    background-color: #bbdefb !important;
+    border-color: #64b5f6 !important;
+    color: #1565c0 !important;
+    font-weight: normal !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+/* Subtle gray styling for change user button */
+.change-user-btn-subtle {
+    background-color: #e9ecef !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+    border: 1px solid #adb5bd !important;
+}
+
+.change-user-btn-subtle:hover,
+.change-user-btn-subtle:focus,
+.change-user-btn-subtle:active {
+    background-color: #dee2e6 !important;
+    border-color: #868e96 !important;
+    color: #343a40 !important;
+    box-shadow: none !important;
+}
+
+/* Replace pill highlighting with underline for menu navigation */
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+    color: #337ab7 !important;
+    background-color: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-color: #337ab7 !important;
+    text-decoration-thickness: 3px !important;
+    text-underline-offset: 3px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Remove background/padding/shadow from nav-pills */
+.nav-pills {
+    background-color: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Hover effect for menu items */
+.nav-pills > li > a:hover {
+    color: #337ab7 !important;
+    background-color: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(51, 122, 183, 0.7) !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 3px !important;
+}
+
+/* Default state for menu items */
+.nav-pills > li > a {
+    color: #333 !important;
+    background-color: transparent !important;
+    text-decoration: none !important;
+}
+
+/* Keep tick icons blue at all times */
+.nav-pills .glyphicon-ok {
+    color: #337ab7 !important;
+}
+
+/* Center modal vertically */
+.modal {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.modal-dialog {
+    margin: 0 auto !important;
+}
+
+/* Subtle cancel button styling */
+.cancel-btn-subtle {
+    background-color: #e9ecef !important;
+    border: 1px solid #adb5bd !important;
+    color: #495057 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+.cancel-btn-subtle:hover,
+.cancel-btn-subtle:focus,
+.cancel-btn-subtle:active {
+    background-color: #dee2e6 !important;
+    border-color: #868e96 !important;
+    color: #343a40 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+}
+
+/* Multiselect-specific success button styling */
+.multiselect-btn-success {
+    background-color: #7ed37e !important;
+    border-color: #7ed37e !important;
+    color: #000000 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    border: 1px solid #7ed37e !important;
+}
+
+.multiselect-btn-success:hover,
+.multiselect-btn-success:focus,
+.multiselect-btn-success:active {
+    background-color: #6bc96b !important;
+    border-color: #6bc96b !important;
+    color: #000000 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.multiselect-btn-success:disabled,
+.multiselect-btn-success.disabled {
+    background-color: #b8e6b8 !important;
+    border-color: #b8e6b8 !important;
+    color: #666666 !important;
+    background-image: none !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+
+/* Better contrast for warning (yellow) buttons */
+.btn-warning {
+    color: #000000 !important;
+    text-shadow: none !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    color: #000000 !important;
+    text-shadow: none !important;
+}

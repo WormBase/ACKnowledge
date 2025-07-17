@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 import falcon
 import urllib.parse
@@ -55,6 +56,26 @@ class AutocompleteReader:
         except Exception as e:
             logger.error(f"Error fetching autocomplete data: {e}")
             raise falcon.HTTPInternalServerError("Error fetching autocomplete data")
+
+
+class DiseaseAutocompleteReader:
+
+    def __init__(self):
+        self.base_url = os.getenv("AUTOCOMPLETE_API", "https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR")
+
+    def on_get(self, req, resp):
+        search_term = req.get_param("userValue")
+        if not search_term:
+            raise falcon.HTTPBadRequest("Missing parameter", "'userValue' parameter is required.")
+
+        url = f"{self.base_url}&objectType=humandoid&userValue={urllib.parse.quote(search_term)}"
+        try:
+            data = urlopen(url)
+            resp.body = data.read().decode('utf-8')
+            resp.status = falcon.HTTP_200
+        except Exception as e:
+            logger.error(f"Error fetching disease autocomplete data: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching disease autocomplete data")
 
 
 class FeedbackFormReader:
@@ -192,12 +213,20 @@ class FeedbackFormWriter:
 
                 # disease
                 if "disease" in req.media:
-                    self.db.afp.set_submitted_disease(disease=req.media["disease"], paper_id=paper_id)
+                    # Create structured JSON for disease data
+                    disease_value = req.media["disease"]
+                    comment = disease_value if disease_value != "Checked" and disease_value != "" else ""
+                    diseases = req.media.get("disease_list", []) if isinstance(req.media.get("disease_list"), list) else []
+                    disease_data = {
+                        "checked": disease_value != "" and disease_value != "Checked",
+                        "comment": comment,
+                        "diseases": diseases
+                    }
+                    self.db.afp.set_submitted_disease(disease=json.dumps(disease_data), paper_id=paper_id)
 
                 # comments
                 if "comments" in req.media:
                     self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
-                    self.db.afp.set_submitted_other_cc_contacts(other_cc_contacts=req.media["otherCCContacts"], paper_id=paper_id)
                     person_id = req.media["person_id"]
                     self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)

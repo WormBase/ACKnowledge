@@ -1,7 +1,10 @@
 import {
   SET_DISEASE,
   TOGGLE_DISEASE,
-  SET_IS_DISEASE_SAVED_TO_DB
+  SET_IS_DISEASE_SAVED_TO_DB,
+  ADD_DISEASE_NAME,
+  REMOVE_DISEASE_NAME,
+  SET_DISEASE_NAMES
 } from "../actions/diseaseActions";
 
 
@@ -10,6 +13,8 @@ const initialState = {
     checked: false,
     details: ''
   },
+  diseaseNames: [],
+  addedDiseaseNames: [],
   isSavedToDB: false
 };
 
@@ -34,6 +39,29 @@ export default function(state = initialState, action) {
         ...state,
         disease: state.disease,
         isSavedToDB: true
+      };
+    }
+    case ADD_DISEASE_NAME: {
+      return {
+        ...state,
+        diseaseNames: [...state.diseaseNames, action.payload],
+        addedDiseaseNames: [...state.addedDiseaseNames, action.payload],
+        isSavedToDB: false
+      };
+    }
+    case REMOVE_DISEASE_NAME: {
+      return {
+        ...state,
+        diseaseNames: state.diseaseNames.filter(name => name !== action.payload),
+        addedDiseaseNames: state.addedDiseaseNames.filter(name => name !== action.payload),
+        isSavedToDB: false
+      };
+    }
+    case SET_DISEASE_NAMES: {
+      return {
+        ...state,
+        diseaseNames: Array.isArray(action.payload) ? action.payload : [],
+        isSavedToDB: false
       };
     }
     default:

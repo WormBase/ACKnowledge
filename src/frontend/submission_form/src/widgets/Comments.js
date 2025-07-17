@@ -1,9 +1,8 @@
 import React from 'react';
-import {Button, FormControl, Image, Panel} from "react-bootstrap";
+import {Button, FormControl, Glyphicon, Image, Panel} from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
 import {useDispatch, useSelector} from "react-redux";
 import {setComments} from "../redux/actions/commentsActions";
-import {setOtherCCContacts} from "../redux/actions/commentsActions";
 import {showSectionsNotCompleted} from "../redux/actions/displayActions";
 import {WIDGET} from "../constants";
 import {saveWidgetData} from "../redux/actions/widgetActions";
@@ -24,7 +23,6 @@ const Other = () => {
         interactionsSaved && phenotypesSaved && diseaseSaved
 
     const comments = useSelector((state) => state.comments.comments);
-    const otherCCContacts = useSelector((state) => state.comments.otherCCContacts);
     const person = useSelector((state) => state.person.person);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
@@ -49,16 +47,35 @@ const Other = () => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Please check that your contact info is up to date by clicking on the button below
+                                    Please check that your contact info is up to date by clicking on the link below
                                 </div>
                             </div>
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
-                                            target={"_blank"}>
-                                        Update contact info</Button>
+                                    <a 
+                                        href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                                        Update contact info
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -74,16 +91,35 @@ const Other = () => {
                         <div className="container-fluid">
                             <div className="row">
                                 <div className="col-sm-12">
-                                    Please check that your lineage is up to date by clicking on the button below
+                                    Please check that your lineage is up to date by clicking on the link below
                                 </div>
                             </div>
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <Button bsClass="btn btn-info wrap-button" bsStyle="info"
-                                            href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
-                                            target={"_blank"}>
-                                        Update lineage</Button>
+                                    <a 
+                                        href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            fontSize: '13px',
+                                            color: '#0066cc',
+                                            textDecoration: 'none',
+                                            borderBottom: '1px solid #0066cc',
+                                            fontWeight: '500'
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.color = '#004499';
+                                            e.target.style.borderBottomColor = '#004499';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.color = '#0066cc';
+                                            e.target.style.borderBottomColor = '#0066cc';
+                                        }}
+                                    >
+                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                                        Update lineage
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -106,34 +142,6 @@ const Other = () => {
                                 <a href="https://www.micropublication.org" target="_blank">
                                     <Image src="micropub_logo.png" responsive/>
                                 </a>
-                            </div>
-                        </div>
-                    </Panel.Body>
-                </Panel>
-                <Panel>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">
-                            Other Community Curation Contacts
-                        </Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    Have you received community curation requests from other groups or organizations?
-                                    If so, please specify from which organization and when.
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <FormControl componentClass="textarea" multiple
-                                                 placeholder="Other community curation contacts"
-                                                 value={otherCCContacts}
-                                                 onChange={(event) => {
-                                                     dispatch(setOtherCCContacts(event.target.value))
-                                                 }}
-                                    />
-                                </div>
                             </div>
                         </div>
                     </Panel.Body>
@@ -166,11 +174,10 @@ const Other = () => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
                     if (allOtherWidgetsSavedToDB) {
                         const payload = {
                             comments: comments,
-                            otherCCContacts: otherCCContacts,
                             person_id: "two" + person.personId,
                             passwd: paperPassword
                         };

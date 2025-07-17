@@ -1,12 +1,32 @@
 import React, {useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 
+// Inject styles for centering modals vertically
+if (typeof document !== 'undefined') {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+        .modal-dialog-centered {
+            display: flex;
+            align-items: center;
+            min-height: calc(100vh - 60px);
+        }
+        .modal-dialog-centered .modal-content {
+            margin: auto;
+        }
+    `;
+    if (!document.querySelector('style[data-modal-center]')) {
+        styleElement.setAttribute('data-modal-center', 'true');
+        document.head.appendChild(styleElement);
+    }
+}
+
 export const WelcomeModal = (props) => {
     if (props["show"] !== undefined && props["show"]) {
         return (
             <Modal
                 {...props}
                 bsSize="large"
+                dialogClassName="modal-dialog-centered"
                 aria-labelledby="contained-modal-title-sm">
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-lg">Welcome</Modal.Title>
@@ -23,7 +43,7 @@ export const WelcomeModal = (props) => {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={props.onHide}>Close</Button>
+                    <Button bsStyle="primary" onClick={props.onHide}>Close</Button>
                 </Modal.Footer>
             </Modal>
         );
@@ -38,6 +58,7 @@ export const CompletedSubmissionModal = (props) => {
             <Modal
                 {...props}
                 bsSize="large"
+                dialogClassName="modal-dialog-centered"
                 aria-labelledby="contained-modal-title-sm">
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-lg">Submission Already Completed</Modal.Title>
@@ -65,7 +86,8 @@ export const SectionsNotCompletedModal = (props) => {
         return (
             <Modal
                 {...props}
-                bsSize="medium">
+                bsSize="medium"
+                dialogClassName="modal-dialog-centered">
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-lg">Incomplete Sections</Modal.Title>
                 </Modal.Header>

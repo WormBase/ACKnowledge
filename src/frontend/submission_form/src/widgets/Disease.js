@@ -1,20 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from "react-bootstrap/es/Button";
 import {
-    Checkbox, Form, FormControl, Panel
+    Alert, Checkbox, Form, FormControl, Glyphicon, Panel
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
-import {setDisease, toggleDisease} from "../redux/actions/diseaseActions";
+import MultiSelect from "../components/multiselect/MultiSelect";
+import DiseaseAutoComplete from "../components/multiselect/DiseaseAutoComplete";
+import DiseaseRequiredModal from "../components/modals/DiseaseRequiredModal";
+import {setDisease, toggleDisease, addDiseaseName, removeDiseaseName} from "../redux/actions/diseaseActions";
 import {useDispatch, useSelector} from "react-redux";
-import {getCheckboxDBVal} from "../AFPValues";
-import {saveWidgetData} from "../redux/actions/widgetActions";
+import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
+import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
 
 const Disease = () => {
     const dispatch = useDispatch();
+    const [showDiseaseRequiredModal, setShowDiseaseRequiredModal] = useState(false);
     const disease = useSelector((state) => state.disease.disease);
+    const diseaseNames = useSelector((state) => state.disease.diseaseNames);
+    const addedDiseaseNames = useSelector((state) => state.disease.addedDiseaseNames);
     const isSavedToDB = useSelector((state) => state.disease.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+    const person = useSelector((state) => state.person.person);
 
     return (
         <div>
@@ -25,6 +32,20 @@ const Disease = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    const payload = {
+                        disease: getCheckboxDBVal(disease.checked, disease.details),
+                        disease_list: diseaseNames,
+                        person_id: "two" + person.personId,
+                        passwd: paperPassword
+                    };
+                    dispatch(saveWidgetDataSilently(payload, WIDGET.DISEASE));
+                }}>
+                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                    Save current progress
+                </Button>
+            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Disease model data in the paper</Panel.Title>
@@ -42,6 +63,45 @@ const Disease = () => {
                     </Form>
                 </Panel.Body>
             </Panel>
+            
+            {disease.checked && (
+                <>
+                    <Alert bsStyle="warning" style={{marginTop: '20px', marginBottom: '20px'}}>
+                        <strong>Important:</strong> Since you indicated this paper describes a human disease model, 
+                        please specify which disease(s) are studied in your paper. This information is required.
+                    </Alert>
+                    
+                    <Panel>
+                        <Panel.Heading>
+                            <Panel.Title componentClass="h3">Specific diseases studied in the paper</Panel.Title>
+                        </Panel.Heading>
+                        <Panel.Body>
+                            <MultiSelect
+                                items={diseaseNames}
+                                addedItems={addedDiseaseNames}
+                                itemsNameSingular="disease"
+                                itemsNamePlural="diseases"
+                                addItemFunction={(disease) => dispatch(addDiseaseName(disease))}
+                                remItemFunction={(disease) => dispatch(removeDiseaseName(disease))}
+                                searchType="disease"
+                                sampleQuery="e.g. Parkinson's"
+                                defaultExactMatchOnly={false}
+                                exactMatchTooltip="Check this to search for exact disease names only"
+                                autocompletePlaceholder="Type disease names to search. For example:
+Parkinson's disease
+Alzheimer's disease
+Cancer
+Diabetes"
+                                customAutoComplete={(props) => <DiseaseAutoComplete {...props} />}
+                                customTitle="Specify diseases studied in the paper"
+                                showTpcBadge={false}
+                                emptyStateText="No diseases selected"
+                            />
+                        </Panel.Body>
+                    </Panel>
+                </>
+            )}
+            
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">
@@ -70,15 +130,28 @@ const Disease = () => {
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="success" onClick={() => {
-                    let payload = {
+                <Button bsStyle="primary" bsSize="small" onClick={() => {
+                    // Validate that if disease is checked, at least one disease name is selected
+                    if (disease.checked && diseaseNames.length === 0) {
+                        setShowDiseaseRequiredModal(true);
+                        return;
+                    }
+                    
+                    const payload = {
                         disease: getCheckboxDBVal(disease.checked, disease.details),
+                        disease_list: diseaseNames,
+                        person_id: "two" + person.personId,
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.DISEASE));
-                }}>Save and continue
+                }}>Save and go to next section
                 </Button>
             </div>
+            
+            <DiseaseRequiredModal 
+                show={showDiseaseRequiredModal} 
+                close={() => setShowDiseaseRequiredModal(false)}
+            />
         </div>
     );
 }

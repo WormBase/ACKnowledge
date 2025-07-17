@@ -89,94 +89,179 @@ const PersonSelector = () => {
             </div>
     }
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <div className="col-sm-6">
-                    WormBase User: <strong>{person.name}</strong> (WBPerson{person.personId})
+        <div className="person-selector-compact">
+            <div style={{marginBottom: '8px'}}>
+                <div style={{fontSize: '12px', color: '#666', marginBottom: '2px'}}>
+                    WormBase User:
                 </div>
-                <div className="col-sm-6" align="right">
-                    <Button bsSize="xsmall" bsStyle="primary" onClick={() => setShow(true)}>Change user</Button>
-                    &nbsp;<Button bsSize="xsmall" bsStyle="primary" onClick={() => {window.open('https://wormbase.org/submissions/person.cgi', '_blank')}}>
-                        Request new WB Person
-                    </Button>
+                <div style={{fontSize: '14px', fontWeight: 'bold', color: '#333'}}>
+                    {person.name} (WBPerson{person.personId})
                 </div>
             </div>
-            <div className="row">
-                <div>
-                    &nbsp;
-                </div>
+            
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
+                <Button 
+                    className="change-user-btn-subtle"
+                    bsSize="small" 
+                    onClick={() => setShow(true)}
+                    style={{
+                        fontSize: '12px',
+                        padding: '4px 8px'
+                    }}
+                >
+                    Change user
+                </Button>
+                
+                <a 
+                    href="https://wormbase.org/submissions/person.cgi" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                        fontSize: '13px',
+                        color: '#0066cc',
+                        textDecoration: 'none',
+                        borderBottom: '1px solid #0066cc',
+                        fontWeight: '500'
+                    }}
+                    onMouseOver={(e) => {
+                        e.target.style.color = '#004499';
+                        e.target.style.borderBottomColor = '#004499';
+                    }}
+                    onMouseOut={(e) => {
+                        e.target.style.color = '#0066cc';
+                        e.target.style.borderBottomColor = '#0066cc';
+                    }}
+                >
+                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                    Request WBPerson
+                </a>
+                
+                <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
+                    <a 
+                        href="https://acp.acknowledge.textpressolab.com" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                            fontSize: '13px',
+                            color: '#0066cc',
+                            textDecoration: 'none',
+                            borderBottom: '1px solid #0066cc',
+                            fontWeight: '500'
+                        }}
+                        onMouseOver={(e) => {
+                            e.target.style.color = '#004499';
+                            e.target.style.borderBottomColor = '#004499';
+                        }}
+                        onMouseOut={(e) => {
+                            e.target.style.color = '#0066cc';
+                            e.target.style.borderBottomColor = '#0066cc';
+                        }}
+                    >
+                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                        ACKnowledge Author Portal
+                    </a>
+                </OverlayTrigger>
             </div>
-            <div className="row">
-
-                <div className="col-sm-12" align="left">
-                    <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
-                        <Button
-                            onClick={() => {window.open('https://acp.acknowledge.textpressolab.com', '_blank')}}
-                        >ACKnowledge author portal</Button>
-                    </OverlayTrigger>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-sm-12">
-                </div>
-            </div>
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={show} onHide={handleClose} bsSize="large">
                 <Modal.Header closeButton>
                     <Modal.Title>Select from Wormbase User list</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body style={{minWidth: '600px', minHeight: '400px'}}>
                     {data_fetch_err_alert}
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <input className="form-control"
-                                       placeholder={sampleQuery}
-                                       onChange={(e) => {searchWB(e.target.value, "person")}}
-                                />
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                &nbsp;
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <FormControl componentClass="select" multiple
-                                             style={{height: '200px'}}
-                                             defaultValue=""
-                                             onDoubleClick={(e) => {
-                                                 let fullData = e.target.label;
-                                                 let wbRx = / \( WBPerson([0-9]+) \)/;
-                                                 let arr = wbRx.exec(fullData);
-                                                 fullData = fullData.replace(wbRx, "");
-                                                 dispatch(setPerson(fullData, arr[1]));
-                                                 handleClose();
-                                             }}
-                                             onClick={(e) => {
-                                                 let fullData = e.target.label;
-                                                 let wbRx = / \( WBPerson([0-9]+) \)/;
-                                                 let arr = wbRx.exec(fullData);
-                                                 fullData = fullData.replace(wbRx, "");
-                                                 setTmp_person_name(fullData);
-                                                 setTmp_person_id(arr[1]);
-                                             }}
-                                >
-                                    {[...availableItems].map(item =>
-                                        <option>{item}</option>)}
-                                </FormControl>
-                            </div>
-                        </div>
-                        {more}
+                    <div style={{marginBottom: '16px'}}>
+                        <label style={{fontSize: '14px', fontWeight: '600', marginBottom: '8px', display: 'block'}}>
+                            Search for your name:
+                        </label>
+                        <input 
+                            className="form-control"
+                            placeholder={sampleQuery}
+                            onChange={(e) => {searchWB(e.target.value, "person")}}
+                            style={{width: '100%'}}
+                        />
                     </div>
+                    
+                    <div style={{marginBottom: '16px'}}>
+                        <label style={{fontSize: '14px', fontWeight: '600', marginBottom: '8px', display: 'block'}}>
+                            Select from results ({availableItems.size} found):
+                        </label>
+                        <FormControl 
+                            componentClass="select" 
+                            multiple
+                            style={{
+                                height: '200px', 
+                                width: '100%',
+                                minHeight: '200px',
+                                fontSize: '13px'
+                            }}
+                            defaultValue=""
+                            onDoubleClick={(e) => {
+                                let fullData = e.target.label;
+                                let wbRx = / \( WBPerson([0-9]+) \)/;
+                                let arr = wbRx.exec(fullData);
+                                fullData = fullData.replace(wbRx, "");
+                                dispatch(setPerson(fullData, arr[1]));
+                                handleClose();
+                            }}
+                            onClick={(e) => {
+                                let fullData = e.target.label;
+                                let wbRx = / \( WBPerson([0-9]+) \)/;
+                                let arr = wbRx.exec(fullData);
+                                fullData = fullData.replace(wbRx, "");
+                                setTmp_person_name(fullData);
+                                setTmp_person_id(arr[1]);
+                            }}
+                        >
+                            {availableItems.size === 0 ? (
+                                <option disabled>Type your name above to search for WormBase users</option>
+                            ) : (
+                                [...availableItems].map((item, index) =>
+                                    <option key={index} value={item}>{item}</option>
+                                )
+                            )}
+                        </FormControl>
+                        {more && (
+                            <div style={{marginTop: '8px', fontSize: '12px', color: '#666', fontStyle: 'italic'}}>
+                                Some results matching the query have been omitted. Try a more specific query to narrow down the results.
+                            </div>
+                        )}
+                    </div>
+                    
+                    {tmp_person_name && (
+                        <div style={{
+                            backgroundColor: '#f8f9fa', 
+                            padding: '12px', 
+                            borderRadius: '4px',
+                            border: '1px solid #dee2e6'
+                        }}>
+                            <strong>Selected:</strong> {tmp_person_name} (WBPerson{tmp_person_id})
+                        </div>
+                    )}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button onClick={() =>{
-                        if (tmp_person_id !== undefined && tmp_person_name !== undefined) {
-                            dispatch(setPerson(tmp_person_name, tmp_person_id));
-                            handleClose();
-                        }
-                    }}>Select</Button>
+                <Modal.Footer style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div style={{fontSize: '12px', color: '#666'}}>
+                        Tip: Double-click an item to select it quickly
+                    </div>
+                    <div>
+                        <Button 
+                            bsStyle="primary"
+                            onClick={handleClose}
+                            style={{marginRight: '10px'}}
+                        >
+                            Cancel
+                        </Button>
+                        <Button 
+                            bsStyle="primary"
+                            onClick={() =>{
+                                if (tmp_person_id !== undefined && tmp_person_name !== undefined) {
+                                    dispatch(setPerson(tmp_person_name, tmp_person_id));
+                                    handleClose();
+                                }
+                            }}
+                            disabled={tmp_person_id === undefined || tmp_person_name === undefined}
+                        >
+                            Select User
+                        </Button>
+                    </div>
                 </Modal.Footer>
             </Modal>
         </div>
