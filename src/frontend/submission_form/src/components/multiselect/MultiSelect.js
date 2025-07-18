@@ -34,8 +34,8 @@ const MultiSelect = (props) => {
             // If savedItems prop is provided, use it as the baseline
             savedStateRef.current = new Set(Array.isArray(props.savedItems) ? props.savedItems.map(item => item.trim()) : []);
             setHasInitialized(true);
-        } else if (!hasInitialized && items.length > 0) {
-            // Otherwise, capture the initial non-empty state (for backward compatibility)
+        } else if (!hasInitialized) {
+            // Otherwise, capture the initial state (can be empty or non-empty)
             savedStateRef.current = new Set(items.map(item => item.trim()));
             setHasInitialized(true);
         }
