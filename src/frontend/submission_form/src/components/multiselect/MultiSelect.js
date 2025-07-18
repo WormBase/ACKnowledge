@@ -22,17 +22,27 @@ const MultiSelect = (props) => {
     const [isVerticalLayout, setIsVerticalLayout] = useState(false);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false);
     const [showWbIds, setShowWbIds] = useState(true);
-    const originalItemsRef = useRef(null);
+    const [hasInitialized, setHasInitialized] = useState(false);
+    const savedStateRef = useRef(null);
     
     // Ensure props.items is always an array
     const items = Array.isArray(props.items) ? props.items : [];
     
-    // Capture original items only once on first render with data - normalize them
-    if (originalItemsRef.current === null && items.length > 0) {
-        originalItemsRef.current = new Set(items.map(item => item.trim()));
-    }
+    // Initialize saved state only once when data first loads
+    useEffect(() => {
+        if (props.savedItems !== undefined) {
+            // If savedItems prop is provided, use it as the baseline
+            savedStateRef.current = new Set(Array.isArray(props.savedItems) ? props.savedItems.map(item => item.trim()) : []);
+            setHasInitialized(true);
+        } else if (!hasInitialized && items.length > 0) {
+            // Otherwise, capture the initial non-empty state (for backward compatibility)
+            savedStateRef.current = new Set(items.map(item => item.trim()));
+            setHasInitialized(true);
+        }
+    }, [props.savedItems, items, hasInitialized]);
     
-    const originalItems = originalItemsRef.current || new Set();
+    // Use the saved state as the baseline for comparison
+    const originalItems = savedStateRef.current || new Set();
 
     // No filtering needed anymore
     const filteredItems = items;
@@ -126,17 +136,13 @@ const MultiSelect = (props) => {
     };
 
     const handleReset = () => {
-        if (originalItems.size === 0) {
-            return; // Nothing to reset to
-        }
-
-        // Get all net additions and removals to undo them
-        const netAdditions = [...allCurrentItems].filter(item => !originalItems.has(item));
-        const netRemovals = [...originalItems].filter(item => !allCurrentItems.has(item));
-        
         // Remove all net additions (items that were added)
-        netAdditions.forEach(item => {
-            props.remItemFunction(item);
+        // Find the actual item with potential trailing spaces to remove
+        netAdditions.forEach(trimmedItem => {
+            const actualItem = items.find(item => item.trim() === trimmedItem);
+            if (actualItem) {
+                props.remItemFunction(actualItem);
+            }
         });
         
         // Add back all net removals (items that were removed)
@@ -202,7 +208,7 @@ const MultiSelect = (props) => {
                     className="multiselect-btn-subtle"
                     bsSize="small"
                     onClick={() => setShowResetConfirmation(true)}
-                    disabled={originalItems.size === 0 || (netAdditions.length === 0 && netRemovals.length === 0)}
+                    disabled={netAdditions.length === 0 && netRemovals.length === 0}
                     style={{
                         fontSize: '12px',
                         padding: '4px 8px'
@@ -499,6 +505,7 @@ MultiSelect.propTypes = {
     items: PropTypes.array,
     addedItems: PropTypes.array,
     removedItems: PropTypes.array,
+    savedItems: PropTypes.array,
     addItemFunction: PropTypes.func,
     remItemFunction: PropTypes.func,
     itemsNamePlural: PropTypes.string,
