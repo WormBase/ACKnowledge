@@ -19,6 +19,7 @@ const Disease = () => {
     const disease = useSelector((state) => state.disease.disease);
     const diseaseNames = useSelector((state) => state.disease.diseaseNames);
     const addedDiseaseNames = useSelector((state) => state.disease.addedDiseaseNames);
+    const savedDiseaseNames = useSelector((state) => state.disease.savedDiseaseNames);
     const isSavedToDB = useSelector((state) => state.disease.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
     const person = useSelector((state) => state.person.person);
@@ -79,6 +80,7 @@ const Disease = () => {
                             <MultiSelect
                                 items={diseaseNames}
                                 addedItems={addedDiseaseNames}
+                                savedItems={savedDiseaseNames}
                                 itemsNameSingular="disease"
                                 itemsNamePlural="diseases"
                                 addItemFunction={(disease) => dispatch(addDiseaseName(disease))}

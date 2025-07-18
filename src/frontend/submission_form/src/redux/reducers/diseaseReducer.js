@@ -15,6 +15,7 @@ const initialState = {
   },
   diseaseNames: [],
   addedDiseaseNames: [],
+  savedDiseaseNames: [], // Track originally loaded diseases
   isSavedToDB: false
 };
 
@@ -42,10 +43,17 @@ export default function(state = initialState, action) {
       };
     }
     case ADD_DISEASE_NAME: {
+      const newDiseaseNames = [...state.diseaseNames, action.payload];
+      // Only add to addedDiseaseNames if it wasn't in the original saved list
+      const wasOriginallyPresent = state.savedDiseaseNames.some(name => name.trim() === action.payload.trim());
+      const newAddedDiseaseNames = wasOriginallyPresent ? 
+        state.addedDiseaseNames : 
+        [...state.addedDiseaseNames, action.payload];
+      
       return {
         ...state,
-        diseaseNames: [...state.diseaseNames, action.payload],
-        addedDiseaseNames: [...state.addedDiseaseNames, action.payload],
+        diseaseNames: newDiseaseNames,
+        addedDiseaseNames: newAddedDiseaseNames,
         isSavedToDB: false
       };
     }
@@ -61,6 +69,8 @@ export default function(state = initialState, action) {
       return {
         ...state,
         diseaseNames: Array.isArray(action.payload) ? action.payload : [],
+        savedDiseaseNames: Array.isArray(action.payload) ? action.payload : [], // Store as saved baseline
+        addedDiseaseNames: [], // Reset added diseases when loading from API
         isSavedToDB: false
       };
     }
