@@ -20,6 +20,7 @@ const initialState = {
         saved: false
     },
     addedTransgenes: [],
+    savedTransgenes: [],  // Track originally loaded transgenes
     newAntibodies: {
         checked: false,
         details: ''
@@ -38,24 +39,36 @@ const initialState = {
 export default function(state = initialState, action) {
     switch (action.type) {
         case SET_TRANSGENES: {
+            // Check if this is the initial load (savedTransgenes hasn't been set AND we're not saved to DB)
+            const isInitialLoad = state.savedTransgenes.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 transgenes: action.payload,
+                // Only set savedTransgenes on initial load from API
+                savedTransgenes: isInitialLoad ? (action.payload.elements || []) : state.savedTransgenes,
                 newAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,
-                addedTransgenes: state.addedTransgenes,
+                // Only reset addedTransgenes on initial load
+                addedTransgenes: isInitialLoad ? [] : state.addedTransgenes,
                 isSavedToDB: false
             };
         }
         case ADD_TRANSGENE: {
+            const newTransgenes = [...new Set([...state.transgenes.elements, action.payload.transgene])];
+            // Only add to addedTransgenes if it wasn't in the original saved list
+            const wasOriginallyPresent = state.savedTransgenes.some(transgene => transgene.trim() === action.payload.transgene.trim());
+            const newAddedTransgenes = wasOriginallyPresent ? 
+                state.addedTransgenes : 
+                [...new Set([...state.addedTransgenes, action.payload.transgene])];
+            
             return {
                 ...state,
                 transgenes: {
-                    elements: [...new Set([...state.transgenes.elements, action.payload.transgene])],
+                    elements: newTransgenes,
                     saved: false
                 },
-                addedTransgenes: [...new Set([...state.addedTransgenes, action.payload.transgene])],
+                addedTransgenes: newAddedTransgenes,
                 newAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,
@@ -69,7 +82,7 @@ export default function(state = initialState, action) {
                     elements: state.transgenes.elements.filter(element => element !== action.payload.transgene),
                     saved: false
                 },
-                addedTransgenes: state.addedTransgenes,
+                addedTransgenes: state.addedTransgenes.filter(transgene => transgene !== action.payload.transgene),
                 newAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,

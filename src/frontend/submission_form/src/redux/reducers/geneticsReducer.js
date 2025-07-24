@@ -28,6 +28,8 @@ const initialState = {
     },
     addedAlleles: [],
     addedStrains: [],
+    savedAlleles: [],  // Track originally loaded alleles
+    savedStrains: [],  // Track originally loaded strains
     sequenceChange: {
         checked: false,
         details: ''
@@ -47,26 +49,38 @@ const initialState = {
 export default function(state = initialState, action) {
     switch (action.type) {
         case SET_ALLELES: {
+            // Check if this is the initial load (savedAlleles hasn't been set AND we're not saved to DB)
+            const isInitialLoad = state.savedAlleles.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 alleles: action.payload,
+                // Only set savedAlleles on initial load from API
+                savedAlleles: isInitialLoad ? (action.payload.elements || []) : state.savedAlleles,
                 strains: state.strains,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
-                addedAlleles: state.addedAlleles,
+                // Only reset addedAlleles on initial load
+                addedAlleles: isInitialLoad ? [] : state.addedAlleles,
                 addedStrains: state.addedStrains,
                 isSavedToDB: false
             };
         }
         case ADD_ALLELE: {
+            const newAlleles = [...new Set([...state.alleles.elements, action.payload.allele])];
+            // Only add to addedAlleles if it wasn't in the original saved list
+            const wasOriginallyPresent = state.savedAlleles.some(allele => allele.trim() === action.payload.allele.trim());
+            const newAddedAlleles = wasOriginallyPresent ? 
+                state.addedAlleles : 
+                [...new Set([...state.addedAlleles, action.payload.allele])];
+            
             return {
                 ...state,
                 alleles: {
-                    elements: [...new Set([...state.alleles.elements, action.payload.allele])],
+                    elements: newAlleles,
                     saved: false
                 },
-                addedAlleles: [...new Set([...state.addedAlleles, action.payload.allele])],
+                addedAlleles: newAddedAlleles,
                 addedStrains: state.addedStrains,
                 strains: state.strains,
                 sequenceChange: state.sequenceChange,
@@ -82,25 +96,30 @@ export default function(state = initialState, action) {
                     elements: state.alleles.elements.filter(element => element !== action.payload.allele),
                     saved: false
                 },
+                addedAlleles: state.addedAlleles.filter(allele => allele !== action.payload.allele),
                 strains: state.strains,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
-                addedAlleles: state.addedAlleles,
                 addedStrains: state.addedStrains,
                 isSavedToDB: false
             };
         }
         case SET_STRAINS: {
+            // Check if this is the initial load (savedStrains hasn't been set AND we're not saved to DB)
+            const isInitialLoad = state.savedStrains.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 alleles: state.alleles,
                 strains: action.payload,
+                // Only set savedStrains on initial load from API
+                savedStrains: isInitialLoad ? (action.payload.elements || []) : state.savedStrains,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
                 addedAlleles: state.addedAlleles,
-                addedStrains: state.addedStrains,
+                // Only reset addedStrains on initial load
+                addedStrains: isInitialLoad ? [] : state.addedStrains,
                 isSavedToDB: false
             };
         }
@@ -113,6 +132,13 @@ export default function(state = initialState, action) {
                 newStrainsArr = [...new Set([...[...state.strains.elements].filter(e => e !== newStrainNameOnly), action.payload.strain])];
                 newStrainAlreadyPresentError = true
             }
+            
+            // Only add to addedStrains if it wasn't in the original saved list
+            const wasOriginallyPresent = state.savedStrains.some(strain => strain.trim() === action.payload.strain.trim());
+            const newAddedStrains = wasOriginallyPresent ? 
+                state.addedStrains : 
+                [...new Set([...state.addedStrains, action.payload.strain])];
+            
             return {
                 ...state,
                 alleles: state.alleles,
@@ -120,7 +146,7 @@ export default function(state = initialState, action) {
                     elements: newStrainsArr,
                     saved: false
                 },
-                addedStrains: [...new Set([...state.addedStrains, action.payload.strain])],
+                addedStrains: newAddedStrains,
                 addedAlleles: state.addedAlleles,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
@@ -137,11 +163,11 @@ export default function(state = initialState, action) {
                     elements: state.strains.elements.filter(element => element !== action.payload.strain),
                     saved: false
                 },
+                addedStrains: state.addedStrains.filter(strain => strain !== action.payload.strain),
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
                 addedAlleles: state.addedAlleles,
-                addedStrains: state.addedStrains,
                 isSavedToDB: false
             };
         }

@@ -24,8 +24,10 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
     const genes = useSelector((state) => state.overview.genes.elements);
     const addedGenes = useSelector((state) => state.overview.addedGenes);
+    const savedGenes = useSelector((state) => state.overview.savedGenes);
     const species = useSelector((state) => state.overview.species.elements);
     const addedSpecies = useSelector((state) => state.overview.addedSpecies);
+    const savedSpecies = useSelector((state) => state.overview.savedSpecies);
     const geneModel = useSelector((state) => state.overview.geneModel);
     const isSavedToDB = useSelector((state) => state.overview.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
@@ -55,6 +57,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 itemsNamePlural={"genes"}
                 items={genes}
                 addedItems={addedGenes}
+                savedItems={savedGenes}
                 addItemFunction={(gene) => dispatch(addGene(gene))}
                 remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
@@ -206,6 +209,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             itemsNamePlural={"species"}
                             items={species}
                             addedItems={addedSpecies}
+                            savedItems={savedSpecies}
                             addItemFunction={(species) => dispatch(addSpecies(species))}
                             remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}

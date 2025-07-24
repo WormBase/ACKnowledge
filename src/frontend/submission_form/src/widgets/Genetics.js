@@ -27,9 +27,11 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     const dispatch = useDispatch();
     const alleles = useSelector((state) => state.genetics.alleles.elements);
     const addedAlleles = useSelector((state) => state.genetics.addedAlleles);
+    const savedAlleles = useSelector((state) => state.genetics.savedAlleles);
     const otherAlleles = useSelector((state) => state.genetics.otherAlleles.elements);
     const strains = useSelector((state) => state.genetics.strains.elements);
     const addedStrains = useSelector((state) => state.genetics.addedStrains);
+    const savedStrains = useSelector((state) => state.genetics.savedStrains);
     const otherStrains = useSelector((state) => state.genetics.otherStrains.elements);
     const sequenceChange = useSelector((state) => state.genetics.sequenceChange);
     const strainAlreadyPresentError = useSelector((state) => state.genetics.strainAlreadyPresentError);
@@ -64,6 +66,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 itemsNamePlural={"alleles"}
                 items={alleles}
                 addedItems={addedAlleles}
+                savedItems={savedAlleles}
                 addItemFunction={(allele) => dispatch(addAllele(allele))}
                 remItemFunction={(allele) => dispatch(removeAllele(allele))}
                 searchType={"variation"}
@@ -84,6 +87,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 itemsNamePlural={"strains"}
                 items={strains}
                 addedItems={addedStrains}
+                savedItems={savedStrains}
                 addItemFunction={(strain) => dispatch(addStrain(strain))}
                 remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}

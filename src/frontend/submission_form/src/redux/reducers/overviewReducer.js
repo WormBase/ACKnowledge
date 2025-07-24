@@ -24,6 +24,8 @@ const initialState = {
     },
     addedGenes: [],
     addedSpecies: [],
+    savedGenes: [],  // Track originally loaded genes
+    savedSpecies: [], // Track originally loaded species
     otherSpecies: {
         elements: [ { id: 1, name: "" } ],
         saved: false
@@ -34,24 +36,36 @@ const initialState = {
 export default function(state = initialState, action) {
     switch (action.type) {
         case SET_GENES: {
+            // Check if this is the initial load (savedGenes hasn't been set AND we're not saved to DB)
+            const isInitialLoad = state.savedGenes.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 genes: action.payload,
+                // Only set savedGenes on initial load from API
+                savedGenes: isInitialLoad ? (action.payload.elements || []) : state.savedGenes,
                 geneModel: state.geneModel,
                 species: state.species,
-                addedGenes: state.addedGenes,
+                // Only reset addedGenes on initial load
+                addedGenes: isInitialLoad ? [] : state.addedGenes,
                 addedSpecies: state.addedSpecies,
                 isSavedToDB: false
             };
         }
         case ADD_GENE: {
+            const newGenes = [...new Set([...state.genes.elements, action.payload.gene])];
+            // Only add to addedGenes if it wasn't in the original saved list
+            const wasOriginallyPresent = state.savedGenes.some(gene => gene.trim() === action.payload.gene.trim());
+            const newAddedGenes = wasOriginallyPresent ? 
+                state.addedGenes : 
+                [...new Set([...state.addedGenes, action.payload.gene])];
+            
             return {
                 ...state,
                 genes: {
-                    elements: [...new Set([...state.genes.elements, action.payload.gene])],
+                    elements: newGenes,
                     saved: false
                 },
-                addedGenes: [...new Set([...state.addedGenes, action.payload.gene])],
+                addedGenes: newAddedGenes,
                 addedSpecies: state.addedSpecies,
                 geneModel: state.geneModel,
                 species: state.species,
@@ -65,7 +79,7 @@ export default function(state = initialState, action) {
                     elements: state.genes.elements.filter(element => element !== action.payload.gene),
                     saved: false
                 },
-                addedGenes: state.addedGenes,
+                addedGenes: state.addedGenes.filter(gene => gene !== action.payload.gene),
                 addedSpecies: state.addedSpecies,
                 geneModel: state.geneModel,
                 species: state.species,
@@ -73,26 +87,38 @@ export default function(state = initialState, action) {
             };
         }
         case SET_SPECIES: {
+            // Check if this is the initial load (savedSpecies hasn't been set AND we're not saved to DB)
+            const isInitialLoad = state.savedSpecies.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 genes: state.genes,
                 geneModel: state.geneModel,
                 species: action.payload,
+                // Only set savedSpecies on initial load from API
+                savedSpecies: isInitialLoad ? (action.payload.elements || []) : state.savedSpecies,
                 addedGenes: state.addedGenes,
-                addedSpecies: state.addedSpecies,
+                // Only reset addedSpecies on initial load
+                addedSpecies: isInitialLoad ? [] : state.addedSpecies,
                 isSavedToDB: false
             };
         }
         case ADD_SPECIES: {
+            const newSpecies = [...new Set([...state.species.elements, action.payload.species])];
+            // Only add to addedSpecies if it wasn't in the original saved list
+            const wasOriginallyPresent = state.savedSpecies.some(species => species.trim() === action.payload.species.trim());
+            const newAddedSpecies = wasOriginallyPresent ? 
+                state.addedSpecies : 
+                [...new Set([...state.addedSpecies, action.payload.species])];
+            
             return {
                 ...state,
                 genes: state.genes,
                 geneModel: state.geneModel,
                 species: {
-                    elements: [...new Set([...state.species.elements, action.payload.species])],
+                    elements: newSpecies,
                     saved: false
                 },
-                addedSpecies: [...new Set([...state.addedSpecies, action.payload.species])],
+                addedSpecies: newAddedSpecies,
                 addedGenes: state.addedGenes,
                 isSavedToDB: false
             };
@@ -107,7 +133,7 @@ export default function(state = initialState, action) {
                     saved: false
                 },
                 addedGenes: state.addedGenes,
-                addedSpecies: state.addedSpecies,
+                addedSpecies: state.addedSpecies.filter(species => species !== action.payload.species),
                 isSavedToDB: false
             };
         }

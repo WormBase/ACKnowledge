@@ -27,6 +27,7 @@ const Reagent = () => {
     const dispatch = useDispatch();
     const transgenes = useSelector((state) => state.reagent.transgenes.elements);
     const addedTransgenes = useSelector((state) => state.reagent.addedTransgenes);
+    const savedTransgenes = useSelector((state) => state.reagent.savedTransgenes);
     const newAntibodies = useSelector((state) => state.reagent.newAntibodies);
     const otherTransgenes = useSelector((state) => state.reagent.otherTransgenes.elements);
     const otherAntibodies = useSelector((state) => state.reagent.otherAntibodies.elements);
@@ -85,6 +86,7 @@ const Reagent = () => {
                             itemsNamePlural={"transgenes"}
                             items={transgenes}
                             addedItems={addedTransgenes}
+                            savedItems={savedTransgenes}
                             addItemFunction={(transgene) => dispatch(addTransgene(transgene))}
                             remItemFunction={(transgene) => dispatch(removeTransgene(transgene))}
                             searchType={"transgene"}

@@ -22,27 +22,17 @@ const MultiSelect = (props) => {
     const [isVerticalLayout, setIsVerticalLayout] = useState(false);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false);
     const [showWbIds, setShowWbIds] = useState(true);
-    const [hasInitialized, setHasInitialized] = useState(false);
     const savedStateRef = useRef(null);
     
     // Ensure props.items is always an array
     const items = Array.isArray(props.items) ? props.items : [];
     
-    // Initialize saved state only once when data first loads
-    useEffect(() => {
-        if (props.savedItems !== undefined) {
-            // If savedItems prop is provided, use it as the baseline
-            savedStateRef.current = new Set(Array.isArray(props.savedItems) ? props.savedItems.map(item => item.trim()) : []);
-            setHasInitialized(true);
-        } else if (!hasInitialized) {
-            // Otherwise, capture the initial state (can be empty or non-empty)
-            savedStateRef.current = new Set(items.map(item => item.trim()));
-            setHasInitialized(true);
-        }
-    }, [props.savedItems, items, hasInitialized]);
-    
-    // Use the saved state as the baseline for comparison
-    const originalItems = savedStateRef.current || new Set();
+    // Determine the baseline for comparison
+    // If savedItems is provided, always use it as the source of truth
+    // Otherwise, treat all items as additions (for widgets without saved state tracking)
+    const originalItems = props.savedItems !== undefined && Array.isArray(props.savedItems)
+        ? new Set(props.savedItems.map(item => item.trim()))
+        : new Set(); // Empty set means all current items will be considered additions
 
     // No filtering needed anymore
     const filteredItems = items;
