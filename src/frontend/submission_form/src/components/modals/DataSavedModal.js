@@ -28,7 +28,7 @@ const DataSavedModal = (props) => {
     let body = <div><span>Try again later or contact </span><a href="mailto:help@wormbase.org">Wormbase Helpdesk</a></div>;
     if (props.success) {
         if (props.last_widget) {
-            btn = <Button bsStyle="success" onClick={() => props.hideDataSaved()}>Close</Button>;
+            btn = <Button bsStyle="primary" onClick={() => props.hideDataSaved()}>Close</Button>;
             title =  "Congratulations!";
             body = "You have successfully submitted all your data to Wormbase. Thank you for your participation.";
         } else {
