@@ -92,7 +92,7 @@ const PersonSelector = () => {
         <div className="person-selector-compact">
             <div style={{marginBottom: '8px'}}>
                 <div style={{fontSize: '12px', color: '#666', marginBottom: '2px'}}>
-                    WormBase User:
+                    Author/Community Curator:
                 </div>
                 <div style={{fontSize: '14px', fontWeight: 'bold', color: '#333'}}>
                     {person.name} (WBPerson{person.personId})
@@ -212,7 +212,7 @@ const PersonSelector = () => {
                             }}
                         >
                             {availableItems.size === 0 ? (
-                                <option disabled>Type your name above to search for WormBase users</option>
+                                <option disabled>Type your name above to search for Authors/Community Curators</option>
                             ) : (
                                 [...availableItems].map((item, index) =>
                                     <option key={index} value={item}>{item}</option>
