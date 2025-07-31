@@ -164,7 +164,7 @@ const PersonSelector = () => {
             </div>
             <Modal show={show} onHide={handleClose} bsSize="large">
                 <Modal.Header closeButton>
-                    <Modal.Title>Select from Wormbase User list</Modal.Title>
+                    <Modal.Title>Select from Authors/Community Curators list</Modal.Title>
                 </Modal.Header>
                 <Modal.Body style={{minWidth: '600px', minHeight: '400px'}}>
                     {data_fetch_err_alert}
