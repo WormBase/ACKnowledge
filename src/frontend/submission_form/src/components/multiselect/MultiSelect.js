@@ -19,9 +19,9 @@ const MultiSelect = (props) => {
     const [showAddMode, setShowAddMode] = useState(false);
     const [selectedForRemoval, setSelectedForRemoval] = useState(new Set());
     const [showRemovalMode, setShowRemovalMode] = useState(false);
-    const [isVerticalLayout, setIsVerticalLayout] = useState(false);
+    const [isVerticalLayout, setIsVerticalLayout] = useState(props.defaultListView || false);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false);
-    const [showWbIds, setShowWbIds] = useState(true);
+    const [showWbIds, setShowWbIds] = useState(props.defaultShowIds !== undefined ? props.defaultShowIds : true);
     const savedStateRef = useRef(null);
     
     // Ensure props.items is always an array
@@ -507,7 +507,9 @@ MultiSelect.propTypes = {
     customAutoComplete: PropTypes.func,
     customTitle: PropTypes.string,
     showTpcBadge: PropTypes.bool,
-    emptyStateText: PropTypes.string
+    emptyStateText: PropTypes.string,
+    defaultListView: PropTypes.bool,
+    defaultShowIds: PropTypes.bool
 };
 
 MultiSelect.defaultProps = {
@@ -515,7 +517,9 @@ MultiSelect.defaultProps = {
     addedItems: [],
     removedItems: [],
     defaultExactMatchOnly: false,
-    showTpcBadge: true
+    showTpcBadge: true,
+    defaultListView: false,
+    defaultShowIds: true
 };
 
 export default MultiSelect;
