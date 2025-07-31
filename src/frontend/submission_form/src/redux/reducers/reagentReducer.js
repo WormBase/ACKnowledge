@@ -39,13 +39,15 @@ const initialState = {
 export default function(state = initialState, action) {
     switch (action.type) {
         case SET_TRANSGENES: {
+            // Ensure savedTransgenes is an array
+            const currentSavedTransgenes = Array.isArray(state.savedTransgenes) ? state.savedTransgenes : [];
             // Check if this is the initial load (savedTransgenes hasn't been set AND we're not saved to DB)
-            const isInitialLoad = state.savedTransgenes.length === 0 && !state.isSavedToDB;
+            const isInitialLoad = currentSavedTransgenes.length === 0 && !state.isSavedToDB;
             return {
                 ...state,
                 transgenes: action.payload,
                 // Only set savedTransgenes on initial load from API
-                savedTransgenes: isInitialLoad ? (action.payload.elements || []) : state.savedTransgenes,
+                savedTransgenes: isInitialLoad ? (Array.isArray(action.payload.elements) ? action.payload.elements : []) : currentSavedTransgenes,
                 newAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,
@@ -56,8 +58,10 @@ export default function(state = initialState, action) {
         }
         case ADD_TRANSGENE: {
             const newTransgenes = [...new Set([...state.transgenes.elements, action.payload.transgene])];
+            // Ensure savedTransgenes is an array before using .some()
+            const savedTransgenesArray = Array.isArray(state.savedTransgenes) ? state.savedTransgenes : [];
             // Only add to addedTransgenes if it wasn't in the original saved list
-            const wasOriginallyPresent = state.savedTransgenes.some(transgene => transgene.trim() === action.payload.transgene.trim());
+            const wasOriginallyPresent = savedTransgenesArray.some(transgene => transgene.trim() === action.payload.transgene.trim());
             const newAddedTransgenes = wasOriginallyPresent ? 
                 state.addedTransgenes : 
                 [...new Set([...state.addedTransgenes, action.payload.transgene])];
