@@ -378,11 +378,11 @@ const MultiSelect = (props) => {
                 maxHeight: '350px',
                 minHeight: 'auto',
                 overflowY: 'auto',
-                padding: filteredItems.length === 0 ? '15px' : '8px',
+                padding: (filteredItems.length === 0 && netRemovals.length === 0) ? '15px' : '8px',
                 backgroundColor: '#f8f9fa',
                 boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.08)'
             }}>
-                {filteredItems.length === 0 ? (
+                {(filteredItems.length === 0 && netRemovals.length === 0) ? (
                     <div style={{textAlign: 'center', color: '#999'}}>
                         {props.emptyStateText || `No ${props.itemsNamePlural} found`}
                     </div>
@@ -393,6 +393,7 @@ const MultiSelect = (props) => {
                         flexWrap: isVerticalLayout ? 'nowrap' : 'wrap',
                         gap: isVerticalLayout ? '2px' : '4px'
                     }}>
+                        {/* Display current items */}
                         {filteredItems.sort().map((item, index) => {
                             const isAddedItem = new Set(addedItems).has(item);
                             const isSelectedForRemoval = selectedForRemoval.has(item);
@@ -403,7 +404,7 @@ const MultiSelect = (props) => {
                             
                             return (
                                 <span
-                                    key={index}
+                                    key={`current-${index}`}
                                     style={{
                                         cursor: 'pointer',
                                         margin: '0',
@@ -445,6 +446,55 @@ const MultiSelect = (props) => {
                                 </span>
                             );
                         })}
+                        
+                        {/* Display removed items with strikethrough */}
+                        {netRemovals.sort().map((item, index) => (
+                            <span
+                                key={`removed-${index}`}
+                                style={{
+                                    cursor: 'pointer',
+                                    margin: '0',
+                                    fontSize: '12px',
+                                    fontWeight: '500',
+                                    padding: isVerticalLayout ? '4px 8px' : '6px 8px',
+                                    display: isVerticalLayout ? 'block' : 'inline-block',
+                                    maxWidth: isVerticalLayout ? 'none' : '250px',
+                                    width: isVerticalLayout ? '100%' : 'auto',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    borderRadius: '3px',
+                                    backgroundColor: '#ffebee',
+                                    border: '1px solid #dc3545',
+                                    color: '#721c24',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                    transition: 'all 0.2s ease',
+                                    textDecoration: 'line-through',
+                                    opacity: 0.8
+                                }}
+                                onClick={() => {
+                                    // Re-add the removed item when clicked
+                                    props.addItemFunction(item);
+                                }}
+                                title={`${item} (removed - click to restore)`}
+                                onMouseOver={(e) => {
+                                    e.target.style.transform = isVerticalLayout ? 'translateX(2px)' : 'translateY(-1px)';
+                                    e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                                    e.target.style.opacity = '1';
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.transform = isVerticalLayout ? 'translateX(0)' : 'translateY(0)';
+                                    e.target.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
+                                    e.target.style.opacity = '0.8';
+                                }}
+                            >
+                                <Glyphicon glyph="minus" style={{marginRight: '6px', fontSize: '11px'}}/>
+                                {(() => {
+                                    const displayItem = formatItemDisplay(item);
+                                    return isVerticalLayout ? displayItem : (displayItem.length > 30 ? displayItem.substring(0, 30) + '...' : displayItem);
+                                })()}
+                            </span>
+                        ))}
                     </div>
                 )}
             </div>
