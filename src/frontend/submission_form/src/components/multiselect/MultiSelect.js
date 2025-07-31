@@ -238,19 +238,21 @@ const MultiSelect = (props) => {
                     </Button>
                 </div>
 
-                <Button 
-                    className="multiselect-btn-subtle"
-                    bsSize="small"
-                    onClick={() => setShowWbIds(!showWbIds)}
-                    style={{
-                        fontSize: '12px',
-                        padding: '4px 8px'
-                    }}
-                    title={showWbIds ? "Hide WormBase IDs" : "Show WormBase IDs"}
-                >
-                    <Glyphicon glyph={showWbIds ? "eye-close" : "eye-open"} style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> 
-                    {showWbIds ? "Hide IDs" : "Show IDs"}
-                </Button>
+                {props.showIdToggle !== false && (
+                    <Button 
+                        className="multiselect-btn-subtle"
+                        bsSize="small"
+                        onClick={() => setShowWbIds(!showWbIds)}
+                        style={{
+                            fontSize: '12px',
+                            padding: '4px 8px'
+                        }}
+                        title={showWbIds ? "Hide WormBase IDs" : "Show WormBase IDs"}
+                    >
+                        <Glyphicon glyph={showWbIds ? "eye-close" : "eye-open"} style={{fontSize: '10px', marginRight: '4px', marginLeft: '0'}}/> 
+                        {showWbIds ? "Hide IDs" : "Show IDs"}
+                    </Button>
+                )}
 
                 <div style={{flex: 1}}></div>
 
@@ -509,7 +511,8 @@ MultiSelect.propTypes = {
     showTpcBadge: PropTypes.bool,
     emptyStateText: PropTypes.string,
     defaultListView: PropTypes.bool,
-    defaultShowIds: PropTypes.bool
+    defaultShowIds: PropTypes.bool,
+    showIdToggle: PropTypes.bool
 };
 
 MultiSelect.defaultProps = {
@@ -519,7 +522,8 @@ MultiSelect.defaultProps = {
     defaultExactMatchOnly: false,
     showTpcBadge: true,
     defaultListView: false,
-    defaultShowIds: true
+    defaultShowIds: true,
+    showIdToggle: true
 };
 
 export default MultiSelect;

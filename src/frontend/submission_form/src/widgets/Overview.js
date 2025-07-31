@@ -218,6 +218,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             defaultExactMatchOnly={true}
                             exactMatchTooltip={'Species searches require exact matches for accuracy'}
                             autocompletePlaceholder={"Type species names, one per line. For example:\nCaenorhabditis elegans\nCaenorhabditis briggsae\nDrosophila melanogaster"}
+                            showIdToggle={false}
                         />
                     </Panel.Body>
                 </Panel>
