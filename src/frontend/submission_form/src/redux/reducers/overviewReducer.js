@@ -38,11 +38,18 @@ export default function(state = initialState, action) {
         case SET_GENES: {
             // Check if this is the initial load (savedGenes hasn't been set AND we're not saved to DB)
             const isInitialLoad = state.savedGenes.length === 0 && !state.isSavedToDB;
+            // Ensure elements is always an array
+            const elements = Array.isArray(action.payload.elements) 
+                ? action.payload.elements 
+                : Array.from(action.payload.elements || []);
             return {
                 ...state,
-                genes: action.payload,
+                genes: {
+                    ...action.payload,
+                    elements: elements
+                },
                 // Only set savedGenes on initial load from API
-                savedGenes: isInitialLoad ? (action.payload.elements || []) : state.savedGenes,
+                savedGenes: isInitialLoad ? elements : state.savedGenes,
                 geneModel: state.geneModel,
                 species: state.species,
                 // Only reset addedGenes on initial load
@@ -89,13 +96,20 @@ export default function(state = initialState, action) {
         case SET_SPECIES: {
             // Check if this is the initial load (savedSpecies hasn't been set AND we're not saved to DB)
             const isInitialLoad = state.savedSpecies.length === 0 && !state.isSavedToDB;
+            // Ensure elements is always an array
+            const elements = Array.isArray(action.payload.elements) 
+                ? action.payload.elements 
+                : Array.from(action.payload.elements || []);
             return {
                 ...state,
                 genes: state.genes,
                 geneModel: state.geneModel,
-                species: action.payload,
+                species: {
+                    ...action.payload,
+                    elements: elements
+                },
                 // Only set savedSpecies on initial load from API
-                savedSpecies: isInitialLoad ? (action.payload.elements || []) : state.savedSpecies,
+                savedSpecies: isInitialLoad ? elements : state.savedSpecies,
                 addedGenes: state.addedGenes,
                 // Only reset addedSpecies on initial load
                 addedSpecies: isInitialLoad ? [] : state.addedSpecies,

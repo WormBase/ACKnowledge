@@ -43,11 +43,18 @@ export default function(state = initialState, action) {
             const currentSavedTransgenes = Array.isArray(state.savedTransgenes) ? state.savedTransgenes : [];
             // Check if this is the initial load (savedTransgenes hasn't been set AND we're not saved to DB)
             const isInitialLoad = currentSavedTransgenes.length === 0 && !state.isSavedToDB;
+            // Ensure elements is always an array
+            const elements = Array.isArray(action.payload.elements) 
+                ? action.payload.elements 
+                : Array.from(action.payload.elements || []);
             return {
                 ...state,
-                transgenes: action.payload,
+                transgenes: {
+                    ...action.payload,
+                    elements: elements
+                },
                 // Only set savedTransgenes on initial load from API
-                savedTransgenes: isInitialLoad ? (Array.isArray(action.payload.elements) ? action.payload.elements : []) : currentSavedTransgenes,
+                savedTransgenes: isInitialLoad ? elements : currentSavedTransgenes,
                 newAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,

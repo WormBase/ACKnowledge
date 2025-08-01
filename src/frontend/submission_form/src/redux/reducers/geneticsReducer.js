@@ -51,11 +51,18 @@ export default function(state = initialState, action) {
         case SET_ALLELES: {
             // Check if this is the initial load (savedAlleles hasn't been set AND we're not saved to DB)
             const isInitialLoad = state.savedAlleles.length === 0 && !state.isSavedToDB;
+            // Ensure elements is always an array
+            const elements = Array.isArray(action.payload.elements) 
+                ? action.payload.elements 
+                : Array.from(action.payload.elements || []);
             return {
                 ...state,
-                alleles: action.payload,
+                alleles: {
+                    ...action.payload,
+                    elements: elements
+                },
                 // Only set savedAlleles on initial load from API
-                savedAlleles: isInitialLoad ? (action.payload.elements || []) : state.savedAlleles,
+                savedAlleles: isInitialLoad ? elements : state.savedAlleles,
                 strains: state.strains,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
@@ -108,12 +115,19 @@ export default function(state = initialState, action) {
         case SET_STRAINS: {
             // Check if this is the initial load (savedStrains hasn't been set AND we're not saved to DB)
             const isInitialLoad = state.savedStrains.length === 0 && !state.isSavedToDB;
+            // Ensure elements is always an array
+            const elements = Array.isArray(action.payload.elements) 
+                ? action.payload.elements 
+                : Array.from(action.payload.elements || []);
             return {
                 ...state,
                 alleles: state.alleles,
-                strains: action.payload,
+                strains: {
+                    ...action.payload,
+                    elements: elements
+                },
                 // Only set savedStrains on initial load from API
-                savedStrains: isInitialLoad ? (action.payload.elements || []) : state.savedStrains,
+                savedStrains: isInitialLoad ? elements : state.savedStrains,
                 sequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
