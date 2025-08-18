@@ -23,7 +23,7 @@ const DiseaseFetchAndSelect = ({ searchString, exactMatchOnly, addItemFunction, 
         searchEntities.map(entity => ({
             queryKey: ['diseaseQuery', entity],
             queryFn: () => {
-                const url = `${process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT}?objectType=humandoid&userValue=${entity}`;
+                const url = `${process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT}?objectType=humandoid&userValue=${encodeURIComponent(entity)}`;
                 return axios.get(url);
             },
             enabled: entity.length > 0
