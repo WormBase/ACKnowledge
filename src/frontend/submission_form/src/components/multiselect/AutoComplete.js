@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Button, FormControl, Glyphicon, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Checkbox from "react-bootstrap/lib/Checkbox";
@@ -15,9 +15,19 @@ const AutoComplete = ({
 }) => {
     const [exactMatchOnly, setExactMatchOnly] = useState(defaultExactMatchOnly);
     const [searchString, setSearchString] = useState("");
+    const [debouncedSearchString, setDebouncedSearchString] = useState("");
     const [tmpSelectedItems, setTmpSelectedItems] = useState(new Set());
     const [availableItems, setAvailableItems] = useState([]);
     const [hasResults, setHasResults] = useState(false);
+
+    // Debounce the search string to avoid too many API calls
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchString(searchString);
+        }, 300); // 300ms delay
+
+        return () => clearTimeout(timer);
+    }, [searchString]);
 
     const handleSearchChange = (e) => {
         setSearchString(e.target.value);
@@ -121,9 +131,9 @@ const AutoComplete = ({
                 )}
             </div>
 
-            {searchString.trim() && (
+            {debouncedSearchString.trim() && (
                 <EntitiesFetchAndSelect
-                    searchString={searchString}
+                    searchString={debouncedSearchString}
                     exactMatchOnly={exactMatchOnly}
                     addItemFunction={addItemFunction}
                     searchType={searchType}

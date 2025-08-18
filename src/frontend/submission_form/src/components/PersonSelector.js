@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
     Alert,
     Button,
@@ -18,16 +18,41 @@ const PersonSelector = () => {
     const [tmp_person_id, setTmp_person_id] = useState(undefined);
     const [availableItems, setAvailableItems] = useState(new Set());
     const [showMore, setShowMore] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
 
     const person = useSelector((state) => state.person.person);
 
     const sampleQuery = "Type your name";
+
+    // Debounce the search to avoid too many API calls
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchInput);
+        }, 300); // 300ms delay
+
+        return () => clearTimeout(timer);
+    }, [searchInput]);
+
+    // Trigger search when debounced value changes
+    useEffect(() => {
+        if (debouncedSearch.trim()) {
+            searchWB(debouncedSearch, "person");
+        } else {
+            setAvailableItems(new Set());
+            setShowMore(false);
+        }
+    }, [debouncedSearch]);
 
     const handleClose = () => {
         setShow(false);
         setShow_fetch_data_error(false);
         setTmp_person_id(undefined);
         setTmp_person_name(undefined);
+        setSearchInput("");
+        setDebouncedSearch("");
+        setAvailableItems(new Set());
+        setShowMore(false);
     }
 
     const searchWB = (searchString, searchType) => {
@@ -175,7 +200,8 @@ const PersonSelector = () => {
                         <input 
                             className="form-control"
                             placeholder={sampleQuery}
-                            onChange={(e) => {searchWB(e.target.value, "person")}}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                             style={{width: '100%'}}
                         />
                     </div>
@@ -195,20 +221,26 @@ const PersonSelector = () => {
                             }}
                             defaultValue=""
                             onDoubleClick={(e) => {
+                                if (!e.target.label) return; // Prevent error when clicking without data
                                 let fullData = e.target.label;
                                 let wbRx = / \( WBPerson([0-9]+) \)/;
                                 let arr = wbRx.exec(fullData);
-                                fullData = fullData.replace(wbRx, "");
-                                dispatch(setPerson(fullData, arr[1]));
-                                handleClose();
+                                if (arr && arr[1]) {
+                                    fullData = fullData.replace(wbRx, "");
+                                    dispatch(setPerson(fullData, arr[1]));
+                                    handleClose();
+                                }
                             }}
                             onClick={(e) => {
+                                if (!e.target.label) return; // Prevent error when clicking without data
                                 let fullData = e.target.label;
                                 let wbRx = / \( WBPerson([0-9]+) \)/;
                                 let arr = wbRx.exec(fullData);
-                                fullData = fullData.replace(wbRx, "");
-                                setTmp_person_name(fullData);
-                                setTmp_person_id(arr[1]);
+                                if (arr && arr[1]) {
+                                    fullData = fullData.replace(wbRx, "");
+                                    setTmp_person_name(fullData);
+                                    setTmp_person_id(arr[1]);
+                                }
                             }}
                         >
                             {availableItems.size === 0 ? (
