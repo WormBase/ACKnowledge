@@ -395,12 +395,9 @@ const MultiSelect = (props) => {
                     }}>
                         {/* Display current items */}
                         {filteredItems.sort().map((item, index) => {
-                            const isAddedItem = new Set(addedItems).has(item);
                             const isSelectedForRemoval = selectedForRemoval.has(item);
-                            const wasOriginallyPresent = originalItems.has(item.trim());
-                            
-                            // Only show as "added" if it's truly new (wasn't in original)
-                            const isNewlyAdded = isAddedItem && !wasOriginallyPresent;
+                            // Check if this item is in the netAdditions list (wasn't in original tfp_ data)
+                            const isNewlyAdded = netAdditions.includes(item.trim());
                             
                             return (
                                 <span
