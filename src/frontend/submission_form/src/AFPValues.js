@@ -148,6 +148,26 @@ export function getSetOfEntitiesFromWBAPIData(afpString, tfpString, entityPrefix
 }
 
 /**
+ * get ONLY the tfp_ (extracted) entities from WB API data, ignoring afp_ (saved) data
+ *
+ * @param {string} tfpString string containing data for a data type coming from tfp tables
+ * @param {string} entityPrefix optional prefix to be attached to additional information for each entity
+ * @returns {Array} an array of entities from tfp_ tables only
+ */
+export function getTfpEntitiesOnly(tfpString, entityPrefix) {
+    if (tfpString !== undefined && tfpString.tfp !== undefined && tfpString.tfp !== "" &&
+        tfpString.tfp !== null) {
+        if (entityPrefix !== undefined) {
+            return extractEntitiesFromTfpString(tfpString.tfp, entityPrefix);
+        } else {
+            return tfpString.tfp.split(" | ");
+        }
+    } else {
+        return [];
+    }
+}
+
+/**
  * get a checkbox value with its associated text for a specific data type from a data object returned by WB API
  *
  * WB API returns a data object with all tfp_*, afp_*, and svm_* tables and their values for a specific paper. This

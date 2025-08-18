@@ -28,10 +28,12 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     const alleles = useSelector((state) => state.genetics.alleles.elements);
     const addedAlleles = useSelector((state) => state.genetics.addedAlleles);
     const savedAlleles = useSelector((state) => state.genetics.savedAlleles);
+    const tfpAlleles = useSelector((state) => state.genetics.tfpAlleles);
     const otherAlleles = useSelector((state) => state.genetics.otherAlleles.elements);
     const strains = useSelector((state) => state.genetics.strains.elements);
     const addedStrains = useSelector((state) => state.genetics.addedStrains);
     const savedStrains = useSelector((state) => state.genetics.savedStrains);
+    const tfpStrains = useSelector((state) => state.genetics.tfpStrains);
     const otherStrains = useSelector((state) => state.genetics.otherStrains.elements);
     const sequenceChange = useSelector((state) => state.genetics.sequenceChange);
     const strainAlreadyPresentError = useSelector((state) => state.genetics.strainAlreadyPresentError);
@@ -66,7 +68,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 itemsNamePlural={"alleles"}
                 items={alleles}
                 addedItems={addedAlleles}
-                savedItems={savedAlleles}
+                savedItems={tfpAlleles}  // Use tfp_ data as the reference for comparison
                 addItemFunction={(allele) => dispatch(addAllele(allele))}
                 remItemFunction={(allele) => dispatch(removeAllele(allele))}
                 searchType={"variation"}
@@ -87,7 +89,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 itemsNamePlural={"strains"}
                 items={strains}
                 addedItems={addedStrains}
-                savedItems={savedStrains}
+                savedItems={tfpStrains}  // Use tfp_ data as the reference for comparison
                 addItemFunction={(strain) => dispatch(addStrain(strain))}
                 remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}

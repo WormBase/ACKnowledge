@@ -25,9 +25,11 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const genes = useSelector((state) => state.overview.genes.elements);
     const addedGenes = useSelector((state) => state.overview.addedGenes);
     const savedGenes = useSelector((state) => state.overview.savedGenes);
+    const tfpGenes = useSelector((state) => state.overview.tfpGenes);
     const species = useSelector((state) => state.overview.species.elements);
     const addedSpecies = useSelector((state) => state.overview.addedSpecies);
     const savedSpecies = useSelector((state) => state.overview.savedSpecies);
+    const tfpSpecies = useSelector((state) => state.overview.tfpSpecies);
     const geneModel = useSelector((state) => state.overview.geneModel);
     const isSavedToDB = useSelector((state) => state.overview.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
@@ -57,7 +59,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 itemsNamePlural={"genes"}
                 items={genes}
                 addedItems={addedGenes}
-                savedItems={savedGenes}
+                savedItems={tfpGenes}  // Use tfp_ data as the reference for comparison
                 addItemFunction={(gene) => dispatch(addGene(gene))}
                 remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
@@ -211,7 +213,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             itemsNamePlural={"species"}
                             items={species}
                             addedItems={addedSpecies}
-                            savedItems={savedSpecies}
+                            savedItems={tfpSpecies}  // Use tfp_ data as the reference for comparison
                             addItemFunction={(species) => dispatch(addSpecies(species))}
                             remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}

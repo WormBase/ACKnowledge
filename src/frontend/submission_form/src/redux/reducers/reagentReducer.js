@@ -10,7 +10,8 @@ import {
     REMOVE_OTHER_TRANSGENE,
     SET_OTHER_ANTIBODIES,
     ADD_OTHER_ANTIBODY,
-    REMOVE_OTHER_ANTIBODY
+    REMOVE_OTHER_ANTIBODY,
+    SET_TFP_TRANSGENES
 } from "../actions/reagentActions";
 
 
@@ -21,6 +22,7 @@ const initialState = {
     },
     addedTransgenes: [],
     savedTransgenes: [],  // Track originally loaded transgenes
+    tfpTransgenes: [],  // Store original tfp_ data for transgenes
     newAntibodies: {
         checked: false,
         details: ''
@@ -201,6 +203,12 @@ export default function(state = initialState, action) {
                     saved: false},
                 addedTransgenes: state.addedTransgenes,
                 isSavedToDB: false
+            };
+        }
+        case SET_TFP_TRANSGENES: {
+            return {
+                ...state,
+                tfpTransgenes: action.payload.transgenes
             };
         }
         default:

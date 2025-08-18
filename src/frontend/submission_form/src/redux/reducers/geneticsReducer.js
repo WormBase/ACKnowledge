@@ -13,7 +13,8 @@ import {
     REMOVE_OTHER_ALLELE,
     SET_OTHER_STRAINS,
     ADD_OTHER_STRAIN,
-    REMOVE_OTHER_STRAIN, SET_STRAIN_ALREADY_PRESENT_ERROR
+    REMOVE_OTHER_STRAIN, SET_STRAIN_ALREADY_PRESENT_ERROR,
+    SET_TFP_ALLELES, SET_TFP_STRAINS
 } from "../actions/geneticsActions";
 
 
@@ -30,6 +31,8 @@ const initialState = {
     addedStrains: [],
     savedAlleles: [],  // Track originally loaded alleles
     savedStrains: [],  // Track originally loaded strains
+    tfpAlleles: [],  // Store original tfp_ data for alleles
+    tfpStrains: [],  // Store original tfp_ data for strains
     sequenceChange: {
         checked: false,
         details: ''
@@ -312,6 +315,18 @@ export default function(state = initialState, action) {
                 ...state,
                 strainAlreadyPresentError: action.payload.errorMessage
             }
+        }
+        case SET_TFP_ALLELES: {
+            return {
+                ...state,
+                tfpAlleles: action.payload.alleles
+            };
+        }
+        case SET_TFP_STRAINS: {
+            return {
+                ...state,
+                tfpStrains: action.payload.strains
+            };
         }
         default:
             return state;

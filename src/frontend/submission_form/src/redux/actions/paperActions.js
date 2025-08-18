@@ -2,23 +2,27 @@ import axios from 'axios';
 import {
     getCheckbxOrSingleFieldFromWBAPIData,
     getSetOfEntitiesFromWBAPIData,
-    getTableValuesFromWBAPIData
+    getTableValuesFromWBAPIData,
+    getTfpEntitiesOnly
 } from "../../AFPValues";
-import {setGeneModel, setGenes, setIsOverviewSavedToDB, setOtherSpecies, setSpecies} from "./overviewActions";
+import {setGeneModel, setGenes, setIsOverviewSavedToDB, setOtherSpecies, setSpecies, setTfpGenes, setTfpSpecies} from "./overviewActions";
 import {
     setAlleles,
     setIsGeneticsSavedToDB,
     setOtherAlleles,
     setOtherStrains,
     setSequenceChange,
-    setStrains
+    setStrains,
+    setTfpAlleles,
+    setTfpStrains
 } from "./geneticsActions";
 import {
     setIsReagentSavedToDB,
     setNewAntibodies,
     setOtherAntibodies,
     setOtherTransgenes,
-    setTransgenes
+    setTransgenes,
+    setTfpTransgenes
 } from "./reagentActions";
 import {
     setAdditionalExpr,
@@ -66,8 +70,16 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 // Overview
                 let genes = getSetOfEntitiesFromWBAPIData(result.data.genestudied, result.data.genestudied, "WBGene");
                 dispatch(setGenes(genes.entities(), genes.prevSaved()));
+                // Also store the original tfp_ data for genes
+                let tfpGenes = getTfpEntitiesOnly(result.data.genestudied, "WBGene");
+                dispatch(setTfpGenes(tfpGenes));
+                
                 let species = getSetOfEntitiesFromWBAPIData(result.data.species, result.data.species, undefined);
                 dispatch(setSpecies(species.entities(), species.prevSaved()));
+                // Also store the original tfp_ data for species
+                let tfpSpecies = getTfpEntitiesOnly(result.data.species, undefined);
+                dispatch(setTfpSpecies(tfpSpecies));
+                
                 let structCorrCB = getCheckbxOrSingleFieldFromWBAPIData(result.data.structcorr, undefined);
                 dispatch(setGeneModel(structCorrCB.isChecked(), structCorrCB.details()));
                 let otherSpecies = getTableValuesFromWBAPIData(result.data.otherspecies, false);
@@ -79,8 +91,15 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 // Genetics
                 let alleles = getSetOfEntitiesFromWBAPIData(result.data.variation, result.data.variation, "");
                 dispatch(setAlleles(alleles.entities(), alleles.prevSaved()));
+                // Also store the original tfp_ data for alleles
+                let tfpAlleles = getTfpEntitiesOnly(result.data.variation, "");
+                dispatch(setTfpAlleles(tfpAlleles));
+                
                 let strains = getSetOfEntitiesFromWBAPIData(result.data.strain, result.data.strain, "");
                 dispatch(setStrains(strains.entities(), strains.prevSaved()));
+                // Also store the original tfp_ data for strains
+                let tfpStrains = getTfpEntitiesOnly(result.data.strain, "");
+                dispatch(setTfpStrains(tfpStrains));
                 let seqChange = getCheckbxOrSingleFieldFromWBAPIData(result.data.seqchange, result.data.seqchange);
                 dispatch(setSequenceChange(seqChange.isChecked(), seqChange.details()));
                 let otherAlleles = getTableValuesFromWBAPIData(result.data.othervariation, false);
@@ -95,6 +114,9 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 // Reagent
                 let transgenes = getSetOfEntitiesFromWBAPIData(result.data.transgene, result.data.transgene, "");
                 dispatch(setTransgenes(transgenes.entities(), transgenes.prevSaved()));
+                // Also store the original tfp_ data for transgenes
+                let tfpTransgenes = getTfpEntitiesOnly(result.data.transgene, "");
+                dispatch(setTfpTransgenes(tfpTransgenes));
                 let otherTransgenes = getTableValuesFromWBAPIData(result.data.othertransgene, false);
                 dispatch(setOtherTransgenes(otherTransgenes.entities(), otherTransgenes.prevSaved()));
                 let otherAntibodies = getTableValuesFromWBAPIData(result.data.otherantibody, true);

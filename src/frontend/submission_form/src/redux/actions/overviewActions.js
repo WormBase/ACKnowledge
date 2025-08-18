@@ -8,6 +8,8 @@ export const SET_GENE_MODEL = "SET_GENE_MODEL";
 export const TOGGLE_GENE_MODEL = "TOGGLE_GENE_MODEL";
 export const SET_IS_OVERVIEW_SAVED_TO_DB = "SET_IS_SAVED_TO_DB";
 export const SET_OTHER_SPECIES = "SET_OTHER_SPECIES";
+export const SET_TFP_GENES = "SET_TFP_GENES";
+export const SET_TFP_SPECIES = "SET_TFP_SPECIES";
 
 
 export const setGenes = (elements, saved) => ({
@@ -77,5 +79,19 @@ export const setOtherSpecies = (elements, saved) => ({
     payload: {
         elements: elements,
         saved: saved
+    }
+});
+
+export const setTfpGenes = (genes) => ({
+    type: SET_TFP_GENES,
+    payload: {
+        genes: genes
+    }
+});
+
+export const setTfpSpecies = (species) => ({
+    type: SET_TFP_SPECIES,
+    payload: {
+        species: species
     }
 });

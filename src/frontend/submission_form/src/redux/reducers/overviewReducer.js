@@ -5,7 +5,8 @@ import {
     REMOVE_SPECIES,
     SET_GENE_MODEL,
     SET_SPECIES,
-    SET_GENES, SET_IS_OVERVIEW_SAVED_TO_DB, TOGGLE_GENE_MODEL, SET_OTHER_SPECIES
+    SET_GENES, SET_IS_OVERVIEW_SAVED_TO_DB, TOGGLE_GENE_MODEL, SET_OTHER_SPECIES,
+    SET_TFP_GENES, SET_TFP_SPECIES
 } from "../actions/overviewActions";
 
 
@@ -26,6 +27,8 @@ const initialState = {
     addedSpecies: [],
     savedGenes: [],  // Track originally loaded genes
     savedSpecies: [], // Track originally loaded species
+    tfpGenes: [],  // Store original tfp_ data for genes
+    tfpSpecies: [], // Store original tfp_ data for species
     otherSpecies: {
         elements: [ { id: 1, name: "" } ],
         saved: false
@@ -189,6 +192,18 @@ export default function(state = initialState, action) {
                 ...state,
                 otherSpecies: action.payload,
                 isSavedToDB: false
+            };
+        }
+        case SET_TFP_GENES: {
+            return {
+                ...state,
+                tfpGenes: action.payload.genes
+            };
+        }
+        case SET_TFP_SPECIES: {
+            return {
+                ...state,
+                tfpSpecies: action.payload.species
             };
         }
         default:

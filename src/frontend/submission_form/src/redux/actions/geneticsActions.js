@@ -7,6 +7,8 @@ export const REMOVE_STRAIN = "REMOVE_STRAIN";
 export const SET_SEQUENCE_CHANGE = "SET_SEQUENCE_CHANGE";
 export const TOGGLE_SEQUENCE_CHANGE = "TOGGLE_SEQUENCE_CHANGE";
 export const SET_IS_GENETICS_SAVED_TO_DB = "SET_IS_GENETICS_SAVED_TO_DB";
+export const SET_TFP_ALLELES = "SET_TFP_ALLELES";
+export const SET_TFP_STRAINS = "SET_TFP_STRAINS";
 export const SET_OTHER_ALLELES = "SET_OTHER_ALLELES";
 export const ADD_OTHER_ALLELE = "ADD_OTHER_ALLELE";
 export const REMOVE_OTHER_ALLELE = "REMOVE_OTHER_ALLELE";
@@ -125,4 +127,18 @@ export const removeOtherStrain = strain => ({
 export const setStrainAlreadyPresentError = errorMessage => ({
     type: SET_STRAIN_ALREADY_PRESENT_ERROR,
     payload: { errorMessage }
+});
+
+export const setTfpAlleles = (alleles) => ({
+    type: SET_TFP_ALLELES,
+    payload: {
+        alleles: alleles
+    }
+});
+
+export const setTfpStrains = (strains) => ({
+    type: SET_TFP_STRAINS,
+    payload: {
+        strains: strains
+    }
 })

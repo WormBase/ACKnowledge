@@ -4,6 +4,7 @@ export const REMOVE_TRANSGENE = "REMOVE_TRANSGENE";
 export const SET_NEW_ANTIBODIES = "SET_NEW_ANTIBODIES";
 export const TOGGLE_NEW_ANTIBODIES = "TOGGLE_NEW_ANTIBODIES";
 export const SET_IS_REAGENT_SAVED_TO_DB = "SET_IS_REAGENT_SAVED_TO_DB";
+export const SET_TFP_TRANSGENES = "SET_TFP_TRANSGENES";
 export const SET_OTHER_TRANSGENES = "SET_OTHER_TRANSGENES";
 export const ADD_OTHER_TRANSGENE = "ADD_OTHER_TRANSGENE";
 export const REMOVE_OTHER_TRANSGENE = "REMOVE_OTHER_TRANSGENE";
@@ -92,5 +93,12 @@ export const removeOtherAntibody = antibody => ({
     type: REMOVE_OTHER_ANTIBODY,
     payload: {
         antibody
+    }
+});
+
+export const setTfpTransgenes = (transgenes) => ({
+    type: SET_TFP_TRANSGENES,
+    payload: {
+        transgenes: transgenes
     }
 });
