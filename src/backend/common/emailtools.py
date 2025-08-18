@@ -56,14 +56,15 @@ class EmailManager(object):
         except Exception as e:
             logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent. Exception message: " + str(e))
 
-    def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str]):
-        content = self.content_email_to_author.format(paper_title, paper_journal, afp_link)
-        subject = self.subject_email_to_author.format(paper_id)
+    def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], coauthor_emails: List[str] = None):
+        coauthor_list = ", ".join(coauthor_emails) if coauthor_emails else "none available"
+        content = self.content_email_to_author.format(paper_title, paper_journal, paper_id, afp_link, coauthor_list)
+        subject = self.subject_email_to_author
         self.send_email(subject=subject, content=content, recipients=recipients)
 
     def notify_admin_of_paper_without_entities(self, paper_id, paper_title: str, paper_journal: str, afp_link,
                                                recipients: List[str]):
-        content = self.content_email_empty.format(paper_title, paper_journal, afp_link)
+        content = self.content_email_empty.format(paper_title, paper_journal, paper_id, afp_link)
         subject = self.subject_email_empty.format(paper_id)
         self.send_email(subject=subject, content=content, recipients=recipients)
 
@@ -99,12 +100,13 @@ class EmailManager(object):
         self.send_email(subject=self.subject_email_author_dash, content=content, recipients=recipients)
 
     def send_reminder_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str],
-                                final_call: bool = False):
-        final_text = "Note that after one week’s time, partial submissions will be checked and entered into WormBase " \
+                                final_call: bool = False, coauthor_emails: List[str] = None):
+        final_text = "Note that after one week's time, partial submissions will be checked and entered into WormBase " \
                      "by one of our curators." if final_call else ""
+        coauthor_list = ", ".join(coauthor_emails) if coauthor_emails else "none available"
 
-        content = self.content_email_reminder.format(paper_title, paper_journal, afp_link, final_text)
-        subject = self.subject_email_reminder.format(paper_id)
+        content = self.content_email_reminder.format(paper_title, paper_journal, paper_id, afp_link, coauthor_list, final_text)
+        subject = self.subject_email_reminder
         self.send_email(subject=subject, content=content, recipients=recipients)
 
     @staticmethod

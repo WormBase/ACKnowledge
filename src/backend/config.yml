@@ -5,11 +5,11 @@ emails:
   server_host: "smtp.gmail.com"
   server_port: 465
 
-  subject_to_author: "Help Wormbase curate your paper WBPaper{}"
+  subject_to_author: "Help Wormbase curate your paper"
   content_to_author: "Dear Author,<br/>
                       Congratulations on your recent publication!<br/>
                       <br/>
-                      \"{}\", {}<br/>
+                      \"{}\", {}. WBPaper{}<br/>
                       <br/>
                       <a href='https://wormbase.org'>WormBase</a> is contacting you for help in alerting our biocurators to data that need to be extracted<br/>
                       from your paper and entered into our database.<br/>
@@ -31,6 +31,8 @@ emails:
                       unpublished data generated during this study, we encourage you to submit it
                       <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
                       <br/>
+                      This form has been submitted also to your coauthors, for which we have an email: {}. We recommend that you coordinate with them on who will fill out the form.<br/>
+                      <br/>
                       Please contact <a href='mailto:help.acknowledge@wormbase.org'>help.acknowledge@wormbase.org</a> or
                       <a href='mailto:contact@micropublication.org'>contact@micropublication.org</a> if you would like more<br/>
                       information about flagging your paper for curation or Micropublication.<br/>
@@ -39,14 +41,13 @@ emails:
                       Best Wishes,<br/>
                       WormBase<br/>
                       <br/>
-                      <br/>
                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
                       The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>"
 
   subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
   content_empty: "The paper:<br/>
                   <br/>
-                  \"{}\", {}<br/>
+                  \"{}\", {}. WBPaper{}<br/>
                   <br/>
                   has empty entity lists.<br/>
                   <br/>
@@ -81,13 +82,13 @@ emails:
                         <a href='https://acp.acknowledge.textpressolab.com?token={}'>https://acp.acknowledge.textpressolab.com?token={}</a><br/>
                         "
 
-  subject_reminder: "Help Wormbase curate your paper WBPaper{}"
+  subject_reminder: "Help Wormbase curate your paper"
   content_reminder: "Dear Author,<br/>
                      <br/>
                      We recently sent an email asking for your help in flagging entities and data types for WormBase curation for the<br/>
                       paper:<br/>
                      <br/>
-                     \"{}\", {}<br/>
+                     \"{}\", {}. WBPaper{}<br/>
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
                      <a href={}>ACKnowledge Curation Form for your paper</a>.<br/>
@@ -96,11 +97,12 @@ emails:
                      <br/>
                      You can view all your papers already in the ACKnowledge system on the <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a>.<br/>
                      <br/>
+                     This form has been submitted also to your coauthors, for which we have an email: {}. We recommend that you coordinate with them on who will fill out the form.<br/>
+                     <br/>
                      If you have questions about completing the form, please feel free to reply to this email and we will be happy to assist<br/>
                      you. {}<br/>
                      <br/>
                      Thank you for helping WormBase!<br/>
-                     <br/>
                      <br/>
                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
                      The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>

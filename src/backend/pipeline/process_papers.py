@@ -248,7 +248,13 @@ def main():
             emailed_papers.append(paper.paper_id)
 
             if genes_id_name or alleles_id_name or transgenes_id_name or meaningful_strains:
+                # Get list of all author emails for coauthor coordination
+                all_author_emails = [author[1] for author in authors]
+                
                 for author in authors:
+                    # Get coauthor emails (all authors except current recipient)
+                    coauthor_emails = [email for email in all_author_emails if email != author[1]]
+                    
                     author_specific_form_link = EmailManager.get_feedback_form_tiny_url(
                         afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
                         alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
@@ -256,10 +262,10 @@ def main():
                     logger.debug("Author specific link: " + author_specific_form_link)
                     if not args.dev_mode:
                         email_manager.send_email_to_author(
-                            paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]])
+                            paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]], coauthor_emails)
                 if args.dev_mode:
                     email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
-                                                       feedback_form_tiny_url, args.admin_emails)
+                                                       feedback_form_tiny_url, args.admin_emails, [])
             else:
                 email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
                                                                      paper.journal, feedback_form_tiny_url,

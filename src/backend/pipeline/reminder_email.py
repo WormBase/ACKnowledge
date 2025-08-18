@@ -50,9 +50,12 @@ def main():
                 # data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(afp_link))
                 # tiny_url = data.read().decode('utf-8')
                 if not args.dev_mode:
+                    # For reminders, we send to all authors at once, so coauthor list includes all other authors
+                    coauthor_emails = authors_emails
                     email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
                                                           paper_journal=paper_journal, afp_link=afp_link,
-                                                          recipients=authors_emails, final_call=False)
+                                                          recipients=authors_emails, final_call=False,
+                                                          coauthor_emails=coauthor_emails)
                     logger.info("going to sleep for ~30 minutes")
                     time.sleep(2000)
             else:
