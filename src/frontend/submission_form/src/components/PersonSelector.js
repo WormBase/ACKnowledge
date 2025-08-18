@@ -32,7 +32,7 @@ const PersonSelector = () => {
 
     const searchWB = (searchString, searchType) => {
         if (searchString !== "") {
-            fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '?objectType=' + searchType + '&userValue=' + searchString)
+            fetch(process.env.REACT_APP_API_AUTOCOMPLETE_ENDPOINT + '?objectType=' + encodeURIComponent(searchType) + '&userValue=' + encodeURIComponent(searchString))
                 .then(res => {
                     if (res.status === 200) {
                         return res.text();
