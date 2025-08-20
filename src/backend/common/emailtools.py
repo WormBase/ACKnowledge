@@ -32,6 +32,8 @@ class EmailManager(object):
         self.subject_email_reminder = config["emails"]["subject_reminder"]
         self.content_email_new_sub_thanks = config["emails"]["content_new_sub_thanks"]
         self.subject_email_new_sub_thanks = config["emails"]["subject_new_sub_thanks"]
+        self.content_email_coauthor_notification = config["emails"]["content_coauthor_notification"]
+        self.subject_email_coauthor_notification = config["emails"]["subject_coauthor_notification"]
         self.email_user = config["emails"]["email_user"]
         self.email_user = config["emails"]["email_user"]
         self.server_host = config["emails"]["server_host"]
@@ -131,6 +133,13 @@ class EmailManager(object):
     def send_new_sub_thanks_email(self, paper_id, paper_title, recipients: List[str], test: bool = False):
         content = self.content_email_new_sub_thanks.format(paper_title, paper_id)
         subject = self.subject_email_new_sub_thanks
+        if test:
+            subject = "[Dev Test] " + subject
+        self.send_email(subject=subject, content=content, recipients=recipients)
+    
+    def send_coauthor_notification_email(self, paper_id, paper_title, submitter_name, recipients: List[str], test: bool = False):
+        content = self.content_email_coauthor_notification.format(submitter_name, paper_title, paper_id)
+        subject = self.subject_email_coauthor_notification
         if test:
             subject = "[Dev Test] " + subject
         self.send_email(subject=subject, content=content, recipients=recipients)

@@ -116,6 +116,8 @@ emails:
                            {}<br/>
                            WBPaperID: {}<br/>
                            <br/>
+                           Your coauthors associated with this paper have been notified of your submission.<br/>
+                           <br/>
                            We appreciate your time and effort.<br/>
                            The ACKnowledge Team
                            <br/>
@@ -123,6 +125,26 @@ emails:
                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
                            The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
                            "
+
+  subject_coauthor_notification: "Your coauthor has submitted data to WormBase"
+  content_coauthor_notification: "Dear Coauthor,<br/>
+                                  <br/>
+                                  We would like to inform you that your coauthor ({}) has completed the data submission for the following publication:<br/>
+                                  <br/>
+                                  {}<br/>
+                                  WBPaperID: {}<br/>
+                                  <br/>
+                                  The submission has been received and will be processed by our curators.<br/>
+                                  <br/>
+                                  You can view all your papers already in the ACKnowledge system on the <a href='https://acp.acknowledge.textpressolab.com'>Author Curation Portal</a>.<br/>
+                                  <br/>
+                                  Thank you for your contribution to WormBase!<br/>
+                                  The ACKnowledge Team
+                                  <br/>
+                                  <br/>
+                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
+                                  The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
+                                  "
 
 ntt_extraction:
   min_occurrences:

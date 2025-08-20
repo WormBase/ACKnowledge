@@ -253,9 +253,40 @@ class FeedbackFormWriter:
                                                                                        self.admin_emails, dashboard_url,
                                                                                        tiny_url,
                                                                                        self.test)
+                    # Get all author emails for the paper
+                    all_author_emails_str = self.db.afp.get_contact_emails(paper_id)
+                    if all_author_emails_str:
+                        all_author_emails = [email.strip() for email in all_author_emails_str.split(" | ")]
+                        # Remove any empty strings
+                        all_author_emails = [email for email in all_author_emails if email]
+                    else:
+                        # If no emails found in afp table, at least send to the current author
+                        all_author_emails = [author_email]
+                    
+                    # Separate the submitting author from coauthors
+                    coauthor_emails = [email for email in all_author_emails if email != author_email]
+                    
+                    # Get submitter's name for the coauthor notification
+                    person_id = req.media["person_id"]
+                    submitter_name = self.db.person.get_fullname_from_personid("two" + person_id)
+                    if not submitter_name:
+                        submitter_name = author_email  # Fallback to email if name not found
+                    
+                    # Send thank you email to the submitting author
                     self.email_manager.send_new_sub_thanks_email(
                         paper_id=paper_id, paper_title=paper_title, test=self.test,
                         recipients=([author_email] if not self.test else self.admin_emails))
+                    
+                    # Send notification email to coauthors (if any)
+                    if coauthor_emails and not self.test:
+                        self.email_manager.send_coauthor_notification_email(
+                            paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
+                            recipients=coauthor_emails, test=self.test)
+                    elif self.test and coauthor_emails:
+                        # In test mode, send to admin emails
+                        self.email_manager.send_coauthor_notification_email(
+                            paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
+                            recipients=self.admin_emails, test=self.test)
 
                 resp.body = '{"result": "success"}'
                 resp.status = falcon.HTTP_200
