@@ -333,8 +333,11 @@ class AllelesSpreadsheetCreator:
                 
                 # Get author information
                 person_id = req.media.get("person_id", "")
-                author_name = "Unknown Author"
-                if person_id:
+                # Use person_name from request if provided (preferred for logged-in user)
+                author_name = req.media.get("person_name", "")
+                
+                # Fallback to database lookup if no name provided
+                if not author_name and person_id:
                     fullname = self.db.person.get_fullname_from_personid("two" + person_id)
                     if fullname:
                         author_name = fullname
@@ -343,6 +346,10 @@ class AllelesSpreadsheetCreator:
                         author_email = self.db.person.get_email(person_id)
                         if author_email:
                             author_name = author_email
+                
+                # Final fallback
+                if not author_name:
+                    author_name = "Unknown Author"
 
                 # Create folder and spreadsheet
                 folder_id = self.google_drive_service.create_or_get_paper_folder(paper_id)

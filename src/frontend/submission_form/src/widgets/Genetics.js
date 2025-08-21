@@ -41,6 +41,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     const isSavedToDB = useSelector((state) => state.genetics.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
     const personId = useSelector((state) => state.person.personId);
+    const person = useSelector((state) => state.person.person);
     
     // State for spreadsheet creation
     const [creatingSpreadsheet, setCreatingSpreadsheet] = useState(false);
@@ -56,7 +57,8 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             const apiBaseUrl = writeEndpoint.replace('/api/write', '');
             const response = await axios.post(`${apiBaseUrl}/api/create_alleles_spreadsheet`, {
                 passwd: paperPassword,
-                person_id: personId
+                person_id: personId,
+                person_name: person.name || 'Unknown Author'
             });
             
             if (response.data.success) {
@@ -179,7 +181,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                     }}
                                 >
                                     <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
-                                    {creatingSpreadsheet ? 'Creating...' : '📊 Upload spreadsheet (for large lists)'}
+                                    {creatingSpreadsheet ? 'Creating...' : '📊 Create Allele spreadsheet (for large lists)'}
                                 </Button>
                             )}
                         </Panel.Title>
