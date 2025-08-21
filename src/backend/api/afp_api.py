@@ -11,7 +11,7 @@ from wbtools.db.dbmanager import WBDBManager
 from src.backend.api.endpoints.author_portal import AuthorPapersPageReader
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
 from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader, PaperInfoReader, \
-    AutocompleteReader, DiseaseAutocompleteReader
+    AutocompleteReader, DiseaseAutocompleteReader, AllelesSpreadsheetCreator
 
 
 class HandleCORS(object):
@@ -79,6 +79,8 @@ def main():
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager, afp_base_url=args.afp_base_url,
                                                   email_passwd=args.email_passwd)
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
+    alleles_spreadsheet_creator = AllelesSpreadsheetCreator(db_manager=db_manager)
+    app.add_route('/api/create_alleles_spreadsheet', alleles_spreadsheet_creator)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()
@@ -120,3 +122,5 @@ else:
                                                   afp_base_url=os.environ['AFP_BASE_URL'],
                                                   email_passwd=os.environ['EMAIL_PASSWD'])
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
+    alleles_spreadsheet_creator = AllelesSpreadsheetCreator(db_manager=db_manager)
+    app.add_route('/api/create_alleles_spreadsheet', alleles_spreadsheet_creator)

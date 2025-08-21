@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Alert,
     Button, Checkbox, Glyphicon, Image, OverlayTrigger,
@@ -22,6 +22,7 @@ import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetAct
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
@@ -39,6 +40,38 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     const strainAlreadyPresentError = useSelector((state) => state.genetics.strainAlreadyPresentError);
     const isSavedToDB = useSelector((state) => state.genetics.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+    const personId = useSelector((state) => state.person.personId);
+    
+    // State for spreadsheet creation
+    const [creatingSpreadsheet, setCreatingSpreadsheet] = useState(false);
+    const [spreadsheetError, setSpreadsheetError] = useState(null);
+
+    const handleCreateAllelesSpreadsheet = async () => {
+        setCreatingSpreadsheet(true);
+        setSpreadsheetError(null);
+        
+        try {
+            // Use the same base URL as other API calls
+            const writeEndpoint = process.env.REACT_APP_API_DB_WRITE_ENDPOINT || 'http://localhost:8001/api/write';
+            const apiBaseUrl = writeEndpoint.replace('/api/write', '');
+            const response = await axios.post(`${apiBaseUrl}/api/create_alleles_spreadsheet`, {
+                passwd: paperPassword,
+                person_id: personId
+            });
+            
+            if (response.data.success) {
+                // Open spreadsheet in new tab
+                window.open(response.data.spreadsheet_url, '_blank');
+            } else {
+                setSpreadsheetError('Failed to create spreadsheet');
+            }
+        } catch (error) {
+            console.error('Error creating alleles spreadsheet:', error);
+            setSpreadsheetError('Failed to create spreadsheet. Please try again.');
+        } finally {
+            setCreatingSpreadsheet(false);
+        }
+    };
 
     const allelesTooltip = (
         <Tooltip id="tooltip">
@@ -127,9 +160,36 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             <form>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">List of WormBase alleles identified in the paper <OverlayTrigger placement="top" overlay={allelesTooltip}>
-                            <Glyphicon glyph="question-sign"/>
-                        </OverlayTrigger></Panel.Title>
+                        <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                <span>List of WormBase alleles identified in the paper</span>
+                                <OverlayTrigger placement="top" overlay={allelesTooltip}>
+                                    <Glyphicon glyph="question-sign"/>
+                                </OverlayTrigger>
+                            </div>
+                            {!hideAlleles && (
+                                <Button 
+                                    bsStyle="info" 
+                                    bsSize="xs" 
+                                    onClick={handleCreateAllelesSpreadsheet}
+                                    disabled={creatingSpreadsheet}
+                                    style={{
+                                        fontSize: '11px',
+                                        padding: '2px 6px'
+                                    }}
+                                >
+                                    <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
+                                    {creatingSpreadsheet ? 'Creating...' : '📊 Upload spreadsheet (for large lists)'}
+                                </Button>
+                            )}
+                        </Panel.Title>
+                        {spreadsheetError && (
+                            <div style={{marginTop: '8px'}}>
+                                <Alert bsStyle="danger" style={{marginBottom: '0', padding: '6px', fontSize: '12px'}}>
+                                    {spreadsheetError}
+                                </Alert>
+                            </div>
+                        )}
                     </Panel.Heading>
                     <Panel.Body>
                         {allelesListComponent}

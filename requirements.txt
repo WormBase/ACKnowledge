@@ -14,3 +14,7 @@ nltk~=3.6.3
 transformers~=4.35.2
 datasets
 optimum
+google-api-python-client>=2.0.0
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+gspread>=5.0.0

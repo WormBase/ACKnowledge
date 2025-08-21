@@ -12,6 +12,7 @@ from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import EmailManager
+from src.backend.common.google_drive_service import GoogleDriveService
 
 logger = logging.getLogger(__name__)
 
@@ -293,3 +294,74 @@ class FeedbackFormWriter:
 
         else:
             raise falcon.HTTPError(falcon.HTTP_401)
+
+
+class AllelesSpreadsheetCreator:
+
+    def __init__(self, db_manager: WBDBManager):
+        self.db = db_manager
+        self.logger = logging.getLogger("AFP API")
+        try:
+            self.google_drive_service = GoogleDriveService()
+            # Validate credentials on startup
+            if not self.google_drive_service.validate_credentials():
+                self.logger.error("Google Drive credentials validation failed")
+                self.google_drive_service = None
+        except Exception as e:
+            self.logger.error(f"Failed to initialize Google Drive service: {e}")
+            self.google_drive_service = None
+
+    def on_post(self, req, resp):
+        if not self.google_drive_service:
+            raise falcon.HTTPInternalServerError(
+                title="Google Drive Service Unavailable",
+                description="Google Drive integration is not properly configured"
+            )
+
+        # Validate required parameters
+        if not req.media or 'passwd' not in req.media:
+            raise falcon.HTTPBadRequest("Missing parameters", "Paper password is required")
+
+        paper_id = self.db.afp.get_paper_id_from_passwd(req.media["passwd"])
+        if not paper_id:
+            raise falcon.HTTPError(falcon.HTTP_401, title="Unauthorized", description="Invalid paper password")
+
+        with self.db:
+            try:
+                # Get paper information
+                paper_title = self.db.paper.get_paper_title(paper_id) or "Unknown Title"
+                
+                # Get author information
+                person_id = req.media.get("person_id", "")
+                author_name = "Unknown Author"
+                if person_id:
+                    fullname = self.db.person.get_fullname_from_personid("two" + person_id)
+                    if fullname:
+                        author_name = fullname
+                    else:
+                        # Fallback to email if name not found
+                        author_email = self.db.person.get_email(person_id)
+                        if author_email:
+                            author_name = author_email
+
+                # Create folder and spreadsheet
+                folder_id = self.google_drive_service.create_or_get_paper_folder(paper_id)
+                spreadsheet_url = self.google_drive_service.create_alleles_spreadsheet(
+                    folder_id, paper_id, paper_title, author_name
+                )
+
+                self.logger.info(f"Created alleles spreadsheet for paper {paper_id}")
+                
+                resp.body = json.dumps({
+                    'spreadsheet_url': spreadsheet_url,
+                    'paper_id': paper_id,
+                    'success': True
+                })
+                resp.status = falcon.HTTP_200
+
+            except Exception as e:
+                self.logger.error(f"Error creating alleles spreadsheet for paper {paper_id}: {e}")
+                raise falcon.HTTPInternalServerError(
+                    title="Spreadsheet Creation Failed",
+                    description="Failed to create Google Spreadsheet. Please try again later."
+                )
