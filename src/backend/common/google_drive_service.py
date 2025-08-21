@@ -18,12 +18,18 @@ class GoogleDriveConfig:
     
     def __init__(self):
         self.credentials = self._get_google_credentials()
-        self.parent_folder_id = os.getenv('GOOGLE_DRIVE_PARENT_FOLDER_ID')
+        self.base_parent_folder_id = os.getenv('GOOGLE_DRIVE_PARENT_FOLDER_ID')
         self.domain = os.getenv('GOOGLE_DRIVE_DOMAIN')  # Optional
+        self.is_development = os.getenv('ENVIRONMENT', '').lower() in ['dev', 'development', 'local']
         
-        if not self.parent_folder_id:
+        if not self.base_parent_folder_id:
             raise ValueError("GOOGLE_DRIVE_PARENT_FOLDER_ID environment variable is required")
         
+        # Set up the actual parent folder (with _test suffix in development)
+        self.parent_folder_id = self._get_or_create_parent_folder()
+        
+        if self.is_development:
+            logger.info(f"Development mode detected (ENVIRONMENT={os.getenv('ENVIRONMENT', 'not set')})")
         logger.info(f"Google Drive configured with parent folder: {self.parent_folder_id}")
     
     def _get_google_credentials(self):
@@ -137,6 +143,66 @@ class GoogleDriveConfig:
                 # Don't raise, try other methods
         
         return None
+    
+    def _get_or_create_parent_folder(self):
+        """Get or create the parent folder, with _test suffix in development mode."""
+        if not self.is_development:
+            logger.info("Production mode: using configured parent folder directly")
+            return self.base_parent_folder_id
+        
+        # In development mode, create/use a _test folder
+        logger.info("Development mode: using test folder")
+        
+        try:
+            # Build a temporary drive service to check/create folders
+            from googleapiclient.discovery import build
+            drive_service = build('drive', 'v3', credentials=self.credentials)
+            
+            # Get the base folder name to create test folder
+            if self.base_parent_folder_id == 'root':
+                test_folder_name = 'ACKnowledge_test'
+                parent_for_test = 'root'
+            else:
+                # Get the base folder info
+                base_folder = drive_service.files().get(
+                    fileId=self.base_parent_folder_id,
+                    fields='name, parents'
+                ).execute()
+                
+                base_folder_name = base_folder.get('name', 'Unknown')
+                test_folder_name = f"{base_folder_name}_test"
+                parent_for_test = base_folder.get('parents', ['root'])[0] if base_folder.get('parents') else 'root'
+            
+            # Check if test folder already exists
+            query = f"name='{test_folder_name}' and mimeType='application/vnd.google-apps.folder' and parents in '{parent_for_test}'"
+            results = drive_service.files().list(q=query, fields='files(id, name)').execute()
+            files = results.get('files', [])
+            
+            if files:
+                test_folder_id = files[0]['id']
+                logger.info(f"Found existing test folder: {test_folder_name} ({test_folder_id})")
+                return test_folder_id
+            else:
+                # Create test folder
+                folder_metadata = {
+                    'name': test_folder_name,
+                    'mimeType': 'application/vnd.google-apps.folder',
+                    'parents': [parent_for_test]
+                }
+                
+                folder = drive_service.files().create(
+                    body=folder_metadata,
+                    fields='id'
+                ).execute()
+                
+                test_folder_id = folder.get('id')
+                logger.info(f"Created test folder: {test_folder_name} ({test_folder_id})")
+                return test_folder_id
+                
+        except Exception as e:
+            logger.warning(f"Could not create/access test folder: {e}")
+            logger.info("Falling back to base parent folder")
+            return self.base_parent_folder_id
 
 
 class GoogleDriveService:
