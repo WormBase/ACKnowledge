@@ -280,14 +280,52 @@ class GoogleDriveService:
             logger.error(f"Error creating folder for {paper_id}: {e}")
             raise
     
+    def _find_existing_spreadsheet(self, folder_id: str, spreadsheet_name: str) -> str:
+        """Check if a spreadsheet with the given name already exists in the folder."""
+        try:
+            # Search for spreadsheets with the exact name in the specific folder
+            query = f"name='{spreadsheet_name}' and mimeType='application/vnd.google-apps.spreadsheet' and parents in '{folder_id}' and trashed = false"
+            results = self.drive_service.files().list(
+                q=query,
+                fields='files(id, name, webViewLink)',
+                pageSize=1
+            ).execute()
+            
+            files = results.get('files', [])
+            if files:
+                spreadsheet = files[0]
+                spreadsheet_id = spreadsheet['id']
+                
+                # Get the web view URL
+                file_info = self.drive_service.files().get(
+                    fileId=spreadsheet_id,
+                    fields='webViewLink'
+                ).execute()
+                
+                logger.info(f"Found existing spreadsheet: {spreadsheet_name} (ID: {spreadsheet_id})")
+                return file_info['webViewLink']
+            
+            return None
+            
+        except HttpError as e:
+            logger.error(f"Error searching for existing spreadsheet: {e}")
+            # Don't fail if search fails, just proceed to create new one
+            return None
+    
     def create_alleles_spreadsheet(self, folder_id: str, paper_id: str, 
                                    paper_title: str, author_name: str) -> str:
-        """Create a new alleles spreadsheet with template."""
+        """Create a new alleles spreadsheet with template, or return existing one."""
         spreadsheet_name = f"Alleles_Submission_{paper_id}"
+        
+        # First, check if spreadsheet already exists in the folder
+        existing_url = self._find_existing_spreadsheet(folder_id, spreadsheet_name)
+        if existing_url:
+            logger.info(f"Found existing spreadsheet '{spreadsheet_name}' - returning existing URL")
+            return existing_url
         
         try:
             # Create spreadsheet directly in Drive (Sheets API doesn't support parent folders)
-            logger.info(f"Creating spreadsheet '{spreadsheet_name}'")
+            logger.info(f"Creating new spreadsheet '{spreadsheet_name}'")
             simple_body = {'properties': {'title': spreadsheet_name}}
             spreadsheet = self.sheets_service.spreadsheets().create(body=simple_body).execute()
             spreadsheet_id = spreadsheet['spreadsheetId']

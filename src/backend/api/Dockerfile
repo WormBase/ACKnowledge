@@ -30,10 +30,27 @@ ENV GROBID_API_URL=http://cervino.caltech.edu:8070/api
 ENV PAPER_INFO_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper"
 ENV AUTOCOMPLETE_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR"
 
+# Gunicorn worker configuration
+ENV GUNICORN_WORKERS=4
+ENV GUNICORN_MAX_REQUESTS=1000
+ENV GUNICORN_MAX_REQUESTS_JITTER=50
+ENV GUNICORN_TIMEOUT=1800
+
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
 EXPOSE ${PORT}
 
-CMD gunicorn -b 0.0.0.0:8001 -t 1800 src.backend.api.afp_api:app >> /var/log/afp_api.log 2>&1
+CMD gunicorn \
+    --workers ${GUNICORN_WORKERS} \
+    --worker-class sync \
+    --bind 0.0.0.0:8001 \
+    --timeout ${GUNICORN_TIMEOUT} \
+    --max-requests ${GUNICORN_MAX_REQUESTS} \
+    --max-requests-jitter ${GUNICORN_MAX_REQUESTS_JITTER} \
+    --preload \
+    --access-logfile /var/log/afp_api_access.log \
+    --error-logfile /var/log/afp_api.log \
+    --log-level info \
+    src.backend.api.afp_api:app
 
 #CMD python3 src/backend/api/afp_api.py -N ${DB_NAME} -U ${DB_USER} -P "${DB_PASSWD}" -H ${DB_HOST} -p ${PORT} -a ${ADMINS} -e ${EMAIL_PASSWD} -u ${AFP_BASE_URL} -w ${TAZENDRA_USER} -z ${TAZENDRA_PASSWORD} ${DEV_MODE} -l ${LOG_FILE} -L DEBUG -c ${SENTENCE_CLASSIFICATION_API} >> ${INFO_FILE} 2>&1
