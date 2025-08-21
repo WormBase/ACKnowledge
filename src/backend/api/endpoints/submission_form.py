@@ -49,7 +49,7 @@ class AutocompleteReader:
         if not search_type or not entity:
             raise falcon.HTTPBadRequest("Missing parameters", "Both 'objectType' and 'userValue' parameters are required.")
 
-        url = f"{self.base_url}&objectType={search_type}&userValue={entity}"
+        url = f"{self.base_url}&objectType={urllib.parse.quote(search_type)}&userValue={urllib.parse.quote(entity)}"
         try:
             data = urlopen(url)
             resp.body = data.read().decode('utf-8')
