@@ -1,4 +1,4 @@
-FROM node:8.2.1
+FROM node:18-slim
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
