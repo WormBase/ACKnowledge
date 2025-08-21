@@ -20,7 +20,7 @@ class GoogleDriveConfig:
         self.credentials = self._get_google_credentials()
         self.base_parent_folder_id = os.getenv('GOOGLE_DRIVE_PARENT_FOLDER_ID')
         self.domain = os.getenv('GOOGLE_DRIVE_DOMAIN')  # Optional
-        self.is_development = os.getenv('ENVIRONMENT', '').lower() in ['dev', 'development', 'local']
+        self.is_development = os.getenv('ACKNOWLEDGE_MODE', '').lower() in ['dev', 'development', 'local']
         
         if not self.base_parent_folder_id:
             raise ValueError("GOOGLE_DRIVE_PARENT_FOLDER_ID environment variable is required")
@@ -29,7 +29,7 @@ class GoogleDriveConfig:
         self.parent_folder_id = self._get_or_create_parent_folder()
         
         if self.is_development:
-            logger.info(f"Development mode detected (ENVIRONMENT={os.getenv('ENVIRONMENT', 'not set')})")
+            logger.info(f"Development mode detected (ACKNOWLEDGE_MODE={os.getenv('ACKNOWLEDGE_MODE', 'not set')})")
         logger.info(f"Google Drive configured with parent folder: {self.parent_folder_id}")
     
     def _get_google_credentials(self):
