@@ -2,6 +2,7 @@ FROM node:18-slim as build-stage
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
+ENV NODE_OPTIONS="--openssl-legacy-provider"
 COPY src/frontend/submission_form .
 RUN npm cache clean --force
 RUN npm install --legacy-peer-deps --silent
