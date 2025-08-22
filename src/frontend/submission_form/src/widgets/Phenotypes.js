@@ -35,7 +35,7 @@ const Phenotypes = () => {
 
     const svmTooltip = (
         <Tooltip id="tooltip">
-            This field is prepopulated by Textpresso Central.
+            This field is prepopulated by machine learning methods.
         </Tooltip>
     );
     return (
@@ -72,13 +72,25 @@ const Phenotypes = () => {
                 </Panel.Heading>
                 <Panel.Body>
                     <div className="container-fluid">
-                        <div className="row">
+                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
                             <div className="col-sm-7">
                                 <Checkbox checked={allelePheno.checked}
                                           onClick={() => dispatch(toggleAllelePhenotype())}>
                                     <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
                                                                                       overlay={svmTooltip}>
-                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                    <span style={{
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        fontSize: '12px', 
+                                        color: '#555',
+                                        backgroundColor: '#e8f4fd',
+                                        padding: '4px 8px',
+                                        borderRadius: '12px',
+                                        border: '1px solid #86c4d0'
+                                    }}>
+                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
+                                        Auto-detected
+                                    </span></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -106,13 +118,25 @@ const Phenotypes = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
                             <div className="col-sm-7">
                                 <Checkbox checked={rnaiPheno.checked}
                                           onClick={() => dispatch(toggleRnaiPhenotype())}>
                                     <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
                                                                                     overlay={svmTooltip}>
-                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                    <span style={{
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        fontSize: '12px', 
+                                        color: '#555',
+                                        backgroundColor: '#e8f4fd',
+                                        padding: '4px 8px',
+                                        borderRadius: '12px',
+                                        border: '1px solid #86c4d0'
+                                    }}>
+                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
+                                        Auto-detected
+                                    </span></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -140,13 +164,25 @@ const Phenotypes = () => {
                                 </a>
                             </div>
                         </div>
-                        <div className="row">
+                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
                             <div className="col-sm-7">
                                 <Checkbox checked={overexprPheno.checked}
                                           onClick={() => dispatch(toggleOverexprPhenotype())}>
                                     <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
                                                                                                         overlay={svmTooltip}>
-                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                    <span style={{
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        fontSize: '12px', 
+                                        color: '#555',
+                                        backgroundColor: '#e8f4fd',
+                                        padding: '4px 8px',
+                                        borderRadius: '12px',
+                                        border: '1px solid #86c4d0'
+                                    }}>
+                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
+                                        Auto-detected
+                                    </span></OverlayTrigger></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -220,7 +256,19 @@ const Phenotypes = () => {
                         <FormGroup>
                             <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
                                 <strong>Enzymatic Activity</strong> <OverlayTrigger placement="top" overlay={svmTooltip}>
-                                    <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                                    <span style={{
+                                        display: 'inline-flex', 
+                                        alignItems: 'center', 
+                                        fontSize: '12px', 
+                                        color: '#555',
+                                        backgroundColor: '#e8f4fd',
+                                        padding: '4px 8px',
+                                        borderRadius: '12px',
+                                        border: '1px solid #86c4d0'
+                                    }}>
+                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
+                                        Auto-detected
+                                    </span></OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => dispatch(setEnzymaticActivity(true, enzymaticAct.details))}
