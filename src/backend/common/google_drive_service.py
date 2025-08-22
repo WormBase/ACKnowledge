@@ -313,7 +313,7 @@ class GoogleDriveService:
             return None
     
     def create_alleles_spreadsheet(self, folder_id: str, paper_id: str, 
-                                   paper_title: str, author_name: str) -> str:
+                                   paper_title: str, author_name: str, pmid: str = None) -> str:
         """Create a new alleles spreadsheet with template, or return existing one."""
         spreadsheet_name = f"Alleles_Submission_{paper_id}"
         
@@ -373,7 +373,7 @@ class GoogleDriveService:
             # Set up the spreadsheet template
             try:
                 logger.info(f"Setting up spreadsheet template")
-                self._setup_alleles_template(spreadsheet_id, paper_id, paper_title, author_name)
+                self._setup_alleles_template(spreadsheet_id, paper_id, paper_title, author_name, pmid)
             except Exception as template_error:
                 logger.warning(f"Could not set up template: {template_error}")
             
@@ -398,7 +398,7 @@ class GoogleDriveService:
             raise
     
     def _setup_alleles_template(self, spreadsheet_id: str, paper_id: str, 
-                                paper_title: str, author_name: str):
+                                paper_title: str, author_name: str, pmid: str = None):
         """Set up the alleles spreadsheet template with headers and instructions."""
         
         try:
@@ -492,9 +492,14 @@ class GoogleDriveService:
             ).execute()
             
             # Set up Instructions sheet data
+            # Format IDs in Alliance xref curie format
+            paper_id_formatted = f"WB:WBPaper{paper_id}"
+            pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
+            
             instructions_data = [
                 ['Paper Information', ''],
-                ['Paper ID:', paper_id],
+                ['WB Paper ID:', paper_id_formatted],
+                ['PMID:', pmid_formatted],
                 ['Title:', paper_title],
                 ['Author:', author_name],
                 ['', ''],
@@ -521,7 +526,7 @@ class GoogleDriveService:
             
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Instructions!A1:B24',
+                range='Instructions!A1:B25',
                 valueInputOption='RAW',
                 body={'values': instructions_data}
             ).execute()
@@ -683,6 +688,417 @@ class GoogleDriveService:
                     'Allele Name', 'Gene', 'Sequence Change Type',
                     'Flanking Sequence 5\' (30bp)', 'Flanking Sequence 3\' (30bp)',
                     'Strain', 'Species', 'Notes/Comments'
+                ]]
+                
+                self.sheets_service.spreadsheets().values().update(
+                    spreadsheetId=spreadsheet_id,
+                    range='A1:H1',
+                    valueInputOption='RAW',
+                    body={'values': headers}
+                ).execute()
+                
+                logger.info("Added basic headers to spreadsheet")
+            except Exception as simple_error:
+                logger.error(f"Even simple template setup failed: {simple_error}")
+    
+    def create_strains_spreadsheet(self, folder_id: str, paper_id: str, 
+                                   paper_title: str, author_name: str, pmid: str = None) -> str:
+        """Create a new strains spreadsheet with template, or return existing one."""
+        spreadsheet_name = f"Strains_Submission_{paper_id}"
+        
+        # First, check if spreadsheet already exists in the folder
+        existing_url = self._find_existing_spreadsheet(folder_id, spreadsheet_name)
+        if existing_url:
+            logger.info(f"Found existing spreadsheet '{spreadsheet_name}' - returning existing URL")
+            return existing_url
+        
+        try:
+            # Create spreadsheet directly in Drive (Sheets API doesn't support parent folders)
+            logger.info(f"Creating new spreadsheet '{spreadsheet_name}'")
+            simple_body = {'properties': {'title': spreadsheet_name}}
+            spreadsheet = self.sheets_service.spreadsheets().create(body=simple_body).execute()
+            spreadsheet_id = spreadsheet['spreadsheetId']
+            logger.info(f"Successfully created spreadsheet: {spreadsheet_id}")
+            
+            # CRITICAL: Move spreadsheet to the correct folder immediately
+            # The Sheets API creates in root by default, so we must move it
+            try:
+                logger.info(f"Moving spreadsheet to folder: {folder_id}")
+                
+                # Get current parents first
+                file_info = self.drive_service.files().get(
+                    fileId=spreadsheet_id,
+                    fields='parents'
+                ).execute()
+                
+                previous_parents = ",".join(file_info.get('parents', ['root']))
+                
+                # Move file to the target folder and remove from all previous locations
+                self.drive_service.files().update(
+                    fileId=spreadsheet_id,
+                    addParents=folder_id,
+                    removeParents=previous_parents,
+                    fields='id, parents'
+                ).execute()
+                
+                logger.info(f"Successfully moved spreadsheet to folder {folder_id}")
+                
+                # Verify the move
+                updated_file = self.drive_service.files().get(
+                    fileId=spreadsheet_id,
+                    fields='parents'
+                ).execute()
+                
+                if folder_id in updated_file.get('parents', []):
+                    logger.info(f"Verified: Spreadsheet is in folder {folder_id}")
+                else:
+                    logger.warning(f"Warning: Spreadsheet may not be in the correct folder")
+                    
+            except HttpError as move_error:
+                logger.error(f"Failed to move spreadsheet to folder: {move_error}")
+                # Don't continue if we can't place it in the right folder
+                raise Exception(f"Cannot place spreadsheet in correct folder: {move_error}")
+            
+            # Set up the spreadsheet template
+            try:
+                logger.info(f"Setting up spreadsheet template")
+                self._setup_strains_template(spreadsheet_id, paper_id, paper_title, author_name, pmid)
+            except Exception as template_error:
+                logger.warning(f"Could not set up template: {template_error}")
+            
+            # Set sharing permissions
+            try:
+                logger.info(f"Setting sharing permissions")
+                self._set_spreadsheet_permissions(spreadsheet_id)
+            except Exception as perm_error:
+                logger.warning(f"Could not set permissions: {perm_error}")
+            
+            # Get the web view URL
+            file_info = self.drive_service.files().get(
+                fileId=spreadsheet_id,
+                fields='webViewLink'
+            ).execute()
+            
+            logger.info(f"Created strains spreadsheet for {paper_id}: {spreadsheet_id}")
+            return file_info['webViewLink']
+            
+        except HttpError as e:
+            logger.error(f"Spreadsheet creation failed: {e}")
+            raise
+    
+    def _setup_strains_template(self, spreadsheet_id: str, paper_id: str, 
+                                paper_title: str, author_name: str, pmid: str = None):
+        """Set up the strains spreadsheet template with headers and instructions."""
+        
+        try:
+            # First, get the current spreadsheet to check existing sheets
+            spreadsheet = self.sheets_service.spreadsheets().get(
+                spreadsheetId=spreadsheet_id
+            ).execute()
+            
+            sheets = spreadsheet.get('sheets', [])
+            
+            # Find or create the necessary sheets
+            strains_sheet_id = None
+            instructions_sheet_id = None
+            
+            for sheet in sheets:
+                sheet_title = sheet['properties']['title']
+                sheet_id = sheet['properties']['sheetId']
+                if sheet_title in ['Sheet1', 'Strains Data']:
+                    strains_sheet_id = sheet_id
+                elif sheet_title == 'Instructions':
+                    instructions_sheet_id = sheet_id
+            
+            requests = []
+            
+            # Rename Sheet1 to Strains Data if needed
+            if strains_sheet_id is not None and sheets[0]['properties']['title'] == 'Sheet1':
+                requests.append({
+                    'updateSheetProperties': {
+                        'properties': {
+                            'sheetId': strains_sheet_id,
+                            'title': 'Strains Data'
+                        },
+                        'fields': 'title'
+                    }
+                })
+            
+            # Add Instructions sheet if it doesn't exist
+            if instructions_sheet_id is None:
+                requests.append({
+                    'addSheet': {
+                        'properties': {
+                            'title': 'Instructions',
+                            'gridProperties': {
+                                'rowCount': 50,
+                                'columnCount': 2
+                            }
+                        }
+                    }
+                })
+                # We'll need to get the new sheet ID after creation
+                # For now, we'll use a placeholder
+                instructions_sheet_id = 1
+            
+            # Execute sheet structure changes first
+            if requests:
+                self.sheets_service.spreadsheets().batchUpdate(
+                    spreadsheetId=spreadsheet_id,
+                    body={'requests': requests}
+                ).execute()
+                
+                # Re-fetch to get updated sheet IDs
+                spreadsheet = self.sheets_service.spreadsheets().get(
+                    spreadsheetId=spreadsheet_id
+                ).execute()
+                sheets = spreadsheet.get('sheets', [])
+                
+                for sheet in sheets:
+                    if sheet['properties']['title'] == 'Strains Data':
+                        strains_sheet_id = sheet['properties']['sheetId']
+                    elif sheet['properties']['title'] == 'Instructions':
+                        instructions_sheet_id = sheet['properties']['sheetId']
+            
+            # Now set up the data using values API (more reliable)
+            # Set up Strains Data headers
+            strains_headers = [[
+                'Strain Name',
+                'Genotype',
+                'Species',
+                'Background Strain',
+                'Outcrossed',
+                'Mutagen',
+                'Made By',
+                'Notes/Comments'
+            ]]
+            
+            self.sheets_service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,
+                range='Strains Data!A1:H1',
+                valueInputOption='RAW',
+                body={'values': strains_headers}
+            ).execute()
+            
+            # Set up Instructions sheet data
+            # Format IDs in Alliance xref curie format
+            paper_id_formatted = f"WB:WBPaper{paper_id}"
+            pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
+            
+            instructions_data = [
+                ['Paper Information', ''],
+                ['WB Paper ID:', paper_id_formatted],
+                ['PMID:', pmid_formatted],
+                ['Title:', paper_title],
+                ['Author:', author_name],
+                ['', ''],
+                ['Instructions', ''],
+                ['Column A - Strain Name:', 'Enter the strain name (e.g., CB1004, BAT1560)'],
+                ['Column B - Genotype:', 'Enter the genotype (e.g., vhp-1(sa366) II; egIs1 [dat-1p::GFP])'],
+                ['Column C - Species:', 'Species name (e.g., C. elegans)'],
+                ['Column D - Background Strain:', 'Parent/background strain if applicable (e.g., N2, CB4856)'],
+                ['Column E - Outcrossed:', 'Number of times outcrossed (e.g., 3x, 6x)'],
+                ['Column F - Mutagen:', 'Mutagen used if applicable (e.g., EMS, UV, CRISPR)'],
+                ['Column G - Made By:', 'Person or lab who created the strain'],
+                ['Column H - Notes/Comments:', 'Any additional information'],
+                ['', ''],
+                ['Examples', ''],
+                ['Standard strain:', 'CB1004, flu-4(e1004), C. elegans, N2, 6x, EMS, Sydney Brenner'],
+                ['CRISPR strain:', 'BAT1560, hmg-3(bar24[hmg-3::3xHA]), C. elegans, N2, 3x, CRISPR, Smith Lab'],
+                ['GFP strain:', 
+                 'PMD153, vhp-1(sa366) II; egIs1 [dat-1p::GFP], C. elegans, CB4856, Not outcrossed, , Jones Lab'],
+                ['', ''],
+                ['How to import existing data:', ''],
+                ['1. Use File > Import', ''],
+                ['2. Select your CSV or Excel file', ''],
+                ['3. Choose "Replace spreadsheet" or "Insert new sheet(s)"', ''],
+                ['4. Map your columns to match the template headers', ''],
+                ['', ''],
+                ['Note:', 'For papers with many strains (>250), you can bulk import your strain list'],
+                ['', 'from an existing spreadsheet or database export.']
+            ]
+            
+            self.sheets_service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,
+                range='Instructions!A1:B29',
+                valueInputOption='RAW',
+                body={'values': instructions_data}
+            ).execute()
+            
+            # Apply formatting and column widths (optional, try but don't fail)
+            try:
+                format_requests = [
+                    # Format headers in Strains Data sheet
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 8
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'backgroundColor': {'red': 0.8, 'green': 0.8, 'blue': 0.8},
+                                    'textFormat': {'bold': True}
+                                }
+                            },
+                            'fields': 'userEnteredFormat(backgroundColor,textFormat)'
+                        }
+                    },
+                    # Auto-resize columns in Strains Data sheet
+                    {
+                        'autoResizeDimensions': {
+                            'dimensions': {
+                                'sheetId': strains_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 0,
+                                'endIndex': 8
+                            }
+                        }
+                    }
+                ]
+                
+                # Add column width adjustments for Instructions sheet if it exists
+                if instructions_sheet_id is not None:
+                    format_requests.extend([
+                        # Set column A width (labels column) - wider for the labels
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 0,
+                                    'endIndex': 1
+                                },
+                                'properties': {
+                                    'pixelSize': 250  # Width for labels column
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Set column B width (values column) - wider for content
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 1,
+                                    'endIndex': 2
+                                },
+                                'properties': {
+                                    'pixelSize': 500  # Width for content column
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Format the headers in Instructions sheet
+                        {
+                            'repeatCell': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'startRowIndex': 0,
+                                    'endRowIndex': 1,
+                                    'startColumnIndex': 0,
+                                    'endColumnIndex': 2
+                                },
+                                'cell': {
+                                    'userEnteredFormat': {
+                                        'textFormat': {'bold': True}
+                                    }
+                                },
+                                'fields': 'userEnteredFormat.textFormat'
+                            }
+                        },
+                        {
+                            'repeatCell': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'startRowIndex': 5,
+                                    'endRowIndex': 6,
+                                    'startColumnIndex': 0,
+                                    'endColumnIndex': 1
+                                },
+                                'cell': {
+                                    'userEnteredFormat': {
+                                        'textFormat': {'bold': True}
+                                    }
+                                },
+                                'fields': 'userEnteredFormat.textFormat'
+                            }
+                        },
+                        {
+                            'repeatCell': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'startRowIndex': 15,
+                                    'endRowIndex': 16,
+                                    'startColumnIndex': 0,
+                                    'endColumnIndex': 1
+                                },
+                                'cell': {
+                                    'userEnteredFormat': {
+                                        'textFormat': {'bold': True}
+                                    }
+                                },
+                                'fields': 'userEnteredFormat.textFormat'
+                            }
+                        },
+                        {
+                            'repeatCell': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'startRowIndex': 20,
+                                    'endRowIndex': 21,
+                                    'startColumnIndex': 0,
+                                    'endColumnIndex': 1
+                                },
+                                'cell': {
+                                    'userEnteredFormat': {
+                                        'textFormat': {'bold': True}
+                                    }
+                                },
+                                'fields': 'userEnteredFormat.textFormat'
+                            }
+                        },
+                        {
+                            'repeatCell': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'startRowIndex': 26,
+                                    'endRowIndex': 27,
+                                    'startColumnIndex': 0,
+                                    'endColumnIndex': 1
+                                },
+                                'cell': {
+                                    'userEnteredFormat': {
+                                        'textFormat': {'bold': True}
+                                    }
+                                },
+                                'fields': 'userEnteredFormat.textFormat'
+                            }
+                        }
+                    ])
+                
+                self.sheets_service.spreadsheets().batchUpdate(
+                    spreadsheetId=spreadsheet_id,
+                    body={'requests': format_requests}
+                ).execute()
+            except Exception as format_error:
+                logger.warning(f"Could not apply formatting: {format_error}")
+            
+            logger.info(f"Successfully set up strains template for {paper_id}")
+            
+        except Exception as e:
+            logger.error(f"Error setting up template: {e}")
+            # Try a simpler approach - just add the headers
+            try:
+                logger.info("Trying simpler template setup")
+                headers = [[
+                    'Strain Name', 'Genotype', 'Species',
+                    'Background Strain', 'Outcrossed', 'Mutagen',
+                    'Made By', 'Notes/Comments'
                 ]]
                 
                 self.sheets_service.spreadsheets().values().update(

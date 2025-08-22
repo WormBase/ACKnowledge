@@ -43,13 +43,17 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     const personId = useSelector((state) => state.person.personId);
     const person = useSelector((state) => state.person.person);
     
-    // State for spreadsheet creation
-    const [creatingSpreadsheet, setCreatingSpreadsheet] = useState(false);
-    const [spreadsheetError, setSpreadsheetError] = useState(null);
+    // State for alleles spreadsheet creation
+    const [creatingAllelesSpreadsheet, setCreatingAllelesSpreadsheet] = useState(false);
+    const [allelesSpreadsheetError, setAllelesSpreadsheetError] = useState(null);
+    
+    // State for strains spreadsheet creation
+    const [creatingStrainsSpreadsheet, setCreatingStrainsSpreadsheet] = useState(false);
+    const [strainsSpreadsheetError, setStrainsSpreadsheetError] = useState(null);
 
     const handleCreateAllelesSpreadsheet = async () => {
-        setCreatingSpreadsheet(true);
-        setSpreadsheetError(null);
+        setCreatingAllelesSpreadsheet(true);
+        setAllelesSpreadsheetError(null);
         
         try {
             // Use the same base URL as other API calls
@@ -65,13 +69,41 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 // Open spreadsheet in new tab
                 window.open(response.data.spreadsheet_url, '_blank');
             } else {
-                setSpreadsheetError('Failed to create spreadsheet');
+                setAllelesSpreadsheetError('Failed to create spreadsheet');
             }
         } catch (error) {
             console.error('Error creating alleles spreadsheet:', error);
-            setSpreadsheetError('Failed to create spreadsheet. Please try again.');
+            setAllelesSpreadsheetError('Failed to create spreadsheet. Please try again.');
         } finally {
-            setCreatingSpreadsheet(false);
+            setCreatingAllelesSpreadsheet(false);
+        }
+    };
+    
+    const handleCreateStrainsSpreadsheet = async () => {
+        setCreatingStrainsSpreadsheet(true);
+        setStrainsSpreadsheetError(null);
+        
+        try {
+            // Use the same base URL as other API calls
+            const writeEndpoint = process.env.REACT_APP_API_DB_WRITE_ENDPOINT || 'http://localhost:8001/api/write';
+            const apiBaseUrl = writeEndpoint.replace('/api/write', '');
+            const response = await axios.post(`${apiBaseUrl}/api/create_strains_spreadsheet`, {
+                passwd: paperPassword,
+                person_id: personId,
+                person_name: person.name || 'Unknown Author'
+            });
+            
+            if (response.data.success) {
+                // Open spreadsheet in new tab
+                window.open(response.data.spreadsheet_url, '_blank');
+            } else {
+                setStrainsSpreadsheetError('Failed to create spreadsheet');
+            }
+        } catch (error) {
+            console.error('Error creating strains spreadsheet:', error);
+            setStrainsSpreadsheetError('Failed to create spreadsheet. Please try again.');
+        } finally {
+            setCreatingStrainsSpreadsheet(false);
         }
     };
 
@@ -174,21 +206,21 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                     bsStyle="info" 
                                     bsSize="xs" 
                                     onClick={handleCreateAllelesSpreadsheet}
-                                    disabled={creatingSpreadsheet}
+                                    disabled={creatingAllelesSpreadsheet}
                                     style={{
                                         fontSize: '11px',
                                         padding: '2px 6px'
                                     }}
                                 >
                                     <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
-                                    {creatingSpreadsheet ? 'Creating...' : '📊 Create Allele spreadsheet (for large lists)'}
+                                    {creatingAllelesSpreadsheet ? 'Creating...' : 'Upload Allele spreadsheet (for large lists)'}
                                 </Button>
                             )}
                         </Panel.Title>
-                        {spreadsheetError && (
+                        {allelesSpreadsheetError && (
                             <div style={{marginTop: '8px'}}>
                                 <Alert bsStyle="danger" style={{marginBottom: '0', padding: '6px', fontSize: '12px'}}>
-                                    {spreadsheetError}
+                                    {allelesSpreadsheetError}
                                 </Alert>
                             </div>
                         )}
@@ -267,9 +299,36 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">List of WormBase strains identified in the paper <OverlayTrigger placement="top" overlay={strainsTooltip}>
-                            <Glyphicon glyph="question-sign"/>
-                        </OverlayTrigger></Panel.Title>
+                        <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                <span>List of WormBase strains identified in the paper</span>
+                                <OverlayTrigger placement="top" overlay={strainsTooltip}>
+                                    <Glyphicon glyph="question-sign"/>
+                                </OverlayTrigger>
+                            </div>
+                            {!hideStrains && (
+                                <Button 
+                                    bsStyle="info" 
+                                    bsSize="xs" 
+                                    onClick={handleCreateStrainsSpreadsheet}
+                                    disabled={creatingStrainsSpreadsheet}
+                                    style={{
+                                        fontSize: '11px',
+                                        padding: '2px 6px'
+                                    }}
+                                >
+                                    <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
+                                    {creatingStrainsSpreadsheet ? 'Creating...' : 'Upload Strain spreadsheet (for large lists)'}
+                                </Button>
+                            )}
+                        </Panel.Title>
+                        {strainsSpreadsheetError && (
+                            <div style={{marginTop: '8px'}}>
+                                <Alert bsStyle="danger" style={{marginBottom: '0', padding: '6px', fontSize: '12px'}}>
+                                    {strainsSpreadsheetError}
+                                </Alert>
+                            </div>
+                        )}
                     </Panel.Heading>
                     <Panel.Body>
                         {strainsListComponent}
