@@ -66,7 +66,7 @@ const FAQ = () => {
             <h4>Data Types Submitted through the ACKnowledge Form</h4>
             <ol>
                 <li><FAQsingle question={"How are the different data types identified?"}
-                               answer={"Wherever possible, we use machine learning to help automate identification of different data types, e.g. anatomical expression patterns, RNAi phenotypes, and genetic interactions.  Automatically identified data types are indicated on the form with the <img src=\"tpc_powered.svg\" width=\"80px\"/> tag.  More information about some of our approaches can be found in the <strong>About Section</strong>."}/></li>
+                               answer={"Wherever possible, we use machine learning to help automate identification of different data types, e.g. anatomical expression patterns, RNAi phenotypes, and genetic interactions.  Automatically identified data types are indicated on the form with the <span style=\"display:inline-flex;align-items:center;font-size:12px;color:#333;background-color:#ffffff;padding:4px 8px;border-radius:12px;border:2px solid #ddd;font-weight:normal;box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);vertical-align:middle\"><span style=\"margin-right:6px;color:#ffd700;font-size:14px\">⚡</span>Auto-detected</span> tag.  More information about some of our approaches can be found in the <strong>About Section</strong>."}/></li>
                 <li><FAQsingle question={"Can I submit other data types not listed in the ACKnowledge?"}
                                answer={"If your paper includes data types not listed in the ACKnowledge form, please let us know by adding a note in the Comments field in the Comments and submit widget."}/></li>
             </ol>

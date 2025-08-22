@@ -4,6 +4,7 @@ import {
     Panel, Tooltip, Image, OverlayTrigger
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
+import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {
     setGeneticInteractions,
     setPhysicalInteractions, setRegulatoryInteractions,
@@ -23,11 +24,6 @@ const Interactions = () => {
     const isSavedToDB = useSelector((state) => state.interactions.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
-    const svmTooltip = (
-        <Tooltip id="tooltip">
-            This field is prepopulated by Textpresso Central.
-        </Tooltip>
-    );
     const geneticIntTooltip = (
         <Tooltip id="tooltip">
             Genetic interactions refer to observations of phenotype modifications and/or a double mutant (or
@@ -58,7 +54,7 @@ const Interactions = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+            <div style={{marginBottom: '15px', textAlign: 'center'}}>
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
@@ -81,8 +77,7 @@ const Interactions = () => {
                         <FormGroup>
                             <Checkbox checked={geneint.checked} onClick={() => dispatch(toggleGeneticInteractions())}>
                                 <strong>Genetic Interactions</strong> <OverlayTrigger placement="top" overlay={geneticIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
-                                <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => dispatch(setGeneticInteractions(true, geneint.details))}
@@ -92,8 +87,7 @@ const Interactions = () => {
                                          }}/>
                             <Checkbox checked={geneprod.checked} onClick={() => dispatch(togglePhysicalInteractions())}>
                                 <strong>Physical Interactions</strong> <OverlayTrigger placement="top" overlay={physicalIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
-                                <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => dispatch(setPhysicalInteractions(true, geneprod.details))}
@@ -103,8 +97,7 @@ const Interactions = () => {
                                          }}/>
                             <Checkbox checked={genereg.checked} onClick={() => dispatch(toggleRegulatoryInteractions())}>
                                 <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top" overlay={regulatoryIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top" overlay={svmTooltip}>
-                                <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => dispatch(setRegulatoryInteractions(true, genereg.details))}

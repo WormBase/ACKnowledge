@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Checkbox, Form, FormGroup, Glyphicon, Image, OverlayTrigger, Panel, Tooltip} from "react-bootstrap";
 import FormControl from "react-bootstrap/es/FormControl";
 import InstructionsAlert from "../components/InstructionsAlert";
+import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {
     setAllelePhenotype, setChemicalPhenotype, setEnvironmentalPhenotype,
     setEnzymaticActivity,
@@ -33,11 +34,6 @@ const Phenotypes = () => {
     const isSavedToDB = useSelector((state) => state.phenotypes.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
-    const svmTooltip = (
-        <Tooltip id="tooltip">
-            This field is prepopulated by machine learning methods.
-        </Tooltip>
-    );
     return (
         <div>
             <InstructionsAlert
@@ -48,7 +44,7 @@ const Phenotypes = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+            <div style={{marginBottom: '15px', textAlign: 'center'}}>
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         allele_pheno: getCheckboxDBVal(allelePheno.checked),
@@ -76,21 +72,7 @@ const Phenotypes = () => {
                             <div className="col-sm-7">
                                 <Checkbox checked={allelePheno.checked}
                                           onClick={() => dispatch(toggleAllelePhenotype())}>
-                                    <strong>Allele Phenotype</strong> <OverlayTrigger placement="top"
-                                                                                      overlay={svmTooltip}>
-                                    <span style={{
-                                        display: 'inline-flex', 
-                                        alignItems: 'center', 
-                                        fontSize: '12px', 
-                                        color: '#555',
-                                        backgroundColor: '#e8f4fd',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #86c4d0'
-                                    }}>
-                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
-                                        Auto-detected
-                                    </span></OverlayTrigger></Checkbox>
+                                    <strong>Allele Phenotype</strong> <AutoDetectedBadge/></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -122,21 +104,7 @@ const Phenotypes = () => {
                             <div className="col-sm-7">
                                 <Checkbox checked={rnaiPheno.checked}
                                           onClick={() => dispatch(toggleRnaiPhenotype())}>
-                                    <strong>RNAi Phenotype</strong> <OverlayTrigger placement="top"
-                                                                                    overlay={svmTooltip}>
-                                    <span style={{
-                                        display: 'inline-flex', 
-                                        alignItems: 'center', 
-                                        fontSize: '12px', 
-                                        color: '#555',
-                                        backgroundColor: '#e8f4fd',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #86c4d0'
-                                    }}>
-                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
-                                        Auto-detected
-                                    </span></OverlayTrigger></Checkbox>
+                                    <strong>RNAi Phenotype</strong> <AutoDetectedBadge/></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -168,21 +136,7 @@ const Phenotypes = () => {
                             <div className="col-sm-7">
                                 <Checkbox checked={overexprPheno.checked}
                                           onClick={() => dispatch(toggleOverexprPhenotype())}>
-                                    <strong>Transgene Overexpression Phenotype</strong> <OverlayTrigger placement="top"
-                                                                                                        overlay={svmTooltip}>
-                                    <span style={{
-                                        display: 'inline-flex', 
-                                        alignItems: 'center', 
-                                        fontSize: '12px', 
-                                        color: '#555',
-                                        backgroundColor: '#e8f4fd',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #86c4d0'
-                                    }}>
-                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
-                                        Auto-detected
-                                    </span></OverlayTrigger></Checkbox>
+                                    <strong>Transgene Overexpression Phenotype</strong> <AutoDetectedBadge/></Checkbox>
                             </div>
                             <div className="col-sm-5">
                                 <a 
@@ -255,20 +209,7 @@ const Phenotypes = () => {
                     <Form>
                         <FormGroup>
                             <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
-                                <strong>Enzymatic Activity</strong> <OverlayTrigger placement="top" overlay={svmTooltip}>
-                                    <span style={{
-                                        display: 'inline-flex', 
-                                        alignItems: 'center', 
-                                        fontSize: '12px', 
-                                        color: '#555',
-                                        backgroundColor: '#e8f4fd',
-                                        padding: '4px 8px',
-                                        borderRadius: '12px',
-                                        border: '1px solid #86c4d0'
-                                    }}>
-                                        <Image src="iconic-mark-color.svg" width="16px" style={{marginRight: '6px'}}/>
-                                        Auto-detected
-                                    </span></OverlayTrigger>
+                                <strong>Enzymatic Activity</strong> <AutoDetectedBadge/>
                             </Checkbox>
                             <FormControl type="text" placeholder="Add details here"
                                          onClick={() => dispatch(setEnzymaticActivity(true, enzymaticAct.details))}

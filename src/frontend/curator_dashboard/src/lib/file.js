@@ -12,7 +12,7 @@ export const downloadFile = async (fileContent, fileName, fileType, fileExtensio
 }
 
 export const downloadCSVSpreadsheet = async (paperID) => {
-        let formContent = "WormBase ACKnowledge\n\nSome of the results provided in this form (marked as TPC powered) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
+        let formContent = "WormBase ACKnowledge\n\nSome of the results provided in this form (marked as Auto-detected) have been automatically extracted by our text mining methods\nPlease add any entity we might have missed and remove those that were erroneously extracted\n\n*** Section 1: Entities identified in the paper ***\n\n";
         let payload = {
                 paper_id: paperID
         };
@@ -65,36 +65,36 @@ export const downloadCSVSpreadsheet = async (paperID) => {
                 } else {
                         tfp_transgenes = [];
                 }
-                formContent += "GENES (TPC powered)\n";
+                formContent += "GENES (Auto-detected)\n";
                 formContent += tfp_genestudied.join("\n") + "\n\n";
-                formContent += "SPECIES (TPC powered)\n";
+                formContent += "SPECIES (Auto-detected)\n";
                 formContent += tfp_species.join("\n") + "\n\n";
-                formContent += "ALLELES (TPC powered)\n";
+                formContent += "ALLELES (Auto-detected)\n";
                 formContent += tfp_alleles.join("\n") + "\n\n";
-                formContent += "STRAINS (TPC powered)\n";
+                formContent += "STRAINS (Auto-detected)\n";
                 formContent += tfp_strains.join("\n") + "\n\n";
-                formContent += "TRANSGENES (TPC powered)\n";
+                formContent += "TRANSGENES (Auto-detected)\n";
                 formContent += tfp_transgenes.join("\n") + "\n\n";
                 formContent += "New Genes reported\nList here\n\n";
                 formContent += "New Alleles reported\nList here\n\n";
                 formContent += "New Strains reported\nList here\n\n";
                 formContent += "New Transgenes reported\nList here\n\n";
                 formContent += "Known Antobodies used in the study\nList here\n\n";
-                formContent += "Are you reporting an allele sequence change? (TPC powered)\n" + (flags["svm_seqchange_checked"] ? "Yes" : "No") + "\n\n";
+                formContent += "Are you reporting an allele sequence change? (Auto-detected)\n" + (flags["svm_seqchange_checked"] ? "Yes" : "No") + "\n\n";
                 formContent += "Are you reporting a Gene model update and gene sequence connection?\nNo\n\n";
                 formContent += "Did you generate a new antibody? If yes specify\nNo\n\n";
 
                 formContent += "*** Section 2: Datatypes ***\nConfirm if your paper contains any of the data types below\n\n";
-                formContent += "Anatomic Expression data in WT condition (TPC powered)\n" + (flags["svm_otherexpr_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Anatomic Expression data in WT condition (Auto-detected)\n" + (flags["svm_otherexpr_checked"] ? "Yes": "No") + "\n\n";
                 formContent += "Site of action data\nNo\n\n";
                 formContent += "Time of action data\nNo\n\n";
                 formContent += "RNAseq data\nNo\n\n";
-                formContent += "Genetic Interactions (TPC powered)\n" + (flags["svm_geneint_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Physical Interactions (TPC powered)\n" + (flags["svm_geneprod_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Regulatory Interactions (TPC powered)\n" + (flags["svm_genereg_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Allele-Phenotype data (TPC powered)\n" + (flags["svm_newmutant_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Allele-RNAi data (TPC powered)\n" + (flags["svm_rnai_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Transgene Overexpression Phenotype data (TPC powered)\n" + (flags["svm_overexpr_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Genetic Interactions (Auto-detected)\n" + (flags["svm_geneint_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Physical Interactions (Auto-detected)\n" + (flags["svm_geneprod_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Regulatory Interactions (Auto-detected)\n" + (flags["svm_genereg_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Allele-Phenotype data (Auto-detected)\n" + (flags["svm_newmutant_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Allele-RNAi data (Auto-detected)\n" + (flags["svm_rnai_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Transgene Overexpression Phenotype data (Auto-detected)\n" + (flags["svm_overexpr_checked"] ? "Yes": "No") + "\n\n";
                 formContent += "Chemical Induced Phenotype Data\nNo\n\n";
                 formContent += "Environmental Induced Phenotype Data\nNo\n\n";
                 formContent += "Enzymatic activity Data\nNo\n\n";

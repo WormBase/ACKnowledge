@@ -13,6 +13,7 @@ import {
 } from 'react-bootstrap';
 import AutoComplete from './AutoComplete';
 import NoEntitiesSelectedModal from './NoEntitiesSelectedModal';
+import AutoDetectedBadge from '../AutoDetectedBadge';
 import ResetConfirmationModal from './ResetConfirmationModal';
 
 const MultiSelect = (props) => {
@@ -57,11 +58,6 @@ const MultiSelect = (props) => {
     // Net removals: items that were originally present but aren't currently present
     const netRemovals = [...originalItems].filter(item => !allCurrentItems.has(item));
 
-    const tpcTooltip = (
-        <Tooltip id="tooltip">
-            This field is prepopulated by Textpresso Central.
-        </Tooltip>
-    );
 
     const handleRemoveSelected = () => {
         if (selectedForRemoval.size === 0) {
@@ -167,11 +163,7 @@ const MultiSelect = (props) => {
                 <h4 style={{margin: 0, flex: 1, fontWeight: '600'}}>
                     {props.customTitle || `${props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)}`}
                 </h4>
-                {props.showTpcBadge && (
-                    <OverlayTrigger placement="top" overlay={tpcTooltip}>
-                        <Image src="tpc_powered.svg" width="70px"/>
-                    </OverlayTrigger>
-                )}
+                {props.showTpcBadge && <AutoDetectedBadge/>}
             </div>
 
             {/* Subtle action buttons */}

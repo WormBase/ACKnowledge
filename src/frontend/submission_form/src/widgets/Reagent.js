@@ -60,7 +60,7 @@ const Reagent = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+            <div style={{marginBottom: '15px', textAlign: 'center'}}>
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     const payload = {
                         transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),

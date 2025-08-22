@@ -5,6 +5,7 @@ import {
     Panel, Tooltip
 } from "react-bootstrap";
 import InstructionsAlert from "../components/InstructionsAlert";
+import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {useDispatch, useSelector} from "react-redux";
 import {
     setAdditionalExpr,
@@ -57,11 +58,6 @@ const Expression = () =>{
             to refer to a specific piece of text from their publication in the text box provided.
         </Tooltip>
     );
-    const svmTooltip = (
-        <Tooltip id="tooltip">
-            This field is prepopulated by Textpresso Central.
-        </Tooltip>
-    );
     return (
         <div>
             <InstructionsAlert
@@ -72,7 +68,7 @@ const Expression = () =>{
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+            <div style={{marginBottom: '15px', textAlign: 'center'}}>
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
@@ -97,9 +93,7 @@ const Expression = () =>{
                         <Checkbox checked={expression.checked} onClick={() => dispatch(toggleExpression())}>
                             <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                                       overlay={tooltip}>
-                            <Glyphicon glyph="question-sign"/></OverlayTrigger> <OverlayTrigger placement="top"
-                                                                                                overlay={svmTooltip}>
-                            <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger>
+                            <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                         </Checkbox>
                         <FormControl type="text" placeholder="Add details here"
                                      onClick={() => dispatch(setExpression(true, expression.details))}

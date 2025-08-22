@@ -6,6 +6,7 @@ import {
 } from "react-bootstrap";
 import MultiSelect from "../components/multiselect/MultiSelect";
 import InstructionsAlert from "../components/InstructionsAlert";
+import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {useDispatch, useSelector} from "react-redux";
 import {
     addAllele,
@@ -118,11 +119,6 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             Please validate the list of strains experimentally studied in your paper in the box below by adding or removing strains if required.
         </Tooltip>
     );
-    const svmTooltip = (
-        <Tooltip id="tooltip">
-            This field is prepopulated by Textpresso Central.
-        </Tooltip>
-    );
     let allelesListComponent;
     if (hideAlleles) {
         allelesListComponent = (<Alert bsStyle="warning">More than 100 alleles were extracted from the paper and they were omitted from the Author First Pass interface. If you would like to validate the list of alleles click <a onClick={() => {
@@ -175,7 +171,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'right'}}>
+            <div style={{marginBottom: '15px', textAlign: 'center'}}>
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         alleles_list: transformEntitiesIntoAfpString(alleles, ""),
@@ -263,14 +259,12 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                     </Panel.Heading>
                     <Panel.Body>
                         <div className="container-fluid">
-                            <div className="row">
+                            <div className="row" style={{display: 'flex', alignItems: 'center'}}>
                                 <div className="col-sm-7">
                                     <Checkbox checked={sequenceChange.checked}
                                               onClick={() => {
                                                   dispatch(toggleSequenceChange());
-                                              }}><strong>Allele sequence change</strong> <OverlayTrigger placement="top"
-                                                                                                         overlay={svmTooltip}>
-                                        <Image src="tpc_powered.svg" width="80px"/></OverlayTrigger></Checkbox>
+                                              }}><strong>Allele sequence change</strong> <AutoDetectedBadge/></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
                                     <a 
