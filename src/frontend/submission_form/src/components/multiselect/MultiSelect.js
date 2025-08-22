@@ -8,7 +8,8 @@ import {
     OverlayTrigger,
     Tooltip,
     Alert,
-    Label
+    Label,
+    Modal
 } from 'react-bootstrap';
 import AutoComplete from './AutoComplete';
 import NoEntitiesSelectedModal from './NoEntitiesSelectedModal';
@@ -22,6 +23,7 @@ const MultiSelect = (props) => {
     const [isVerticalLayout, setIsVerticalLayout] = useState(props.defaultListView || false);
     const [showResetConfirmation, setShowResetConfirmation] = useState(false);
     const [showWbIds, setShowWbIds] = useState(props.defaultShowIds !== undefined ? props.defaultShowIds : true);
+    const [showRemoveAllConfirmation, setShowRemoveAllConfirmation] = useState(false);
     const savedStateRef = useRef(null);
     
     // Ensure props.items is always an array
@@ -73,6 +75,18 @@ const MultiSelect = (props) => {
         
         setSelectedForRemoval(new Set());
         setShowRemovalMode(false);
+    };
+
+    const handleRemoveAllConfirmed = () => {
+        if (filteredItems.length > 0) {
+            // Remove all items
+            filteredItems.forEach(item => {
+                props.remItemFunction(item);
+            });
+            setSelectedForRemoval(new Set());
+            setShowRemovalMode(false);
+        }
+        setShowRemoveAllConfirmation(false);
     };
 
     const toggleItemForRemoval = (item) => {
@@ -338,12 +352,7 @@ const MultiSelect = (props) => {
                                 bsSize="small" 
                                 onClick={() => {
                                     if (filteredItems.length > 0) {
-                                        // Select all items and remove them immediately
-                                        filteredItems.forEach(item => {
-                                            props.remItemFunction(item);
-                                        });
-                                        setSelectedForRemoval(new Set());
-                                        setShowRemovalMode(false);
+                                        setShowRemoveAllConfirmation(true);
                                     }
                                 }}
                                 disabled={filteredItems.length === 0}
@@ -536,6 +545,24 @@ const MultiSelect = (props) => {
                 netAdditions={netAdditions.length}
                 netRemovals={netRemovals.length}
             />
+            
+            {/* Remove All Confirmation Modal */}
+            <Modal show={showRemoveAllConfirmation} onHide={() => setShowRemoveAllConfirmation(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Remove All {props.itemsNamePlural && props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1) || 'Entities'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    You are removing all {filteredItems.length} {props.itemsNamePlural || 'entities'}. Are you sure you want to proceed?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={() => setShowRemoveAllConfirmation(false)}>
+                        Cancel
+                    </Button>
+                    <Button bsStyle="danger" onClick={handleRemoveAllConfirmed}>
+                        Remove All
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
