@@ -96,7 +96,7 @@ const Phenotypes = () => {
                                     }}
                                     onClick={() => dispatch(setAllelePhenotype(true, ''))}
                                 >
-                                    Add details in online form <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                    Submit allele phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
                         </div>
@@ -128,7 +128,7 @@ const Phenotypes = () => {
                                     }}
                                     onClick={() => dispatch(setRnaiPhenotype(true, ''))}
                                 >
-                                    Add details in online form <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                    Submit RNAi phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
                         </div>
@@ -160,7 +160,7 @@ const Phenotypes = () => {
                                     }}
                                     onClick={() => dispatch(setOverexprPhenotype(true, ''))}
                                 >
-                                    Add details in online form <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                    Submit overexpression phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
                         </div>
