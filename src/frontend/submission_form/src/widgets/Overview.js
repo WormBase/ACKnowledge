@@ -44,7 +44,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
 
     const speciesTooltip = (
         <Tooltip id="tooltip">
-            Please validate the list of species in your paper in the box below by adding or removing species if required.
+            Please validate the list of species experimentally studied in your paper in the box below by adding or removing species if required.
         </Tooltip>
     );
     let geneListComponent;
@@ -75,8 +75,8 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="In this page you will see genes and species that have been identified in your
-                    paper. Please validate the list by adding/removing entries in the identified lists. You can also
+                alertTextNotSaved="In this page you will see genes and species that have been experimentally studied in your
+                    paper. Please validate the list by adding/removing entries. You can also
                     notify us for gene model updates."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}

@@ -95,7 +95,7 @@ Alzheimer's disease
 Cancer
 Diabetes"
                                 customAutoComplete={(props) => <DiseaseAutoComplete {...props} />}
-                                customTitle="Specify diseases studied in the paper"
+                                customTitle="Diseases"
                                 showTpcBadge={false}
                                 emptyStateText="No diseases selected"
                             />

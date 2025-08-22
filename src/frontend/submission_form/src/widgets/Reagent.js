@@ -37,7 +37,7 @@ const Reagent = () => {
 
     const transgenesTooltip = (
         <Tooltip id="tooltip">
-            Please validate the list of transgenes in your paper in the box below by adding or removing strains if required.
+            Please validate the list of transgenes experimentally studied in your paper in the box below by adding or removing transgenes if required.
         </Tooltip>
     );
     const antibodyTooltip = (
@@ -53,7 +53,7 @@ const Reagent = () => {
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="Here you can find transgenes that have been identified in your paper. Please
+                alertTextNotSaved="Here you can find transgenes that have been experimentally studied in your paper. Please
                     validate the list as for the previous section. You can also submit information about antibodies
                     mentioned or generated in the study."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
@@ -77,7 +77,7 @@ const Reagent = () => {
             <form>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">List of WormBase transgenes identified in the paper <OverlayTrigger placement="top" overlay={transgenesTooltip}>
+                        <Panel.Title componentClass="h3">List of WormBase transgenes experimentally studied in the paper <OverlayTrigger placement="top" overlay={transgenesTooltip}>
                             <Glyphicon glyph="question-sign"/>
                         </OverlayTrigger></Panel.Title>
                     </Panel.Heading>

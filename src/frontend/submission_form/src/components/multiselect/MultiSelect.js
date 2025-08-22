@@ -151,7 +151,7 @@ const MultiSelect = (props) => {
             {/* Header with title and optional TPC badge */}
             <div className="multiselect-header" style={{display: 'flex', alignItems: 'center', marginBottom: '15px'}}>
                 <h4 style={{margin: 0, flex: 1, fontWeight: '600'}}>
-                    {props.customTitle || `${props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)} identified in the paper`}
+                    {props.customTitle || `${props.itemsNamePlural.charAt(0).toUpperCase() + props.itemsNamePlural.slice(1)}`}
                 </h4>
                 {props.showTpcBadge && (
                     <OverlayTrigger placement="top" overlay={tpcTooltip}>

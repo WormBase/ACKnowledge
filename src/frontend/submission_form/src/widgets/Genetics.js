@@ -109,13 +109,13 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
 
     const allelesTooltip = (
         <Tooltip id="tooltip">
-            Please validate the list of alleles in your paper in the box below by adding or removing alleles if required. Note that not all the Million Mutation Project alleles are recognized
+            Please validate the list of alleles experimentally studied in your paper in the box below by adding or removing alleles if required. Note that not all the Million Mutation Project alleles are recognized
         </Tooltip>
     );
 
     const strainsTooltip = (
         <Tooltip id="tooltip">
-            Please validate the list of strains in your paper in the box below by adding or removing strains if required.
+            Please validate the list of strains experimentally studied in your paper in the box below by adding or removing strains if required.
         </Tooltip>
     );
     const svmTooltip = (
@@ -170,7 +170,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="Here you can find alleles and strains that have been identified in your paper.
+                alertTextNotSaved="Here you can find alleles and strains that have been experimentally studied in your paper.
                     Please validate the list as for the previous section. You can also submit a new allele name and indicate an allele sequence change."
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
@@ -196,7 +196,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                <span>List of WormBase alleles identified in the paper</span>
+                                <span>List of WormBase alleles experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={allelesTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger>
@@ -301,7 +301,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                     <Panel.Heading>
                         <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                             <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                <span>List of WormBase strains identified in the paper</span>
+                                <span>List of WormBase strains experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={strainsTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger>
