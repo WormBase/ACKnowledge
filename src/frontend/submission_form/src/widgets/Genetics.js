@@ -294,8 +294,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                         }}
                                         onClick={() => dispatch(setSequenceChange(true, ''))}
                                     >
-                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                        Add details in online form
+                                        Add details in online form <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                     </a>
                                 </div>
                             </div>

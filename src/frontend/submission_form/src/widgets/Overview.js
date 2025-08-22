@@ -139,8 +139,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                                             }}
                                             onClick={() => dispatch(setGeneModel())}
                                         >
-                                            <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                            Request New Gene Name
+                                            Request New Gene Name <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                         </a>
                                     </div>
                                 </div>
@@ -177,8 +176,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                                         }}
                                         onClick={() => dispatch(setGeneModel())}
                                     >
-                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                        Report Gene-Sequence
+                                        Report Gene-Sequence <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                     </a>
                                 </div>
                             </div>

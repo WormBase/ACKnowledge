@@ -157,8 +157,7 @@ const PersonSelector = () => {
                         e.target.style.borderBottomColor = '#0066cc';
                     }}
                 >
-                    <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                    Request WBPerson
+                    Request WBPerson <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                 </a>
                 
                 <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
@@ -182,8 +181,7 @@ const PersonSelector = () => {
                             e.target.style.borderBottomColor = '#0066cc';
                         }}
                     >
-                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                        ACKnowledge Author Portal
+                        ACKnowledge Author Portal <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                     </a>
                 </OverlayTrigger>
             </div>

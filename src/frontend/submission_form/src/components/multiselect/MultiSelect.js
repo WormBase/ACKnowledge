@@ -298,7 +298,7 @@ const MultiSelect = (props) => {
                         }}
                         title="View in WormBase"
                     >
-                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/> View in WB
+                        View in WB <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                     </Button>
                 )}
             </div>

@@ -73,8 +73,7 @@ const Other = () => {
                                             e.target.style.borderBottomColor = '#0066cc';
                                         }}
                                     >
-                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                        Update contact info
+                                        Update contact info <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                     </a>
                                 </div>
                             </div>
@@ -117,8 +116,7 @@ const Other = () => {
                                             e.target.style.borderBottomColor = '#0066cc';
                                         }}
                                     >
-                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                        Update lineage
+                                        Update lineage <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                     </a>
                                 </div>
                             </div>
