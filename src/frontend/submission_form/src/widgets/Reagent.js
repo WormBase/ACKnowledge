@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    Alert,
     Button,
     Checkbox,
     Form,
@@ -95,25 +96,30 @@ const Reagent = () => {
                             exactMatchTooltip={"Check this to search for exact transgene names only"}
                             autocompletePlaceholder={"Type transgene names, one per line or separated by commas. For example:\nctIs40\nWBTransgene00000647"}
                         />
-                    </Panel.Body>
-                </Panel>
-                <Panel>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">New Transgenes</Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <ControlLabel>
-                                        Enter one transgene per line. If possible, enter the transgene name followed by genotype followed by species, separated by comma. <br/>
-                                        e.g. <i>eaIs15</i>, [<i>Ppie-1::HIM-5::GFP::pie-1</i>], <i>C. elegans</i>. <br/>
-                                        For extrachromosomal arrays: <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
-                                    </ControlLabel>
-                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new transgenes here, one per line"
-                                                 value={otherTransgenes.map(a => a.name).join("\n")}
-                                                 onChange={e => dispatch(setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
-                                                     return {id: index + 1, name: a}})))}/>
+                        
+                        {/* New transgenes section integrated into main panel */}
+                        <div style={{marginTop: '15px'}}>
+                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                                Can't find a transgene? Add new transgenes not yet in WormBase
+                            </h5>
+                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                <strong>Note:</strong> If a transgene you're looking for doesn't appear when using the "Add" button above 
+                                (because it's new and not yet in WormBase), you can enter it manually below. 
+                                This is for newly generated transgenes that haven't been curated into WormBase yet.
+                            </Alert>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <ControlLabel>
+                                            Enter one transgene per line. If possible, enter the transgene name followed by genotype followed by species, separated by comma. <br/>
+                                            e.g. <i>eaIs15</i>, [<i>Ppie-1::HIM-5::GFP::pie-1</i>], <i>C. elegans</i>. <br/>
+                                            For extrachromosomal arrays: <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
+                                        </ControlLabel>
+                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new transgenes not yet in WormBase here, one per line"
+                                                     value={otherTransgenes.map(a => a.name).join("\n")}
+                                                     onChange={e => dispatch(setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a}})))}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

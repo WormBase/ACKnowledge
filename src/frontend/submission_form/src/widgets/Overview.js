@@ -105,40 +105,44 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                     </Panel.Heading>
                     <Panel.Body>
                         {geneListComponent}
-                    </Panel.Body>
-                </Panel>
-                <Panel>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">New Gene Name</Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <a 
-                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            fontSize: '13px',
-                                            color: '#0066cc',
-                                            textDecoration: 'none',
-                                            borderBottom: '1px solid #0066cc',
-                                            fontWeight: '500'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.color = '#004499';
-                                            e.target.style.borderBottomColor = '#004499';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.color = '#0066cc';
-                                            e.target.style.borderBottomColor = '#0066cc';
-                                        }}
-                                        onClick={() => dispatch(setGeneModel())}
-                                    >
-                                        <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
-                                        Request New Gene Name
-                                    </a>
+                        
+                        {/* New gene name section integrated into main panel */}
+                        <div style={{marginTop: '15px'}}>
+                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                                Can't find a gene? Request a new gene name
+                            </h5>
+                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                <strong>Note:</strong> If a gene you're looking for doesn't appear when using the "Add" button above 
+                                (because it's newly discovered and not yet in WormBase), you can request a new gene name using the link below.
+                            </Alert>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <a 
+                                            href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '13px',
+                                                color: '#0066cc',
+                                                textDecoration: 'none',
+                                                borderBottom: '1px solid #0066cc',
+                                                fontWeight: '500'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.target.style.color = '#004499';
+                                                e.target.style.borderBottomColor = '#004499';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.target.style.color = '#0066cc';
+                                                e.target.style.borderBottomColor = '#0066cc';
+                                            }}
+                                            onClick={() => dispatch(setGeneModel())}
+                                        >
+                                            <Glyphicon glyph="new-window" style={{fontSize: '10px', marginRight: '4px'}}/>
+                                            Request New Gene Name
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -222,23 +226,28 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             autocompletePlaceholder={"Type species names, one per line. For example:\nCaenorhabditis elegans\nCaenorhabditis briggsae\nDrosophila melanogaster"}
                             showIdToggle={false}
                         />
-                    </Panel.Body>
-                </Panel>
-                <Panel>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">New species</Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <ControlLabel>
-                                        Enter new species and species not yet in our system, one per line.
-                                    </ControlLabel>
-                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert new species here, one per line"
-                                                 value={otherSpecies.map(a => a.name).join("\n")}
-                                                 onChange={e => dispatch(setOtherSpecies(e.target.value.split("\n").map((a, index) => {
-                                                     return {id: index + 1, name: a}})))}/>
+                        
+                        {/* New species section integrated into main panel */}
+                        <div style={{marginTop: '15px'}}>
+                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                                Can't find a species? Add new species not yet in WormBase
+                            </h5>
+                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                <strong>Note:</strong> If a species you're looking for doesn't appear when using the "Add" button above 
+                                (because it's new and not yet in WormBase), you can enter it manually below. 
+                                This is for newly studied species that haven't been curated into WormBase yet.
+                            </Alert>
+                            <div className="container-fluid">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <ControlLabel>
+                                            Enter new species and species not yet in our system, one per line.
+                                        </ControlLabel>
+                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new species not yet in WormBase here, one per line"
+                                                     value={otherSpecies.map(a => a.name).join("\n")}
+                                                     onChange={e => dispatch(setOtherSpecies(e.target.value.split("\n").map((a, index) => {
+                                                         return {id: index + 1, name: a}})))}/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
