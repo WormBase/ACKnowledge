@@ -170,7 +170,7 @@ const Phenotypes = () => {
                                     <Checkbox checked={chemPheno.checked} onClick={() => dispatch(toggleChemicalPhenotype())}>
                                         <strong>Chemical Induced Phenotype</strong>
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Add details here"
+                                    <FormControl type="text" placeholder="E.g.: Exposure to 7% EtOH progressively flattened the body-bend amplitudes of the worms until they died at the L1 stage"
                                                  onClick={() => dispatch(setChemicalPhenotype(true, chemPheno.details))}
                                                  value={chemPheno.details}
                                                  onChange={(event) => {
@@ -187,7 +187,7 @@ const Phenotypes = () => {
                                     <Checkbox checked={envPheno.checked} onClick={() => dispatch(toggleEnvironmentalPhenotype())}>
                                         <strong>Environmental Induced Phenotype</strong>
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Add details here"
+                                    <FormControl type="text" placeholder="E.g.: hsf-1 mutants are hypersensitive to elevated temperature."
                                                  onClick={() => dispatch(setEnvironmentalPhenotype(true, envPheno.details))}
                                                  value={envPheno.details}
                                                  onChange={(event) => {
@@ -211,7 +211,7 @@ const Phenotypes = () => {
                             <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
                                 <strong>Enzymatic Activity</strong> <AutoDetectedBadge/>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here"
+                            <FormControl type="text" placeholder="E.g.: AIR-2 phosphorylates REC-8 in vitro."
                                          onClick={() => dispatch(setEnzymaticActivity(true, enzymaticAct.details))}
                                          value={enzymaticAct.details}
                                          onChange={(event) => {
@@ -224,7 +224,7 @@ const Phenotypes = () => {
                             <Checkbox checked={othergenefunc.checked} onClick={() => dispatch(toggleOthergenefunc())}>
                                 <strong>Other Gene Function</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="Add details here"
+                            <FormControl type="text" placeholder="E.g.: AAT-9 transports amino acids when expressed alone in Xenopus oocytes."
                                          onClick={() => dispatch(setOthergenefunc(true, othergenefunc.details))}
                                          value={othergenefunc.details}
                                          onChange={(event) => {

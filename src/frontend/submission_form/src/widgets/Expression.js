@@ -95,7 +95,7 @@ const Expression = () =>{
                                                                                                       overlay={tooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                         </Checkbox>
-                        <FormControl type="text" placeholder="Add details here"
+                        <FormControl type="text" placeholder="E.g.: unc-47 is expressed in GABAergic motor neurons."
                                      onClick={() => dispatch(setExpression(true, expression.details))}
                                      value={expression.details}
                                      onChange={(event) => {
@@ -107,7 +107,7 @@ const Expression = () =>{
                                                                                  overlay={siteTooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger>
                         </Checkbox>
-                        <FormControl type="text" placeholder="Add details here"
+                        <FormControl type="text" placeholder="E.g.: Expressing AVR-14 specifically in AVA sufficed to rescue AVA inhibition following tail stimulation."
                                      onClick={() => dispatch(setSiteOfAction(true, siteOfAction.details))}
                                      value={siteOfAction.details}
                                      onChange={(event) => {
@@ -119,7 +119,7 @@ const Expression = () =>{
                                                                                  overlay={timeTooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger>
                         </Checkbox>
-                        <FormControl type="text" placeholder="Add details here"
+                        <FormControl type="text" placeholder="E.g.: CDK-4 regulates size during L3 larval stage in seam cells."
                                      onClick={() => dispatch(setTimeOfAction(true, timeOfAction.details))}
                                      value={timeOfAction.details}
                                      onChange={(event) => {
@@ -162,7 +162,7 @@ const Expression = () =>{
                             <FormControl
                                 type="text"
                                 value={additionalExpr}
-                                placeholder="Add details here (e.g., qPCR, Proteomics)"
+                                placeholder="E.g., qPCR, Proteomics"
                                 onChange={(event) => {
                                     dispatch(setAdditionalExpr(event.target.value));
                                 }}
