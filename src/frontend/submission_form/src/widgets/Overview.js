@@ -118,6 +118,46 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-sm-12">
+                                        <OverlayTrigger overlay={<Tooltip id="tooltip">Submit newly discovered genes to the nomenclature committee for official gene name assignment</Tooltip>}>
+                                            <a 
+                                                href="http://www.wormbase.org/submissions/gene_name.cgi" 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    fontSize: '13px',
+                                                    color: '#0066cc',
+                                                    textDecoration: 'none',
+                                                    borderBottom: '1px solid #0066cc',
+                                                    fontWeight: '500'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.target.style.color = '#004499';
+                                                    e.target.style.borderBottomColor = '#004499';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.target.style.color = '#0066cc';
+                                                    e.target.style.borderBottomColor = '#0066cc';
+                                                }}
+                                                onClick={() => dispatch(setGeneModel())}
+                                            >
+                                                Request New Gene Name <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                            </a>
+                                        </OverlayTrigger>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Panel.Body>
+                </Panel>
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">Gene model updates and gene sequence connection</Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <div className="container-fluid">
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    <OverlayTrigger overlay={<Tooltip id="tooltip">Submit gene-sequence connections, isoform updates, or coding sequence corrections</Tooltip>}>
                                         <a 
                                             href="http://www.wormbase.org/submissions/gene_name.cgi" 
                                             target="_blank" 
@@ -139,45 +179,9 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                                             }}
                                             onClick={() => dispatch(setGeneModel())}
                                         >
-                                            Request New Gene Name <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                            Report Gene-Sequence <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                         </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </Panel.Body>
-                </Panel>
-                <Panel>
-                    <Panel.Heading>
-                        <Panel.Title componentClass="h3">Gene model updates and gene sequence connection</Panel.Title>
-                    </Panel.Heading>
-                    <Panel.Body>
-                        <div className="container-fluid">
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <a 
-                                        href="http://www.wormbase.org/submissions/gene_name.cgi" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            fontSize: '13px',
-                                            color: '#0066cc',
-                                            textDecoration: 'none',
-                                            borderBottom: '1px solid #0066cc',
-                                            fontWeight: '500'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.color = '#004499';
-                                            e.target.style.borderBottomColor = '#004499';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.color = '#0066cc';
-                                            e.target.style.borderBottomColor = '#0066cc';
-                                        }}
-                                        onClick={() => dispatch(setGeneModel())}
-                                    >
-                                        Report Gene-Sequence <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                                    </a>
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                             <div className="row">

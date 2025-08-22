@@ -125,40 +125,44 @@ const PersonSelector = () => {
             </div>
             
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
-                <Button 
-                    className="change-user-btn-subtle"
-                    bsSize="small" 
-                    onClick={() => setShow(true)}
-                    style={{
-                        fontSize: '12px',
-                        padding: '4px 8px'
-                    }}
-                >
-                    Change user
-                </Button>
+                <OverlayTrigger overlay={<Tooltip id="tooltip">Change the submitter to ensure proper attribution of your curation contribution</Tooltip>}>
+                    <Button 
+                        className="change-user-btn-subtle"
+                        bsSize="small" 
+                        onClick={() => setShow(true)}
+                        style={{
+                            fontSize: '12px',
+                            padding: '4px 8px'
+                        }}
+                    >
+                        Change user
+                    </Button>
+                </OverlayTrigger>
                 
-                <a 
-                    href="https://wormbase.org/submissions/person.cgi" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    style={{
-                        fontSize: '13px',
-                        color: '#0066cc',
-                        textDecoration: 'none',
-                        borderBottom: '1px solid #0066cc',
-                        fontWeight: '500'
-                    }}
-                    onMouseOver={(e) => {
-                        e.target.style.color = '#004499';
-                        e.target.style.borderBottomColor = '#004499';
-                    }}
-                    onMouseOut={(e) => {
-                        e.target.style.color = '#0066cc';
-                        e.target.style.borderBottomColor = '#0066cc';
-                    }}
-                >
-                    Request WBPerson <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                </a>
+                <OverlayTrigger overlay={<Tooltip id="tooltip">Register as a WormBase person to receive credit for your curation contributions</Tooltip>}>
+                    <a 
+                        href="https://wormbase.org/submissions/person.cgi" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{
+                            fontSize: '13px',
+                            color: '#0066cc',
+                            textDecoration: 'none',
+                            borderBottom: '1px solid #0066cc',
+                            fontWeight: '500'
+                        }}
+                        onMouseOver={(e) => {
+                            e.target.style.color = '#004499';
+                            e.target.style.borderBottomColor = '#004499';
+                        }}
+                        onMouseOut={(e) => {
+                            e.target.style.color = '#0066cc';
+                            e.target.style.borderBottomColor = '#0066cc';
+                        }}
+                    >
+                        Request WBPerson <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                    </a>
+                </OverlayTrigger>
                 
                 <OverlayTrigger overlay={<Tooltip id="tooltip">Access the author portal to curate information for your other papers</Tooltip>}>
                     <a 
