@@ -3,8 +3,8 @@ import { OverlayTrigger, Tooltip, Glyphicon } from 'react-bootstrap';
 
 const AutoDetectedBadge = () => {
     const tooltip = (
-        <Tooltip id="auto-detected-tooltip">
-            This field is prepopulated by machine learning methods.
+        <Tooltip id="auto-identified-tooltip">
+            This field was automatically populated using AI/machine learning. Please help us verify its accuracy.
         </Tooltip>
     );
 
@@ -29,7 +29,7 @@ const AutoDetectedBadge = () => {
                         fontSize: '14px'
                     }}
                 >⚡</span>
-                Auto-detected
+                Auto-identified
             </span>
         </OverlayTrigger>
     );

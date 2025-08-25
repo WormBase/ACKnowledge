@@ -141,12 +141,11 @@ const Expression = () =>{
             </Panel>
             <Panel>
                 <Panel.Heading>
-                    <Panel.Title componentClass="h3">Microarrays</Panel.Title>
+                    <Panel.Title componentClass="h3">Large-scale gene expression data</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
                     <p>
-                        WormBase regularly imports microarray data from Gene Expression Omnibus. Please submit your
-                        microarray data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
+                        WormBase regularly imports microarray and RNA-seq data from Gene Expression Omnibus. If you haven’t already, please submit your data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
                                               target={"_blank"}>GEO <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
                     </p>
                 </Panel.Body>
