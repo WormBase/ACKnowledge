@@ -146,6 +146,38 @@ emails:
                                   The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
                                   "
 
+  subject_partial_submissions: "ACKnowledge Monthly Partial Submissions Report - {}"
+  content_partial_submissions: "<h2>ACKnowledge Partial Submissions Report - {}</h2>
+                                <p>Papers with incomplete submissions (started but not finished) since {}.</p>
+                                <br/>
+                                <table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse; width: 100%;'>
+                                    <thead>
+                                        <tr style='background-color: #e8e8e8;'>
+                                            <th style='padding: 10px;'>Paper ID</th>
+                                            <th style='padding: 10px;'>Dashboard Link</th>
+                                            <th style='padding: 10px;'>Form Link</th>
+                                            <th style='padding: 10px;'>Widgets Completed</th>
+                                            <th style='padding: 10px;'>Widget Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {}
+                                    </tbody>
+                                </table>
+                                <br/>
+                                <p><b>Total partial submissions: {}</b></p>
+                                <br/>
+                                <p style='font-size: 0.9em; color: #666;'>
+                                ✓ = Widget completed<br/>
+                                ○ = Widget not completed<br/>
+                                <br/>
+                                This report includes all papers with partial data entry since the specified date.
+                                </p>"
+
+  partial_submissions_recipients:
+    - "daniela@wormbase.org"
+    - "vanauken@caltech.edu"
+
 ntt_extraction:
   min_occurrences:
     gene: 1
