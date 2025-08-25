@@ -147,7 +147,7 @@ const Expression = () =>{
                     <p>
                         WormBase regularly imports microarray data from Gene Expression Omnibus. Please submit your
                         microarray data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
-                                              target={"_blank"}>GEO</a>
+                                              target={"_blank"}>GEO <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
                     </p>
                 </Panel.Body>
             </Panel>

@@ -267,29 +267,31 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                               }}><strong>Allele sequence change</strong> <AutoDetectedBadge/></Checkbox>
                                 </div>
                                 <div className="col-sm-5">
-                                    <a 
-                                        href="https://wormbase.org/submissions/allele_sequence.cgi" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            fontSize: '13px',
-                                            color: '#0066cc',
-                                            textDecoration: 'none',
-                                            borderBottom: '1px solid #0066cc',
-                                            fontWeight: '500'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.color = '#004499';
-                                            e.target.style.borderBottomColor = '#004499';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.color = '#0066cc';
-                                            e.target.style.borderBottomColor = '#0066cc';
-                                        }}
-                                        onClick={() => dispatch(setSequenceChange(true, ''))}
-                                    >
-                                        Submit sequence details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                                    </a>
+                                    <OverlayTrigger overlay={<Tooltip id="tooltip">Submit allele sequence changes</Tooltip>}>
+                                        <a
+                                            href="https://wormbase.org/submissions/allele_sequence.cgi"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '13px',
+                                                color: '#0066cc',
+                                                textDecoration: 'none',
+                                                borderBottom: '1px solid #0066cc',
+                                                fontWeight: '500'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.target.style.color = '#004499';
+                                                e.target.style.borderBottomColor = '#004499';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.target.style.color = '#0066cc';
+                                                e.target.style.borderBottomColor = '#0066cc';
+                                            }}
+                                            onClick={() => dispatch(setSequenceChange(true, ''))}
+                                        >
+                                            Submit sequence details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                        </a>
+                                    </OverlayTrigger>
                                 </div>
                             </div>
                         </div>

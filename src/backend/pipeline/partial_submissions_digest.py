@@ -113,35 +113,39 @@ def get_completed_widgets_info(db_manager, paper_id):
         'total_completed': 0
     }
     
-    # Map widget categories to the corresponding database fields
-    # Based on curator_dashboard.py and submission_form.py
-    widget_field_mappings = {
-        "Overview": ["afp_genestudied", "afp_species", "afp_otherspecies"],
+    # Map widget categories to the corresponding database tables
+    # Check for row existence, not content - empty strings still mean the widget was saved
+    widget_table_mappings = {
+        "Overview": ["afp_genestudied", "afp_species", "afp_otherspecies", "afp_structcorr"],
         "Genetics": ["afp_variation", "afp_strain", "afp_structcorr", "afp_seqchange", 
                      "afp_othervariation", "afp_otherstrain"],
         "Reagent": ["afp_transgene", "afp_othertransgene", "afp_antibody", "afp_otherantibody"],
         "Expression": ["afp_otherexpr", "afp_siteaction", "afp_timeaction", "afp_rnaseq", 
                        "afp_additionalexpr"],
-        "Interactions": ["afp_geneprod", "afp_genereg", "afp_geneint", "afp_physint"],
+        "Interactions": ["afp_geneprod", "afp_genereg", "afp_geneint"],
         "Phenotypes": ["afp_newmutant", "afp_rnai", "afp_overexpr", "afp_chemphen", 
                        "afp_envpheno", "afp_catalyticact", "afp_othergenefunc"],
         "Disease": ["afp_humdis"],
         "Comments": ["afp_comment"]
     }
     
-    # Check each widget category
-    for widget_name, field_names in widget_field_mappings.items():
+    # Check each widget category by looking for row existence in tables
+    for widget_name, table_names in widget_table_mappings.items():
         widget_has_data = False
         
-        for field_name in field_names:
+        for table_name in table_names:
             try:
-                # Use _get_single_field as done in curator_dashboard.py
-                field_value = db_manager._get_single_field(paper_id, field_name)
-                if field_value and field_value != 'null':
+                # Check if any rows exist in this table for this paper
+                # Use direct SQL query to check row existence
+                paper_id_clean = paper_id.replace('WBPaper', '') if paper_id.startswith('WBPaper') else paper_id
+                query = f"SELECT COUNT(*) FROM {table_name} WHERE joinkey = %s"
+                result = db_manager.execute_query(query, (paper_id_clean,))
+                
+                if result and result[0][0] > 0:
                     widget_has_data = True
-                    break  # At least one field has data
+                    break  # At least one table has rows
             except Exception as e:
-                logger.debug(f"Could not check field {field_name} for paper {paper_id}: {e}")
+                logger.debug(f"Could not check table {table_name} for paper {paper_id}: {e}")
                 continue
         
         widgets_info['widgets'][widget_name] = widget_has_data
