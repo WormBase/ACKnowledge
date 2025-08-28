@@ -12,6 +12,7 @@ from wbtools.literature.corpus import CorpusManager
 
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import *
+from src.backend.pipeline.obsolete_strains_filter import ObsoleteStrainsFilter
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +120,12 @@ def main():
     allele_name_id_map = db_manager.generic.get_variation_name_id_map()
     curated_strains = ntt_extractor.get_curated_entities(EntityType.STRAIN, exclude_id_used_as_name=False)
     strain_name_id_map = db_manager.generic.get_strain_name_id_map()
+    
+    # Filter out obsolete strains from AGR API
+    logger.info("Filtering obsolete strains from AGR API")
+    obsolete_strains_filter = ObsoleteStrainsFilter()
+    curated_strains = list(set(curated_strains) - set(
+        obsolete_strains_filter.fetch_obsolete_strain_names(data_provider="WB")))
     curated_transgenes = ntt_extractor.get_curated_entities(EntityType.TRANSGENE, exclude_id_used_as_name=False)
     transgene_name_id_map = db_manager.generic.get_transgene_name_id_map()
     taxon_id_species_name = db_manager.generic.get_taxon_id_names_map()
