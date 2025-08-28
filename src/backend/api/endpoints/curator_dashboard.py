@@ -163,8 +163,12 @@ class CuratorDashboardReader:
         afp_otherantibodies = " | ".join([elem['name'] for elem in
                                           json.loads(otherantibodies) if
                                           elem["name"] != ""]) if otherantibodies and otherantibodies != 'null' else ""
+        otherspecies = self.db._get_single_field(paper_id, "afp_otherspecies")
+        afp_newspecies = " | ".join([elem['name'] for elem in json.loads(otherspecies)]) if \
+            otherspecies and otherspecies != 'null' else ""
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
-                "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies}
+                "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies,
+                "afp_newspecies": afp_newspecies}
 
     def get_text_from_pdfs(self, paper_id):
         cm = CorpusManager()

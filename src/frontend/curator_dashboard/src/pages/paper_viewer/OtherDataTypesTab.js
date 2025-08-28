@@ -48,6 +48,12 @@ const OtherDataTypesTab = () => {
                             <hr/>
                         </div>
                     </div>
+                    <ManualEntityRow title="New Species" afpEntityList={queryRes.data.afp_newspecies}/>
+                    <div className="row">
+                        <div className="col-sm-12">
+                            <hr/>
+                        </div>
+                    </div>
                 </div>
                 : null}
         </div>
