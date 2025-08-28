@@ -194,7 +194,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                             addItemFunction={(species) => dispatch(addSpecies(species))}
                             remItemFunction={(species) => dispatch(removeSpecies(species))}
                             searchType={"species"}
-                            defaultExactMatchOnly={true}
+                            defaultExactMatchOnly={false}
                             exactMatchTooltip={'Species searches require exact matches for accuracy'}
                             autocompletePlaceholder={"Type species names, one per line. For example:\nCaenorhabditis elegans\nCaenorhabditis briggsae\nDrosophila melanogaster"}
                             showIdToggle={false}
