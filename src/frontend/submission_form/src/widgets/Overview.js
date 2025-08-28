@@ -181,7 +181,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Species in the paper <OverlayTrigger placement="top"
+                        <Panel.Title componentClass="h3">Species experimentally studied in the paper <OverlayTrigger placement="top"
                                                                                               overlay={speciesTooltip}>
                             <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
