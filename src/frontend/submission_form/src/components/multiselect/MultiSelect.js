@@ -327,7 +327,7 @@ const MultiSelect = (props) => {
                 <Alert bsStyle="warning" style={{marginBottom: '12px'}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                         <span>
-                            <strong>Removal Mode:</strong> Click on items below to select them for removal
+                            <strong>Removal Mode:</strong> Click on items to select them (yellow highlight), then click "Remove Selected"
                         </span>
                         <div style={{display: 'flex', gap: '5px'}}>
                             <Button 
@@ -416,11 +416,11 @@ const MultiSelect = (props) => {
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                         borderRadius: '3px',
-                                        backgroundColor: isSelectedForRemoval ? '#f8d7da' : 
+                                        backgroundColor: isSelectedForRemoval ? '#fff3cd' : 
                                                         isNewlyAdded ? '#d4edda' : '#f5f5f5',
-                                        border: `1px solid ${isSelectedForRemoval ? '#dc3545' : 
+                                        border: `1px solid ${isSelectedForRemoval ? '#ffc107' : 
                                                               isNewlyAdded ? '#28a745' : '#868e96'}`,
-                                        color: isSelectedForRemoval ? '#721c24' : 
+                                        color: isSelectedForRemoval ? '#856404' : 
                                                isNewlyAdded ? '#155724' : '#343a40',
                                         boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                                         transition: 'all 0.2s ease'

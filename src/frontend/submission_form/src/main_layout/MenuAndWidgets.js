@@ -229,10 +229,10 @@ const MenuAndWidgets = (props) => {
                             overlay={
                                 <Tooltip id="save-progress-tooltip">
                                     {allSectionsExceptCommentsSaved && !isOnCommentsWidget
-                                        ? <strong>All sections are complete! Click here to go to the Comments section and finalize your submission to WormBase.</strong>
+                                        ? <strong>All sections are complete! Click here to proceed to the Comments section where you can finalize your submission to WormBase.</strong>
                                         : !hasAnyChanges 
                                             ? "No unsaved changes to save."
-                                            : "Saves your current progress across all sections that have changes (except Comments). To finalize and submit your data, click 'Finish and Submit' in the Comments section."
+                                            : "Saves your current progress across all sections that have changes (except Comments). When all sections are complete, you can finalize your submission in the Comments section."
                                     }
                                 </Tooltip>
                             }
@@ -265,7 +265,7 @@ const MenuAndWidgets = (props) => {
                                 disabled={!hasAnyChanges && !(allSectionsExceptCommentsSaved && !isOnCommentsWidget)}
                             >
                                 <Glyphicon glyph={(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "send" : "cloud-upload"} style={{marginRight: '6px'}} />
-                                {(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "FINISH AND SUBMIT" : "Save current progress"}
+                                {(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "FINALIZE SUBMISSION" : "Save current progress"}
                             </Button>
                         </OverlayTrigger>
                     </div>
