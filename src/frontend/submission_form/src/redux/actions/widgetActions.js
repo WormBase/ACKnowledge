@@ -211,12 +211,11 @@ export const saveAllUnsavedWidgets = () => {
         // Check and save Genetics if it has changes
         if (hasWidgetChanges(state.genetics)) {
             const geneticsPayload = {
-                alleles: transformEntitiesIntoAfpString((state.genetics.alleles && state.genetics.alleles.elements) || [], "WBVar"),
-                new_alleles: (state.genetics.newAlleles || []).map(allele => allele.name + "####" + allele.species).join("\n"),
-                strains: transformEntitiesIntoAfpString((state.genetics.strains && state.genetics.strains.elements) || [], "WBStrain"),
-                new_strains: (state.genetics.newStrains || []).map(strain => strain.name + "####" + strain.species + "####" + strain.genotype).join("\n"),
-                allele_seq_change: getCheckboxDBVal((state.genetics.sequenceChange && state.genetics.sequenceChange.checked) || false, (state.genetics.sequenceChange && state.genetics.sequenceChange.details) || ""),
-                person_id: "two" + person.personId,
+                alleles_list: transformEntitiesIntoAfpString((state.genetics.alleles && state.genetics.alleles.elements) || [], ""),
+                allele_seq_change: getCheckboxDBVal((state.genetics.sequenceChange && state.genetics.sequenceChange.checked) || false),
+                other_alleles: JSON.stringify((state.genetics.otherAlleles && state.genetics.otherAlleles.elements) || []),
+                strains_list: transformEntitiesIntoAfpString((state.genetics.strains && state.genetics.strains.elements) || [], ""),
+                other_strains: JSON.stringify((state.genetics.otherStrains && state.genetics.otherStrains.elements) || []),
                 passwd: paperPassword
             };
             promises.push({
@@ -228,11 +227,10 @@ export const saveAllUnsavedWidgets = () => {
         // Check and save Reagent if it has changes
         if (hasWidgetChanges(state.reagent)) {
             const reagentPayload = {
-                transgenes: transformEntitiesIntoAfpString((state.reagent.transgenes && state.reagent.transgenes.elements) || [], "WBTransgene"),
-                new_transgenes: (state.reagent.newTransgenes && typeof state.reagent.newTransgenes === 'string') ? state.reagent.newTransgenes : "",
-                antibodies: transformEntitiesIntoAfpString((state.reagent.antibodies && state.reagent.antibodies.elements) || [], ""),
-                new_antibodies: (state.reagent.newAntibodies && typeof state.reagent.newAntibodies === 'string') ? state.reagent.newAntibodies : "",
-                person_id: "two" + person.personId,
+                transgenes_list: transformEntitiesIntoAfpString((state.reagent.transgenes && state.reagent.transgenes.elements) || [], ""),
+                new_transgenes: JSON.stringify((state.reagent.otherTransgenes && state.reagent.otherTransgenes.elements) || []),
+                new_antibody: getCheckboxDBVal((state.reagent.newAntibodies && state.reagent.newAntibodies.checked) || false, (state.reagent.newAntibodies && state.reagent.newAntibodies.details) || ""),
+                other_antibodies: JSON.stringify((state.reagent.otherAntibodies && state.reagent.otherAntibodies.elements) || []),
                 passwd: paperPassword
             };
             promises.push({
@@ -244,14 +242,10 @@ export const saveAllUnsavedWidgets = () => {
         // Check and save Expression if it has changes
         if (hasWidgetChanges(state.expression)) {
             const expressionPayload = {
-                anatomical_expr: getCheckboxDBVal((state.expression.expression && state.expression.expression.checked) || false, (state.expression.expression && state.expression.expression.details) || ""),
+                anatomic_expr: getCheckboxDBVal((state.expression.expression && state.expression.expression.checked) || false, (state.expression.expression && state.expression.expression.details) || ""),
                 site_action: getCheckboxDBVal((state.expression.siteOfAction && state.expression.siteOfAction.checked) || false, (state.expression.siteOfAction && state.expression.siteOfAction.details) || ""),
                 time_action: getCheckboxDBVal((state.expression.timeOfAction && state.expression.timeOfAction.checked) || false, (state.expression.timeOfAction && state.expression.timeOfAction.details) || ""),
                 additional_expr: getCheckboxDBVal((state.expression.additionalExpr && state.expression.additionalExpr.checked) || false, (state.expression.additionalExpr && state.expression.additionalExpr.details) || ""),
-                new_anatomical_terms: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.anatomical_term && typeof state.expression.otherExpressionEntities.anatomical_term === 'string') ? state.expression.otherExpressionEntities.anatomical_term.replace(/\n/g, ", ") : "",
-                new_life_stage: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.life_stage && typeof state.expression.otherExpressionEntities.life_stage === 'string') ? state.expression.otherExpressionEntities.life_stage.replace(/\n/g, ", ") : "",
-                new_cellular_component: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.cellular_component && typeof state.expression.otherExpressionEntities.cellular_component === 'string') ? state.expression.otherExpressionEntities.cellular_component.replace(/\n/g, ", ") : "",
-                person_id: "two" + person.personId,
                 passwd: paperPassword
             };
             promises.push({
@@ -278,16 +272,13 @@ export const saveAllUnsavedWidgets = () => {
         // Check and save Phenotypes if it has changes
         if (hasWidgetChanges(state.phenotypes)) {
             const phenotypesPayload = {
-                allele_pheno: getCheckboxDBVal((state.phenotypes.allelePheno && state.phenotypes.allelePheno.checked) || false, (state.phenotypes.allelePheno && state.phenotypes.allelePheno.details) || ""),
-                rnai_pheno: getCheckboxDBVal((state.phenotypes.rnaiPheno && state.phenotypes.rnaiPheno.checked) || false, (state.phenotypes.rnaiPheno && state.phenotypes.rnaiPheno.details) || ""),
-                overexpression_pheno: getCheckboxDBVal((state.phenotypes.overexprPheno && state.phenotypes.overexprPheno.checked) || false, (state.phenotypes.overexprPheno && state.phenotypes.overexprPheno.details) || ""),
-                chem: getCheckboxDBVal((state.phenotypes.chemPheno && state.phenotypes.chemPheno.checked) || false, (state.phenotypes.chemPheno && state.phenotypes.chemPheno.details) || ""),
+                allele_pheno: getCheckboxDBVal((state.phenotypes.allelePheno && state.phenotypes.allelePheno.checked) || false),
+                rnai_pheno: getCheckboxDBVal((state.phenotypes.rnaiPheno && state.phenotypes.rnaiPheno.checked) || false),
+                transover_pheno: getCheckboxDBVal((state.phenotypes.overexprPheno && state.phenotypes.overexprPheno.checked) || false),
+                chemical: getCheckboxDBVal((state.phenotypes.chemPheno && state.phenotypes.chemPheno.checked) || false, (state.phenotypes.chemPheno && state.phenotypes.chemPheno.details) || ""),
                 env: getCheckboxDBVal((state.phenotypes.envPheno && state.phenotypes.envPheno.checked) || false, (state.phenotypes.envPheno && state.phenotypes.envPheno.details) || ""),
                 protein: getCheckboxDBVal((state.phenotypes.enzymaticAct && state.phenotypes.enzymaticAct.checked) || false, (state.phenotypes.enzymaticAct && state.phenotypes.enzymaticAct.details) || ""),
                 othergenefunc: getCheckboxDBVal((state.phenotypes.othergenefunc && state.phenotypes.othergenefunc.checked) || false, (state.phenotypes.othergenefunc && state.phenotypes.othergenefunc.details) || ""),
-                new_worm_phenotypes: (state.phenotypes.otherPhenotypes && state.phenotypes.otherPhenotypes.worm_phenotypes && typeof state.phenotypes.otherPhenotypes.worm_phenotypes === 'string') ? state.phenotypes.otherPhenotypes.worm_phenotypes.replace(/\n/g, ", ") : "",
-                new_phenotype_entity: (state.phenotypes.otherPhenotypes && state.phenotypes.otherPhenotypes.phenotype_entity && typeof state.phenotypes.otherPhenotypes.phenotype_entity === 'string') ? state.phenotypes.otherPhenotypes.phenotype_entity.replace(/\n/g, ", ") : "",
-                person_id: "two" + person.personId,
                 passwd: paperPassword
             };
             promises.push({
@@ -300,7 +291,7 @@ export const saveAllUnsavedWidgets = () => {
         if (hasWidgetChanges(state.disease)) {
             const diseasePayload = {
                 disease: getCheckboxDBVal((state.disease.disease && state.disease.disease.checked) || false, (state.disease.disease && state.disease.disease.details) || ""),
-                disease_list: (Array.isArray(state.disease.diseaseNames) ? state.disease.diseaseNames : []).join(" | "),
+                disease_list: Array.isArray(state.disease.diseaseNames) ? state.disease.diseaseNames : [],
                 person_id: "two" + person.personId,
                 passwd: paperPassword
             };
