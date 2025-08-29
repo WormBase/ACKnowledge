@@ -74,7 +74,8 @@ const Expression = () =>{
                     <Panel.Title componentClass="h3">Expression data in the paper</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                    <Form>
+                    <div className="container-fluid">
+                        <Form>
                         <Checkbox checked={expression.checked} onClick={() => dispatch(toggleExpression())}>
                             <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
                                                                                                       overlay={tooltip}>
@@ -121,7 +122,8 @@ const Expression = () =>{
                                          dispatch(setAdditionalExpr(true, event.target.value));
                                      }}
                         />
-                    </Form>
+                        </Form>
+                    </div>
                 </Panel.Body>
             </Panel>
             <Panel>

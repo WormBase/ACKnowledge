@@ -7,6 +7,24 @@ import {showSectionsNotCompleted} from "../redux/actions/displayActions";
 import {WIDGET} from "../constants";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 
+// CSS animation for the pulsing finish button
+const pulseAnimation = `
+    @keyframes pulse-glow {
+        0% {
+            box-shadow: 0 0 5px rgba(92, 184, 92, 0.7), 0 0 10px rgba(92, 184, 92, 0.4);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(92, 184, 92, 0.9), 0 0 30px rgba(92, 184, 92, 0.6), 0 0 40px rgba(92, 184, 92, 0.3);
+            transform: scale(1.02);
+        }
+        100% {
+            box-shadow: 0 0 5px rgba(92, 184, 92, 0.7), 0 0 10px rgba(92, 184, 92, 0.4);
+            transform: scale(1);
+        }
+    }
+`;
+
 const Other = () => {
     const dispatch = useDispatch();
 
@@ -179,20 +197,73 @@ const Other = () => {
                     </Panel.Body>
                 </Panel>
             </form>
-            <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    if (allOtherWidgetsSavedToDB) {
-                        const payload = {
-                            comments: comments,
-                            person_id: "two" + person.personId,
-                            passwd: paperPassword
-                        };
-                        dispatch(saveWidgetData(payload, WIDGET.COMMENTS));
-                    } else {
-                        dispatch(showSectionsNotCompleted());
+            <div align="right" style={{position: 'relative'}}>
+                {/* Add the animation styles */}
+                <style>{pulseAnimation}</style>
+                
+                {/* Show a badge when ready to submit */}
+                {allOtherWidgetsSavedToDB && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        backgroundColor: '#d9534f',
+                        color: 'white',
+                        borderRadius: '50%',
+                        width: '20px',
+                        height: '20px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        zIndex: 1,
+                        animation: 'pulse-glow 2s infinite'
+                    }}>!</div>
+                )}
+                
+                <OverlayTrigger 
+                    placement="left" 
+                    overlay={
+                        <Tooltip id="submit-tooltip">
+                            {allOtherWidgetsSavedToDB 
+                                ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
+                                : "Please complete and save all other sections before submitting."
+                            }
+                        </Tooltip>
                     }
-                }}>Finish and submit
-                </Button>
+                >
+                    <Button 
+                        bsStyle={allOtherWidgetsSavedToDB ? "success" : "primary"} 
+                        bsSize={allOtherWidgetsSavedToDB ? "large" : "small"}
+                        onClick={() => {
+                            if (allOtherWidgetsSavedToDB) {
+                                const payload = {
+                                    comments: comments,
+                                    person_id: "two" + person.personId,
+                                    passwd: paperPassword
+                                };
+                                dispatch(saveWidgetData(payload, WIDGET.COMMENTS));
+                            } else {
+                                dispatch(showSectionsNotCompleted());
+                            }
+                        }}
+                        style={{
+                            ...(allOtherWidgetsSavedToDB ? {
+                                animation: 'pulse-glow 2s infinite',
+                                fontSize: '16px',
+                                fontWeight: 'bold',
+                                padding: '10px 15px',
+                                border: '2px solid #4cae4c',
+                                position: 'relative',
+                                overflow: 'visible'
+                            } : {})
+                        }}
+                    >
+                        <Glyphicon glyph={allOtherWidgetsSavedToDB ? "send" : "save"} style={{marginRight: '6px'}} />
+                        {allOtherWidgetsSavedToDB ? "FINISH AND SUBMIT" : "Finish and submit"}
+                    </Button>
+                </OverlayTrigger>
             </div>
         </div>
     );
