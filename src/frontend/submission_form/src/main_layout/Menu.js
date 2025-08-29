@@ -57,11 +57,19 @@ const Menu = ({urlQuery}) => {
                (widgetState.addedGenes && widgetState.addedGenes.length > 0) ||
                (widgetState.addedSpecies && widgetState.addedSpecies.length > 0) ||
                (widgetState.addedAlleles && widgetState.addedAlleles.length > 0) ||
+               (widgetState.addedStrains && widgetState.addedStrains.length > 0) ||
                (widgetState.newAlleles && widgetState.newAlleles.length > 0) ||
                (widgetState.newStrains && widgetState.newStrains.length > 0) ||
-               (widgetState.newTransgenes && typeof widgetState.newTransgenes === 'string' && widgetState.newTransgenes.trim() !== '') ||
-               (widgetState.newAntibodies && typeof widgetState.newAntibodies === 'string' && widgetState.newAntibodies.trim() !== '') ||
+               (widgetState.addedTransgenes && widgetState.addedTransgenes.length > 0) ||
+               (widgetState.addedDiseaseNames && widgetState.addedDiseaseNames.length > 0) ||
+               (widgetState.newAntibodies && widgetState.newAntibodies.checked) ||
                (widgetState.comments && typeof widgetState.comments === 'string' && widgetState.comments.trim() !== '') ||
+               // Check text fields for new entities
+               (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.anatomical_term && typeof widgetState.otherExpressionEntities.anatomical_term === 'string' && widgetState.otherExpressionEntities.anatomical_term.trim() !== '') ||
+               (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.life_stage && typeof widgetState.otherExpressionEntities.life_stage === 'string' && widgetState.otherExpressionEntities.life_stage.trim() !== '') ||
+               (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.cellular_component && typeof widgetState.otherExpressionEntities.cellular_component === 'string' && widgetState.otherExpressionEntities.cellular_component.trim() !== '') ||
+               (widgetState.otherPhenotypes && widgetState.otherPhenotypes.worm_phenotypes && typeof widgetState.otherPhenotypes.worm_phenotypes === 'string' && widgetState.otherPhenotypes.worm_phenotypes.trim() !== '') ||
+               (widgetState.otherPhenotypes && widgetState.otherPhenotypes.phenotype_entity && typeof widgetState.otherPhenotypes.phenotype_entity === 'string' && widgetState.otherPhenotypes.phenotype_entity.trim() !== '') ||
                // Check checkboxes for various widgets
                (widgetState.geneModel && widgetState.geneModel.checked) ||
                (widgetState.sequenceChange && widgetState.sequenceChange.checked) ||
