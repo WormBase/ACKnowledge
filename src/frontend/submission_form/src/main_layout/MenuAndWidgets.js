@@ -12,6 +12,24 @@ import {setSelectedWidget, saveAllUnsavedWidgets} from "../redux/actions/widgetA
 import WidgetArea from "./WidgetArea";
 import {Button, Glyphicon, OverlayTrigger, Tooltip} from "react-bootstrap";
 
+// CSS animation for the pulsing finish button
+const pulseAnimation = `
+    @keyframes pulse-glow {
+        0% {
+            box-shadow: 0 0 5px rgba(92, 184, 92, 0.7), 0 0 10px rgba(92, 184, 92, 0.4);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(92, 184, 92, 0.9), 0 0 30px rgba(92, 184, 92, 0.6), 0 0 40px rgba(92, 184, 92, 0.3);
+            transform: scale(1.02);
+        }
+        100% {
+            box-shadow: 0 0 5px rgba(92, 184, 92, 0.7), 0 0 10px rgba(92, 184, 92, 0.4);
+            transform: scale(1);
+        }
+    }
+`;
+
 const MenuAndWidgets = (props) => {
     const dispatch = useDispatch();
     const currentLocation = props.location.pathname;
@@ -128,6 +146,9 @@ const MenuAndWidgets = (props) => {
         state.phenotypes.isSavedToDB &&
         state.disease.isSavedToDB
     );
+    
+    // Check if we're currently on the Comments widget
+    const isOnCommentsWidget = selectedWidget === MENU_INDEX[WIDGET.COMMENTS];
 
     // Check if any section has unsaved changes (excluding Comments - final submission only)
     const hasAnyChanges = useSelector((state) => 
@@ -178,13 +199,37 @@ const MenuAndWidgets = (props) => {
                             <PersonSelector/>
                         </div>
                     </div>
-                    <div style={{marginBottom: '10px'}}>
+                    <div style={{marginBottom: '10px', position: 'relative'}}>
+                        {/* Add the animation styles */}
+                        <style>{pulseAnimation}</style>
+                        
+                        {/* Show a badge when ready to submit (but not if already on Comments) */}
+                        {allSectionsExceptCommentsSaved && !isOnCommentsWidget && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                right: '-8px',
+                                backgroundColor: '#d9534f',
+                                color: 'white',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                                zIndex: 1,
+                                animation: 'pulse-glow 2s infinite'
+                            }}>!</div>
+                        )}
+                        
                         <OverlayTrigger 
                             placement="right" 
                             overlay={
                                 <Tooltip id="save-progress-tooltip">
-                                    {allSectionsExceptCommentsSaved 
-                                        ? "All sections are complete! Click here to go to the Comments section and finalize your submission to WormBase."
+                                    {allSectionsExceptCommentsSaved && !isOnCommentsWidget
+                                        ? <strong>🎉 All sections are complete! Click here to go to the Comments section and finalize your submission to WormBase.</strong>
                                         : !hasAnyChanges 
                                             ? "No unsaved changes to save."
                                             : "Saves your current progress across all sections that have changes (except Comments). To finalize and submit your data, click 'Finish and Submit' in the Comments section."
@@ -193,10 +238,10 @@ const MenuAndWidgets = (props) => {
                             }
                         >
                             <Button 
-                                bsStyle={allSectionsExceptCommentsSaved ? "success" : "primary"}
-                                bsSize="small" 
+                                bsStyle={(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "success" : "primary"}
+                                bsSize={(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "large" : "small"}
                                 onClick={() => {
-                                    if (allSectionsExceptCommentsSaved) {
+                                    if (allSectionsExceptCommentsSaved && !isOnCommentsWidget) {
                                         // Navigate to Comments section for final submission
                                         dispatch(setSelectedWidget(MENU_INDEX[WIDGET.COMMENTS]));
                                         props.history.push(WIDGET.COMMENTS + props.location.search);
@@ -205,11 +250,22 @@ const MenuAndWidgets = (props) => {
                                         dispatch(saveAllUnsavedWidgets());
                                     }
                                 }}
-                                style={{width: '100%'}}
-                                disabled={!hasAnyChanges && !allSectionsExceptCommentsSaved}
+                                style={{
+                                    width: '100%',
+                                    ...((allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? {
+                                        animation: 'pulse-glow 2s infinite',
+                                        fontSize: '16px',
+                                        fontWeight: 'bold',
+                                        padding: '10px 15px',
+                                        border: '2px solid #4cae4c',
+                                        position: 'relative',
+                                        overflow: 'visible'
+                                    } : {})
+                                }}
+                                disabled={!hasAnyChanges && !(allSectionsExceptCommentsSaved && !isOnCommentsWidget)}
                             >
-                                <Glyphicon glyph={allSectionsExceptCommentsSaved ? "check" : "cloud-upload"} style={{marginRight: '6px'}} />
-                                {allSectionsExceptCommentsSaved ? "Finish and submit" : "Save current progress"}
+                                <Glyphicon glyph={(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "send" : "cloud-upload"} style={{marginRight: '6px'}} />
+                                {(allSectionsExceptCommentsSaved && !isOnCommentsWidget) ? "FINISH AND SUBMIT" : "Save current progress"}
                             </Button>
                         </OverlayTrigger>
                     </div>
