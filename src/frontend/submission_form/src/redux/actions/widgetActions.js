@@ -289,8 +289,12 @@ export const saveAllUnsavedWidgets = () => {
         
         // Check and save Disease if it has changes
         if (hasWidgetChanges(state.disease)) {
+            // Don't pass "checked" as details - it's a legacy value that should be treated as empty
+            const diseaseDetails = (state.disease.disease && state.disease.disease.details && state.disease.disease.details !== "checked") 
+                ? state.disease.disease.details 
+                : "";
             const diseasePayload = {
-                disease: getCheckboxDBVal((state.disease.disease && state.disease.disease.checked) || false, (state.disease.disease && state.disease.disease.details) || ""),
+                disease: getCheckboxDBVal((state.disease.disease && state.disease.disease.checked) || false, diseaseDetails),
                 disease_list: Array.isArray(state.disease.diseaseNames) ? state.disease.diseaseNames : [],
                 person_id: "two" + person.personId,
                 passwd: paperPassword
