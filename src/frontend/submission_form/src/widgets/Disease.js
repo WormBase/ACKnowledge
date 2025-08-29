@@ -106,8 +106,8 @@ Diabetes"
                         <div className="row">
                             <div className="col-sm-12">
                                 <FormControl componentClass="textarea" multiple
-                                             value={disease.details}
-                                             onClick={() => dispatch(setDisease(true, disease.details))}
+                                             value={disease.details === "checked" ? "" : disease.details}
+                                             onClick={() => dispatch(setDisease(true, disease.details === "checked" ? "" : disease.details))}
                                              onChange={(event) => {
                                                  dispatch(setDisease(true, event.target.value));
                                              }}
@@ -125,8 +125,10 @@ Diabetes"
                         return;
                     }
                     
+                    // Filter out "checked" from details - it's a legacy value
+                    const diseaseDetails = (disease.details === "checked") ? "" : disease.details;
                     const payload = {
-                        disease: getCheckboxDBVal(disease.checked, disease.details),
+                        disease: getCheckboxDBVal(disease.checked, diseaseDetails),
                         disease_list: diseaseNames,
                         person_id: "two" + person.personId,
                         passwd: paperPassword

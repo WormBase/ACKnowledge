@@ -190,7 +190,9 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                     }
                 } catch (e) {
                     // Fallback to old format for backward compatibility
-                    dispatch(setDisease(disease.isChecked(), disease.details() || ""));
+                    // Filter out "checked" as it's a legacy value that shouldn't be shown as text
+                    const details = disease.details() === "checked" ? "" : (disease.details() || "");
+                    dispatch(setDisease(disease.isChecked(), details));
                     diseaseList = [];
                 }
                 
