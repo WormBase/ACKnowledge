@@ -8,8 +8,9 @@ import {MENU_INDEX, pages, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
 import {hideDataSaved, hideSectionsNotCompleted} from "../redux/actions/displayActions";
 import Menu from "./Menu";
-import {setSelectedWidget} from "../redux/actions/widgetActions";
+import {setSelectedWidget, saveAllUnsavedWidgets} from "../redux/actions/widgetActions";
 import WidgetArea from "./WidgetArea";
+import {Button, Glyphicon, OverlayTrigger, Tooltip} from "react-bootstrap";
 
 const MenuAndWidgets = (props) => {
     const dispatch = useDispatch();
@@ -21,6 +22,81 @@ const MenuAndWidgets = (props) => {
     const [showCompletedModal, setShowCompletedModal] = useState(false);
     const [initialPerson, setInitialPerson] = useState(null);
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
+
+    // Utility function to check if a widget has changes (same as in Menu.js)
+    const hasWidgetChanges = (widgetState) => {
+        if (!widgetState) return false;
+        // If saved to DB, no changes needed
+        if (widgetState.isSavedToDB) return false;
+        
+        // Helper function to compare arrays
+        const arraysEqual = (a = [], b = []) => {
+            if (a.length !== b.length) return false;
+            const setA = new Set(a);
+            const setB = new Set(b);
+            return setA.size === setB.size && [...setA].every(x => setB.has(x));
+        };
+        
+        // Check for changes by comparing current state with saved state
+        let hasChanges = false;
+        
+        // For Overview widget
+        if (widgetState.genes && widgetState.savedGenes) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.genes.elements, widgetState.savedGenes);
+        }
+        if (widgetState.species && widgetState.savedSpecies) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.species.elements, widgetState.savedSpecies);
+        }
+        
+        // For Genetics widget
+        if (widgetState.alleles && widgetState.savedAlleles) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.alleles.elements, widgetState.savedAlleles);
+        }
+        if (widgetState.strains && widgetState.savedStrains) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.strains.elements, widgetState.savedStrains);
+        }
+        
+        // For Reagent widget  
+        if (widgetState.transgenes && widgetState.savedTransgenes) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.transgenes.elements, widgetState.savedTransgenes);
+        }
+        
+        // For Disease widget
+        if (widgetState.diseaseNames && widgetState.savedDiseaseNames) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.diseaseNames, widgetState.savedDiseaseNames);
+        }
+        
+        // Check for other changes
+        hasChanges = hasChanges ||
+               (widgetState.addedGenes && widgetState.addedGenes.length > 0) ||
+               (widgetState.addedSpecies && widgetState.addedSpecies.length > 0) ||
+               (widgetState.addedAlleles && widgetState.addedAlleles.length > 0) ||
+               (widgetState.newAlleles && widgetState.newAlleles.length > 0) ||
+               (widgetState.newStrains && widgetState.newStrains.length > 0) ||
+               (widgetState.newTransgenes && typeof widgetState.newTransgenes === 'string' && widgetState.newTransgenes.trim() !== '') ||
+               (widgetState.newAntibodies && typeof widgetState.newAntibodies === 'string' && widgetState.newAntibodies.trim() !== '') ||
+               (widgetState.comments && typeof widgetState.comments === 'string' && widgetState.comments.trim() !== '') ||
+               // Check checkboxes for various widgets
+               (widgetState.geneModel && widgetState.geneModel.checked) ||
+               (widgetState.sequenceChange && widgetState.sequenceChange.checked) ||
+               (widgetState.expression && widgetState.expression.checked) ||
+               (widgetState.siteOfAction && widgetState.siteOfAction.checked) ||
+               (widgetState.timeOfAction && widgetState.timeOfAction.checked) ||
+               (widgetState.additionalExpr && widgetState.additionalExpr.checked) ||
+               (widgetState.geneint && widgetState.geneint.checked) ||
+               (widgetState.geneprod && widgetState.geneprod.checked) ||
+               (widgetState.genereg && widgetState.genereg.checked) ||
+               (widgetState.allelePheno && widgetState.allelePheno.checked) ||
+               (widgetState.rnaiPheno && widgetState.rnaiPheno.checked) ||
+               (widgetState.overexprPheno && widgetState.overexprPheno.checked) ||
+               (widgetState.chemPheno && widgetState.chemPheno.checked) ||
+               (widgetState.envPheno && widgetState.envPheno.checked) ||
+               (widgetState.enzymaticAct && widgetState.enzymaticAct.checked) ||
+               (widgetState.othergenefunc && widgetState.othergenefunc.checked) ||
+               (widgetState.disease && widgetState.disease.checked);
+               
+        return hasChanges;
+    };
     
     // Check if all sections are saved
     const allSectionsSaved = useSelector((state) => 
@@ -32,6 +108,18 @@ const MenuAndWidgets = (props) => {
         state.phenotypes.isSavedToDB &&
         state.disease.isSavedToDB &&
         state.comments.isSavedToDB
+    );
+
+    // Check if any section has unsaved changes (excluding Comments - final submission only)
+    const hasAnyChanges = useSelector((state) => 
+        hasWidgetChanges(state.overview) ||
+        hasWidgetChanges(state.genetics) ||
+        hasWidgetChanges(state.reagent) ||
+        hasWidgetChanges(state.expression) ||
+        hasWidgetChanges(state.interactions) ||
+        hasWidgetChanges(state.phenotypes) ||
+        hasWidgetChanges(state.disease)
+        // Comments excluded - saving it triggers final submission
     );
     
     // Get the current person from state
@@ -70,6 +158,30 @@ const MenuAndWidgets = (props) => {
                         <div className="panel-body" style={{padding: '8px'}}>
                             <PersonSelector/>
                         </div>
+                    </div>
+                    <div style={{marginBottom: '10px'}}>
+                        <OverlayTrigger 
+                            placement="right" 
+                            overlay={
+                                <Tooltip id="save-progress-tooltip">
+                                    {!hasAnyChanges 
+                                        ? "No unsaved changes to save."
+                                        : "Saves your current progress across all sections that have changes (except Comments). To finalize and submit your data, click 'Finish and Submit' in the Comments section."
+                                    }
+                                </Tooltip>
+                            }
+                        >
+                            <Button 
+                                bsStyle="primary" 
+                                bsSize="small" 
+                                onClick={() => dispatch(saveAllUnsavedWidgets())}
+                                style={{width: '100%'}}
+                                disabled={!hasAnyChanges}
+                            >
+                                <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
+                                Save current progress
+                            </Button>
+                        </OverlayTrigger>
                     </div>
                     <Menu urlQuery={props.location.search}/>
                 </div>

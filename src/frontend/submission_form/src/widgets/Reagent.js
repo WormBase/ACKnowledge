@@ -60,21 +60,6 @@ const Reagent = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    const payload = {
-                        transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
-                        new_transgenes: JSON.stringify(otherTransgenes),
-                        new_antibody: getCheckboxDBVal(newAntibodies.checked, newAntibodies.details),
-                        other_antibodies: JSON.stringify(otherAntibodies),
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.REAGENT));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <form>
                 <Panel>
                     <Panel.Heading>

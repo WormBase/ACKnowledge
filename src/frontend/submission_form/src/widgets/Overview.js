@@ -17,7 +17,7 @@ import {
 } from "../redux/actions/overviewActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
-import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
+import {saveWidgetData} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
@@ -81,22 +81,6 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    const payload = {
-                        gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
-                        gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
-                        species_list: transformEntitiesIntoAfpString(species, ""),
-                        other_species: JSON.stringify(otherSpecies),
-                        person_id: "two" + person.personId,
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.OVERVIEW));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <form>
                 <Panel>
                     <Panel.Heading>

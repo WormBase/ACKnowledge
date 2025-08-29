@@ -171,22 +171,6 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
-                        alleles_list: transformEntitiesIntoAfpString(alleles, ""),
-                        allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
-                        other_alleles: JSON.stringify(otherAlleles),
-                        strains_list: transformEntitiesIntoAfpString(strains, ""),
-                        other_strains: JSON.stringify(otherStrains),
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.GENETICS));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <form>
                 <Panel>
                     <Panel.Heading>

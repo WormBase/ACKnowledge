@@ -44,24 +44,6 @@ const Phenotypes = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
-                        allele_pheno: getCheckboxDBVal(allelePheno.checked),
-                        rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
-                        transover_pheno: getCheckboxDBVal(overexprPheno.checked),
-                        chemical: getCheckboxDBVal(chemPheno.checked, chemPheno.details),
-                        env: getCheckboxDBVal(envPheno.checked, envPheno.details),
-                        protein: getCheckboxDBVal(enzymaticAct.checked, enzymaticAct.details),
-                        othergenefunc: getCheckboxDBVal(othergenefunc.checked, othergenefunc.details),
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.PHENOTYPES));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Phenotype data in the paper</Panel.Title>

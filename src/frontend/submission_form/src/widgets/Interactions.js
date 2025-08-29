@@ -54,20 +54,6 @@ const Interactions = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
-                        gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
-                        phys_int: getCheckboxDBVal(geneprod.checked, geneprod.details),
-                        gene_reg: getCheckboxDBVal(genereg.checked, genereg.details),
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.INTERACTIONS));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Interaction data in the paper</Panel.Title>

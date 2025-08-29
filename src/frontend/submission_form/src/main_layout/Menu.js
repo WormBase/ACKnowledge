@@ -1,5 +1,5 @@
 import React from 'react';
-import {Nav, NavItem} from "react-bootstrap";
+import {Nav, NavItem, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
@@ -8,6 +8,106 @@ import {setSelectedWidget} from "../redux/actions/widgetActions";
 
 const Menu = ({urlQuery}) => {
     const dispatch = useDispatch();
+
+    // Utility function to check if a widget has changes
+    const hasWidgetChanges = (widgetState) => {
+        if (!widgetState) return false;
+        // If saved to DB, no changes needed
+        if (widgetState.isSavedToDB) return false;
+        
+        // Helper function to compare arrays
+        const arraysEqual = (a = [], b = []) => {
+            if (a.length !== b.length) return false;
+            const setA = new Set(a);
+            const setB = new Set(b);
+            return setA.size === setB.size && [...setA].every(x => setB.has(x));
+        };
+        
+        // Check for changes by comparing current state with saved state
+        let hasChanges = false;
+        
+        // For Overview widget
+        if (widgetState.genes && widgetState.savedGenes) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.genes.elements, widgetState.savedGenes);
+        }
+        if (widgetState.species && widgetState.savedSpecies) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.species.elements, widgetState.savedSpecies);
+        }
+        
+        // For Genetics widget
+        if (widgetState.alleles && widgetState.savedAlleles) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.alleles.elements, widgetState.savedAlleles);
+        }
+        if (widgetState.strains && widgetState.savedStrains) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.strains.elements, widgetState.savedStrains);
+        }
+        
+        // For Reagent widget  
+        if (widgetState.transgenes && widgetState.savedTransgenes) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.transgenes.elements, widgetState.savedTransgenes);
+        }
+        
+        // For Disease widget
+        if (widgetState.diseaseNames && widgetState.savedDiseaseNames) {
+            hasChanges = hasChanges || !arraysEqual(widgetState.diseaseNames, widgetState.savedDiseaseNames);
+        }
+        
+        // Check for other changes
+        hasChanges = hasChanges ||
+               (widgetState.addedGenes && widgetState.addedGenes.length > 0) ||
+               (widgetState.addedSpecies && widgetState.addedSpecies.length > 0) ||
+               (widgetState.addedAlleles && widgetState.addedAlleles.length > 0) ||
+               (widgetState.newAlleles && widgetState.newAlleles.length > 0) ||
+               (widgetState.newStrains && widgetState.newStrains.length > 0) ||
+               (widgetState.newTransgenes && typeof widgetState.newTransgenes === 'string' && widgetState.newTransgenes.trim() !== '') ||
+               (widgetState.newAntibodies && typeof widgetState.newAntibodies === 'string' && widgetState.newAntibodies.trim() !== '') ||
+               (widgetState.comments && typeof widgetState.comments === 'string' && widgetState.comments.trim() !== '') ||
+               // Check checkboxes for various widgets
+               (widgetState.geneModel && widgetState.geneModel.checked) ||
+               (widgetState.sequenceChange && widgetState.sequenceChange.checked) ||
+               (widgetState.expression && widgetState.expression.checked) ||
+               (widgetState.siteOfAction && widgetState.siteOfAction.checked) ||
+               (widgetState.timeOfAction && widgetState.timeOfAction.checked) ||
+               (widgetState.additionalExpr && widgetState.additionalExpr.checked) ||
+               (widgetState.geneint && widgetState.geneint.checked) ||
+               (widgetState.geneprod && widgetState.geneprod.checked) ||
+               (widgetState.genereg && widgetState.genereg.checked) ||
+               (widgetState.allelePheno && widgetState.allelePheno.checked) ||
+               (widgetState.rnaiPheno && widgetState.rnaiPheno.checked) ||
+               (widgetState.overexprPheno && widgetState.overexprPheno.checked) ||
+               (widgetState.chemPheno && widgetState.chemPheno.checked) ||
+               (widgetState.envPheno && widgetState.envPheno.checked) ||
+               (widgetState.enzymaticAct && widgetState.enzymaticAct.checked) ||
+               (widgetState.othergenefunc && widgetState.othergenefunc.checked) ||
+               (widgetState.disease && widgetState.disease.checked);
+               
+        return hasChanges;
+    };
+
+    // Reusable menu item component
+    const MenuItemWithIcon = ({ widget, title, children }) => {
+        const widgetState = useSelector((state) => state[widget]);
+        const isSaved = widgetState && widgetState.isSavedToDB;
+        const hasChanges = hasWidgetChanges(widgetState);
+
+        const icon = isSaved ? 
+            <OverlayTrigger placement="right" overlay={<Tooltip id={`${widget}-tooltip`}>Section saved</Tooltip>}>
+                <Glyphicon glyph="ok" style={{color: 'green'}}/>
+            </OverlayTrigger> :
+            hasChanges ?
+            <OverlayTrigger placement="right" overlay={<Tooltip id={`${widget}-tooltip`}>Section has unsaved changes</Tooltip>}>
+                <Glyphicon glyph="pencil" style={{color: 'orange'}}/>
+            </OverlayTrigger> : 
+            null;
+
+        return (
+            <>
+                {title}&nbsp;{icon}
+                {children}
+            </>
+        );
+    };
+
     return (
         <div>
             <div className="panel panel-default" style={{marginBottom: '10px'}}>
@@ -15,60 +115,51 @@ const Menu = ({urlQuery}) => {
                     <Nav bsStyle="pills" stacked onSelect={(sel) => dispatch(setSelectedWidget(sel))}>
                         <IndexLinkContainer to={WIDGET.OVERVIEW + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.OVERVIEW]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>{WIDGET_TITLE[WIDGET.OVERVIEW]}
-                                &nbsp;{useSelector((state) => state.overview.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}
-                            </NavItem></IndexLinkContainer>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>
+                                <MenuItemWithIcon widget="overview" title={WIDGET_TITLE[WIDGET.OVERVIEW]} />
+                            </NavItem>
+                        </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.GENETICS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.GENETICS]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.GENETICS]}>{WIDGET_TITLE[WIDGET.GENETICS]}
-                                &nbsp;{useSelector((state) => state.genetics.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}
+                            <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>
+                                <MenuItemWithIcon widget="genetics" title={WIDGET_TITLE[WIDGET.GENETICS]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.REAGENT + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.REAGENT]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.REAGENT]}>{WIDGET_TITLE[WIDGET.REAGENT]}
-                                &nbsp;{useSelector((state) => state.reagent.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]}>
+                                <MenuItemWithIcon widget="reagent" title={WIDGET_TITLE[WIDGET.REAGENT]} />
+                            </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.EXPRESSION + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.EXPRESSION]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>{WIDGET_TITLE[WIDGET.EXPRESSION]}
-                                &nbsp;{useSelector((state) => state.expression.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>
+                                <MenuItemWithIcon widget="expression" title={WIDGET_TITLE[WIDGET.EXPRESSION]} />
+                            </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.INTERACTIONS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.INTERACTIONS]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>{WIDGET_TITLE[WIDGET.INTERACTIONS]}
-                                &nbsp;{useSelector((state) => state.interactions.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>
+                                <MenuItemWithIcon widget="interactions" title={WIDGET_TITLE[WIDGET.INTERACTIONS]} />
+                            </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.PHENOTYPES + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.PHENOTYPES]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>{WIDGET_TITLE[WIDGET.PHENOTYPES]}
-                                &nbsp;{useSelector((state) => state.phenotypes.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>
+                                <MenuItemWithIcon widget="phenotypes" title={WIDGET_TITLE[WIDGET.PHENOTYPES]} />
+                            </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.DISEASE + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.DISEASE]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.DISEASE]}>{WIDGET_TITLE[WIDGET.DISEASE]}&nbsp;
-                                {useSelector((state) => state.disease.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]}>
+                                <MenuItemWithIcon widget="disease" title={WIDGET_TITLE[WIDGET.DISEASE]} />
+                            </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.COMMENTS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.COMMENTS]}>
-                            <NavItem
-                                eventKey={MENU_INDEX[WIDGET.COMMENTS]}>{WIDGET_TITLE[WIDGET.COMMENTS]}
-                                &nbsp;{useSelector((state) => state.comments.isSavedToDB) ?
-                                    <Glyphicon glyph="ok"/> : false}</NavItem>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]}>
+                                <MenuItemWithIcon widget="comments" title={WIDGET_TITLE[WIDGET.COMMENTS]} />
+                            </NavItem>
                         </IndexLinkContainer>
                     </Nav>
                 </div>

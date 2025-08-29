@@ -33,20 +33,6 @@ const Disease = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    const payload = {
-                        disease: getCheckboxDBVal(disease.checked, disease.details),
-                        disease_list: diseaseNames,
-                        person_id: "two" + person.personId,
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.DISEASE));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Disease model data in the paper</Panel.Title>

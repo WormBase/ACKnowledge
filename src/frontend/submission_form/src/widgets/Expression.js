@@ -69,21 +69,6 @@ const Expression = () =>{
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
-            <div style={{marginBottom: '15px', textAlign: 'center'}}>
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
-                        anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
-                        site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
-                        time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
-                        additional_expr: getCheckboxDBVal(additionalExpr.checked, additionalExpr.details),
-                        passwd: paperPassword
-                    };
-                    dispatch(saveWidgetDataSilently(payload, WIDGET.EXPRESSION));
-                }}>
-                    <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                    Save current progress
-                </Button>
-            </div>
             <Panel>
                 <Panel.Heading>
                     <Panel.Title componentClass="h3">Expression data in the paper</Panel.Title>

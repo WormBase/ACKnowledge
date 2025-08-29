@@ -101,3 +101,256 @@ export const saveWidgetDataSilently = (dataToSave, widget) => {
             });
     }
 }
+
+// Utility function to check if a widget has changes
+const hasWidgetChanges = (widgetState) => {
+    if (!widgetState) return false;
+    // If saved to DB, no changes needed
+    if (widgetState.isSavedToDB) return false;
+    
+    // Helper function to compare arrays
+    const arraysEqual = (a = [], b = []) => {
+        if (a.length !== b.length) return false;
+        const setA = new Set(a);
+        const setB = new Set(b);
+        return setA.size === setB.size && [...setA].every(x => setB.has(x));
+    };
+    
+    // Check for changes by comparing current state with saved state
+    let hasChanges = false;
+    
+    // For Overview widget
+    if (widgetState.genes && widgetState.savedGenes) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.genes.elements, widgetState.savedGenes);
+    }
+    if (widgetState.species && widgetState.savedSpecies) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.species.elements, widgetState.savedSpecies);
+    }
+    
+    // For Genetics widget
+    if (widgetState.alleles && widgetState.savedAlleles) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.alleles.elements, widgetState.savedAlleles);
+    }
+    if (widgetState.strains && widgetState.savedStrains) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.strains.elements, widgetState.savedStrains);
+    }
+    
+    // For Reagent widget  
+    if (widgetState.transgenes && widgetState.savedTransgenes) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.transgenes.elements, widgetState.savedTransgenes);
+    }
+    
+    // For Disease widget
+    if (widgetState.diseaseNames && widgetState.savedDiseaseNames) {
+        hasChanges = hasChanges || !arraysEqual(widgetState.diseaseNames, widgetState.savedDiseaseNames);
+    }
+    
+    // Check for other changes
+    hasChanges = hasChanges ||
+           (widgetState.addedGenes && widgetState.addedGenes.length > 0) ||
+           (widgetState.addedSpecies && widgetState.addedSpecies.length > 0) ||
+           (widgetState.addedAlleles && widgetState.addedAlleles.length > 0) ||
+           (widgetState.newAlleles && widgetState.newAlleles.length > 0) ||
+           (widgetState.newStrains && widgetState.newStrains.length > 0) ||
+           (widgetState.newTransgenes && typeof widgetState.newTransgenes === 'string' && widgetState.newTransgenes.trim() !== '') ||
+           (widgetState.newAntibodies && typeof widgetState.newAntibodies === 'string' && widgetState.newAntibodies.trim() !== '') ||
+           (widgetState.comments && typeof widgetState.comments === 'string' && widgetState.comments.trim() !== '') ||
+           // Check checkboxes for various widgets
+           (widgetState.geneModel && widgetState.geneModel.checked) ||
+           (widgetState.sequenceChange && widgetState.sequenceChange.checked) ||
+           (widgetState.expression && widgetState.expression.checked) ||
+           (widgetState.siteOfAction && widgetState.siteOfAction.checked) ||
+           (widgetState.timeOfAction && widgetState.timeOfAction.checked) ||
+           (widgetState.additionalExpr && widgetState.additionalExpr.checked) ||
+           (widgetState.geneint && widgetState.geneint.checked) ||
+           (widgetState.geneprod && widgetState.geneprod.checked) ||
+           (widgetState.genereg && widgetState.genereg.checked) ||
+           (widgetState.allelePheno && widgetState.allelePheno.checked) ||
+           (widgetState.rnaiPheno && widgetState.rnaiPheno.checked) ||
+           (widgetState.overexprPheno && widgetState.overexprPheno.checked) ||
+           (widgetState.chemPheno && widgetState.chemPheno.checked) ||
+           (widgetState.envPheno && widgetState.envPheno.checked) ||
+           (widgetState.enzymaticAct && widgetState.enzymaticAct.checked) ||
+           (widgetState.othergenefunc && widgetState.othergenefunc.checked) ||
+           (widgetState.disease && widgetState.disease.checked);
+           
+    return hasChanges;
+};
+
+export const saveAllUnsavedWidgets = () => {
+    return (dispatch, getState) => {
+        const state = getState();
+        const paperPassword = state.paper.paperData.paperPasswd;
+        const person = state.person.person;
+        const promises = [];
+        
+        // Check and save Overview if it has changes
+        if (hasWidgetChanges(state.overview)) {
+            const overviewPayload = {
+                gene_list: transformEntitiesIntoAfpString((state.overview.genes && state.overview.genes.elements) || [], "WBGene"),
+                gene_model_update: getCheckboxDBVal((state.overview.geneModel && state.overview.geneModel.checked) || false, (state.overview.geneModel && state.overview.geneModel.details) || ""),
+                species_list: transformEntitiesIntoAfpString((state.overview.species && state.overview.species.elements) || [], ""),
+                other_species: JSON.stringify((state.overview.otherSpecies && state.overview.otherSpecies.elements) || []),
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.OVERVIEW,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, overviewPayload)
+            });
+        }
+        
+        // Check and save Genetics if it has changes
+        if (hasWidgetChanges(state.genetics)) {
+            const geneticsPayload = {
+                alleles: transformEntitiesIntoAfpString((state.genetics.alleles && state.genetics.alleles.elements) || [], "WBVar"),
+                new_alleles: (state.genetics.newAlleles || []).map(allele => allele.name + "####" + allele.species).join("\n"),
+                strains: transformEntitiesIntoAfpString((state.genetics.strains && state.genetics.strains.elements) || [], "WBStrain"),
+                new_strains: (state.genetics.newStrains || []).map(strain => strain.name + "####" + strain.species + "####" + strain.genotype).join("\n"),
+                allele_seq_change: getCheckboxDBVal((state.genetics.sequenceChange && state.genetics.sequenceChange.checked) || false, (state.genetics.sequenceChange && state.genetics.sequenceChange.details) || ""),
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.GENETICS,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, geneticsPayload)
+            });
+        }
+        
+        // Check and save Reagent if it has changes
+        if (hasWidgetChanges(state.reagent)) {
+            const reagentPayload = {
+                transgenes: transformEntitiesIntoAfpString((state.reagent.transgenes && state.reagent.transgenes.elements) || [], "WBTransgene"),
+                new_transgenes: (state.reagent.newTransgenes && typeof state.reagent.newTransgenes === 'string') ? state.reagent.newTransgenes : "",
+                antibodies: transformEntitiesIntoAfpString((state.reagent.antibodies && state.reagent.antibodies.elements) || [], ""),
+                new_antibodies: (state.reagent.newAntibodies && typeof state.reagent.newAntibodies === 'string') ? state.reagent.newAntibodies : "",
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.REAGENT,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, reagentPayload)
+            });
+        }
+        
+        // Check and save Expression if it has changes
+        if (hasWidgetChanges(state.expression)) {
+            const expressionPayload = {
+                anatomical_expr: getCheckboxDBVal((state.expression.expression && state.expression.expression.checked) || false, (state.expression.expression && state.expression.expression.details) || ""),
+                site_action: getCheckboxDBVal((state.expression.siteOfAction && state.expression.siteOfAction.checked) || false, (state.expression.siteOfAction && state.expression.siteOfAction.details) || ""),
+                time_action: getCheckboxDBVal((state.expression.timeOfAction && state.expression.timeOfAction.checked) || false, (state.expression.timeOfAction && state.expression.timeOfAction.details) || ""),
+                additional_expr: getCheckboxDBVal((state.expression.additionalExpr && state.expression.additionalExpr.checked) || false, (state.expression.additionalExpr && state.expression.additionalExpr.details) || ""),
+                new_anatomical_terms: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.anatomical_term && typeof state.expression.otherExpressionEntities.anatomical_term === 'string') ? state.expression.otherExpressionEntities.anatomical_term.replace(/\n/g, ", ") : "",
+                new_life_stage: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.life_stage && typeof state.expression.otherExpressionEntities.life_stage === 'string') ? state.expression.otherExpressionEntities.life_stage.replace(/\n/g, ", ") : "",
+                new_cellular_component: (state.expression.otherExpressionEntities && state.expression.otherExpressionEntities.cellular_component && typeof state.expression.otherExpressionEntities.cellular_component === 'string') ? state.expression.otherExpressionEntities.cellular_component.replace(/\n/g, ", ") : "",
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.EXPRESSION,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, expressionPayload)
+            });
+        }
+        
+        // Check and save Interactions if it has changes
+        if (hasWidgetChanges(state.interactions)) {
+            const interactionsPayload = {
+                gene_int: getCheckboxDBVal((state.interactions.geneint && state.interactions.geneint.checked) || false, (state.interactions.geneint && state.interactions.geneint.details) || ""),
+                phys_int: getCheckboxDBVal((state.interactions.geneprod && state.interactions.geneprod.checked) || false, (state.interactions.geneprod && state.interactions.geneprod.details) || ""),
+                gene_reg: getCheckboxDBVal((state.interactions.genereg && state.interactions.genereg.checked) || false, (state.interactions.genereg && state.interactions.genereg.details) || ""),
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.INTERACTIONS,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, interactionsPayload)
+            });
+        }
+        
+        // Check and save Phenotypes if it has changes
+        if (hasWidgetChanges(state.phenotypes)) {
+            const phenotypesPayload = {
+                allele_pheno: getCheckboxDBVal((state.phenotypes.allelePheno && state.phenotypes.allelePheno.checked) || false, (state.phenotypes.allelePheno && state.phenotypes.allelePheno.details) || ""),
+                rnai_pheno: getCheckboxDBVal((state.phenotypes.rnaiPheno && state.phenotypes.rnaiPheno.checked) || false, (state.phenotypes.rnaiPheno && state.phenotypes.rnaiPheno.details) || ""),
+                overexpression_pheno: getCheckboxDBVal((state.phenotypes.overexprPheno && state.phenotypes.overexprPheno.checked) || false, (state.phenotypes.overexprPheno && state.phenotypes.overexprPheno.details) || ""),
+                chem: getCheckboxDBVal((state.phenotypes.chemPheno && state.phenotypes.chemPheno.checked) || false, (state.phenotypes.chemPheno && state.phenotypes.chemPheno.details) || ""),
+                env: getCheckboxDBVal((state.phenotypes.envPheno && state.phenotypes.envPheno.checked) || false, (state.phenotypes.envPheno && state.phenotypes.envPheno.details) || ""),
+                protein: getCheckboxDBVal((state.phenotypes.enzymaticAct && state.phenotypes.enzymaticAct.checked) || false, (state.phenotypes.enzymaticAct && state.phenotypes.enzymaticAct.details) || ""),
+                othergenefunc: getCheckboxDBVal((state.phenotypes.othergenefunc && state.phenotypes.othergenefunc.checked) || false, (state.phenotypes.othergenefunc && state.phenotypes.othergenefunc.details) || ""),
+                new_worm_phenotypes: (state.phenotypes.otherPhenotypes && state.phenotypes.otherPhenotypes.worm_phenotypes && typeof state.phenotypes.otherPhenotypes.worm_phenotypes === 'string') ? state.phenotypes.otherPhenotypes.worm_phenotypes.replace(/\n/g, ", ") : "",
+                new_phenotype_entity: (state.phenotypes.otherPhenotypes && state.phenotypes.otherPhenotypes.phenotype_entity && typeof state.phenotypes.otherPhenotypes.phenotype_entity === 'string') ? state.phenotypes.otherPhenotypes.phenotype_entity.replace(/\n/g, ", ") : "",
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.PHENOTYPES,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, phenotypesPayload)
+            });
+        }
+        
+        // Check and save Disease if it has changes
+        if (hasWidgetChanges(state.disease)) {
+            const diseasePayload = {
+                disease: getCheckboxDBVal((state.disease.disease && state.disease.disease.checked) || false, (state.disease.disease && state.disease.disease.details) || ""),
+                disease_list: (Array.isArray(state.disease.diseaseNames) ? state.disease.diseaseNames : []).join(" | "),
+                person_id: "two" + person.personId,
+                passwd: paperPassword
+            };
+            promises.push({
+                widget: WIDGET.DISEASE,
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, diseasePayload)
+            });
+        }
+        
+        // Comments section excluded - saving it triggers final submission
+        
+        if (promises.length === 0) {
+            // All widgets are already saved
+            dispatch(showProgressSaved());
+            return;
+        }
+        
+        dispatch(setLoading());
+        
+        // Execute all save promises
+        Promise.all(promises.map(p => p.promise))
+            .then(results => {
+                // Update saved status for each widget
+                promises.forEach(({widget}) => {
+                    switch (widget) {
+                        case WIDGET.OVERVIEW:
+                            dispatch(setIsOverviewSavedToDB());
+                            break;
+                        case WIDGET.GENETICS:
+                            dispatch(setIsGeneticsSavedToDB());
+                            break;
+                        case WIDGET.REAGENT:
+                            dispatch(setIsReagentSavedToDB());
+                            break;
+                        case WIDGET.EXPRESSION:
+                            dispatch(setIsExpressionSavedToDB());
+                            break;
+                        case WIDGET.PHENOTYPES:
+                            dispatch(setIsPhenotypesSavedToDB());
+                            break;
+                        case WIDGET.INTERACTIONS:
+                            dispatch(setIsInteractionsSavedToDB());
+                            break;
+                        case WIDGET.DISEASE:
+                            dispatch(setIsDiseaseSavedToDB());
+                            break;
+                        case WIDGET.COMMENTS:
+                            dispatch(setIsCommentsSavedToDB());
+                            break;
+                    }
+                });
+                dispatch(showProgressSaved());
+            })
+            .catch((error) => {
+                dispatch(showDataSaved(false, false));
+            })
+            .finally(() => {
+                dispatch(unsetLoading());
+            });
+    };
+}
