@@ -9,11 +9,13 @@ import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {useDispatch, useSelector} from "react-redux";
 import {
     setAdditionalExpr,
-    setExpression, setRnaseq,
+    setExpression,
     setSiteOfAction,
     setTimeOfAction,
-    toggleExpression, toggleRnaseq,
-    toggleSiteOfAction, toggleTimeOfAction
+    toggleExpression,
+    toggleSiteOfAction,
+    toggleTimeOfAction,
+    toggleAdditionalExpr
 } from "../redux/actions/expressionActions";
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
@@ -24,7 +26,6 @@ const Expression = () =>{
     const expression = useSelector((state) => state.expression.expression);
     const siteOfAction = useSelector((state) => state.expression.siteOfAction);
     const timeOfAction = useSelector((state) => state.expression.timeOfAction);
-    const rnaSeq = useSelector((state) => state.expression.rnaseq);
     const additionalExpr = useSelector((state) => state.expression.additionalExpr);
     const isSavedToDB = useSelector((state) => state.expression.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
@@ -74,8 +75,7 @@ const Expression = () =>{
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
                         site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
                         time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
-                        rnaseq: getCheckboxDBVal(rnaSeq.checked, rnaSeq.details),
-                        additional_expr: additionalExpr,
+                        additional_expr: getCheckboxDBVal(additionalExpr.checked, additionalExpr.details),
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetDataSilently(payload, WIDGET.EXPRESSION));
@@ -126,14 +126,14 @@ const Expression = () =>{
                                          dispatch(setTimeOfAction(true, event.target.value));
                                      }}
                         />
-                        <Checkbox checked={rnaSeq.checked} onClick={() => dispatch(toggleRnaseq())}>
-                            <strong>RNAseq data</strong>
+                        <Checkbox checked={additionalExpr.checked} onClick={() => dispatch(toggleAdditionalExpr())}>
+                            <strong>Additional type of expression data</strong>
                         </Checkbox>
-                        <FormControl type="text" placeholder="Add details here"
-                                     onClick={() => dispatch(setRnaseq(true, rnaSeq.details))}
-                                     value={rnaSeq.details}
+                        <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
+                                     onClick={() => dispatch(setAdditionalExpr(true, additionalExpr.details))}
+                                     value={additionalExpr.details}
                                      onChange={(event) => {
-                                         dispatch(setRnaseq(true, event.target.value));
+                                         dispatch(setAdditionalExpr(true, event.target.value));
                                      }}
                         />
                     </Form>
@@ -150,34 +150,13 @@ const Expression = () =>{
                     </p>
                 </Panel.Body>
             </Panel>
-            <Panel>
-                <Panel.Heading>
-                    <Panel.Title componentClass="h3">Add additional type of expression data &nbsp;
-                    </Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
-                    <Form horizontal>
-                        <Col componentClass={ControlLabel} sm={7}>
-                            <FormControl
-                                type="text"
-                                value={additionalExpr}
-                                placeholder="E.g., qPCR, Proteomics"
-                                onChange={(event) => {
-                                    dispatch(setAdditionalExpr(event.target.value));
-                                }}
-                            />
-                        </Col>
-                    </Form>
-                </Panel.Body>
-            </Panel>
             <div align="right">
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     let payload = {
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
                         site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
                         time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
-                        rnaseq: getCheckboxDBVal(rnaSeq.checked, rnaSeq.details),
-                        additional_expr: additionalExpr,
+                        additional_expr: getCheckboxDBVal(additionalExpr.checked, additionalExpr.details),
                         passwd: paperPassword
                     };
                     dispatch(saveWidgetData(payload, WIDGET.EXPRESSION));

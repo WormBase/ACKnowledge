@@ -127,7 +127,6 @@ class CuratorDashboardReader:
         afp_newantibody_checked, afp_newantibody_details = self.get_class_author_sub_val("afp_antibody", paper_id)
         afp_siteaction_checked, afp_siteaction_details = self.get_class_author_sub_val("afp_siteaction", paper_id)
         afp_timeaction_checked, afp_timeaction_details = self.get_class_author_sub_val("afp_timeaction", paper_id)
-        afp_rnaseq_checked, afp_rnaseq_details = self.get_class_author_sub_val("afp_rnaseq", paper_id)
         afp_chemphen_checked, afp_chemphen_details = self.get_class_author_sub_val("afp_chemphen", paper_id)
         afp_envpheno_checked, afp_envpheno_details = self.get_class_author_sub_val("afp_envpheno", paper_id)
         afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
@@ -140,7 +139,6 @@ class CuratorDashboardReader:
                 "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
                 "afp_siteaction_checked": afp_siteaction_checked, "afp_siteaction_details": afp_siteaction_details,
                 "afp_timeaction_checked": afp_timeaction_checked, "afp_timeaction_details": afp_timeaction_details,
-                "afp_rnaseq_checked": afp_rnaseq_checked, "afp_rnaseq_details": afp_rnaseq_details,
                 "afp_chemphen_checked": afp_chemphen_checked, "afp_chemphen_details": afp_chemphen_details,
                 "afp_envpheno_checked": afp_envpheno_checked, "afp_envpheno_details": afp_envpheno_details,
                 "afp_catalyticact_checked": afp_catalyticact_checked, "afp_catalyticact_details":
@@ -269,7 +267,6 @@ class CuratorDashboardReader:
                                 '"afp_newantibody_checked": "{}", "afp_newantibody_details": {}, ' \
                                 '"afp_siteaction_checked": "{}", "afp_siteaction_details": {}, ' \
                                 '"afp_timeaction_checked": "{}", "afp_timeaction_details": {}, ' \
-                                '"afp_rnaseq_checked": "{}", "afp_rnaseq_details": {}, ' \
                                 '"afp_chemphen_checked": "{}", "afp_chemphen_details": {}, ' \
                                 '"afp_envpheno_checked": "{}", "afp_envpheno_details": {}, ' \
                                 '"afp_humdis_checked": "{}", "afp_humdis_details": {}, ' \
@@ -279,7 +276,6 @@ class CuratorDashboardReader:
                                             other_yn["afp_newantibody_checked"], json.dumps(other_yn["afp_newantibody_details"]),
                                             other_yn["afp_siteaction_checked"], json.dumps(other_yn["afp_siteaction_details"]),
                                             other_yn["afp_timeaction_checked"], json.dumps(other_yn["afp_timeaction_details"]),
-                                            other_yn["afp_rnaseq_checked"], json.dumps(other_yn["afp_rnaseq_details"]),
                                             other_yn["afp_chemphen_checked"], json.dumps(other_yn["afp_chemphen_details"]),
                                             other_yn["afp_envpheno_checked"], json.dumps(other_yn["afp_envpheno_details"]),
                                             other_yn["afp_humdis_checked"], json.dumps(other_yn["afp_humdis_details"]),

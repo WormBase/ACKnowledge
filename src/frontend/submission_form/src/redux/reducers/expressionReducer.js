@@ -5,9 +5,9 @@ import {
   TOGGLE_SITE_OF_ACTION,
   SET_TIME_OF_ACTION,
   TOGGLE_TIME_OF_ACTION,
-  SET_RNASEQ,
-  TOGGLE_RNASEQ,
-  SET_ADDITIONAL_EXPR, SET_IS_EXPRESSION_SAVED_TO_DB
+  SET_ADDITIONAL_EXPR,
+  TOGGLE_ADDITIONAL_EXPR,
+  SET_IS_EXPRESSION_SAVED_TO_DB
 } from "../actions/expressionActions";
 
 
@@ -24,11 +24,10 @@ const initialState = {
     checked: false,
     details: ''
   },
-  rnaseq: {
+  additionalExpr: {
     checked: false,
     details: ''
   },
-  additionalExpr: "",
   isSavedToDB: false
 };
 
@@ -40,7 +39,6 @@ export default function(state = initialState, action) {
         expression: action.payload,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -51,7 +49,6 @@ export default function(state = initialState, action) {
         expression: {checked: !state.expression.checked, details: ''},
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -62,7 +59,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: action.payload,
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -73,7 +69,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: {checked: !state.siteOfAction.checked, details: ''},
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -84,7 +79,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: action.payload,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -95,29 +89,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: {checked: !state.timeOfAction.checked, details: ''},
-        rnaseq: state.rnaseq,
-        additionalExpr: state.additionalExpr,
-        isSavedToDB: false
-      };
-    }
-    case SET_RNASEQ: {
-      return {
-        ...state,
-        expression: state.expression,
-        siteOfAction: state.siteOfAction,
-        timeOfAction: state.timeOfAction,
-        rnaseq: action.payload,
-        additionalExpr: state.additionalExpr,
-        isSavedToDB: false
-      };
-    }
-    case TOGGLE_RNASEQ: {
-      return {
-        ...state,
-        expression: state.expression,
-        siteOfAction: state.siteOfAction,
-        timeOfAction: state.timeOfAction,
-        rnaseq: {checked: !state.rnaseq.checked, details: ''},
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -128,8 +99,17 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
-        additionalExpr: action.payload.details,
+        additionalExpr: action.payload,
+        isSavedToDB: false
+      };
+    }
+    case TOGGLE_ADDITIONAL_EXPR: {
+      return {
+        ...state,
+        expression: state.expression,
+        siteOfAction: state.siteOfAction,
+        timeOfAction: state.timeOfAction,
+        additionalExpr: {checked: !state.additionalExpr.checked, details: ''},
         isSavedToDB: false
       };
     }
@@ -139,7 +119,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        rnaseq: state.rnaseq,
         additionalExpr: state.additionalExpr,
         isSavedToDB: true
       };

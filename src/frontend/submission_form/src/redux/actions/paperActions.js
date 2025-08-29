@@ -28,7 +28,6 @@ import {
     setAdditionalExpr,
     setExpression,
     setIsExpressionSavedToDB,
-    setRnaseq,
     setSiteOfAction,
     setTimeOfAction
 } from "./expressionActions";
@@ -135,12 +134,10 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 dispatch(setSiteOfAction(siteOfAction.isChecked(), siteOfAction.details()));
                 let timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.data.timeaction, undefined);
                 dispatch(setTimeOfAction(timeOfAction.isChecked(), timeOfAction.details()));
-                let rnaSeq = getCheckbxOrSingleFieldFromWBAPIData(result.data.rnaseq, result.data.rnaseq);
-                dispatch(setRnaseq(rnaSeq.isChecked(), rnaSeq.details()));
                 let additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.data.additionalexpr, undefined);
-                dispatch(setAdditionalExpr(additionalExpr.details()));
+                dispatch(setAdditionalExpr(additionalExpr.isChecked(), additionalExpr.details()));
                 if (expression.prevSaved() && siteOfAction.prevSaved() && timeOfAction.prevSaved() &&
-                    rnaSeq.prevSaved() && additionalExpr.prevSaved()) {
+                    additionalExpr.prevSaved()) {
                     dispatch(setIsExpressionSavedToDB());
                 }
 

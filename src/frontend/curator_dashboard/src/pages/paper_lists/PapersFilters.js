@@ -144,8 +144,6 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                                                 onChange={() => dispatch(togglePaperListFilter("siteaction", "manual"))}/>
                                                                     <Form.Check checked={paperListFilters.manualFilters.has("timeaction")} type="checkbox" label="Time of action data"
                                                                                 onChange={() => dispatch(togglePaperListFilter("timeaction", "manual"))}/>
-                                                                    <Form.Check checked={paperListFilters.manualFilters.has("rnaseq")} type="checkbox" label="RNAseq data"
-                                                                                onChange={() => dispatch(togglePaperListFilter("rnaseq", "manual"))}/>
                                                                     <Form.Check checked={paperListFilters.manualFilters.has("chemphen")} type="checkbox" label="Chemically induced phenotype"
                                                                                 onChange={() => dispatch(togglePaperListFilter("chemphen", "manual"))}/>
                                                                     <Form.Check checked={paperListFilters.manualFilters.has("envpheno")} type="checkbox" label="Environmental induced phenotype"
@@ -193,8 +191,6 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                                                 onChange={() => dispatch(togglePaperListFilter("siteaction", "curation"))}/>
                                                                     <Form.Check checked={paperListFilters.curationFilters.has("timeaction")} type="checkbox" label="Time of action data"
                                                                                 onChange={() => dispatch(togglePaperListFilter("timeaction", "curation"))}/>
-                                                                    <Form.Check checked={paperListFilters.curationFilters.has("rnaseq")} type="checkbox" label="RNAseq data"
-                                                                                onChange={() => dispatch(togglePaperListFilter("rnaseq", "curation"))}/>
                                                                     <Form.Check checked={paperListFilters.curationFilters.has("chemphen")} type="checkbox" label="Chemically induced phenotype"
                                                                                 onChange={() => dispatch(togglePaperListFilter("chemphen", "curation"))}/>
                                                                     <Form.Check checked={paperListFilters.curationFilters.has("envpheno")} type="checkbox" label="Environmental induced phenotype"

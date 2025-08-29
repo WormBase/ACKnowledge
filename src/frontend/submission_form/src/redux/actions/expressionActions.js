@@ -4,9 +4,8 @@ export const SET_SITE_OF_ACTION = "SET_SITE_OF_ACTION";
 export const TOGGLE_SITE_OF_ACTION = "TOGGLE_SITE_OF_ACTION";
 export const SET_TIME_OF_ACTION = "SET_TIME_OF_ACTION";
 export const TOGGLE_TIME_OF_ACTION = "TOGGLE_TIME_OF_ACTION";
-export const SET_RNASEQ = "SET_RNASEQ";
-export const TOGGLE_RNASEQ = "TOGGLE_RNASEQ";
 export const SET_ADDITIONAL_EXPR = "SET_ADDITIONAL_EXPR";
+export const TOGGLE_ADDITIONAL_EXPR = "TOGGLE_ADDITIONAL_EXPR";
 export const SET_IS_EXPRESSION_SAVED_TO_DB = "SET_IS_EXPRESSION_SAVED_TO_DB";
 
 
@@ -49,24 +48,18 @@ export const toggleTimeOfAction = () => ({
     payload: {}
 });
 
-export const setRnaseq = (checked, details) => ({
-    type: SET_RNASEQ,
+
+export const setAdditionalExpr = (checked, details) => ({
+    type: SET_ADDITIONAL_EXPR,
     payload: {
         checked: checked,
         details: details
     }
 });
 
-export const toggleRnaseq = () => ({
-    type: TOGGLE_RNASEQ,
+export const toggleAdditionalExpr = () => ({
+    type: TOGGLE_ADDITIONAL_EXPR,
     payload: {}
-});
-
-export const setAdditionalExpr = details => ({
-    type: SET_ADDITIONAL_EXPR,
-    payload: {
-        details
-    }
 });
 
 export const setIsExpressionSavedToDB = () => ({

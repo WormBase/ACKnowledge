@@ -181,8 +181,6 @@ class FeedbackFormWriter:
                     self.db.afp.set_submitted_site_action(site_action=req.media["site_action"], paper_id=paper_id)
                 if "time_action" in req.media:
                     self.db.afp.set_submitted_time_action(time_action=req.media["time_action"], paper_id=paper_id)
-                if "rnaseq" in req.media:
-                    self.db.afp.set_submitted_rnaseq(rnaseq=req.media["rnaseq"], paper_id=paper_id)
                 if "additional_expr" in req.media:
                     self.db.afp.set_submitted_additional_expr(additional_expr=req.media["additional_expr"],
                                                               paper_id=paper_id)

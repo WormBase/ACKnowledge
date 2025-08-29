@@ -44,9 +44,6 @@ const OtherYesNoDataTypesTab = () => {
                     <FlaggedInfoRow title="Time of action data" afpChecked={queryRes.data.data.afp_timeaction_checked}
                                     afpDetails={queryRes.data.data.afp_timeaction_details}
                     />
-                    <FlaggedInfoRow title="RNAseq data" afpChecked={queryRes.data.data.afp_rnaseq_checked}
-                                    afpDetails={queryRes.data.data.afp_rnaseq_details}
-                    />
                     <FlaggedInfoRow title="Chemically induced phenotype" afpChecked={queryRes.data.data.afp_chemphen_checked}
                                     afpDetails={queryRes.data.data.afp_chemphen_details}
                     />
