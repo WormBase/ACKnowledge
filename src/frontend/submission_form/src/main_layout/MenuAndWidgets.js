@@ -117,6 +117,17 @@ const MenuAndWidgets = (props) => {
         state.disease.isSavedToDB &&
         state.comments.isSavedToDB
     );
+    
+    // Check if all sections except Comments are saved
+    const allSectionsExceptCommentsSaved = useSelector((state) => 
+        state.overview.isSavedToDB &&
+        state.genetics.isSavedToDB &&
+        state.reagent.isSavedToDB &&
+        state.expression.isSavedToDB &&
+        state.interactions.isSavedToDB &&
+        state.phenotypes.isSavedToDB &&
+        state.disease.isSavedToDB
+    );
 
     // Check if any section has unsaved changes (excluding Comments - final submission only)
     const hasAnyChanges = useSelector((state) => 
@@ -172,22 +183,33 @@ const MenuAndWidgets = (props) => {
                             placement="right" 
                             overlay={
                                 <Tooltip id="save-progress-tooltip">
-                                    {!hasAnyChanges 
-                                        ? "No unsaved changes to save."
-                                        : "Saves your current progress across all sections that have changes (except Comments). To finalize and submit your data, click 'Finish and Submit' in the Comments section."
+                                    {allSectionsExceptCommentsSaved 
+                                        ? "All sections are complete! Click here to go to the Comments section and finalize your submission to WormBase."
+                                        : !hasAnyChanges 
+                                            ? "No unsaved changes to save."
+                                            : "Saves your current progress across all sections that have changes (except Comments). To finalize and submit your data, click 'Finish and Submit' in the Comments section."
                                     }
                                 </Tooltip>
                             }
                         >
                             <Button 
-                                bsStyle="primary" 
+                                bsStyle={allSectionsExceptCommentsSaved ? "success" : "primary"}
                                 bsSize="small" 
-                                onClick={() => dispatch(saveAllUnsavedWidgets())}
+                                onClick={() => {
+                                    if (allSectionsExceptCommentsSaved) {
+                                        // Navigate to Comments section for final submission
+                                        dispatch(setSelectedWidget(MENU_INDEX[WIDGET.COMMENTS]));
+                                        props.history.push(WIDGET.COMMENTS + props.location.search);
+                                        window.scrollTo(0, 0);
+                                    } else {
+                                        dispatch(saveAllUnsavedWidgets());
+                                    }
+                                }}
                                 style={{width: '100%'}}
-                                disabled={!hasAnyChanges}
+                                disabled={!hasAnyChanges && !allSectionsExceptCommentsSaved}
                             >
-                                <Glyphicon glyph="cloud-upload" style={{marginRight: '6px'}} />
-                                Save current progress
+                                <Glyphicon glyph={allSectionsExceptCommentsSaved ? "check" : "cloud-upload"} style={{marginRight: '6px'}} />
+                                {allSectionsExceptCommentsSaved ? "Finish and submit" : "Save current progress"}
                             </Button>
                         </OverlayTrigger>
                     </div>
