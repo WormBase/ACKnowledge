@@ -50,13 +50,13 @@ const Phenotypes = () => {
                 </Panel.Heading>
                 <Panel.Body>
                     <div className="container-fluid">
-                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
-                            <div className="col-sm-7">
-                                <Checkbox checked={allelePheno.checked}
-                                          onClick={() => dispatch(toggleAllelePhenotype())}>
-                                    <strong>Allele Phenotype</strong> <AutoDetectedBadge/></Checkbox>
-                            </div>
-                            <div className="col-sm-5">
+                        <Form>
+                            <FormGroup>
+                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'}}>
+                                    <Checkbox checked={allelePheno.checked}
+                                              onClick={() => dispatch(toggleAllelePhenotype())} style={{marginBottom: '0'}}>
+                                        <strong>Allele Phenotype</strong> <AutoDetectedBadge/>
+                                    </Checkbox>
                                 <a 
                                     href="https://wormbase.org/submissions/phenotype.cgi" 
                                     target="_blank" 
@@ -81,14 +81,13 @@ const Phenotypes = () => {
                                     Submit allele phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
-                        </div>
-                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
-                            <div className="col-sm-7">
+                        </FormGroup>
+                        <FormGroup>
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'}}>
                                 <Checkbox checked={rnaiPheno.checked}
-                                          onClick={() => dispatch(toggleRnaiPhenotype())}>
-                                    <strong>RNAi Phenotype</strong> <AutoDetectedBadge/></Checkbox>
-                            </div>
-                            <div className="col-sm-5">
+                                          onClick={() => dispatch(toggleRnaiPhenotype())} style={{marginBottom: '0'}}>
+                                    <strong>RNAi Phenotype</strong> <AutoDetectedBadge/>
+                                </Checkbox>
                                 <a 
                                     href="https://wormbase.org/submissions/phenotype.cgi" 
                                     target="_blank" 
@@ -113,14 +112,13 @@ const Phenotypes = () => {
                                     Submit RNAi phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
-                        </div>
-                        <div className="row" style={{display: 'flex', alignItems: 'center'}}>
-                            <div className="col-sm-7">
+                        </FormGroup>
+                        <FormGroup>
+                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px'}}>
                                 <Checkbox checked={overexprPheno.checked}
-                                          onClick={() => dispatch(toggleOverexprPhenotype())}>
-                                    <strong>Transgene Overexpression Phenotype</strong> <AutoDetectedBadge/></Checkbox>
-                            </div>
-                            <div className="col-sm-5">
+                                          onClick={() => dispatch(toggleOverexprPhenotype())} style={{marginBottom: '0'}}>
+                                    <strong>Transgene Overexpression Phenotype</strong> <AutoDetectedBadge/>
+                                </Checkbox>
                                 <a 
                                     href="https://wormbase.org/submissions/phenotype.cgi" 
                                     target="_blank" 
@@ -145,42 +143,35 @@ const Phenotypes = () => {
                                     Submit overexpression phenotype details <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
                                 </a>
                             </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-7">
-                                <FormGroup>
-                                    <Checkbox checked={chemPheno.checked} onClick={() => dispatch(toggleChemicalPhenotype())}>
-                                        <strong>Chemical Induced Phenotype</strong>
-                                    </Checkbox>
-                                    <FormControl type="text" placeholder="E.g.: Exposure to 7% EtOH progressively flattened the body-bend amplitudes of the worms until they died at the L1 stage"
-                                                 onClick={() => dispatch(setChemicalPhenotype(true, chemPheno.details))}
-                                                 value={chemPheno.details}
-                                                 onChange={(event) => {
-                                                     dispatch(setChemicalPhenotype(true, event.target.value));
-                                                 }}
-                                    />
-                                    <FormControl.Feedback />
-                                </FormGroup>
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <FormGroup>
-                                    <Checkbox checked={envPheno.checked} onClick={() => dispatch(toggleEnvironmentalPhenotype())}>
-                                        <strong>Environmental Induced Phenotype</strong>
-                                    </Checkbox>
-                                    <FormControl type="text" placeholder="E.g.: hsf-1 mutants are hypersensitive to elevated temperature."
-                                                 onClick={() => dispatch(setEnvironmentalPhenotype(true, envPheno.details))}
-                                                 value={envPheno.details}
-                                                 onChange={(event) => {
-                                                     dispatch(setEnvironmentalPhenotype(true, event.target.value));
-                                                 }}
-                                    />
-                                    <FormControl.Feedback />
-                                </FormGroup>
-                            </div>
-                        </div>
-                    </div>
+                        </FormGroup>
+                        <FormGroup>
+                            <Checkbox checked={chemPheno.checked} onClick={() => dispatch(toggleChemicalPhenotype())}>
+                                <strong>Chemical Induced Phenotype</strong>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g.: Exposure to 7% EtOH progressively flattened the body-bend amplitudes of the worms until they died at the L1 stage"
+                                         onClick={() => dispatch(setChemicalPhenotype(true, chemPheno.details))}
+                                         value={chemPheno.details}
+                                         onChange={(event) => {
+                                             dispatch(setChemicalPhenotype(true, event.target.value));
+                                         }}
+                            />
+                            <FormControl.Feedback />
+                        </FormGroup>
+                        <FormGroup>
+                            <Checkbox checked={envPheno.checked} onClick={() => dispatch(toggleEnvironmentalPhenotype())}>
+                                <strong>Environmental Induced Phenotype</strong>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g.: hsf-1 mutants are hypersensitive to elevated temperature."
+                                         onClick={() => dispatch(setEnvironmentalPhenotype(true, envPheno.details))}
+                                         value={envPheno.details}
+                                         onChange={(event) => {
+                                             dispatch(setEnvironmentalPhenotype(true, event.target.value));
+                                         }}
+                            />
+                            <FormControl.Feedback />
+                        </FormGroup>
+                    </Form>
+                </div>
                 </Panel.Body>
             </Panel>
             <Panel>
@@ -188,11 +179,12 @@ const Phenotypes = () => {
                     <Panel.Title componentClass="h3">Functional data in the paper</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                    <Form>
-                        <FormGroup>
-                            <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
-                                <strong>Enzymatic Activity</strong> <AutoDetectedBadge/>
-                            </Checkbox>
+                    <div className="container-fluid">
+                        <Form>
+                            <FormGroup>
+                                <Checkbox checked={enzymaticAct.checked} onClick={() => dispatch(toggleEnzymaticActivity())}>
+                                    <strong>Enzymatic Activity</strong> <AutoDetectedBadge/>
+                                </Checkbox>
                             <FormControl type="text" placeholder="E.g.: AIR-2 phosphorylates REC-8 in vitro."
                                          onClick={() => dispatch(setEnzymaticActivity(true, enzymaticAct.details))}
                                          value={enzymaticAct.details}
@@ -216,6 +208,7 @@ const Phenotypes = () => {
                             <FormControl.Feedback />
                         </FormGroup>
                     </Form>
+                </div>
                 </Panel.Body>
             </Panel>
             <div align="right">

@@ -76,52 +76,52 @@ const Expression = () =>{
                 <Panel.Body>
                     <div className="container-fluid">
                         <Form>
-                        <Checkbox checked={expression.checked} onClick={() => dispatch(toggleExpression())}>
-                            <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
-                                                                                                      overlay={tooltip}>
-                            <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
-                        </Checkbox>
-                        <FormControl type="text" placeholder="E.g.: unc-47 is expressed in GABAergic motor neurons."
-                                     onClick={() => dispatch(setExpression(true, expression.details))}
-                                     value={expression.details}
-                                     onChange={(event) => {
-                                         dispatch(setExpression(true, event.target.value));
-                                     }}
-                        />
-                        <Checkbox checked={siteOfAction.checked} onClick={() => dispatch(toggleSiteOfAction())}>
-                            <strong>Site of action data</strong> <OverlayTrigger placement="top"
-                                                                                 overlay={siteTooltip}>
-                            <Glyphicon glyph="question-sign"/></OverlayTrigger>
-                        </Checkbox>
-                        <FormControl type="text" placeholder="E.g.: Expressing AVR-14 specifically in AVA sufficed to rescue AVA inhibition following tail stimulation."
-                                     onClick={() => dispatch(setSiteOfAction(true, siteOfAction.details))}
-                                     value={siteOfAction.details}
-                                     onChange={(event) => {
-                                         dispatch(setSiteOfAction(true, event.target.value));
-                                     }}
-                        />
-                        <Checkbox checked={timeOfAction.checked} onClick={() => dispatch(toggleTimeOfAction())}>
-                            <strong>Time of action data</strong> <OverlayTrigger placement="top"
-                                                                                 overlay={timeTooltip}>
-                            <Glyphicon glyph="question-sign"/></OverlayTrigger>
-                        </Checkbox>
-                        <FormControl type="text" placeholder="E.g.: CDK-4 regulates size during L3 larval stage in seam cells."
-                                     onClick={() => dispatch(setTimeOfAction(true, timeOfAction.details))}
-                                     value={timeOfAction.details}
-                                     onChange={(event) => {
-                                         dispatch(setTimeOfAction(true, event.target.value));
-                                     }}
-                        />
-                        <Checkbox checked={additionalExpr.checked} onClick={() => dispatch(toggleAdditionalExpr())}>
-                            <strong>Additional type of expression data</strong>
-                        </Checkbox>
-                        <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
-                                     onClick={() => dispatch(setAdditionalExpr(true, additionalExpr.details))}
-                                     value={additionalExpr.details}
-                                     onChange={(event) => {
-                                         dispatch(setAdditionalExpr(true, event.target.value));
-                                     }}
-                        />
+                            <Checkbox checked={expression.checked} onClick={() => dispatch(toggleExpression())}>
+                                <strong>Anatomic Expression data in WT condition</strong> <OverlayTrigger placement="top"
+                                                                                                          overlay={tooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g.: unc-47 is expressed in GABAergic motor neurons."
+                                         onClick={() => dispatch(setExpression(true, expression.details))}
+                                         value={expression.details}
+                                         onChange={(event) => {
+                                             dispatch(setExpression(true, event.target.value));
+                                         }}
+                            />
+                            <Checkbox checked={siteOfAction.checked} onClick={() => dispatch(toggleSiteOfAction())}>
+                                <strong>Site of action data</strong> <OverlayTrigger placement="top"
+                                                                                     overlay={siteTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g.: Expressing AVR-14 specifically in AVA sufficed to rescue AVA inhibition following tail stimulation."
+                                         onClick={() => dispatch(setSiteOfAction(true, siteOfAction.details))}
+                                         value={siteOfAction.details}
+                                         onChange={(event) => {
+                                             dispatch(setSiteOfAction(true, event.target.value));
+                                         }}
+                            />
+                            <Checkbox checked={timeOfAction.checked} onClick={() => dispatch(toggleTimeOfAction())}>
+                                <strong>Time of action data</strong> <OverlayTrigger placement="top"
+                                                                                     overlay={timeTooltip}>
+                                <Glyphicon glyph="question-sign"/></OverlayTrigger>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g.: CDK-4 regulates size during L3 larval stage in seam cells."
+                                         onClick={() => dispatch(setTimeOfAction(true, timeOfAction.details))}
+                                         value={timeOfAction.details}
+                                         onChange={(event) => {
+                                             dispatch(setTimeOfAction(true, event.target.value));
+                                         }}
+                            />
+                            <Checkbox checked={additionalExpr.checked} onClick={() => dispatch(toggleAdditionalExpr())}>
+                                <strong>Additional type of expression data</strong>
+                            </Checkbox>
+                            <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
+                                         onClick={() => dispatch(setAdditionalExpr(true, additionalExpr.details))}
+                                         value={additionalExpr.details}
+                                         onChange={(event) => {
+                                             dispatch(setAdditionalExpr(true, event.target.value));
+                                         }}
+                            />
                         </Form>
                     </div>
                 </Panel.Body>
@@ -131,10 +131,12 @@ const Expression = () =>{
                     <Panel.Title componentClass="h3">Large-scale gene expression data</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                    <p>
-                        WormBase regularly imports microarray and RNA-seq data from Gene Expression Omnibus. If you haven’t already, please submit your data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
-                                              target={"_blank"}>GEO <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
-                    </p>
+                    <div className="container-fluid">
+                        <p>
+                            WormBase regularly imports microarray and RNA-seq data from Gene Expression Omnibus. If you haven't already, please submit your data to <a href="https://www.ncbi.nlm.nih.gov/geo/info/submission.html"
+                                                  target={"_blank"}>GEO <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
+                        </p>
+                    </div>
                 </Panel.Body>
             </Panel>
             <div align="right">

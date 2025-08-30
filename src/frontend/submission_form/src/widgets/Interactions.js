@@ -59,41 +59,43 @@ const Interactions = () => {
                     <Panel.Title componentClass="h3">Interaction data in the paper</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                    <Form>
-                        <FormGroup>
-                            <Checkbox checked={geneint.checked} onClick={() => dispatch(toggleGeneticInteractions())}>
-                                <strong>Genetic Interactions</strong> <OverlayTrigger placement="top" overlay={geneticIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
-                            </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: emb-4(n1256) suppressed the egg laying defect of lin-12 mutants."
-                                         onClick={() => dispatch(setGeneticInteractions(true, geneint.details))}
-                                         value={geneint.details}
-                                         onChange={(event) => {
-                                             dispatch(setGeneticInteractions(true, event.target.value));
-                                         }}/>
-                            <Checkbox checked={geneprod.checked} onClick={() => dispatch(togglePhysicalInteractions())}>
-                                <strong>Physical Interactions</strong> <OverlayTrigger placement="top" overlay={physicalIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
-                            </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: Yeast two-hybrid assay shows LIN-12 physically interacts with SEL-10."
-                                         onClick={() => dispatch(setPhysicalInteractions(true, geneprod.details))}
-                                         value={geneprod.details}
-                                         onChange={(event) => {
-                                             dispatch(setPhysicalInteractions(true, event.target.value));
-                                         }}/>
-                            <Checkbox checked={genereg.checked} onClick={() => dispatch(toggleRegulatoryInteractions())}>
-                                <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top" overlay={regulatoryIntTooltip}>
-                                <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
-                            </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: fat-5 expression was reduced by 66% in the nhr-80 mutants."
-                                         onClick={() => dispatch(setRegulatoryInteractions(true, genereg.details))}
-                                         value={genereg.details}
-                                         onChange={(event) => {
-                                             dispatch(setRegulatoryInteractions(true, event.target.value));
-                                         }}/>
-                            <FormControl.Feedback />
-                        </FormGroup>
-                    </Form>
+                    <div className="container-fluid">
+                        <Form>
+                            <FormGroup>
+                                <Checkbox checked={geneint.checked} onClick={() => dispatch(toggleGeneticInteractions())}>
+                                    <strong>Genetic Interactions</strong> <OverlayTrigger placement="top" overlay={geneticIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
+                                </Checkbox>
+                                <FormControl type="text" placeholder="E.g.: emb-4(n1256) suppressed the egg laying defect of lin-12 mutants."
+                                             onClick={() => dispatch(setGeneticInteractions(true, geneint.details))}
+                                             value={geneint.details}
+                                             onChange={(event) => {
+                                                 dispatch(setGeneticInteractions(true, event.target.value));
+                                             }}/>
+                                <Checkbox checked={geneprod.checked} onClick={() => dispatch(togglePhysicalInteractions())}>
+                                    <strong>Physical Interactions</strong> <OverlayTrigger placement="top" overlay={physicalIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
+                                </Checkbox>
+                                <FormControl type="text" placeholder="E.g.: Yeast two-hybrid assay shows LIN-12 physically interacts with SEL-10."
+                                             onClick={() => dispatch(setPhysicalInteractions(true, geneprod.details))}
+                                             value={geneprod.details}
+                                             onChange={(event) => {
+                                                 dispatch(setPhysicalInteractions(true, event.target.value));
+                                             }}/>
+                                <Checkbox checked={genereg.checked} onClick={() => dispatch(toggleRegulatoryInteractions())}>
+                                    <strong>Regulatory Interactions</strong> <OverlayTrigger placement="top" overlay={regulatoryIntTooltip}>
+                                    <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
+                                </Checkbox>
+                                <FormControl type="text" placeholder="E.g.: fat-5 expression was reduced by 66% in the nhr-80 mutants."
+                                             onClick={() => dispatch(setRegulatoryInteractions(true, genereg.details))}
+                                             value={genereg.details}
+                                             onChange={(event) => {
+                                                 dispatch(setRegulatoryInteractions(true, event.target.value));
+                                             }}/>
+                                <FormControl.Feedback />
+                            </FormGroup>
+                        </Form>
+                    </div>
                 </Panel.Body>
             </Panel>
             <div align="right">

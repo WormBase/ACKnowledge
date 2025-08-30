@@ -38,16 +38,18 @@ const Disease = () => {
                     <Panel.Title componentClass="h3">Disease model data in the paper</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                    <Form>
-                        <Checkbox checked={disease.checked} onClick={() => dispatch(toggleDisease())}>
-                            <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson’s disease) by employing at least one of the following:</strong>
-                        </Checkbox>
-                        <ul>
-                            <li><strong>Gene/allele or strain that recapitulates disease phenotype(s) and provides insight into disease pathogenesis. Please provide official names for strains (e.g., CL2006).</strong></li>
-                            <li><strong>Transgenic studies with human and/or worm disease relevant gene.</strong></li>
-                            <li><strong>Modifiers of a new or previously established disease model (e.g., drugs, herbals, chemicals, etc).</strong></li>
-                        </ul>
-                    </Form>
+                    <div className="container-fluid">
+                        <Form>
+                            <Checkbox checked={disease.checked} onClick={() => dispatch(toggleDisease())}>
+                                <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson's disease) by employing at least one of the following:</strong>
+                            </Checkbox>
+                            <ul>
+                                <li><strong>Gene/allele or strain that recapitulates disease phenotype(s) and provides insight into disease pathogenesis. Please provide official names for strains (e.g., CL2006).</strong></li>
+                                <li><strong>Transgenic studies with human and/or worm disease relevant gene.</strong></li>
+                                <li><strong>Modifiers of a new or previously established disease model (e.g., drugs, herbals, chemicals, etc).</strong></li>
+                            </ul>
+                        </Form>
+                    </div>
                 </Panel.Body>
             </Panel>
             
@@ -98,22 +100,16 @@ Diabetes"
                 </Panel.Heading>
                 <Panel.Body>
                     <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-sm-12">
-                                Write comments here
-                            </div>
+                        <div style={{marginBottom: '10px'}}>
+                            Write comments here
                         </div>
-                        <div className="row">
-                            <div className="col-sm-12">
-                                <FormControl componentClass="textarea" multiple
-                                             value={disease.details === "checked" ? "" : disease.details}
-                                             onClick={() => dispatch(setDisease(true, disease.details === "checked" ? "" : disease.details))}
-                                             onChange={(event) => {
-                                                 dispatch(setDisease(true, event.target.value));
-                                             }}
-                                />
-                            </div>
-                        </div>
+                        <FormControl componentClass="textarea" multiple
+                                     value={disease.details === "checked" ? "" : disease.details}
+                                     onClick={() => dispatch(setDisease(true, disease.details === "checked" ? "" : disease.details))}
+                                     onChange={(event) => {
+                                         dispatch(setDisease(true, event.target.value));
+                                     }}
+                        />
                     </div>
                 </Panel.Body>
             </Panel>

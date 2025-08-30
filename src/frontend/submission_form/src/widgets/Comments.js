@@ -185,16 +185,18 @@ const Other = () => {
                         </Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <div className="row">
-                            <div className="col-sm-10">
-                                If you have unpublished data generated during this study, we encourage you to
-                                submit it at <a href="https://www.micropublication.org" target="_blank">
-                                micropublication.org <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
-                            </div>
-                            <div className="col-sm-2">
-                                <a href="https://www.micropublication.org" target="_blank">
-                                    <Image src="micropub_logo.png" responsive/>
-                                </a>
+                        <div className="container-fluid">
+                            <div className="row">
+                                <div className="col-sm-10">
+                                    If you have unpublished data generated during this study, we encourage you to
+                                    submit it at <a href="https://www.micropublication.org" target="_blank">
+                                    micropublication.org <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/></a>
+                                </div>
+                                <div className="col-sm-2">
+                                    <a href="https://www.micropublication.org" target="_blank">
+                                        <Image src="micropub_logo.png" responsive/>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </Panel.Body>

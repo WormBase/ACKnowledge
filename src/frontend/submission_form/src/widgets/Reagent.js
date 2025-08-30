@@ -117,30 +117,32 @@ const Reagent = () => {
                             <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
-                        <Form>
-                            <FormGroup>
-                                <Checkbox checked={newAntibodies.checked} onClick={dispatch(toggleNewAntibodies)}>
-                                    <strong>Newly generated antibodies</strong>
-                                </Checkbox>
-                                <FormControl type="text" placeholder="Enter antibody name and details here"
-                                             onClick={() => dispatch(setNewAntibodies())}
-                                             value={newAntibodies.details}
-                                             onChange={(event) => {dispatch(setNewAntibodies(true, event.target.value))}}/>
-                                <br/>
-                                <ControlLabel>Other Antibodies Used</ControlLabel>
-                                <FormControl componentClass="textarea" rows="5" placeholder="Insert antibodies here (optionally followed by PMID: 'antibody_name || PMID'), one per line"
-                                             value={otherAntibodies.map(a => {
-                                                 if (a.name) {
-                                                     if (a.publicationId !== undefined) {
-                                                         return a.name + " || " + a.publicationId
-                                                     } else {
-                                                         return a.name
-                                                     }}}).join("\n")}
-                                             onChange={e => dispatch(setOtherAntibodies(e.target.value.split("\n").map((a, index) => {
-                                                 return {id: index + 1, name: a.split(" || ")[0], publicationId: a.split(" || ")[1]}})))}/>
-                                <FormControl.Feedback />
-                            </FormGroup>
-                        </Form>
+                        <div className="container-fluid">
+                            <Form>
+                                <FormGroup>
+                                    <Checkbox checked={newAntibodies.checked} onClick={dispatch(toggleNewAntibodies)}>
+                                        <strong>Newly generated antibodies</strong>
+                                    </Checkbox>
+                                    <FormControl type="text" placeholder="Enter antibody name and details here"
+                                                 onClick={() => dispatch(setNewAntibodies())}
+                                                 value={newAntibodies.details}
+                                                 onChange={(event) => {dispatch(setNewAntibodies(true, event.target.value))}}/>
+                                    <br/>
+                                    <ControlLabel>Other Antibodies Used</ControlLabel>
+                                    <FormControl componentClass="textarea" rows="5" placeholder="Insert antibodies here (optionally followed by PMID: 'antibody_name || PMID'), one per line"
+                                                 value={otherAntibodies.map(a => {
+                                                     if (a.name) {
+                                                         if (a.publicationId !== undefined) {
+                                                             return a.name + " || " + a.publicationId
+                                                         } else {
+                                                             return a.name
+                                                         }}}).join("\n")}
+                                                 onChange={e => dispatch(setOtherAntibodies(e.target.value.split("\n").map((a, index) => {
+                                                     return {id: index + 1, name: a.split(" || ")[0], publicationId: a.split(" || ")[1]}})))}/>
+                                    <FormControl.Feedback />
+                                </FormGroup>
+                            </Form>
+                        </div>
                     </Panel.Body>
                 </Panel>
             </form>
