@@ -253,11 +253,16 @@ class FeedbackFormWriter:
                                                                                        tiny_url,
                                                                                        self.test)
                     # Get all author emails for the paper
-                    all_author_emails_str = self.db.afp.get_contact_emails(paper_id)
-                    if all_author_emails_str:
-                        all_author_emails = [email.strip() for email in all_author_emails_str.split(" | ")]
-                        # Remove any empty strings
-                        all_author_emails = [email for email in all_author_emails if email]
+                    all_author_emails_result = self.db.afp.get_contact_emails(paper_id)
+                    if all_author_emails_result:
+                        # Check if result is already a list or a string
+                        if isinstance(all_author_emails_result, list):
+                            all_author_emails = [email.strip() for email in all_author_emails_result if email and email.strip()]
+                        else:
+                            # It's a string, split it
+                            all_author_emails = [email.strip() for email in all_author_emails_result.split(" | ")]
+                            # Remove any empty strings
+                            all_author_emails = [email for email in all_author_emails if email]
                     else:
                         # If no emails found in afp table, at least send to the current author
                         all_author_emails = [author_email]

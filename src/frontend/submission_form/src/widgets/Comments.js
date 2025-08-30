@@ -45,8 +45,12 @@ const Other = () => {
     const isSavedToDB = useSelector((state) => state.comments.isSavedToDB);
     const allOtherWidgetsSavedToDB =  overviewSaved && geneticsSaved && reagentSaved && expressionSaved &&
         interactionsSaved && phenotypesSaved && diseaseSaved
+    
+    // Check if submission is finalized (all sections including Comments are saved)
+    const isSubmissionFinalized = allOtherWidgetsSavedToDB && isSavedToDB
 
     const comments = useSelector((state) => state.comments.comments);
+    const savedComments = useSelector((state) => state.comments.savedComments);
     const person = useSelector((state) => state.person.person);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
@@ -198,11 +202,11 @@ const Other = () => {
                 </Panel>
             </form>
             <div align="right" style={{position: 'relative'}}>
-                {/* Add the animation styles */}
-                <style>{pulseAnimation}</style>
+                {/* Add the animation styles only if not finalized */}
+                {!isSubmissionFinalized && <style>{pulseAnimation}</style>}
                 
-                {/* Show a badge when ready to submit */}
-                {allOtherWidgetsSavedToDB && (
+                {/* Show a badge when ready to submit but not yet finalized */}
+                {allOtherWidgetsSavedToDB && !isSubmissionFinalized && (
                     <div style={{
                         position: 'absolute',
                         top: '-8px',
@@ -226,16 +230,18 @@ const Other = () => {
                     placement="left" 
                     overlay={
                         <Tooltip id="submit-tooltip">
-                            {allOtherWidgetsSavedToDB 
-                                ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
-                                : "Please complete and save all other sections before submitting."
+                            {isSubmissionFinalized 
+                                ? "Your submission has been finalized. Thank you! Please remember to finalize any new changes by clicking this button again."
+                                : allOtherWidgetsSavedToDB 
+                                    ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
+                                    : "Please complete and save all other sections before submitting."
                             }
                         </Tooltip>
                     }
                 >
                     <Button 
-                        bsStyle={allOtherWidgetsSavedToDB ? "success" : "primary"} 
-                        bsSize={allOtherWidgetsSavedToDB ? "large" : "small"}
+                        bsStyle={isSubmissionFinalized ? "primary" : allOtherWidgetsSavedToDB ? "success" : "primary"} 
+                        bsSize={isSubmissionFinalized ? "small" : allOtherWidgetsSavedToDB ? "large" : "small"}
                         onClick={() => {
                             if (allOtherWidgetsSavedToDB) {
                                 const payload = {
@@ -248,8 +254,9 @@ const Other = () => {
                                 dispatch(showSectionsNotCompleted());
                             }
                         }}
+                        disabled={isSubmissionFinalized && comments === savedComments}
                         style={{
-                            ...(allOtherWidgetsSavedToDB ? {
+                            ...(allOtherWidgetsSavedToDB && !isSubmissionFinalized ? {
                                 animation: 'pulse-glow 2s infinite',
                                 fontSize: '16px',
                                 fontWeight: 'bold',
@@ -260,8 +267,8 @@ const Other = () => {
                             } : {})
                         }}
                     >
-                        <Glyphicon glyph={allOtherWidgetsSavedToDB ? "send" : "save"} style={{marginRight: '6px'}} />
-                        {allOtherWidgetsSavedToDB ? "FINISH AND SUBMIT" : "Finish and submit"}
+                        <Glyphicon glyph={isSubmissionFinalized ? "save" : allOtherWidgetsSavedToDB ? "send" : "save"} style={{marginRight: '6px'}} />
+                        {isSubmissionFinalized ? "Finish and submit" : allOtherWidgetsSavedToDB ? "FINISH AND SUBMIT" : "Finish and submit"}
                     </Button>
                 </OverlayTrigger>
             </div>
