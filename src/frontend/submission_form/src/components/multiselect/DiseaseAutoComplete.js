@@ -35,10 +35,12 @@ const DiseaseAutoComplete = ({
 
     return (
         <div style={{padding: '8px'}}>
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
-                <span>
-                    <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them. If you need help finding a disease term, you can access the Disease Ontology <a href="https://disease-ontology.org" target="_blank" rel="noopener noreferrer">here</a>.
-                </span>
+            <div style={{marginBottom: '12px'}}>
+                <div style={{marginBottom: '10px'}}>
+                    <span>
+                        <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them. If you need help finding a disease term, you can access the Disease Ontology <a href="https://disease-ontology.org" target="_blank" rel="noopener noreferrer">here</a>.
+                    </span>
+                </div>
                 <div>
                     <Button 
                         bsStyle="primary"

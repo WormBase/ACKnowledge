@@ -56,11 +56,13 @@ const AutoComplete = ({
 
     return (
         <div style={{padding: '8px'}}>
-            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px'}}>
-                <span>
-                    <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them
-                </span>
-                <div style={{display: 'flex', gap: '8px'}}>
+            <div style={{marginBottom: '12px'}}>
+                <div style={{marginBottom: '10px'}}>
+                    <span>
+                        <strong>Add Mode:</strong> Enter {itemsNamePlural} to search and add them
+                    </span>
+                </div>
+                <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
                     <Button
                         className="multiselect-btn-success"
                         bsSize="small"

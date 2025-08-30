@@ -276,6 +276,51 @@
   color: white;
 }
 
+/* Desktop spacing improvements for removal mode */
+@media (min-width: 768px) {
+  /* Fix the removal mode alert layout to prevent overlap */
+  .alert.alert-warning {
+    padding: 15px 20px !important;
+  }
+  
+  /* Make the main flex container wrap on smaller viewports */
+  .alert-warning > div[style*="display: flex"] {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+  }
+  
+  /* Ensure instruction text doesn't get squeezed */
+  .alert-warning > div > span {
+    flex: 1 1 400px !important;
+    min-width: 400px !important;
+    margin-right: 20px !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Keep buttons from overlapping */
+  .alert-warning > div > div[style*="gap"] {
+    flex: 0 0 auto !important;
+    min-width: fit-content !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* For larger desktops, use single line layout */
+@media (min-width: 1200px) {
+  .alert-warning > div[style*="display: flex"] {
+    flex-wrap: nowrap !important;
+  }
+  
+  .alert-warning > div > span {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    margin-right: 30px !important;
+  }
+}
+
 /* Utility Classes */
 .text-muted {
   color: #6c757d !important;
@@ -340,13 +385,41 @@
   }
   
   /* Ensure proper spacing for mobile */
+  /* Stack buttons vertically on mobile */
   .entity-list__actions {
     margin-top: 16px;
-    gap: 12px;
+    gap: 8px;
+    flex-direction: column !important;
+  }
+  
+  .entity-list__actions .btn {
+    width: 100% !important;
+    flex: none !important;
+    font-size: 16px !important;
+    padding: 12px 16px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .entity-management__actions {
-    gap: 16px;
+    gap: 12px;
+    flex-direction: column !important;
+  }
+  
+  .entity-management__actions .btn {
+    width: 100% !important;
+    flex: none !important;
+  }
+  
+  .entity-addition__footer {
+    flex-direction: column !important;
+  }
+  
+  .entity-addition__footer .btn {
+    width: 100% !important;
+    flex: none !important;
+    margin-bottom: 8px !important;
   }
   
   /* Make entity manager more mobile-friendly */

@@ -325,11 +325,11 @@ const MultiSelect = (props) => {
             {/* Removal mode actions */}
             {showRemovalMode && (
                 <Alert bsStyle="warning" style={{marginBottom: '12px'}}>
-                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <span>
+                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '15px'}}>
+                        <span style={{flex: '1 1 auto', minWidth: '300px', marginRight: '20px'}}>
                             <strong>Removal Mode:</strong> Click on items to select them (yellow highlight), then click "Remove Selected"
                         </span>
-                        <div style={{display: 'flex', gap: '5px'}}>
+                        <div style={{display: 'flex', gap: '5px', flexShrink: 0}}>
                             <Button 
                                 bsStyle="warning"
                                 bsSize="small" 
