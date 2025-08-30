@@ -271,10 +271,21 @@ class FeedbackFormWriter:
                     coauthor_emails = [email for email in all_author_emails if email != author_email]
                     
                     # Get submitter's name for the coauthor notification
-                    person_id = req.media["person_id"]
-                    submitter_name = self.db.person.get_fullname_from_personid("two" + person_id)
-                    if not submitter_name:
-                        submitter_name = author_email  # Fallback to email if name not found
+                    person_id = req.media.get("person_id", "")
+                    
+                    # Log for debugging
+                    self.logger.info(f"Getting submitter name for person_id: {person_id}")
+                    
+                    # person_id from frontend already includes "two" prefix
+                    submitter_name = self.db.person.get_fullname_from_personid(person_id)
+                    
+                    # Log the result
+                    self.logger.info(f"Submitter name from DB: {submitter_name}")
+                    
+                    # If name not found or is None/empty, use fallback
+                    if not submitter_name or submitter_name == "Unknown user" or submitter_name.strip() == "":
+                        self.logger.warning(f"Could not get submitter name for person_id {person_id}, using email as fallback")
+                        submitter_name = author_email
                     
                     # Send thank you email to the submitting author
                     self.email_manager.send_new_sub_thanks_email(
