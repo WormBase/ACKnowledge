@@ -193,7 +193,7 @@ const PersonSelector = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Select from Authors/Community Curators list</Modal.Title>
                 </Modal.Header>
-                <Modal.Body style={{minWidth: '600px', minHeight: '400px'}}>
+                <Modal.Body style={{minHeight: '400px'}}>
                     {data_fetch_err_alert}
                     <div style={{marginBottom: '16px'}}>
                         <label style={{fontSize: '14px', fontWeight: '600', marginBottom: '8px', display: 'block'}}>
@@ -221,10 +221,10 @@ const PersonSelector = () => {
                                 minHeight: '200px',
                                 fontSize: '13px'
                             }}
-                            defaultValue=""
+                            value={tmp_person_id ? [`${tmp_person_name} ( WBPerson${tmp_person_id} )`] : []}
                             onDoubleClick={(e) => {
-                                if (!e.target.label) return; // Prevent error when clicking without data
-                                let fullData = e.target.label;
+                                if (!e.target.value) return; // Prevent error when clicking without data
+                                let fullData = e.target.value;
                                 let wbRx = / \( WBPerson([0-9]+) \)/;
                                 let arr = wbRx.exec(fullData);
                                 if (arr && arr[1]) {
@@ -233,15 +233,18 @@ const PersonSelector = () => {
                                     handleClose();
                                 }
                             }}
-                            onClick={(e) => {
-                                if (!e.target.label) return; // Prevent error when clicking without data
-                                let fullData = e.target.label;
-                                let wbRx = / \( WBPerson([0-9]+) \)/;
-                                let arr = wbRx.exec(fullData);
-                                if (arr && arr[1]) {
-                                    fullData = fullData.replace(wbRx, "");
-                                    setTmp_person_name(fullData);
-                                    setTmp_person_id(arr[1]);
+                            onChange={(e) => {
+                                // Get the selected option
+                                const selectedOptions = Array.from(e.target.selectedOptions);
+                                if (selectedOptions.length > 0) {
+                                    const selectedValue = selectedOptions[0].value;
+                                    let wbRx = / \( WBPerson([0-9]+) \)/;
+                                    let arr = wbRx.exec(selectedValue);
+                                    if (arr && arr[1]) {
+                                        let personName = selectedValue.replace(wbRx, "");
+                                        setTmp_person_name(personName);
+                                        setTmp_person_id(arr[1]);
+                                    }
                                 }
                             }}
                         >
@@ -277,7 +280,7 @@ const PersonSelector = () => {
                     </div>
                     <div>
                         <Button 
-                            bsStyle="primary"
+                            bsStyle="default"
                             onClick={handleClose}
                             style={{marginRight: '10px'}}
                         >
