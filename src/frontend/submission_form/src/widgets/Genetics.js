@@ -174,8 +174,14 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             <form>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <Panel.Title componentClass="h3" style={{
+                            display: 'flex', 
+                            alignItems: 'flex-start', 
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '10px'
+                        }}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0'}}>
                                 <span>List of WormBase alleles experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={allelesTooltip}>
                                     <Glyphicon glyph="question-sign"/>
@@ -189,7 +195,9 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                     disabled={creatingAllelesSpreadsheet}
                                     style={{
                                         fontSize: '11px',
-                                        padding: '2px 6px'
+                                        padding: '2px 6px',
+                                        whiteSpace: 'nowrap',
+                                        flexShrink: 0
                                     }}
                                 >
                                     <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
@@ -283,8 +291,14 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                        <Panel.Title componentClass="h3" style={{
+                            display: 'flex', 
+                            alignItems: 'flex-start', 
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '10px'
+                        }}>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0'}}>
                                 <span>List of WormBase strains experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={strainsTooltip}>
                                     <Glyphicon glyph="question-sign"/>
@@ -298,7 +312,9 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                     disabled={creatingStrainsSpreadsheet}
                                     style={{
                                         fontSize: '11px',
-                                        padding: '2px 6px'
+                                        padding: '2px 6px',
+                                        whiteSpace: 'nowrap',
+                                        flexShrink: 0
                                     }}
                                 >
                                     <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />

@@ -30,6 +30,25 @@
 /* Import improved form styles */
 @import './styles/FormImproved.css';
 
+/* Bootstrap-like responsive utility classes */
+.visible-xs-inline {
+    display: none !important;
+}
+
+.hidden-xs {
+    display: initial;
+}
+
+@media (max-width: 767px) {
+    .visible-xs-inline {
+        display: inline !important;
+    }
+    
+    .hidden-xs {
+        display: none !important;
+    }
+}
+
 /* Mobile responsive menu styles for submission form */
 .mobile-menu-toggle-submission {
     display: none;
@@ -290,6 +309,27 @@
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
+    }
+    
+    /* Fix Panel headers with buttons on mobile */
+    .panel-title {
+        width: 100% !important;
+    }
+    
+    .panel-title button {
+        margin-top: 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Prevent horizontal overflow in panels */
+    .panel {
+        overflow-x: hidden !important;
+    }
+    
+    .panel-heading {
+        padding: 10px !important;
+        overflow-x: auto !important;
     }
     
     /* Override inline styles on modal body */
