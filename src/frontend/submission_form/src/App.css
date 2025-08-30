@@ -11,7 +11,7 @@
   background-color: #222;
   height: 150px;
   padding: 20px;
-  color: white;
+  color: #333;
 }
 
 .App-title {
@@ -29,3 +29,245 @@
 
 /* Import improved form styles */
 @import './styles/FormImproved.css';
+
+/* Mobile responsive menu styles for submission form */
+.mobile-menu-toggle-submission {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+}
+.mobile-menu-toggle-submission.hidden {
+    display: none !important;
+}
+
+.hamburger-btn-submission {
+    width: 45px;
+    height: 45px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn-submission:hover,
+.hamburger-btn-submission:focus {
+    background-color: #0056b3;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.hamburger-btn-submission span {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 2px 0;
+    transition: 0.3s;
+    border-radius: 1px;
+}
+
+.menu-overlay-submission {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay-submission.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+    .mobile-menu-toggle-submission {
+        display: block;
+    }
+    
+    .menu-overlay-submission {
+        display: block;
+    }
+    
+    .sidebar-menu {
+        position: fixed;
+        top: 0;
+        left: -350px;
+        width: 330px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+        background-color: #f8f9fa;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .sidebar-menu.expanded {
+        left: 0;
+    }
+    
+    .sidebar-menu.collapsed {
+        left: -350px;
+    }
+    
+    /* Adjust main content area for mobile */
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding-top: 70px;
+    }
+    
+    /* Make the container full width on mobile */
+    .container {
+        width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    /* Show integrated menu header on mobile */
+    .mobile-menu-header {
+        display: block;
+        background-color: white;
+        padding: 10px 15px;
+        border-radius: 5px 5px 0 0;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    /* Integrated close button styles */
+    .hamburger-btn-integrated {
+        background: none;
+        border: none;
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        transition: all 0.2s ease;
+    }
+
+    .hamburger-btn-integrated:hover,
+    .hamburger-btn-integrated:focus {
+        background-color: rgba(0, 0, 0, 0.1);
+        color: #333;
+    }
+
+    /* Make modal buttons larger and more touch-friendly on mobile */
+    .modal-footer .btn {
+        min-height: 44px;
+        padding: 12px 20px;
+        font-size: 16px;
+        margin: 5px;
+    }
+    
+    .modal-header .close {
+        font-size: 28px;
+        padding: 10px;
+        margin: -10px;
+    }
+    
+    /* Larger tap targets for form elements */
+    .form-control, 
+    .btn:not(.hamburger-btn-submission):not(.hamburger-btn-integrated) {
+        min-height: 44px;
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+
+    /* Comprehensive mobile button styling */
+    .btn, button {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        margin: 3px !important;
+        touch-action: manipulation;
+    }
+    
+    /* Special styling for primary action buttons */
+    .btn-primary, .btn-success, .btn-large {
+        min-height: 48px !important;
+        padding: 14px 20px !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Override for hamburger buttons to keep them compact */
+    .hamburger-btn-submission, .hamburger-btn-integrated {
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Modal buttons need extra space */
+    .modal .btn {
+        min-height: 48px !important;
+        padding: 14px 24px !important;
+        margin: 8px 4px !important;
+    }
+}
+
+/* Desktop styles - ensure normal layout */
+@media (min-width: 768px) {
+    .sidebar-menu {
+        position: relative;
+        left: 0 !important;
+        width: auto;
+        transition: none;
+        background-color: transparent;
+        border: none;
+    }
+    
+    .mobile-menu-toggle-submission {
+        display: none !important;
+    }
+    
+    .menu-overlay-submission {
+        display: none !important;
+    }
+    
+    .main-content {
+        width: auto;
+        margin-left: 0;
+        padding-top: 0;
+    }
+
+    /* Ensure Bootstrap grid works normally on desktop */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .col-sm-3.sidebar-menu {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+    
+    .col-sm-9.main-content {
+        flex: 0 0 75%;
+        max-width: 75%;
+    }
+    
+    /* Hide integrated menu header on desktop */
+    .mobile-menu-header {
+        display: none;
+    }
+}

@@ -6,7 +6,7 @@ import {useDispatch} from "react-redux";
 import {setSelectedPaperID} from "../redux/actions";
 import {useHistory} from "react-router";
 
-const LateralMenu = () => {
+const LateralMenu = ({onMenuItemClick = () => {}}) => {
     const dispatch = useDispatch();
     const [tmpPaperID, setTmpPaperID] = useState('');
     const history = useHistory();
@@ -71,7 +71,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"paper" + args}
                                         active={true}>
-                        <a className="aw"><h6>Paper Status</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Paper Status</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -79,7 +79,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"stats" + args}
                                         active={true}>
-                        <a className="aw"><h6>Overall Stats</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Overall Stats</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -87,7 +87,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"papers_stats" + args}
                                         active={true}>
-                        <a className="aw"><h6>Extraction stats</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Extraction stats</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -95,7 +95,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"lists" + args}
                                         active={true}>
-                        <a className="aw"><h6>Paper Lists</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Paper Lists</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -103,7 +103,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"contributors" + args}
                                         active={true}>
-                        <a className="aw"><h6>Contributors</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Contributors</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -111,7 +111,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"entities" + args}
                                         active={true}>
-                        <a className="aw"><h6>Entities Added/Removed</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Entities Added/Removed</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>
@@ -119,7 +119,7 @@ const LateralMenu = () => {
                 <Col sm="10">
                     <IndexLinkContainer to={"sentence_classification" + args}
                                         active={true}>
-                        <a className="aw"><h6>Sentence Level Classification</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Sentence Level Classification</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>

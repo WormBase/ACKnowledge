@@ -26,7 +26,7 @@ body {
 }
 
 #lateralMenu {
-    height: 100vh;
+    min-height: 100vh;
     background-color: steelblue;
     color: white;
 }
@@ -116,4 +116,569 @@ div {
 
 .colorAccent3 {
     background-color: #fdc086;
+}
+
+/* Mobile responsive menu styles */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+}
+
+.hamburger-btn {
+    width: 45px;
+    height: 45px;
+    background-color: steelblue;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover,
+.hamburger-btn:focus {
+    background-color: #4682b4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.hamburger-btn span {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 2px 0;
+    transition: 0.3s;
+    border-radius: 1px;
+}
+
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .menu-overlay {
+        display: block;
+    }
+    
+    #lateralMenu {
+        position: fixed;
+        top: 0;
+        left: -380px;
+        width: 380px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    #lateralMenu.expanded {
+        left: 0;
+    }
+    
+    /* Adjust main content area for mobile */
+    .container-fluid .row .col-sm-10 {
+        width: 100%;
+        padding-top: 70px;
+    }
+    
+    /* Hide menu on desktop by default, show when expanded on mobile */
+    #lateralMenu.collapsed {
+        left: -380px;
+    }
+}
+
+/* Desktop styles - ensure menu is always visible */
+@media (min-width: 768px) {
+    #lateralMenu {
+        position: relative;
+        left: 0 !important;
+        width: auto;
+        transition: none;
+    }
+    
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    .menu-overlay {
+        display: none !important;
+    }
+    
+    /* Reset any mobile-specific changes on desktop */
+    .container-fluid .row .col-sm-10 {
+        width: auto;
+        padding-top: 0;
+    }
+    
+    /* Make menu scroll with content on desktop */
+    #lateralMenu {
+        height: auto;
+        min-height: 100vh;
+    }
+}
+
+/* Mobile button improvements */
+@media (max-width: 767px) {
+    /* Comprehensive mobile button styling */
+    .btn, button {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        margin: 3px !important;
+        touch-action: manipulation;
+    }
+    
+    /* Special styling for primary action buttons */
+    .btn-primary, .btn-success, .btn-large {
+        min-height: 48px !important;
+        padding: 14px 20px !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Override for hamburger button to keep it compact */
+    .hamburger-btn {
+        min-height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Modal buttons need extra space */
+    .modal .btn {
+        min-height: 48px !important;
+        padding: 14px 24px !important;
+        margin: 8px 4px !important;
+    }
+    
+    /* Form controls */
+    .form-control {
+        min-height: 44px !important;
+        font-size: 16px !important;
+        padding: 12px 16px !important;
+    }
+}
+
+/* Comprehensive mobile responsive improvements for curator dashboard */
+@media (max-width: 767px) {
+    /* Fix main layout issues */
+    .container-fluid {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .container-fluid .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    /* Make main content area full width and remove scrollbar */
+    .container-fluid .row .col-sm-10 {
+        width: 100% !important;
+        padding-top: 70px;
+        padding-left: 10px;
+        padding-right: 10px;
+        float: none;
+    }
+    
+    /* Fix main page layout */
+    .main-page {
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding: 10px 5px;
+    }
+    
+    /* Improve lateral menu for mobile - make it much wider */
+    #lateralMenu {
+        width: 380px !important;
+        padding: 20px;
+        font-size: 18px;
+        left: -380px;
+    }
+    
+    #lateralMenu.expanded {
+        left: 0 !important;
+    }
+    
+    #lateralMenu.collapsed {
+        left: -380px !important;
+    }
+    
+    #lateralMenu h6 {
+        font-size: 18px;
+        margin: 12px 0;
+        line-height: 1.4;
+        font-weight: 600;
+    }
+    
+    #lateralMenu .form-control {
+        font-size: 18px;
+        padding: 15px;
+        margin: 12px 0;
+        width: 100%;
+        border-radius: 6px;
+    }
+    
+    #lateralMenu .form-label {
+        font-size: 18px;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+    
+    /* Better panels and content */
+    .panel {
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .panel-body {
+        padding: 25px;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    .panel-heading {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    
+    .panel-title {
+        font-size: 20px;
+
+    /* Make all text much more readable */
+    p, div, span, td, th, label {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Improve readability of all content */
+    .main-page * {
+        word-wrap: break-word;
+        hyphens: auto;
+    }
+    
+    /* Better table readability */
+    .table {
+        font-size: 16px;
+    }
+    
+    .table td, .table th {
+        padding: 12px;
+        vertical-align: middle;
+    }
+    
+    /* Improve form readability */
+    .form-control {
+        font-size: 16px !important;
+        padding: 12px 15px !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Better button sizes */
+    .btn {
+        font-size: 16px !important;
+        padding: 12px 20px !important;
+        min-height: 44px !important;
+    }
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Improve tables for mobile */
+    .table-responsive {
+        border: none;
+        margin-bottom: 0;
+        overflow-x: auto;
+    }
+    
+    table {
+        font-size: 14px;
+        min-width: 600px;
+    }
+    
+    th, td {
+        padding: 8px 6px;
+        white-space: nowrap;
+    }
+    
+    /* Better form layouts */
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-control {
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    /* Improve jumbotron and content areas */
+    .jumbotron {
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .mainJumbotron {
+        min-height: auto;
+        padding: 15px;
+    }
+    
+    /* Better list panels */
+    .listPanel {
+        min-height: auto;
+        padding: 10px;
+    }
+    
+    /* Improve navigation and links */
+    .nav-pills > li > a {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    /* Better spacing for headers */
+    h1, h2, h3, h4, h5, h6 {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+    
+    h1 { font-size: 24px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    h4 { font-size: 16px; }
+    
+    /* Remove excess margins and improve spacing */
+    .row {
+        margin-bottom: 10px;
+    }
+    
+    /* Improve alert messages */
+    .alert {
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Tablet improvements */
+@media (min-width: 768px) and (max-width: 991px) {
+    .container-fluid .row .col-sm-10 {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .main-page {
+        padding: 15px;
+    }
+    
+    #lateralMenu {
+        padding: 20px 15px;
+    }
+}
+
+/* AGGRESSIVE LAYOUT FIXES */
+
+/* DESKTOP LAYOUT FIXES */
+@media (min-width: 768px) {
+    /* Remove scrollbar from main page */
+    .main-page {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    
+    /* Ensure lateral menu scrolls with page, not fixed */
+    #lateralMenu {
+        position: relative !important;
+        height: auto !important;
+        min-height: 100vh;
+    }
+    
+    /* Better balanced spacing between menu and content */
+    .container-fluid .row {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+    
+    .container-fluid .row .col-sm-2 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .container-fluid .row .col-sm-10 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    /* Fix panel and title centering by ensuring consistent padding */
+    .main-page .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .main-page .row {
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+    
+    .main-page .row > [class*="col-"] {
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 20px;
+    }
+    
+    /* Ensure titles have same alignment as panels */
+    .main-page h1, .main-page h2, .main-page h3 {
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+/* IMPROVED MOBILE LAYOUT */
+@media (max-width: 767px) {
+    /* Make lateral menu truly wide and readable */
+    #lateralMenu {
+        width: 95vw !important;
+        max-width: 450px !important;
+        left: -95vw !important;
+        padding: 25px 20px !important;
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+    }
+    
+    #lateralMenu.expanded {
+        left: 0 !important;
+    }
+    
+    #lateralMenu.collapsed {
+        left: -95vw !important;
+    }
+    
+    /* Improve lateral menu text readability with tighter spacing */
+    #lateralMenu h6 {
+        font-size: 20px !important;
+        margin: 10px 0 8px 0 !important;
+        font-weight: 600 !important;
+    }
+    
+    #lateralMenu .form-control {
+        font-size: 18px !important;
+        padding: 12px !important;
+        margin: 8px 0 !important;
+    }
+    
+    #lateralMenu .panel {
+        margin-bottom: 15px !important;
+    }
+    
+    #lateralMenu .panel-body {
+        padding: 15px !important;
+    }
+    
+    /* Fix mobile menu vertical spacing - target Bootstrap Row/Col structure */
+    #lateralMenu .row {
+        margin-bottom: 5px !important;
+        margin-top: 0 !important;
+    }
+    
+    #lateralMenu .row:first-child {
+        margin-top: 10px !important;
+    }
+    
+    #lateralMenu .col-sm-10 {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    #lateralMenu h6 {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+        font-size: 18px !important;
+        line-height: 1.2 !important;
+    }
+    
+    #lateralMenu hr {
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #lateralMenu .form-group {
+        margin-bottom: 10px !important;
+    }
+    
+    /* Make acknowledge logo smaller on mobile to save space */
+    #lateralMenu img {
+        width: 80px !important;
+        height: auto !important;
+        max-width: 80px !important;
+    }
+    
+    /* Adjust header row spacing for smaller logo */
+    #lateralMenu .row:nth-child(2) {
+        margin-bottom: 10px !important;
+    }
+    
+    /* Make main content area truly full width */
+    .container-fluid .row .col-sm-10 {
+        width: 100% !important;
+        padding: 70px 5px 20px 5px !important;
+        float: none !important;
+    }
+    
+    /* Force panels to be full width and stack vertically */
+    .main-page .row {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    
+    .main-page .row > [class*="col-"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        flex: none !important;
+        margin: 0 0 20px 0 !important;
+        padding: 0 5px !important;
+    }
+    
+    /* Ensure panels use full available width */
+    .panel {
+        width: 100% !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+    }
+    
+    .panel-body {
+        padding: 20px !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        word-wrap: break-word !important;
+    }
 }

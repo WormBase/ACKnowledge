@@ -6,7 +6,7 @@ import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
 import {setSelectedWidget} from "../redux/actions/widgetActions";
 
-const Menu = ({urlQuery}) => {
+const Menu = ({urlQuery, onMenuItemClick = () => {}}) => {
     const dispatch = useDispatch();
 
     // Utility function to check if a widget has changes
@@ -123,49 +123,49 @@ const Menu = ({urlQuery}) => {
                     <Nav bsStyle="pills" stacked onSelect={(sel) => dispatch(setSelectedWidget(sel))}>
                         <IndexLinkContainer to={WIDGET.OVERVIEW + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.OVERVIEW]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="overview" title={WIDGET_TITLE[WIDGET.OVERVIEW]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.GENETICS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.GENETICS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="genetics" title={WIDGET_TITLE[WIDGET.GENETICS]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.REAGENT + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.REAGENT]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="reagent" title={WIDGET_TITLE[WIDGET.REAGENT]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.EXPRESSION + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.EXPRESSION]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="expression" title={WIDGET_TITLE[WIDGET.EXPRESSION]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.INTERACTIONS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.INTERACTIONS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="interactions" title={WIDGET_TITLE[WIDGET.INTERACTIONS]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.PHENOTYPES + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.PHENOTYPES]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="phenotypes" title={WIDGET_TITLE[WIDGET.PHENOTYPES]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.DISEASE + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.DISEASE]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="disease" title={WIDGET_TITLE[WIDGET.DISEASE]} />
                             </NavItem>
                         </IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.COMMENTS + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.COMMENTS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]}>
+                            <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]} onClick={onMenuItemClick}>
                                 <MenuItemWithIcon widget="comments" title={WIDGET_TITLE[WIDGET.COMMENTS]} />
                             </NavItem>
                         </IndexLinkContainer>
@@ -179,12 +179,12 @@ const Menu = ({urlQuery}) => {
                         <IndexLinkContainer to={WIDGET.ABOUT + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.ABOUT]}>
                             <NavItem
-                                eventKey={MENU_INDEX[WIDGET.ABOUT]}>{WIDGET_TITLE[WIDGET.ABOUT]}
+                                eventKey={MENU_INDEX[WIDGET.ABOUT]} onClick={onMenuItemClick}>{WIDGET_TITLE[WIDGET.ABOUT]}
                             </NavItem></IndexLinkContainer>
                         <IndexLinkContainer to={WIDGET.HELP + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.HELP]}>
                             <NavItem
-                                eventKey={MENU_INDEX[WIDGET.HELP]}>{WIDGET_TITLE[WIDGET.HELP]}
+                                eventKey={MENU_INDEX[WIDGET.HELP]} onClick={onMenuItemClick}>{WIDGET_TITLE[WIDGET.HELP]}
                             </NavItem></IndexLinkContainer>
                         <NavItem href="https://www.youtube.com/embed/ZONK4qe_-w8?start=86&end=1011" target="_blank">
                             WormBase Community Curation Webinar <Glyphicon glyph="new-window"/>
@@ -195,7 +195,7 @@ const Menu = ({urlQuery}) => {
                         <IndexLinkContainer to={WIDGET.RELEASE_NOTES + urlQuery}
                                             active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.RELEASE_NOTES]}>
                             <NavItem
-                                eventKey={MENU_INDEX[WIDGET.RELEASE_NOTES]}>{WIDGET_TITLE[WIDGET.RELEASE_NOTES]}
+                                eventKey={MENU_INDEX[WIDGET.RELEASE_NOTES]} onClick={onMenuItemClick}>{WIDGET_TITLE[WIDGET.RELEASE_NOTES]}
                             </NavItem></IndexLinkContainer>
                     </Nav>
                 </div>

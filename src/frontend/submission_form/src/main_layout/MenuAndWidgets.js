@@ -39,6 +39,7 @@ const MenuAndWidgets = (props) => {
     const [showPopup, setShowPopup] = useState(true);
     const [showCompletedModal, setShowCompletedModal] = useState(false);
     const [initialPerson, setInitialPerson] = useState(null);
+    const [menuCollapsed, setMenuCollapsed] = useState(true);
     const selectedWidget = useSelector((state) => state.widget.selectedWidget);
 
     // Utility function to check if a widget has changes (same as in Menu.js)
@@ -192,8 +193,37 @@ const MenuAndWidgets = (props) => {
 
     return (
         <div className="container" style={{maxWidth: '1400px', padding: '0 10px'}}>
+            {/* Mobile hamburger button - external trigger */}
+            <div className={`mobile-menu-toggle-submission ${!menuCollapsed ? "hidden" : ""}`}>
+                <Button 
+                    onClick={() => setMenuCollapsed(!menuCollapsed)}
+                    className="hamburger-btn-submission"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </Button>
+            </div>
+            
+            {/* Overlay for mobile menu */}
+            <div 
+                className={`menu-overlay-submission ${!menuCollapsed ? 'active' : ''}`}
+                onClick={() => setMenuCollapsed(true)}
+            ></div>
+            
             <div className="row" style={{margin: '0 -5px'}}>
-                <div className="col-sm-3" style={{padding: '0 5px'}}>
+                <div className={`col-sm-3 sidebar-menu ${menuCollapsed ? 'collapsed' : 'expanded'}`} style={{padding: '0 5px'}}>
+                    {/* Mobile hamburger button - integrated with menu */}
+                    <div className="mobile-menu-header">
+                        <Button 
+                            onClick={() => setMenuCollapsed(true)}
+                            className="hamburger-btn-integrated"
+                            title="Close Menu"
+                        >
+                            ×
+                        </Button>
+                    </div>
+                    
                     <div className="panel panel-default" style={{marginBottom: '10px'}}>
                         <div className="panel-body" style={{padding: '8px'}}>
                             <PersonSelector/>
@@ -269,9 +299,9 @@ const MenuAndWidgets = (props) => {
                             </Button>
                         </OverlayTrigger>
                     </div>
-                    <Menu urlQuery={props.location.search}/>
+                    <Menu urlQuery={props.location.search} onMenuItemClick={() => setMenuCollapsed(true)} />
                 </div>
-                <div className="col-sm-9" style={{padding: '0 5px', paddingLeft: '15px'}}>
+                <div className="col-sm-9 main-content" style={{padding: '0 5px', paddingLeft: '15px'}}>
                     <div className="panel panel-default">
                         <div className="panel-body" style={{padding: '12px'}}>
                             <WidgetArea urlQuery={props.location.search} history={props.history}/>
