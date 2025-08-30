@@ -68,7 +68,18 @@ export const CompletedSubmissionModal = (props) => {
                         This form was already filled out and submitted by <strong>{props.previousAuthor}</strong>.
                     </p>
                     <p>
-                        If you wish to review and/or modify the submission, click on the "Continue" button below.
+                        <strong>To review or modify the submission:</strong>
+                    </p>
+                    <ol style={{paddingLeft: '20px'}}>
+                        <li>Click "Continue" to access the form</li>
+                        <li>Make any desired changes in the relevant sections</li>
+                        <li>Click "Save and go to next section" to save data in each individual section or
+                            "Save current progress" to save all modified sections</li>
+                        <li>Navigate to the Comments section</li>
+                        <li>Click "Re-submit to WormBase" to finalize your updates</li>
+                    </ol>
+                    <p style={{fontStyle: 'italic', fontSize: '13px', color: '#666'}}>
+                        Note: Changes won't be sent to WormBase until you complete all these steps.
                     </p>
                 </Modal.Body>
                 <Modal.Footer>

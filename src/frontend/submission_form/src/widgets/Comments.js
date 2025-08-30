@@ -64,6 +64,31 @@ const Other = () => {
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
+            
+            {/* Show a clear message when submission is finalized */}
+            {isSubmissionFinalized && (
+                <div className="alert alert-info" style={{
+                    backgroundColor: '#e3f2fd',
+                    borderColor: '#2196f3',
+                    color: '#0d47a1',
+                    padding: '15px',
+                    marginBottom: '20px',
+                    borderRadius: '4px',
+                    fontSize: '14px'
+                }}>
+                    <strong>✓ Your submission has been successfully finalized!</strong>
+                    <br/><br/>
+                    <strong>To make additional changes:</strong>
+                    <ol style={{marginBottom: '5px', paddingLeft: '20px'}}>
+                        <li>Navigate to any section and make your changes</li>
+                        <li>Click "Save and go to next section" to save data in each individual section or
+                            "Save current progress" to save all modified sections</li>
+                        <li>Return to this Comments section</li>
+                        <li>Click "Re-submit to WormBase" to finalize your new changes</li>
+                    </ol>
+                    <small style={{fontStyle: 'italic'}}>Note: Changes are not sent to WormBase until you click the re-submit button.</small>
+                </div>
+            )}
             <form>
                 <Panel>
                     <Panel.Heading>
@@ -231,7 +256,9 @@ const Other = () => {
                     overlay={
                         <Tooltip id="submit-tooltip">
                             {isSubmissionFinalized 
-                                ? "Your submission has been finalized. Thank you! Please remember to finalize any new changes by clicking this button again."
+                                ? (comments !== savedComments 
+                                    ? <strong>You have unsaved comments. Click here to re-submit your changes to WormBase.</strong>
+                                    : "Your submission has been finalized. To make further changes: 1) Edit any section, 2) Save those changes using 'Save current progress', 3) Return here and click this button to re-submit.")
                                 : allOtherWidgetsSavedToDB 
                                     ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
                                     : "Please complete and save all other sections before submitting."
@@ -268,7 +295,9 @@ const Other = () => {
                         }}
                     >
                         <Glyphicon glyph={isSubmissionFinalized ? "save" : allOtherWidgetsSavedToDB ? "send" : "save"} style={{marginRight: '6px'}} />
-                        {isSubmissionFinalized ? "Finish and submit" : allOtherWidgetsSavedToDB ? "FINISH AND SUBMIT" : "Finish and submit"}
+                        {isSubmissionFinalized 
+                            ? (comments !== savedComments ? "Re-submit changes" : "Re-submit to WormBase")
+                            : allOtherWidgetsSavedToDB ? "FINISH AND SUBMIT" : "Finish and submit"}
                     </Button>
                 </OverlayTrigger>
             </div>

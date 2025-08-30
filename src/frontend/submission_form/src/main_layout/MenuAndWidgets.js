@@ -259,7 +259,7 @@ const MenuAndWidgets = (props) => {
                             overlay={
                                 <Tooltip id="save-progress-tooltip">
                                     {allSectionsSaved 
-                                        ? "Your submission has been finalized. You can still save any new changes."
+                                        ? "Your submission has been finalized. Save any new changes here, then go to Comments section to re-submit them to WormBase."
                                         : allSectionsExceptCommentsSaved && !isOnCommentsWidget
                                             ? <strong>All sections are complete! Click here to proceed to the Comments section where you can finalize your submission to WormBase.</strong>
                                             : !hasAnyChanges 
