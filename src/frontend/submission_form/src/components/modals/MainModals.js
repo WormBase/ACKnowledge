@@ -103,7 +103,7 @@ export const SectionsNotCompletedModal = (props) => {
                     <Modal.Title id="contained-modal-title-lg">Incomplete Sections</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    You need to complete the following sections before ckicking the "finish and Submit" button:
+                    You need to complete the following sections before clicking the "Finish and Submit" button:
                     <ul>
                         {[...props.sections].map(item => <li>{item}</li>)}
                     </ul>
