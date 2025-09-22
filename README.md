@@ -10,7 +10,7 @@ The ACKnowledge system, currently implemented by WormBase for the <i>C. elegans<
 
 Additional tools in the ACKnowledge system include software to send automated reminder emails to authors who have not completed their submissions, a notification system to inform knowledgebase curators about new author submissions, and a dashboard for curators to monitor submission status.</p>
 
-The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.</p>
+The ACKnowledge project was supported (2021-2025) by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.</p>
 If you have questions about the ACKnowledge project, please contact <a href="mailto:help.acknowledge@wormbase.org">help.acknowledge@wormbase.org</a>.</p>
 
 [ACKnowledge Github repository](https://github.com/WormBase/ACKnowledge)
