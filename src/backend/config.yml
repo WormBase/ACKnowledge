@@ -14,13 +14,11 @@ emails:
                       <a href='https://wormbase.org'>WormBase</a> is contacting you for help in alerting our biocurators to data that need to be extracted<br/>
                       from your paper and entered into our database.<br/>
                       <br/>
-                      This process is part of our <a href='https://wormbase.github.io/ACKnowledge/'>ACKnowledge</a> community curation project funded by the <a href='https://www.nlm.nih.gov/'>National Library of Medicine</a>.<br/>
+                      This process is part of our <a href='https://wormbase.github.io/ACKnowledge/'>ACKnowledge</a> community curation project.<br/>
                       <br/>
                       If you would like to flag* your paper for detailed curation, please click <a href={}>here</a>.<br/>
                       <br/>
                       *Flagging your paper involves validating automatically extracted entities and identifying the types of data present.<br/>
-                      <br/>
-                      Please feel free to forward the link to a co-author if you are unable to complete the form at this time.<br/>
                       <br/>
                       You can view all your papers already in the ACKnowledge system on the 
                       <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a>.<br/>
@@ -39,10 +37,7 @@ emails:
                       Please accept our congratulations on your publication!<br/>
                       <br/>
                       Best Wishes,<br/>
-                      WormBase<br/>
-                      <br/>
-                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                      The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>"
+                      WormBase<br/>"
 
   subject_empty: "Paper processed by ACKnowledge has empty entity lists: WBPaper{}"
   content_empty: "The paper:<br/>
@@ -103,10 +98,7 @@ emails:
                      you. {}<br/>
                      <br/>
                      Thank you for helping WormBase!<br/>
-                     <br/>
-                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                     The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
-                     "
+                     <br/>"
 
   subject_new_sub_thanks: "Thank you for submitting your data to WormBase"
   content_new_sub_thanks: "Thank you for your participation in the Author Curation to Knowledgebase (ACKnowledge) project.<br/>
@@ -121,10 +113,7 @@ emails:
                            We appreciate your time and effort.<br/>
                            The ACKnowledge Team
                            <br/>
-                           <br/>
-                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                           The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
-                           "
+                           <br/>"
 
   subject_coauthor_notification: "Your coauthor has submitted data to WormBase"
   content_coauthor_notification: "Dear Coauthor,<br/>
@@ -141,10 +130,7 @@ emails:
                                   Thank you for your contribution to WormBase!<br/>
                                   The ACKnowledge Team
                                   <br/>
-                                  <br/>
-                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~<br/>
-                                  The ACKnowledge project is supported by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.<br/>
-                                  "
+                                  <br/>"
 
   subject_partial_submissions: "ACKnowledge Monthly Partial Submissions Report - {}"
   content_partial_submissions: "<h2>ACKnowledge Partial Submissions Report - {}</h2>
