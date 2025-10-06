@@ -7,7 +7,7 @@ import InstructionsAlert from "../components/InstructionsAlert";
 import MultiSelect from "../components/multiselect/MultiSelect";
 import DiseaseAutoComplete from "../components/multiselect/DiseaseAutoComplete";
 import DiseaseRequiredModal from "../components/modals/DiseaseRequiredModal";
-import {setDisease, toggleDisease, addDiseaseName, removeDiseaseName} from "../redux/actions/diseaseActions";
+import {setDisease, toggleDisease, addDiseaseName, removeDiseaseName, setDiseaseNames} from "../redux/actions/diseaseActions";
 import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
@@ -40,7 +40,14 @@ const Disease = () => {
                 <Panel.Body>
                     <div className="container-fluid">
                         <Form>
-                            <Checkbox checked={disease.checked} onClick={() => dispatch(toggleDisease())}>
+                            <Checkbox checked={disease.checked} onClick={() => {
+                                // When unchecking, clear disease names and additional comments
+                                if (disease.checked) {
+                                    dispatch(setDiseaseNames([]));
+                                    dispatch(setDisease(false, ""));
+                                }
+                                dispatch(toggleDisease());
+                            }}>
                                 <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson's disease) by employing at least one of the following:</strong>
                             </Checkbox>
                             <ul>
