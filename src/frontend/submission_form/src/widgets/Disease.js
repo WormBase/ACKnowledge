@@ -41,11 +41,11 @@ const Disease = () => {
                     <div className="container-fluid">
                         <Form>
                             <Checkbox checked={disease.checked} onClick={() => {
-                                // When unchecking, clear disease names and additional comments
+                                // When unchecking, clear disease names list
                                 if (disease.checked) {
                                     dispatch(setDiseaseNames([]));
-                                    dispatch(setDisease(false, ""));
                                 }
+                                // toggleDisease already clears the details field
                                 dispatch(toggleDisease());
                             }}>
                                 <strong>The paper describes an experimental model for a specific human disease (e.g., Parkinson's disease) by employing at least one of the following:</strong>
