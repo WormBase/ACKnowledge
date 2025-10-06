@@ -221,7 +221,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                                     <div className="col-sm-12">
                                         <ControlLabel>
                                             Enter one allele per line. If possible, enter the gene and allele name followed by strain and species, separated by comma. <br/>
-                                            e.g. <i>flu-4(e1004)</i>, CB1004, <i>C.elegans</i>. <br/>
+                                            e.g. <i>flu-4(e1004)</i>, CB1004, <i>C.elegans</i> <br/>
                                             For CRISPR alleles include the knock-in construct, followed by strain and species, separated by comma. <br/>
                                             e.g. <i>hmg-3(bar24[hmg-3::3xHA])</i>, BAT1560, <i>C. elegans</i>
                                         </ControlLabel>
