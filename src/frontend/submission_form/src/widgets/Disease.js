@@ -91,28 +91,30 @@ Diabetes"
                     </Panel>
                 </>
             )}
-            
-            <Panel>
-                <Panel.Heading>
-                    <Panel.Title componentClass="h3">
-                        Additional comments on disease models in the paper
-                    </Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
-                    <div className="container-fluid">
-                        <div style={{marginBottom: '10px'}}>
-                            Write comments here
+
+            {disease.checked && (
+                <Panel>
+                    <Panel.Heading>
+                        <Panel.Title componentClass="h3">
+                            Additional comments on disease models in the paper
+                        </Panel.Title>
+                    </Panel.Heading>
+                    <Panel.Body>
+                        <div className="container-fluid">
+                            <div style={{marginBottom: '10px'}}>
+                                Write comments here
+                            </div>
+                            <FormControl componentClass="textarea" multiple
+                                         value={disease.details === "checked" ? "" : disease.details}
+                                         onClick={() => dispatch(setDisease(true, disease.details === "checked" ? "" : disease.details))}
+                                         onChange={(event) => {
+                                             dispatch(setDisease(true, event.target.value));
+                                         }}
+                            />
                         </div>
-                        <FormControl componentClass="textarea" multiple
-                                     value={disease.details === "checked" ? "" : disease.details}
-                                     onClick={() => dispatch(setDisease(true, disease.details === "checked" ? "" : disease.details))}
-                                     onChange={(event) => {
-                                         dispatch(setDisease(true, event.target.value));
-                                     }}
-                        />
-                    </div>
-                </Panel.Body>
-            </Panel>
+                    </Panel.Body>
+                </Panel>
+            )}
             <div align="right">
                 <Button bsStyle="primary" bsSize="small" onClick={() => {
                     // Validate that if disease is checked, at least one disease name is selected
