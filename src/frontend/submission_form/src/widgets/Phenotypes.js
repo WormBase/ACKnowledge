@@ -196,7 +196,9 @@ const Phenotypes = () => {
                         </FormGroup>
                         <FormGroup>
                             <Checkbox checked={othergenefunc.checked} onClick={() => dispatch(toggleOthergenefunc())}>
-                                <strong>Other Gene Function</strong>
+                                <strong>Other Gene Function</strong> <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip">Please tell us about other gene functions, e.g. transcription factor activity, receptor activity, transporter activity, studied in the paper.</Tooltip>}>
+                                    <Glyphicon glyph="question-sign"/>
+                                </OverlayTrigger>
                             </Checkbox>
                             <FormControl type="text" placeholder="E.g.: AAT-9 transports amino acids when expressed alone in Xenopus oocytes."
                                          onClick={() => dispatch(setOthergenefunc(true, othergenefunc.details))}
