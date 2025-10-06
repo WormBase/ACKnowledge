@@ -241,9 +241,10 @@ const PersonSelector = () => {
                                     let wbRx = / \( WBPerson([0-9]+) \)/;
                                     let arr = wbRx.exec(selectedValue);
                                     if (arr && arr[1]) {
-                                        let personName = selectedValue.replace(wbRx, "");
+                                        let personName = selectedValue.replace(wbRx, "").trim();
                                         setTmp_person_name(personName);
                                         setTmp_person_id(arr[1]);
+                                        setSearchInput(personName);
                                     }
                                 }
                             }}
