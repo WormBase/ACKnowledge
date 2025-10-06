@@ -133,7 +133,8 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Gene model updates</Panel.Title>
+                        <Panel.Title componentClass="h3">Gene model updates <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip">Please alert us to any corrections or updates to existing gene models.</Tooltip>}>
+                            <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <div className="container-fluid">

@@ -1,9 +1,7 @@
-import React, {useState} from "react";
+import React from "react";
 import {Alert} from "react-bootstrap";
 
 const InstructionsAlert = (props) => {
-
-    const [show, setShow] = useState(true);
 
     let title = props["alertTitleNotSaved"];
     let text = props["alertTextNotSaved"];
@@ -13,15 +11,11 @@ const InstructionsAlert = (props) => {
         text = props["alertTextSaved"];
         bsstyle = "success";
     }
-    if (show) {
-        return (
-            <Alert onDismiss={() => setShow(false)} bsStyle={bsstyle}>
-                <strong>{title}</strong><p>{text}</p>
-            </Alert>
-        );
-    } else {
-        return "";
-    }
+    return (
+        <Alert bsStyle={bsstyle}>
+            <strong>{title}</strong><p>{text}</p>
+        </Alert>
+    );
 }
 
 export default InstructionsAlert;

@@ -174,48 +174,38 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             <form>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3" style={{
-                            display: 'flex', 
-                            alignItems: 'flex-start', 
-                            justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                            gap: '10px'
-                        }}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0'}}>
+                        <Panel.Title componentClass="h3">
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                                 <span>List of WormBase alleles experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={allelesTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger>
                             </div>
-                            {!hideAlleles && (
-                                <Button 
-                                    bsStyle="info" 
-                                    bsSize="xs" 
-                                    onClick={handleCreateAllelesSpreadsheet}
-                                    disabled={creatingAllelesSpreadsheet}
-                                    style={{
-                                        fontSize: '11px',
-                                        padding: '2px 6px',
-                                        whiteSpace: 'nowrap',
-                                        flexShrink: 0
-                                    }}
-                                >
-                                    <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
-                                    {creatingAllelesSpreadsheet ? 'Creating...' : 'Upload Allele spreadsheet (for large lists)'}
-                                </Button>
-                            )}
                         </Panel.Title>
-                        {allelesSpreadsheetError && (
-                            <div style={{marginTop: '8px'}}>
-                                <Alert bsStyle="danger" style={{marginBottom: '0', padding: '6px', fontSize: '12px'}}>
-                                    {allelesSpreadsheetError}
-                                </Alert>
-                            </div>
-                        )}
                     </Panel.Heading>
                     <Panel.Body>
                         {allelesListComponent}
-                        
+
+                        {/* Alleles spreadsheet upload button */}
+                        {!hideAlleles && (
+                            <div style={{marginTop: '15px', marginBottom: '15px'}}>
+                                <Button
+                                    bsStyle="info"
+                                    bsSize="small"
+                                    onClick={handleCreateAllelesSpreadsheet}
+                                    disabled={creatingAllelesSpreadsheet}
+                                >
+                                    <Glyphicon glyph="upload" style={{marginRight: '6px', fontSize: '14px'}} />
+                                    {creatingAllelesSpreadsheet ? 'Creating...' : 'Upload Allele spreadsheet (for large lists) - opens in new tab'}
+                                </Button>
+                                {allelesSpreadsheetError && (
+                                    <Alert bsStyle="danger" style={{marginTop: '8px', padding: '6px', fontSize: '12px'}}>
+                                        {allelesSpreadsheetError}
+                                    </Alert>
+                                )}
+                            </div>
+                        )}
+
                         {/* New alleles section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
                             <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
@@ -291,48 +281,38 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3" style={{
-                            display: 'flex', 
-                            alignItems: 'flex-start', 
-                            justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                            gap: '10px'
-                        }}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto', minWidth: '0'}}>
+                        <Panel.Title componentClass="h3">
+                            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
                                 <span>List of WormBase strains experimentally studied in the paper</span>
                                 <OverlayTrigger placement="top" overlay={strainsTooltip}>
                                     <Glyphicon glyph="question-sign"/>
                                 </OverlayTrigger>
                             </div>
-                            {!hideStrains && (
-                                <Button 
-                                    bsStyle="info" 
-                                    bsSize="xs" 
-                                    onClick={handleCreateStrainsSpreadsheet}
-                                    disabled={creatingStrainsSpreadsheet}
-                                    style={{
-                                        fontSize: '11px',
-                                        padding: '2px 6px',
-                                        whiteSpace: 'nowrap',
-                                        flexShrink: 0
-                                    }}
-                                >
-                                    <Glyphicon glyph="upload" style={{marginRight: '4px', fontSize: '10px'}} />
-                                    {creatingStrainsSpreadsheet ? 'Creating...' : 'Upload Strain spreadsheet (for large lists)'}
-                                </Button>
-                            )}
                         </Panel.Title>
-                        {strainsSpreadsheetError && (
-                            <div style={{marginTop: '8px'}}>
-                                <Alert bsStyle="danger" style={{marginBottom: '0', padding: '6px', fontSize: '12px'}}>
-                                    {strainsSpreadsheetError}
-                                </Alert>
-                            </div>
-                        )}
                     </Panel.Heading>
                     <Panel.Body>
                         {strainsListComponent}
-                        
+
+                        {/* Strains spreadsheet upload button */}
+                        {!hideStrains && (
+                            <div style={{marginTop: '15px', marginBottom: '15px'}}>
+                                <Button
+                                    bsStyle="info"
+                                    bsSize="small"
+                                    onClick={handleCreateStrainsSpreadsheet}
+                                    disabled={creatingStrainsSpreadsheet}
+                                >
+                                    <Glyphicon glyph="upload" style={{marginRight: '6px', fontSize: '14px'}} />
+                                    {creatingStrainsSpreadsheet ? 'Creating...' : 'Upload Strain spreadsheet (for large lists) - opens in new tab'}
+                                </Button>
+                                {strainsSpreadsheetError && (
+                                    <Alert bsStyle="danger" style={{marginTop: '8px', padding: '6px', fontSize: '12px'}}>
+                                        {strainsSpreadsheetError}
+                                    </Alert>
+                                )}
+                            </div>
+                        )}
+
                         {/* New strains section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
                             <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
