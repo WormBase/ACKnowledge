@@ -36,7 +36,7 @@ export const WelcomeModal = (props) => {
                         Thank you for filling out this form. By doing so, you are helping us incorporate your data into the <a href="https://www.alliancegenome.org" target="_blank" rel="noopener noreferrer">Alliance of Genome Resources</a> in a timely fashion.
                     </p>
                     <p>
-                        Please review the information presented in each page of the form. If needed, you may revise the information presented by adding or removing information.
+                        Please review the information presented in each page of the form. If needed, you may revise by adding or removing information.
                     </p>
                     <p>
                         To save the data entered in each page and move to the next, click 'Save and go to next section'. You can return to each page any time. When you are finished, please click on 'Finish and Submit' on the last page.
