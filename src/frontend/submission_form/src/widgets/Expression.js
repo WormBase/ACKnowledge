@@ -33,7 +33,7 @@ const Expression = () =>{
 
     const tooltip = (
         <Tooltip id="tooltip">
-            go to interaction  section  to flag changes of expression level or localization in mutant background or
+            Check this box if your paper contains gene expression data in WT background. Go to the interaction  section  to flag changes of expression level or localization in mutant background or
             upon treatment.
         </Tooltip>
     );

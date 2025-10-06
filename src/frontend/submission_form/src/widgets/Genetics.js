@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     Alert,
-    Button, Checkbox, Glyphicon, Image, OverlayTrigger,
+    Button, Checkbox, Collapse, Glyphicon, Image, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -51,6 +51,10 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     // State for strains spreadsheet creation
     const [creatingStrainsSpreadsheet, setCreatingStrainsSpreadsheet] = useState(false);
     const [strainsSpreadsheetError, setStrainsSpreadsheetError] = useState(null);
+
+    // State for collapsible sections
+    const [showOtherAlleles, setShowOtherAlleles] = useState(false);
+    const [showOtherStrains, setShowOtherStrains] = useState(false);
 
     const handleCreateAllelesSpreadsheet = async () => {
         setCreatingAllelesSpreadsheet(true);
@@ -208,36 +212,54 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
 
                         {/* New alleles section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
-                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                            <Button
+                                onClick={() => setShowOtherAlleles(!showOtherAlleles)}
+                                aria-controls="other-alleles-collapse"
+                                aria-expanded={showOtherAlleles}
+                                bsStyle="link"
+                                style={{
+                                    padding: '0',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    color: '#337ab7'
+                                }}
+                            >
+                                <Glyphicon glyph={showOtherAlleles ? "chevron-down" : "chevron-right"} style={{marginRight: '6px'}} />
                                 Can't find an allele? Add new alleles not yet in WormBase
-                            </h5>
-                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
-                                <strong>Note:</strong> If an allele you're looking for doesn't appear when using the "Add" button above 
-                                (because it's new and not yet in WormBase), you can enter it manually below. 
-                                This is for newly generated alleles that haven't been curated into WormBase yet.
-                            </Alert>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <ControlLabel>
-                                            Enter one allele per line. If possible, enter the gene and allele name followed by strain and species, separated by comma. <br/>
-                                            e.g. <i>flu-4(e1004)</i>, CB1004, <i>C.elegans</i> <br/>
-                                            For CRISPR alleles include the knock-in construct, followed by strain and species, separated by comma. <br/>
-                                            e.g. <i>hmg-3(bar24[hmg-3::3xHA])</i>, BAT1560, <i>C. elegans</i>
-                                        </ControlLabel>
-                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new alleles not yet in WormBase here, one per line"
-                                                     value={otherAlleles.map(a => a.name).join("\n")}
-                                                     onChange={e => dispatch(setOtherAlleles(e.target.value.split("\n").map((a, index) => {
-                                                         return {id: index + 1, name: a}})))}/>
+                            </Button>
+                            <Collapse in={showOtherAlleles}>
+                                <div id="other-alleles-collapse" style={{marginTop: '10px'}}>
+                                    <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                        <strong>Note:</strong> If an allele you're looking for doesn't appear when using the "Add" button above
+                                        (because it's new and not yet in WormBase), you can enter it manually below.
+                                        This is for newly generated alleles that haven't been curated into WormBase yet.
+                                    </Alert>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <ControlLabel>
+                                                    Enter one allele per line. If possible, enter the gene and allele name followed by strain and species, separated by comma. <br/>
+                                                    e.g. <i>flu-4(e1004)</i>, CB1004, <i>C.elegans</i> <br/>
+                                                    For CRISPR alleles include the knock-in construct, followed by strain and species, separated by comma. <br/>
+                                                    e.g. <i>hmg-3(bar24[hmg-3::3xHA])</i>, BAT1560, <i>C. elegans</i>
+                                                </ControlLabel>
+                                                <FormControl componentClass="textarea" rows="5" placeholder="Enter new alleles not yet in WormBase here, one per line"
+                                                             value={otherAlleles.map(a => a.name).join("\n")}
+                                                             onChange={e => dispatch(setOtherAlleles(e.target.value.split("\n").map((a, index) => {
+                                                                 return {id: index + 1, name: a}})))}/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Collapse>
                         </div>
                     </Panel.Body>
                 </Panel>
                 <Panel>
                     <Panel.Heading>
-                        <Panel.Title componentClass="h3">Allele sequence change</Panel.Title>
+                        <Panel.Title componentClass="h3">Allele sequence change <OverlayTrigger placement="top" overlay={<Tooltip id="tooltip">Please alert us to any newly sequenced alleles.</Tooltip>}>
+                            <Glyphicon glyph="question-sign"/></OverlayTrigger></Panel.Title>
                     </Panel.Heading>
                     <Panel.Body>
                         <div className="container-fluid">
@@ -315,28 +337,45 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
 
                         {/* New strains section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
-                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                            <Button
+                                onClick={() => setShowOtherStrains(!showOtherStrains)}
+                                aria-controls="other-strains-collapse"
+                                aria-expanded={showOtherStrains}
+                                bsStyle="link"
+                                style={{
+                                    padding: '0',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    color: '#337ab7'
+                                }}
+                            >
+                                <Glyphicon glyph={showOtherStrains ? "chevron-down" : "chevron-right"} style={{marginRight: '6px'}} />
                                 Can't find a strain? Add new strains not yet in WormBase
-                            </h5>
-                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
-                                <strong>Note:</strong> If a strain you're looking for doesn't appear when using the "Add" button above 
-                                (because it's new and not yet in WormBase), you can enter it manually below. 
-                                This is for newly generated strains that haven't been curated into WormBase yet.
-                            </Alert>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <ControlLabel>
-                                            Enter one strain per line. If possible, enter the strain name followed by genotype followed by species, separated by comma. <br/>
-                                            e.g. PMD153, (<i>vhp-1(sa366) II; egIs1 [dat-1p::GFP]</i>), <i>C. elegans</i>
-                                        </ControlLabel>
-                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new strains not yet in WormBase here, one per line"
-                                                     value={otherStrains.map(a => a.name).join("\n")}
-                                                     onChange={e => dispatch(setOtherStrains(e.target.value.split("\n").map((a, index) => {
-                                                         return {id: index + 1, name: a}})))}/>
+                            </Button>
+                            <Collapse in={showOtherStrains}>
+                                <div id="other-strains-collapse" style={{marginTop: '10px'}}>
+                                    <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                        <strong>Note:</strong> If a strain you're looking for doesn't appear when using the "Add" button above
+                                        (because it's new and not yet in WormBase), you can enter it manually below.
+                                        This is for newly generated strains that haven't been curated into WormBase yet.
+                                    </Alert>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <ControlLabel>
+                                                    Enter one strain per line. If possible, enter the strain name followed by genotype followed by species, separated by comma. <br/>
+                                                    e.g. PMD153, (<i>vhp-1(sa366) II; egIs1 [dat-1p::GFP]</i>), <i>C. elegans</i>
+                                                </ControlLabel>
+                                                <FormControl componentClass="textarea" rows="5" placeholder="Enter new strains not yet in WormBase here, one per line"
+                                                             value={otherStrains.map(a => a.name).join("\n")}
+                                                             onChange={e => dispatch(setOtherStrains(e.target.value.split("\n").map((a, index) => {
+                                                                 return {id: index + 1, name: a}})))}/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Collapse>
                         </div>
                     </Panel.Body>
                 </Panel>

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Alert,
-    Button, Checkbox, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
+    Button, Checkbox, Collapse, ControlLabel, FormControl, Glyphicon, OverlayTrigger,
     Panel, Tooltip
 } from "react-bootstrap";
 import MultiSelect from "../components/multiselect/MultiSelect";
@@ -22,6 +22,8 @@ import {WIDGET} from "../constants";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
+    const [showOtherGenes, setShowOtherGenes] = useState(false);
+    const [showOtherSpecies, setShowOtherSpecies] = useState(false);
     const genes = useSelector((state) => state.overview.genes.elements);
     const addedGenes = useSelector((state) => state.overview.addedGenes);
     const savedGenes = useSelector((state) => state.overview.savedGenes);
@@ -90,44 +92,61 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         
                         {/* New gene name section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
-                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                            <Button
+                                onClick={() => setShowOtherGenes(!showOtherGenes)}
+                                aria-controls="other-genes-collapse"
+                                aria-expanded={showOtherGenes}
+                                bsStyle="link"
+                                style={{
+                                    padding: '0',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    color: '#337ab7'
+                                }}
+                            >
+                                <Glyphicon glyph={showOtherGenes ? "chevron-down" : "chevron-right"} style={{marginRight: '6px'}} />
                                 Can't find a gene? Request a new gene name
-                            </h5>
-                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
-                                <strong>Note:</strong> If a gene you're looking for doesn't appear when using the "Add" button above 
-                                (because it's newly discovered and not yet in WormBase), you can request a new gene name using the link below.
-                            </Alert>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <OverlayTrigger overlay={<Tooltip id="tooltip">Contact the nomenclature committee if you don't have an official gene name assignment or wish to report or update a gene-sequence connection</Tooltip>}>
-                                            <a 
-                                                href="http://www.wormbase.org/submissions/gene_name.cgi" 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                style={{
-                                                    fontSize: '13px',
-                                                    color: '#0066cc',
-                                                    textDecoration: 'none',
-                                                    borderBottom: '1px solid #0066cc',
-                                                    fontWeight: '500'
-                                                }}
-                                                onMouseOver={(e) => {
-                                                    e.target.style.color = '#004499';
-                                                    e.target.style.borderBottomColor = '#004499';
-                                                }}
-                                                onMouseOut={(e) => {
-                                                    e.target.style.color = '#0066cc';
-                                                    e.target.style.borderBottomColor = '#0066cc';
-                                                }}
-                                                onClick={() => dispatch(setGeneModel())}
-                                            >
-                                                Request new gene name or report gene-sequence connections <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                                            </a>
-                                        </OverlayTrigger>
+                            </Button>
+                            <Collapse in={showOtherGenes}>
+                                <div id="other-genes-collapse" style={{marginTop: '10px'}}>
+                                    <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                        <strong>Note:</strong> If a gene you're looking for doesn't appear when using the "Add" button above
+                                        (because it's newly discovered and not yet in WormBase), you can request a new gene name using the link below.
+                                    </Alert>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <OverlayTrigger overlay={<Tooltip id="tooltip">Contact the nomenclature committee if you don't have an official gene name assignment or wish to report or update a gene-sequence connection</Tooltip>}>
+                                                    <a
+                                                        href="http://www.wormbase.org/submissions/gene_name.cgi"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{
+                                                            fontSize: '13px',
+                                                            color: '#0066cc',
+                                                            textDecoration: 'none',
+                                                            borderBottom: '1px solid #0066cc',
+                                                            fontWeight: '500'
+                                                        }}
+                                                        onMouseOver={(e) => {
+                                                            e.target.style.color = '#004499';
+                                                            e.target.style.borderBottomColor = '#004499';
+                                                        }}
+                                                        onMouseOut={(e) => {
+                                                            e.target.style.color = '#0066cc';
+                                                            e.target.style.borderBottomColor = '#0066cc';
+                                                        }}
+                                                        onClick={() => dispatch(setGeneModel())}
+                                                    >
+                                                        Request new gene name or report gene-sequence connections <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                                    </a>
+                                                </OverlayTrigger>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Collapse>
                         </div>
                     </Panel.Body>
                 </Panel>
@@ -185,27 +204,44 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                         
                         {/* New species section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
-                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                            <Button
+                                onClick={() => setShowOtherSpecies(!showOtherSpecies)}
+                                aria-controls="other-species-collapse"
+                                aria-expanded={showOtherSpecies}
+                                bsStyle="link"
+                                style={{
+                                    padding: '0',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    color: '#337ab7'
+                                }}
+                            >
+                                <Glyphicon glyph={showOtherSpecies ? "chevron-down" : "chevron-right"} style={{marginRight: '6px'}} />
                                 Can't find a species? Add new species not yet in WormBase
-                            </h5>
-                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
-                                <strong>Note:</strong> If a species you're looking for doesn't appear when using the "Add" button above 
-                                (because it's new and not yet in WormBase), you can enter it manually below. 
-                                This is for newly studied species that haven't been curated into WormBase yet.
-                            </Alert>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <ControlLabel>
-                                            Enter new species and species not yet in our system, one per line.
-                                        </ControlLabel>
-                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new species not yet in WormBase here, one per line"
-                                                     value={otherSpecies.map(a => a.name).join("\n")}
-                                                     onChange={e => dispatch(setOtherSpecies(e.target.value.split("\n").map((a, index) => {
-                                                         return {id: index + 1, name: a}})))}/>
+                            </Button>
+                            <Collapse in={showOtherSpecies}>
+                                <div id="other-species-collapse" style={{marginTop: '10px'}}>
+                                    <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                        <strong>Note:</strong> If a species you're looking for doesn't appear when using the "Add" button above
+                                        (because it's new and not yet in WormBase), you can enter it manually below.
+                                        This is for newly studied species that haven't been curated into WormBase yet.
+                                    </Alert>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <ControlLabel>
+                                                    Enter new species and species not yet in our system, one per line.
+                                                </ControlLabel>
+                                                <FormControl componentClass="textarea" rows="5" placeholder="Enter new species not yet in WormBase here, one per line"
+                                                             value={otherSpecies.map(a => a.name).join("\n")}
+                                                             onChange={e => dispatch(setOtherSpecies(e.target.value.split("\n").map((a, index) => {
+                                                                 return {id: index + 1, name: a}})))}/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Collapse>
                         </div>
                     </Panel.Body>
                 </Panel>

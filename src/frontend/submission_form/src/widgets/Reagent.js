@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Alert,
     Button,
     Checkbox,
+    Collapse,
     Form,
     FormControl,
     FormGroup,
@@ -26,6 +27,7 @@ import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetAct
 
 const Reagent = () => {
     const dispatch = useDispatch();
+    const [showOtherTransgenes, setShowOtherTransgenes] = useState(false);
     const transgenes = useSelector((state) => state.reagent.transgenes.elements);
     const addedTransgenes = useSelector((state) => state.reagent.addedTransgenes);
     const savedTransgenes = useSelector((state) => state.reagent.savedTransgenes);
@@ -84,29 +86,46 @@ const Reagent = () => {
                         
                         {/* New transgenes section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
-                            <h5 style={{fontWeight: '600', marginBottom: '15px'}}>
+                            <Button
+                                onClick={() => setShowOtherTransgenes(!showOtherTransgenes)}
+                                aria-controls="other-transgenes-collapse"
+                                aria-expanded={showOtherTransgenes}
+                                bsStyle="link"
+                                style={{
+                                    padding: '0',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    color: '#337ab7'
+                                }}
+                            >
+                                <Glyphicon glyph={showOtherTransgenes ? "chevron-down" : "chevron-right"} style={{marginRight: '6px'}} />
                                 Can't find a transgene? Add new transgenes not yet in WormBase
-                            </h5>
-                            <Alert bsStyle="info" style={{fontSize: '13px'}}>
-                                <strong>Note:</strong> If a transgene you're looking for doesn't appear when using the "Add" button above 
-                                (because it's new and not yet in WormBase), you can enter it manually below. 
-                                This is for newly generated transgenes that haven't been curated into WormBase yet.
-                            </Alert>
-                            <div className="container-fluid">
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <ControlLabel>
-                                            Enter one transgene per line. If possible, enter the transgene name followed by genotype followed by species, separated by comma. <br/>
-                                            e.g. <i>eaIs15</i>, [<i>Ppie-1::HIM-5::GFP::pie-1</i>], <i>C. elegans</i>. <br/>
-                                            For extrachromosomal arrays: <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
-                                        </ControlLabel>
-                                        <FormControl componentClass="textarea" rows="5" placeholder="Enter new transgenes not yet in WormBase here, one per line"
-                                                     value={otherTransgenes.map(a => a.name).join("\n")}
-                                                     onChange={e => dispatch(setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
-                                                         return {id: index + 1, name: a}})))}/>
+                            </Button>
+                            <Collapse in={showOtherTransgenes}>
+                                <div id="other-transgenes-collapse" style={{marginTop: '10px'}}>
+                                    <Alert bsStyle="info" style={{fontSize: '13px'}}>
+                                        <strong>Note:</strong> If a transgene you're looking for doesn't appear when using the "Add" button above
+                                        (because it's new and not yet in WormBase), you can enter it manually below.
+                                        This is for newly generated transgenes that haven't been curated into WormBase yet.
+                                    </Alert>
+                                    <div className="container-fluid">
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <ControlLabel>
+                                                    Enter one transgene per line. If possible, enter the transgene name followed by genotype followed by species, separated by comma. <br/>
+                                                    e.g. <i>eaIs15</i>, [<i>Ppie-1::HIM-5::GFP::pie-1</i>], <i>C. elegans</i> <br/>
+                                                    e.g. <i>sqEx67</i>, [<i>rgef-1p::mcherry::GFP::lgg-1 + rol-6</i>], <i>C. elegans</i>
+                                                </ControlLabel>
+                                                <FormControl componentClass="textarea" rows="5" placeholder="Enter new transgenes not yet in WormBase here, one per line"
+                                                             value={otherTransgenes.map(a => a.name).join("\n")}
+                                                             onChange={e => dispatch(setOtherTransgenes(e.target.value.split("\n").map((a, index) => {
+                                                                 return {id: index + 1, name: a}})))}/>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Collapse>
                         </div>
                     </Panel.Body>
                 </Panel>
