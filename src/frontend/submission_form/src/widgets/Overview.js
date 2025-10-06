@@ -66,8 +66,6 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 defaultExactMatchOnly={false}
                 exactMatchTooltip={'Check this to search for exact gene names only'}
                 autocompletePlaceholder={"Type gene names, one per line or separated by commas. For example:\nunc-26\ndpy-5\nWBGene00001234"}
-                defaultListView={true}
-                defaultShowIds={false}
             />);
     }
     return (
