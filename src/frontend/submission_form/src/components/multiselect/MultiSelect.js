@@ -26,6 +26,8 @@ const MultiSelect = (props) => {
     const [showWbIds, setShowWbIds] = useState(props.defaultShowIds !== undefined ? props.defaultShowIds : true);
     const [showRemoveAllConfirmation, setShowRemoveAllConfirmation] = useState(false);
     const savedStateRef = useRef(null);
+    const addModeRef = useRef(null);
+    const removalModeRef = useRef(null);
     
     // Ensure props.items is always an array
     const items = Array.isArray(props.items) ? props.items : [];
@@ -58,6 +60,23 @@ const MultiSelect = (props) => {
     // Net removals: items that were originally present but aren't currently present
     const netRemovals = [...originalItems].filter(item => !allCurrentItems.has(item));
 
+    // Scroll to add mode component when it becomes visible
+    useEffect(() => {
+        if (showAddMode && addModeRef.current) {
+            setTimeout(() => {
+                addModeRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+    }, [showAddMode]);
+
+    // Scroll to removal mode component when it becomes visible
+    useEffect(() => {
+        if (showRemovalMode && removalModeRef.current) {
+            setTimeout(() => {
+                removalModeRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+    }, [showRemovalMode]);
 
     const handleRemoveSelected = () => {
         if (selectedForRemoval.size === 0) {
@@ -297,78 +316,82 @@ const MultiSelect = (props) => {
 
             {/* Add mode with alert banner */}
             {showAddMode && (
-                <Alert bsStyle="success" style={{marginBottom: '12px'}}>
-                    {props.customAutoComplete ? 
-                        props.customAutoComplete({
-                            close: () => setShowAddMode(false),
-                            addItemFunction: props.addItemFunction,
-                            searchType: props.searchType,
-                            defaultExactMatchOnly: props.defaultExactMatchOnly,
-                            exactMatchTooltip: props.exactMatchTooltip,
-                            autocompletePlaceholder: props.autocompletePlaceholder,
-                            itemsNamePlural: props.itemsNamePlural
-                        })
-                        :
-                        <AutoComplete 
-                            close={() => setShowAddMode(false)}
-                            addItemFunction={props.addItemFunction}
-                            searchType={props.searchType}
-                            defaultExactMatchOnly={props.defaultExactMatchOnly}
-                            exactMatchTooltip={props.exactMatchTooltip}
-                            autocompletePlaceholder={props.autocompletePlaceholder}
-                            itemsNamePlural={props.itemsNamePlural}
-                        />
-                    }
-                </Alert>
+                <div ref={addModeRef}>
+                    <Alert bsStyle="success" style={{marginBottom: '12px'}}>
+                        {props.customAutoComplete ?
+                            props.customAutoComplete({
+                                close: () => setShowAddMode(false),
+                                addItemFunction: props.addItemFunction,
+                                searchType: props.searchType,
+                                defaultExactMatchOnly: props.defaultExactMatchOnly,
+                                exactMatchTooltip: props.exactMatchTooltip,
+                                autocompletePlaceholder: props.autocompletePlaceholder,
+                                itemsNamePlural: props.itemsNamePlural
+                            })
+                            :
+                            <AutoComplete
+                                close={() => setShowAddMode(false)}
+                                addItemFunction={props.addItemFunction}
+                                searchType={props.searchType}
+                                defaultExactMatchOnly={props.defaultExactMatchOnly}
+                                exactMatchTooltip={props.exactMatchTooltip}
+                                autocompletePlaceholder={props.autocompletePlaceholder}
+                                itemsNamePlural={props.itemsNamePlural}
+                            />
+                        }
+                    </Alert>
+                </div>
             )}
 
             {/* Removal mode actions */}
             {showRemovalMode && (
-                <Alert bsStyle="warning" style={{marginBottom: '12px'}}>
-                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '15px'}}>
-                        <span style={{flex: '1 1 auto', minWidth: '300px', marginRight: '20px'}}>
-                            <strong>Removal Mode:</strong> Click on items to select them (yellow highlight), then click "Remove Selected"
-                        </span>
-                        <div style={{display: 'flex', gap: '5px', flexShrink: 0}}>
-                            <Button 
-                                bsStyle="warning"
-                                bsSize="small" 
-                                onClick={handleRemoveSelected}
-                                disabled={selectedForRemoval.size === 0}
-                            >
-                                <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
-                                Remove Selected ({selectedForRemoval.size})
-                            </Button>
-                            <Button 
-                                bsStyle="warning"
-                                bsSize="small" 
-                                onClick={() => {
-                                    if (filteredItems.length > 0) {
-                                        setShowRemoveAllConfirmation(true);
-                                    }
-                                }}
-                                disabled={filteredItems.length === 0}
-                            >
-                                <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
-                                Remove All ({filteredItems.length})
-                            </Button>
-                            <Button 
-                                className="cancel-btn-subtle"
-                                bsSize="small" 
-                                onClick={() => {
-                                    setShowRemovalMode(false);
-                                    setSelectedForRemoval(new Set());
-                                }}
-                                style={{
-                                    fontSize: '12px',
-                                    padding: '4px 8px'
-                                }}
-                            >
-                                Cancel
-                            </Button>
+                <div ref={removalModeRef}>
+                    <Alert bsStyle="warning" style={{marginBottom: '12px'}}>
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '15px'}}>
+                            <span style={{flex: '1 1 auto', minWidth: '300px', marginRight: '20px'}}>
+                                <strong>Removal Mode:</strong> Click on items to select them (yellow highlight), then click "Remove Selected"
+                            </span>
+                            <div style={{display: 'flex', gap: '5px', flexShrink: 0}}>
+                                <Button
+                                    bsStyle="warning"
+                                    bsSize="small"
+                                    onClick={handleRemoveSelected}
+                                    disabled={selectedForRemoval.size === 0}
+                                >
+                                    <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
+                                    Remove Selected ({selectedForRemoval.size})
+                                </Button>
+                                <Button
+                                    bsStyle="warning"
+                                    bsSize="small"
+                                    onClick={() => {
+                                        if (filteredItems.length > 0) {
+                                            setShowRemoveAllConfirmation(true);
+                                        }
+                                    }}
+                                    disabled={filteredItems.length === 0}
+                                >
+                                    <Glyphicon glyph="minus" style={{marginRight: '4px'}} />
+                                    Remove All ({filteredItems.length})
+                                </Button>
+                                <Button
+                                    className="cancel-btn-subtle"
+                                    bsSize="small"
+                                    onClick={() => {
+                                        setShowRemovalMode(false);
+                                        setSelectedForRemoval(new Set());
+                                    }}
+                                    style={{
+                                        fontSize: '12px',
+                                        padding: '4px 8px'
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </Alert>
+                    </Alert>
+                </div>
             )}
 
 
