@@ -1111,7 +1111,319 @@ class GoogleDriveService:
                 logger.info("Added basic headers to spreadsheet")
             except Exception as simple_error:
                 logger.error(f"Even simple template setup failed: {simple_error}")
-    
+
+    def create_transgenes_spreadsheet(self, folder_id: str, paper_id: str,
+                                      paper_title: str, author_name: str, pmid: str = None) -> str:
+        """Create a new transgenes spreadsheet with template, or return existing one."""
+        spreadsheet_name = f"Transgenes_Submission_{paper_id}"
+
+        # First, check if spreadsheet already exists in the folder
+        existing_url = self._find_existing_spreadsheet(folder_id, spreadsheet_name)
+        if existing_url:
+            logger.info(f"Found existing spreadsheet '{spreadsheet_name}' - returning existing URL")
+            return existing_url
+
+        try:
+            # Create spreadsheet directly in Drive (Sheets API doesn't support parent folders)
+            logger.info(f"Creating new spreadsheet '{spreadsheet_name}'")
+            simple_body = {'properties': {'title': spreadsheet_name}}
+            spreadsheet = self.sheets_service.spreadsheets().create(body=simple_body).execute()
+            spreadsheet_id = spreadsheet['spreadsheetId']
+            logger.info(f"Successfully created spreadsheet: {spreadsheet_id}")
+
+            # CRITICAL: Move spreadsheet to the correct folder immediately
+            # The Sheets API creates in root by default, so we must move it
+            try:
+                logger.info(f"Moving spreadsheet to folder: {folder_id}")
+
+                # Get current parents first
+                file_info = self.drive_service.files().get(
+                    fileId=spreadsheet_id,
+                    fields='parents'
+                ).execute()
+
+                previous_parents = ",".join(file_info.get('parents', ['root']))
+
+                # Move file to the target folder and remove from all previous locations
+                self.drive_service.files().update(
+                    fileId=spreadsheet_id,
+                    addParents=folder_id,
+                    removeParents=previous_parents,
+                    fields='id, parents'
+                ).execute()
+
+                logger.info(f"Successfully moved spreadsheet to folder {folder_id}")
+
+                # Verify the move
+                updated_file = self.drive_service.files().get(
+                    fileId=spreadsheet_id,
+                    fields='parents'
+                ).execute()
+
+                if folder_id in updated_file.get('parents', []):
+                    logger.info(f"Verified: Spreadsheet is in folder {folder_id}")
+                else:
+                    logger.warning(f"Warning: Spreadsheet may not be in the correct folder")
+
+            except HttpError as move_error:
+                logger.error(f"Failed to move spreadsheet to folder: {move_error}")
+                # Don't continue if we can't place it in the right folder
+                raise Exception(f"Cannot place spreadsheet in correct folder: {move_error}")
+
+            # Set up the spreadsheet template
+            try:
+                logger.info(f"Setting up spreadsheet template")
+                self._setup_transgenes_template(spreadsheet_id, paper_id, paper_title, author_name, pmid)
+            except Exception as template_error:
+                logger.warning(f"Could not set up template: {template_error}")
+
+            # Set sharing permissions
+            try:
+                logger.info(f"Setting sharing permissions")
+                self._set_spreadsheet_permissions(spreadsheet_id)
+            except Exception as perm_error:
+                logger.warning(f"Could not set permissions: {perm_error}")
+
+            # Get the web view URL
+            file_info = self.drive_service.files().get(
+                fileId=spreadsheet_id,
+                fields='webViewLink'
+            ).execute()
+
+            logger.info(f"Created transgenes spreadsheet for {paper_id}: {spreadsheet_id}")
+            return file_info['webViewLink']
+
+        except HttpError as e:
+            logger.error(f"Spreadsheet creation failed: {e}")
+            raise
+
+    def _setup_transgenes_template(self, spreadsheet_id: str, paper_id: str,
+                                   paper_title: str, author_name: str, pmid: str = None):
+        """Set up the transgenes spreadsheet template with headers and instructions."""
+
+        try:
+            # First, get the current spreadsheet to check existing sheets
+            spreadsheet = self.sheets_service.spreadsheets().get(
+                spreadsheetId=spreadsheet_id
+            ).execute()
+
+            sheets = spreadsheet.get('sheets', [])
+
+            # Find or create the necessary sheets
+            transgenes_sheet_id = None
+            instructions_sheet_id = None
+
+            for sheet in sheets:
+                sheet_title = sheet['properties']['title']
+                if sheet_title == 'Sheet1':
+                    # Rename Sheet1 to Transgenes Data
+                    transgenes_sheet_id = sheet['properties']['sheetId']
+                elif sheet_title == 'Transgenes Data':
+                    transgenes_sheet_id = sheet['properties']['sheetId']
+                elif sheet_title == 'Instructions':
+                    instructions_sheet_id = sheet['properties']['sheetId']
+
+            requests = []
+
+            # Rename Sheet1 to Transgenes Data if needed
+            if transgenes_sheet_id is not None and 'Sheet1' in [s['properties']['title'] for s in sheets]:
+                requests.append({
+                    'updateSheetProperties': {
+                        'properties': {
+                            'sheetId': transgenes_sheet_id,
+                            'title': 'Transgenes Data'
+                        },
+                        'fields': 'title'
+                    }
+                })
+
+            # Create Instructions sheet if it doesn't exist
+            if instructions_sheet_id is None:
+                requests.append({
+                    'addSheet': {
+                        'properties': {
+                            'title': 'Instructions',
+                            'index': 0
+                        }
+                    }
+                })
+
+            # Execute the sheet creation/renaming requests
+            if requests:
+                self.sheets_service.spreadsheets().batchUpdate(
+                    spreadsheetId=spreadsheet_id,
+                    body={'requests': requests}
+                ).execute()
+
+                # Refresh sheet IDs after creation
+                spreadsheet = self.sheets_service.spreadsheets().get(
+                    spreadsheetId=spreadsheet_id
+                ).execute()
+
+                for sheet in spreadsheet['sheets']:
+                    if sheet['properties']['title'] == 'Transgenes Data':
+                        transgenes_sheet_id = sheet['properties']['sheetId']
+                    elif sheet['properties']['title'] == 'Instructions':
+                        instructions_sheet_id = sheet['properties']['sheetId']
+
+            # Set up Transgenes Data sheet headers
+            transgenes_headers = [[
+                'Transgene Name',
+                'Genotype/Construct',
+                'Species',
+                'Integrated/Extrachromosomal',
+                'Expressed Gene(s)',
+                'Promoter(s)',
+                'Markers',
+                'Notes/Comments'
+            ]]
+
+            self.sheets_service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,
+                range='Transgenes Data!A1:H1',
+                valueInputOption='RAW',
+                body={'values': transgenes_headers}
+            ).execute()
+
+            # Set up Instructions sheet data
+            # Format IDs in Alliance xref curie format
+            paper_id_formatted = f"WB:WBPaper{paper_id}"
+            pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
+
+            instructions_data = [
+                ['Paper Information', ''],
+                ['WB Paper ID:', paper_id_formatted],
+                ['PMID:', pmid_formatted],
+                ['Title:', paper_title],
+                ['Author:', author_name],
+                ['', ''],
+                ['Instructions', ''],
+                ['Column A - Transgene Name:', 'Enter the transgene name (e.g., eaIs15, sqEx67, ctIs40)'],
+                ['Column B - Genotype/Construct:', 'Enter the construct details (e.g., [Ppie-1::HIM-5::GFP::pie-1])'],
+                ['Column C - Species:', 'Species name (e.g., C. elegans)'],
+                ['Column D - Integrated/Extrachromosomal:', 'Type: "Integrated" or "Extrachromosomal"'],
+                ['Column E - Expressed Gene(s):', 'Genes expressed by the transgene (e.g., GFP, mCherry)'],
+                ['Column F - Promoter(s):', 'Promoter(s) used (e.g., pie-1p, myo-3p, unc-119p)'],
+                ['Column G - Markers:', 'Selectable markers if any (e.g., rol-6, unc-119(+))'],
+                ['Column H - Notes/Comments:', 'Any additional information'],
+                ['', ''],
+                ['Examples', ''],
+                ['Integrated transgene:', 'eaIs15, [Ppie-1::HIM-5::GFP::pie-1], C. elegans, Integrated, GFP::HIM-5, pie-1p, , '],
+                ['Extrachromosomal array:', 'sqEx67, [rgef-1p::mCherry::GFP::lgg-1 + rol-6], C. elegans, Extrachromosomal, mCherry::GFP::LGG-1, rgef-1p, rol-6, Fluorescent autophagy marker'],
+                ['Multi-gene construct:', 'ctIs40, [Punc-119::sid-1 + Punc-119::GFP], C. elegans, Integrated, SID-1::GFP, unc-119p, , Pan-neuronal expression'],
+                ['', ''],
+                ['How to import existing data:', ''],
+                ['1. Use File > Import', ''],
+                ['2. Select your CSV or Excel file', ''],
+                ['3. Choose "Replace spreadsheet" or "Insert new sheet(s)"', ''],
+                ['4. Map your columns to match the template headers', ''],
+                ['', ''],
+                ['Note:', 'For papers with many transgenes (>250), you can bulk import your transgene list'],
+                ['', 'from an existing spreadsheet or database export.']
+            ]
+
+            self.sheets_service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,
+                range='Instructions!A1:B31',
+                valueInputOption='RAW',
+                body={'values': instructions_data}
+            ).execute()
+
+            # Apply formatting and column widths (optional, try but don't fail)
+            try:
+                format_requests = [
+                    # Format headers in Transgenes Data sheet
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 8
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'backgroundColor': {'red': 0.8, 'green': 0.8, 'blue': 0.8},
+                                    'textFormat': {'bold': True}
+                                }
+                            },
+                            'fields': 'userEnteredFormat(backgroundColor,textFormat)'
+                        }
+                    },
+                    # Auto-resize columns in Transgenes Data sheet
+                    {
+                        'autoResizeDimensions': {
+                            'dimensions': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 0,
+                                'endIndex': 8
+                            }
+                        }
+                    },
+                    # Format Instructions sheet headers
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': instructions_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 2
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'textFormat': {'bold': True, 'fontSize': 12}
+                                }
+                            },
+                            'fields': 'userEnteredFormat(textFormat)'
+                        }
+                    },
+                    # Auto-resize columns in Instructions sheet
+                    {
+                        'autoResizeDimensions': {
+                            'dimensions': {
+                                'sheetId': instructions_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 0,
+                                'endIndex': 2
+                            }
+                        }
+                    }
+                ]
+
+                self.sheets_service.spreadsheets().batchUpdate(
+                    spreadsheetId=spreadsheet_id,
+                    body={'requests': format_requests}
+                ).execute()
+
+                logger.info("Successfully formatted transgenes spreadsheet")
+
+            except Exception as format_error:
+                logger.warning(f"Could not apply formatting: {format_error}")
+
+        except Exception as e:
+            logger.error(f"Error setting up transgenes template: {e}")
+            # If complex setup fails, try simple headers
+            try:
+                headers = [[
+                    'Transgene Name', 'Genotype/Construct', 'Species',
+                    'Integrated/Extrachromosomal', 'Expressed Gene(s)',
+                    'Promoter(s)', 'Markers', 'Notes/Comments'
+                ]]
+
+                self.sheets_service.spreadsheets().values().update(
+                    spreadsheetId=spreadsheet_id,
+                    range='A1:H1',
+                    valueInputOption='RAW',
+                    body={'values': headers}
+                ).execute()
+
+                logger.info("Added basic headers to spreadsheet")
+            except Exception as simple_error:
+                logger.error(f"Even simple template setup failed: {simple_error}")
+
     def _set_spreadsheet_permissions(self, spreadsheet_id: str):
         """Set sharing permissions for the spreadsheet."""
         try:

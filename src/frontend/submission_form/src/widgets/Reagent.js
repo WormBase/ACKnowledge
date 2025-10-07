@@ -24,6 +24,7 @@ import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import {WIDGET} from "../constants";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
+import axios from "axios";
 
 const Reagent = () => {
     const dispatch = useDispatch();
@@ -37,6 +38,40 @@ const Reagent = () => {
     const otherAntibodies = useSelector((state) => state.reagent.otherAntibodies.elements);
     const isSavedToDB = useSelector((state) => state.reagent.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+    const personId = useSelector((state) => state.person.personId);
+    const person = useSelector((state) => state.person.person);
+
+    // State for transgenes spreadsheet creation
+    const [creatingTransgenesSpreadsheet, setCreatingTransgenesSpreadsheet] = useState(false);
+    const [transgenesSpreadsheetError, setTransgenesSpreadsheetError] = useState(null);
+
+    const handleCreateTransgenesSpreadsheet = async () => {
+        setCreatingTransgenesSpreadsheet(true);
+        setTransgenesSpreadsheetError(null);
+
+        try {
+            // Use the same base URL as other API calls
+            const writeEndpoint = process.env.REACT_APP_API_DB_WRITE_ENDPOINT || 'http://localhost:8001/api/write';
+            const apiBaseUrl = writeEndpoint.replace('/api/write', '');
+            const response = await axios.post(`${apiBaseUrl}/api/create_transgenes_spreadsheet`, {
+                passwd: paperPassword,
+                person_id: personId,
+                person_name: person.name || 'Unknown Author'
+            });
+
+            if (response.data.success) {
+                // Open spreadsheet in new tab
+                window.open(response.data.spreadsheet_url, '_blank');
+            } else {
+                setTransgenesSpreadsheetError('Failed to create spreadsheet');
+            }
+        } catch (error) {
+            console.error('Error creating transgenes spreadsheet:', error);
+            setTransgenesSpreadsheetError('Failed to create spreadsheet. Please try again.');
+        } finally {
+            setCreatingTransgenesSpreadsheet(false);
+        }
+    };
 
     const transgenesTooltip = (
         <Tooltip id="tooltip">
@@ -83,7 +118,25 @@ const Reagent = () => {
                             exactMatchTooltip={"Check this to search for exact transgene names only"}
                             autocompletePlaceholder={"Type transgene names, one per line or separated by commas. For example:\nctIs40\nWBTransgene00000647"}
                         />
-                        
+
+                        {/* Transgenes spreadsheet upload button */}
+                        <div style={{marginTop: '15px', marginBottom: '15px'}}>
+                            <Button
+                                bsStyle="info"
+                                bsSize="small"
+                                onClick={handleCreateTransgenesSpreadsheet}
+                                disabled={creatingTransgenesSpreadsheet}
+                            >
+                                <Glyphicon glyph="upload" style={{marginRight: '6px', fontSize: '14px'}} />
+                                {creatingTransgenesSpreadsheet ? 'Creating...' : 'Upload Transgene spreadsheet (for large lists) - opens in new tab'}
+                            </Button>
+                            {transgenesSpreadsheetError && (
+                                <Alert bsStyle="danger" style={{marginTop: '8px', padding: '6px', fontSize: '12px'}}>
+                                    {transgenesSpreadsheetError}
+                                </Alert>
+                            )}
+                        </div>
+
                         {/* New transgenes section integrated into main panel */}
                         <div style={{marginTop: '15px'}}>
                             <Button
