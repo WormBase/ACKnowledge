@@ -15,6 +15,7 @@ import {getCheckboxDBVal} from "../AFPValues";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {WIDGET} from "../constants";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
+import SaveButton from "../components/SaveButton";
 
 const Interactions = () => {
     const dispatch = useDispatch();
@@ -99,16 +100,16 @@ const Interactions = () => {
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
+                <SaveButton
+                    payload={{
                         gene_int: getCheckboxDBVal(geneint.checked, geneint.details),
                         phys_int: getCheckboxDBVal(geneprod.checked, geneprod.details),
                         gene_reg: getCheckboxDBVal(genereg.checked, genereg.details),
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.INTERACTIONS));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.INTERACTIONS}
+                    buttonText="Save and go to next section"
+                />
             </div>
         </div>
     );

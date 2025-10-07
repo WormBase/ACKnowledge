@@ -25,6 +25,7 @@ import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import {WIDGET} from "../constants";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import axios from "axios";
+import SaveButton from "../components/SaveButton";
 
 const Reagent = () => {
     const dispatch = useDispatch();
@@ -219,17 +220,17 @@ const Reagent = () => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    const payload = {
+                <SaveButton
+                    payload={{
                         transgenes_list: transformEntitiesIntoAfpString(transgenes, ""),
                         new_transgenes: JSON.stringify(otherTransgenes),
                         new_antibody: getCheckboxDBVal(newAntibodies.checked, newAntibodies.details),
                         other_antibodies: JSON.stringify(otherAntibodies),
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.REAGENT));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.REAGENT}
+                    buttonText="Save and go to next section"
+                />
             </div>
         </div>
     );

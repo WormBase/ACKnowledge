@@ -12,6 +12,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
+import SaveButton from "../components/SaveButton";
 
 const Disease = () => {
     const dispatch = useDispatch();
@@ -123,24 +124,24 @@ Diabetes"
                 </Panel>
             )}
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    // Validate that if disease is checked, at least one disease name is selected
-                    if (disease.checked && diseaseNames.length === 0) {
-                        setShowDiseaseRequiredModal(true);
-                        return;
-                    }
-                    
-                    // Filter out "checked" from details - it's a legacy value
-                    const diseaseDetails = (disease.details === "checked") ? "" : disease.details;
-                    const payload = {
-                        disease: getCheckboxDBVal(disease.checked, diseaseDetails),
+                <SaveButton
+                    payload={{
+                        disease: getCheckboxDBVal(disease.checked, (disease.details === "checked") ? "" : disease.details),
                         disease_list: diseaseNames,
                         person_id: "two" + person.personId,
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.DISEASE));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.DISEASE}
+                    buttonText="Save and go to next section"
+                    onBeforeSave={() => {
+                        // Validate that if disease is checked, at least one disease name is selected
+                        if (disease.checked && diseaseNames.length === 0) {
+                            setShowDiseaseRequiredModal(true);
+                            return false;
+                        }
+                        return true;
+                    }}
+                />
             </div>
             
             <DiseaseRequiredModal 

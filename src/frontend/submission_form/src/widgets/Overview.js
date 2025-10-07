@@ -19,6 +19,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {getCheckboxDBVal, transformEntitiesIntoAfpString} from "../AFPValues";
 import {saveWidgetData} from "../redux/actions/widgetActions";
 import {WIDGET} from "../constants";
+import SaveButton from "../components/SaveButton";
 
 const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
@@ -247,18 +248,18 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    const payload = {
+                <SaveButton
+                    payload={{
                         gene_list: transformEntitiesIntoAfpString(genes, "WBGene"),
                         gene_model_update: getCheckboxDBVal(geneModel.checked, geneModel.details),
                         species_list: transformEntitiesIntoAfpString(species, ""),
                         other_species: JSON.stringify(otherSpecies),
                         person_id: "two" + person.personId,
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.OVERVIEW));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.OVERVIEW}
+                    buttonText="Save and go to next section"
+                />
             </div>
         </div>
     );

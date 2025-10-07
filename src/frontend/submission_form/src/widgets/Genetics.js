@@ -24,6 +24,7 @@ import ControlLabel from "react-bootstrap/lib/ControlLabel";
 import Modal from "react-bootstrap/lib/Modal";
 import PropTypes from "prop-types";
 import axios from "axios";
+import SaveButton from "../components/SaveButton";
 
 const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) => {
     const dispatch = useDispatch();
@@ -381,18 +382,18 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 </Panel>
             </form>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
+                <SaveButton
+                    payload={{
                         alleles_list: transformEntitiesIntoAfpString(alleles, ""),
                         allele_seq_change: getCheckboxDBVal(sequenceChange.checked),
                         other_alleles: JSON.stringify(otherAlleles),
                         strains_list: transformEntitiesIntoAfpString(strains, ""),
                         other_strains: JSON.stringify(otherStrains),
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.GENETICS));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.GENETICS}
+                    buttonText="Save and go to next section"
+                />
             </div>
             <Modal show={strainAlreadyPresentError} onHide={() => dispatch(setStrainAlreadyPresentError(false))}>
                 <Modal.Header closeButton>

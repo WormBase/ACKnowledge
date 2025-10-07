@@ -20,6 +20,7 @@ import {
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
+import SaveButton from "../components/SaveButton";
 
 const Expression = () =>{
     const dispatch = useDispatch();
@@ -140,17 +141,17 @@ const Expression = () =>{
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
+                <SaveButton
+                    payload={{
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
                         site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
                         time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
                         additional_expr: getCheckboxDBVal(additionalExpr.checked, additionalExpr.details),
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.EXPRESSION));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.EXPRESSION}
+                    buttonText="Save and go to next section"
+                />
             </div>
         </div>
     );

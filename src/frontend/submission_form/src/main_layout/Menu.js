@@ -1,13 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Nav, NavItem, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {IndexLinkContainer} from "react-router-bootstrap";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
-import {setSelectedWidget} from "../redux/actions/widgetActions";
+import {setSelectedWidget, saveWidgetData} from "../redux/actions/widgetActions";
+import {withRouter} from "react-router-dom";
+import UnsavedChangesModal from "../components/modals/UnsavedChangesModal";
 
-const Menu = ({urlQuery, onMenuItemClick = () => {}}) => {
+const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
     const dispatch = useDispatch();
+    const selectedWidget = useSelector((state) => state.widget.selectedWidget);
+    const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+    const [pendingNavigation, setPendingNavigation] = useState(null);
 
     // Utility function to check if a widget has changes
     const hasWidgetChanges = (widgetState) => {
@@ -92,6 +97,89 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}}) => {
         return hasChanges;
     };
 
+    // Get widget state name from menu index
+    const getWidgetStateName = (menuIndex) => {
+        const widgetMap = {
+            [MENU_INDEX[WIDGET.OVERVIEW]]: 'overview',
+            [MENU_INDEX[WIDGET.GENETICS]]: 'genetics',
+            [MENU_INDEX[WIDGET.REAGENT]]: 'reagent',
+            [MENU_INDEX[WIDGET.EXPRESSION]]: 'expression',
+            [MENU_INDEX[WIDGET.INTERACTIONS]]: 'interactions',
+            [MENU_INDEX[WIDGET.PHENOTYPES]]: 'phenotypes',
+            [MENU_INDEX[WIDGET.DISEASE]]: 'disease',
+            [MENU_INDEX[WIDGET.COMMENTS]]: 'comments'
+        };
+        return widgetMap[menuIndex] || null;
+    };
+
+    // Get widget title from menu index
+    const getWidgetTitle = (menuIndex) => {
+        const reverseMap = Object.keys(MENU_INDEX).find(key => MENU_INDEX[key] === menuIndex);
+        return reverseMap ? WIDGET_TITLE[reverseMap] : '';
+    };
+
+    // Get current widget state
+    const currentWidgetState = useSelector((state) => {
+        const widgetName = getWidgetStateName(selectedWidget);
+        return widgetName ? state[widgetName] : null;
+    });
+
+    // Handle navigation attempt
+    const handleNavigationAttempt = (targetMenuIndex, targetPath) => {
+        const hasChanges = hasWidgetChanges(currentWidgetState);
+
+        // If no unsaved changes, navigate directly
+        if (!hasChanges) {
+            dispatch(setSelectedWidget(targetMenuIndex));
+            history.push(targetPath + urlQuery);
+            onMenuItemClick();
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        // Show modal for unsaved changes
+        setPendingNavigation({
+            menuIndex: targetMenuIndex,
+            path: targetPath
+        });
+        setShowUnsavedModal(true);
+    };
+
+    // Handle save and continue
+    const handleSaveAndContinue = () => {
+        const widgetName = getWidgetStateName(selectedWidget);
+        if (widgetName && pendingNavigation) {
+            dispatch(saveWidgetData(widgetName));
+            // Wait a moment for save to process, then navigate
+            setTimeout(() => {
+                dispatch(setSelectedWidget(pendingNavigation.menuIndex));
+                history.push(pendingNavigation.path + urlQuery);
+                onMenuItemClick();
+                window.scrollTo(0, 0);
+                setShowUnsavedModal(false);
+                setPendingNavigation(null);
+            }, 500);
+        }
+    };
+
+    // Handle continue without saving
+    const handleContinueWithoutSaving = () => {
+        if (pendingNavigation) {
+            dispatch(setSelectedWidget(pendingNavigation.menuIndex));
+            history.push(pendingNavigation.path + urlQuery);
+            onMenuItemClick();
+            window.scrollTo(0, 0);
+            setShowUnsavedModal(false);
+            setPendingNavigation(null);
+        }
+    };
+
+    // Handle cancel navigation
+    const handleCancelNavigation = () => {
+        setShowUnsavedModal(false);
+        setPendingNavigation(null);
+    };
+
     // Reusable menu item component
     const MenuItemWithIcon = ({ widget, title, children }) => {
         const widgetState = useSelector((state) => state[widget]);
@@ -118,57 +206,89 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}}) => {
 
     return (
         <div>
+            <UnsavedChangesModal
+                show={showUnsavedModal}
+                onHide={handleCancelNavigation}
+                onSaveAndContinue={handleSaveAndContinue}
+                onContinueWithoutSaving={handleContinueWithoutSaving}
+                currentWidget={getWidgetTitle(selectedWidget)}
+                targetWidget={pendingNavigation ? getWidgetTitle(pendingNavigation.menuIndex) : ''}
+            />
             <div className="panel panel-default" style={{marginBottom: '10px'}}>
                 <div className="panel-body">
-                    <Nav bsStyle="pills" stacked onSelect={(sel) => dispatch(setSelectedWidget(sel))}>
-                        <IndexLinkContainer to={WIDGET.OVERVIEW + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.OVERVIEW]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.OVERVIEW]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="overview" title={WIDGET_TITLE[WIDGET.OVERVIEW]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.GENETICS + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.GENETICS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.GENETICS]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="genetics" title={WIDGET_TITLE[WIDGET.GENETICS]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.REAGENT + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.REAGENT]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.REAGENT]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="reagent" title={WIDGET_TITLE[WIDGET.REAGENT]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.EXPRESSION + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.EXPRESSION]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.EXPRESSION]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="expression" title={WIDGET_TITLE[WIDGET.EXPRESSION]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.INTERACTIONS + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.INTERACTIONS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.INTERACTIONS]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="interactions" title={WIDGET_TITLE[WIDGET.INTERACTIONS]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.PHENOTYPES + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.PHENOTYPES]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.PHENOTYPES]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="phenotypes" title={WIDGET_TITLE[WIDGET.PHENOTYPES]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.DISEASE + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.DISEASE]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.DISEASE]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="disease" title={WIDGET_TITLE[WIDGET.DISEASE]} />
-                            </NavItem>
-                        </IndexLinkContainer>
-                        <IndexLinkContainer to={WIDGET.COMMENTS + urlQuery}
-                                            active={useSelector((state) => state.widget.selectedWidget) === MENU_INDEX[WIDGET.COMMENTS]}>
-                            <NavItem eventKey={MENU_INDEX[WIDGET.COMMENTS]} onClick={onMenuItemClick}>
-                                <MenuItemWithIcon widget="comments" title={WIDGET_TITLE[WIDGET.COMMENTS]} />
-                            </NavItem>
-                        </IndexLinkContainer>
+                    <Nav bsStyle="pills" stacked>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.OVERVIEW]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.OVERVIEW], WIDGET.OVERVIEW);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="overview" title={WIDGET_TITLE[WIDGET.OVERVIEW]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.GENETICS]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.GENETICS], WIDGET.GENETICS);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="genetics" title={WIDGET_TITLE[WIDGET.GENETICS]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.REAGENT]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.REAGENT], WIDGET.REAGENT);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="reagent" title={WIDGET_TITLE[WIDGET.REAGENT]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.EXPRESSION]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.EXPRESSION], WIDGET.EXPRESSION);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="expression" title={WIDGET_TITLE[WIDGET.EXPRESSION]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.INTERACTIONS]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.INTERACTIONS], WIDGET.INTERACTIONS);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="interactions" title={WIDGET_TITLE[WIDGET.INTERACTIONS]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.PHENOTYPES]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.PHENOTYPES], WIDGET.PHENOTYPES);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="phenotypes" title={WIDGET_TITLE[WIDGET.PHENOTYPES]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.DISEASE]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.DISEASE], WIDGET.DISEASE);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="disease" title={WIDGET_TITLE[WIDGET.DISEASE]} />
+                        </NavItem>
+                        <NavItem
+                            active={selectedWidget === MENU_INDEX[WIDGET.COMMENTS]}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavigationAttempt(MENU_INDEX[WIDGET.COMMENTS], WIDGET.COMMENTS);
+                            }}
+                        >
+                            <MenuItemWithIcon widget="comments" title={WIDGET_TITLE[WIDGET.COMMENTS]} />
+                        </NavItem>
                     </Nav>
                 </div>
             </div>
@@ -204,4 +324,4 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}}) => {
     );
 }
 
-export default Menu;
+export default withRouter(Menu);

@@ -21,6 +21,7 @@ import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
 import {saveWidgetData, saveWidgetDataSilently} from "../redux/actions/widgetActions";
 import {useDispatch, useSelector} from "react-redux";
+import SaveButton from "../components/SaveButton";
 
 const Phenotypes = () => {
     const dispatch = useDispatch();
@@ -214,8 +215,8 @@ const Phenotypes = () => {
                 </Panel.Body>
             </Panel>
             <div align="right">
-                <Button bsStyle="primary" bsSize="small" onClick={() => {
-                    let payload = {
+                <SaveButton
+                    payload={{
                         allele_pheno: getCheckboxDBVal(allelePheno.checked),
                         rnai_pheno: getCheckboxDBVal(rnaiPheno.checked),
                         transover_pheno: getCheckboxDBVal(overexprPheno.checked),
@@ -224,10 +225,10 @@ const Phenotypes = () => {
                         protein: getCheckboxDBVal(enzymaticAct.checked, enzymaticAct.details),
                         othergenefunc: getCheckboxDBVal(othergenefunc.checked, othergenefunc.details),
                         passwd: paperPassword
-                    };
-                    dispatch(saveWidgetData(payload, WIDGET.PHENOTYPES));
-                }}>Save and go to next section
-                </Button>
+                    }}
+                    widgetName={WIDGET.PHENOTYPES}
+                    buttonText="Save and go to next section"
+                />
             </div>
         </div>
     );
