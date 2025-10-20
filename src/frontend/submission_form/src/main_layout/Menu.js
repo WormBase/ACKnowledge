@@ -4,10 +4,9 @@ import {IndexLinkContainer} from "react-router-bootstrap";
 import Glyphicon from "react-bootstrap/lib/Glyphicon";
 import {MENU_INDEX, WIDGET, WIDGET_TITLE} from "../constants";
 import {useDispatch, useSelector} from "react-redux";
-import {setSelectedWidget, saveWidgetData} from "../redux/actions/widgetActions";
+import {setSelectedWidget, saveAllUnsavedWidgets} from "../redux/actions/widgetActions";
 import {withRouter} from "react-router-dom";
 import UnsavedChangesModal from "../components/modals/UnsavedChangesModal";
-import {transformEntitiesIntoAfpString, getCheckboxDBVal} from "../AFPValues";
 
 const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
     const dispatch = useDispatch();
@@ -15,16 +14,6 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
     const [showUnsavedModal, setShowUnsavedModal] = useState(false);
     const [pendingNavigation, setPendingNavigation] = useState(null);
 
-    // Get all widget states for payload building
-    const overviewState = useSelector((state) => state.overview);
-    const geneticsState = useSelector((state) => state.genetics);
-    const reagentState = useSelector((state) => state.reagent);
-    const expressionState = useSelector((state) => state.expression);
-    const interactionsState = useSelector((state) => state.interactions);
-    const phenotypesState = useSelector((state) => state.phenotypes);
-    const diseaseState = useSelector((state) => state.disease);
-    const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
-    const person = useSelector((state) => state.person.person);
 
     // Utility function to check if a widget has changes
     const hasWidgetChanges = (widgetState) => {
@@ -157,76 +146,10 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
         setShowUnsavedModal(true);
     };
 
-    // Build payload for a specific widget
-    const buildWidgetPayload = (widgetName) => {
-        let payload = { passwd: paperPassword };
-
-        switch (widgetName) {
-            case 'overview':
-                payload.gene_list = transformEntitiesIntoAfpString((overviewState.genes && overviewState.genes.elements) || [], "WBGene");
-                payload.gene_model_update = getCheckboxDBVal((overviewState.geneModel && overviewState.geneModel.checked) || false, (overviewState.geneModel && overviewState.geneModel.details) || "");
-                payload.species_list = transformEntitiesIntoAfpString((overviewState.species && overviewState.species.elements) || [], "");
-                payload.other_species = JSON.stringify((overviewState.otherSpecies && overviewState.otherSpecies.elements) || []);
-                payload.person_id = "two" + person.personId;
-                break;
-            case 'genetics':
-                payload.alleles_list = transformEntitiesIntoAfpString((geneticsState.alleles && geneticsState.alleles.elements) || [], "");
-                payload.allele_seq_change = getCheckboxDBVal((geneticsState.sequenceChange && geneticsState.sequenceChange.checked) || false);
-                payload.other_alleles = JSON.stringify((geneticsState.otherAlleles && geneticsState.otherAlleles.elements) || []);
-                payload.strains_list = transformEntitiesIntoAfpString((geneticsState.strains && geneticsState.strains.elements) || [], "");
-                payload.other_strains = JSON.stringify((geneticsState.otherStrains && geneticsState.otherStrains.elements) || []);
-                break;
-            case 'reagent':
-                payload.transgenes_list = transformEntitiesIntoAfpString((reagentState.transgenes && reagentState.transgenes.elements) || [], "");
-                payload.new_transgenes = JSON.stringify((reagentState.otherTransgenes && reagentState.otherTransgenes.elements) || []);
-                payload.new_antibody = getCheckboxDBVal((reagentState.newAntibodies && reagentState.newAntibodies.checked) || false, (reagentState.newAntibodies && reagentState.newAntibodies.details) || "");
-                payload.other_antibodies = JSON.stringify((reagentState.otherAntibodies && reagentState.otherAntibodies.elements) || []);
-                break;
-            case 'expression':
-                payload.anatomic_expr = getCheckboxDBVal((expressionState.expression && expressionState.expression.checked) || false, (expressionState.expression && expressionState.expression.details) || "");
-                payload.site_action = getCheckboxDBVal((expressionState.siteOfAction && expressionState.siteOfAction.checked) || false, (expressionState.siteOfAction && expressionState.siteOfAction.details) || "");
-                payload.time_action = getCheckboxDBVal((expressionState.timeOfAction && expressionState.timeOfAction.checked) || false, (expressionState.timeOfAction && expressionState.timeOfAction.details) || "");
-                payload.additional_expr = getCheckboxDBVal((expressionState.additionalExpr && expressionState.additionalExpr.checked) || false, (expressionState.additionalExpr && expressionState.additionalExpr.details) || "");
-                break;
-            case 'interactions':
-                payload.gene_int = getCheckboxDBVal((interactionsState.geneint && interactionsState.geneint.checked) || false, (interactionsState.geneint && interactionsState.geneint.details) || "");
-                payload.phys_int = getCheckboxDBVal((interactionsState.geneprod && interactionsState.geneprod.checked) || false, (interactionsState.geneprod && interactionsState.geneprod.details) || "");
-                payload.gene_reg = getCheckboxDBVal((interactionsState.genereg && interactionsState.genereg.checked) || false, (interactionsState.genereg && interactionsState.genereg.details) || "");
-                payload.person_id = "two" + person.personId;
-                break;
-            case 'phenotypes':
-                payload.allele_pheno = getCheckboxDBVal((phenotypesState.allelePheno && phenotypesState.allelePheno.checked) || false);
-                payload.rnai_pheno = getCheckboxDBVal((phenotypesState.rnaiPheno && phenotypesState.rnaiPheno.checked) || false);
-                payload.transover_pheno = getCheckboxDBVal((phenotypesState.overexprPheno && phenotypesState.overexprPheno.checked) || false);
-                payload.chemical = getCheckboxDBVal((phenotypesState.chemPheno && phenotypesState.chemPheno.checked) || false, (phenotypesState.chemPheno && phenotypesState.chemPheno.details) || "");
-                payload.env = getCheckboxDBVal((phenotypesState.envPheno && phenotypesState.envPheno.checked) || false, (phenotypesState.envPheno && phenotypesState.envPheno.details) || "");
-                payload.protein = getCheckboxDBVal((phenotypesState.enzymaticAct && phenotypesState.enzymaticAct.checked) || false, (phenotypesState.enzymaticAct && phenotypesState.enzymaticAct.details) || "");
-                payload.othergenefunc = getCheckboxDBVal((phenotypesState.othergenefunc && phenotypesState.othergenefunc.checked) || false, (phenotypesState.othergenefunc && phenotypesState.othergenefunc.details) || "");
-                break;
-            case 'disease':
-                const diseaseDetails = (diseaseState.disease && diseaseState.disease.details && diseaseState.disease.details !== "checked")
-                    ? diseaseState.disease.details
-                    : "";
-                payload.disease = getCheckboxDBVal((diseaseState.disease && diseaseState.disease.checked) || false, diseaseDetails);
-                payload.disease_list = Array.isArray(diseaseState.diseaseNames) ? diseaseState.diseaseNames : [];
-                payload.person_id = "two" + person.personId;
-                break;
-        }
-
-        return payload;
-    };
-
     // Handle save and continue
     const handleSaveAndContinue = () => {
-        const widgetName = getWidgetStateName(selectedWidget);
-        if (widgetName && pendingNavigation) {
-            const payload = buildWidgetPayload(widgetName);
-            const widgetConstant = Object.keys(WIDGET).find(key =>
-                WIDGET[key].toLowerCase() === '/' + widgetName.toLowerCase()
-            );
-            dispatch(saveWidgetData(payload, WIDGET[widgetConstant]));
-
-            // Wait a moment for save to process, then navigate
+        if (pendingNavigation) {
+            dispatch(saveAllUnsavedWidgets());
             setTimeout(() => {
                 dispatch(setSelectedWidget(pendingNavigation.menuIndex));
                 history.push(pendingNavigation.path + urlQuery);
