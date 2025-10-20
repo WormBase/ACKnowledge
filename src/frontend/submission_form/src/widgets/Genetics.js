@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Alert,
     Button, Checkbox, Collapse, Glyphicon, Image, OverlayTrigger,
@@ -56,6 +56,20 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
     // State for collapsible sections
     const [showOtherAlleles, setShowOtherAlleles] = useState(false);
     const [showOtherStrains, setShowOtherStrains] = useState(false);
+
+    useEffect(() => {
+        const hasOtherAllelesData = otherAlleles.some(item => item.name.trim() !== '');
+        if (hasOtherAllelesData) {
+            setShowOtherAlleles(true);
+        }
+    }, [otherAlleles]);
+
+    useEffect(() => {
+        const hasOtherStrainsData = otherStrains.some(item => item.name.trim() !== '');
+        if (hasOtherStrainsData) {
+            setShowOtherStrains(true);
+        }
+    }, [otherStrains]);
 
     const handleCreateAllelesSpreadsheet = async () => {
         setCreatingAllelesSpreadsheet(true);

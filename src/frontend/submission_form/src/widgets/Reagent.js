@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Alert,
     Button,
@@ -45,6 +45,13 @@ const Reagent = () => {
     // State for transgenes spreadsheet creation
     const [creatingTransgenesSpreadsheet, setCreatingTransgenesSpreadsheet] = useState(false);
     const [transgenesSpreadsheetError, setTransgenesSpreadsheetError] = useState(null);
+
+    useEffect(() => {
+        const hasOtherTransgenesData = otherTransgenes.some(item => item.name.trim() !== '');
+        if (hasOtherTransgenesData) {
+            setShowOtherTransgenes(true);
+        }
+    }, [otherTransgenes]);
 
     const handleCreateTransgenesSpreadsheet = async () => {
         setCreatingTransgenesSpreadsheet(true);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
     Alert,
@@ -38,6 +38,13 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
     const person = useSelector((state) => state.person.person);
     const otherSpecies = useSelector((state) => state.overview.otherSpecies.elements);
+
+    useEffect(() => {
+        const hasOtherSpeciesData = otherSpecies.some(item => item.name.trim() !== '');
+        if (hasOtherSpeciesData) {
+            setShowOtherSpecies(true);
+        }
+    }, [otherSpecies]);
 
     const geneTooltip = (
         <Tooltip id="tooltip">
