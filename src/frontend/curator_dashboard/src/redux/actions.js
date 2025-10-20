@@ -172,6 +172,12 @@ export const fetchOtherData = (paperID) => {
                 } else {
                     retData.afp_otherantibodies = [];
                 }
+                retData.afp_newspecies = data.data.afp_newspecies;
+                if (retData.afp_newspecies !== '') {
+                    retData.afp_newspecies = retData.afp_newspecies.split(" | ");
+                } else {
+                    retData.afp_newspecies = [];
+                }
                 resolve(retData);
             }).catch((err) => {
                 reject(err);
