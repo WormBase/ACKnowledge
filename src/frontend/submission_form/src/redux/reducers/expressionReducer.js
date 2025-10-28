@@ -16,7 +16,15 @@ const initialState = {
     checked: false,
     details: ''
   },
+  savedExpression: {
+    checked: false,
+    details: ''
+  },
   siteOfAction: {
+    checked: false,
+    details: ''
+  },
+  savedSiteOfAction: {
     checked: false,
     details: ''
   },
@@ -24,7 +32,15 @@ const initialState = {
     checked: false,
     details: ''
   },
+  savedTimeOfAction: {
+    checked: false,
+    details: ''
+  },
   additionalExpr: {
+    checked: false,
+    details: ''
+  },
+  savedAdditionalExpr: {
     checked: false,
     details: ''
   },
@@ -34,9 +50,13 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SET_EXPRESSION: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedExpression.checked && state.savedExpression.details === '' && !state.isSavedToDB;
       return {
         ...state,
         expression: action.payload,
+        // Only set savedExpression on initial load from API
+        savedExpression: isInitialLoad ? action.payload : state.savedExpression,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
         additionalExpr: state.additionalExpr,
@@ -54,10 +74,14 @@ export default function(state = initialState, action) {
       };
     }
     case SET_SITE_OF_ACTION: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedSiteOfAction.checked && state.savedSiteOfAction.details === '' && !state.isSavedToDB;
       return {
         ...state,
         expression: state.expression,
         siteOfAction: action.payload,
+        // Only set savedSiteOfAction on initial load from API
+        savedSiteOfAction: isInitialLoad ? action.payload : state.savedSiteOfAction,
         timeOfAction: state.timeOfAction,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
@@ -74,11 +98,15 @@ export default function(state = initialState, action) {
       };
     }
     case SET_TIME_OF_ACTION: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedTimeOfAction.checked && state.savedTimeOfAction.details === '' && !state.isSavedToDB;
       return {
         ...state,
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: action.payload,
+        // Only set savedTimeOfAction on initial load from API
+        savedTimeOfAction: isInitialLoad ? action.payload : state.savedTimeOfAction,
         additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
@@ -94,12 +122,16 @@ export default function(state = initialState, action) {
       };
     }
     case SET_ADDITIONAL_EXPR: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedAdditionalExpr.checked && state.savedAdditionalExpr.details === '' && !state.isSavedToDB;
       return {
         ...state,
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
         additionalExpr: action.payload,
+        // Only set savedAdditionalExpr on initial load from API
+        savedAdditionalExpr: isInitialLoad ? action.payload : state.savedAdditionalExpr,
         isSavedToDB: false
       };
     }
@@ -117,9 +149,13 @@ export default function(state = initialState, action) {
       return {
         ...state,
         expression: state.expression,
+        savedExpression: state.expression,
         siteOfAction: state.siteOfAction,
+        savedSiteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
+        savedTimeOfAction: state.timeOfAction,
         additionalExpr: state.additionalExpr,
+        savedAdditionalExpr: state.additionalExpr,
         isSavedToDB: true
       };
     }

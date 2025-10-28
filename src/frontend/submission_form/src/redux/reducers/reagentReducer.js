@@ -27,6 +27,10 @@ const initialState = {
         checked: false,
         details: ''
     },
+    savedNewAntibodies: {
+        checked: false,
+        details: ''
+    },
     otherTransgenes: {
         elements: [ { id: 1, name: "" } ],
         saved: false
@@ -103,10 +107,15 @@ export default function(state = initialState, action) {
             };
         }
         case SET_NEW_ANTIBODIES: {
+            // Check if this is the initial load
+            const isInitialLoad = !state.savedNewAntibodies.checked && state.savedNewAntibodies.details === '' && !state.isSavedToDB;
+            const newAntibodies = {checked: action.payload.checked, details: action.payload.details};
             return {
                 ...state,
                 transgenes: state.transgenes,
-                newAntibodies: {checked: action.payload.checked, details: action.payload.details},
+                newAntibodies: newAntibodies,
+                // Only set savedNewAntibodies on initial load from API
+                savedNewAntibodies: isInitialLoad ? newAntibodies : state.savedNewAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,
                 addedTransgenes: state.addedTransgenes,
@@ -129,6 +138,7 @@ export default function(state = initialState, action) {
                 ...state,
                 transgenes: state.transgenes,
                 newAntibodies: state.newAntibodies,
+                savedNewAntibodies: state.newAntibodies,
                 otherTransgenes: state.otherTransgenes,
                 otherAntibodies: state.otherAntibodies,
                 addedTransgenes: state.addedTransgenes,

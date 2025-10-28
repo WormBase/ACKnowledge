@@ -13,6 +13,10 @@ const initialState = {
     checked: false,
     details: ''
   },
+  savedDisease: {
+    checked: false,
+    details: ''
+  },
   diseaseNames: [],
   addedDiseaseNames: [],
   savedDiseaseNames: [], // Track originally loaded diseases
@@ -22,9 +26,13 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SET_DISEASE: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedDisease.checked && state.savedDisease.details === '' && !state.isSavedToDB;
       return {
         ...state,
         disease: action.payload,
+        // Only set savedDisease on initial load from API
+        savedDisease: isInitialLoad ? action.payload : state.savedDisease,
         isSavedToDB: false
       };
     }
@@ -39,6 +47,7 @@ export default function(state = initialState, action) {
       return {
         ...state,
         disease: state.disease,
+        savedDisease: state.disease,
         isSavedToDB: true
       };
     }

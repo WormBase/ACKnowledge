@@ -19,6 +19,10 @@ const initialState = {
         checked: false,
         details: ''
     },
+    savedGeneModel: {
+        checked: false,
+        details: ''
+    },
     species: {
         elements: [],
         saved: false
@@ -155,10 +159,15 @@ export default function(state = initialState, action) {
             };
         }
         case SET_GENE_MODEL: {
+            // Check if this is the initial load
+            const isInitialLoad = !state.savedGeneModel.checked && state.savedGeneModel.details === '' && !state.isSavedToDB;
+            const newGeneModel = {checked: action.payload.checked, details: action.payload.details};
             return {
                 ...state,
                 genes: state.genes,
-                geneModel: {checked: action.payload.checked, details: action.payload.details},
+                geneModel: newGeneModel,
+                // Only set savedGeneModel on initial load from API
+                savedGeneModel: isInitialLoad ? newGeneModel : state.savedGeneModel,
                 species: state.species,
                 addedGenes: state.addedGenes,
                 addedSpecies: state.addedSpecies,
@@ -181,6 +190,7 @@ export default function(state = initialState, action) {
                 ...state,
                 genes: state.genes,
                 geneModel: state.geneModel,
+                savedGeneModel: state.geneModel,
                 species: state.species,
                 addedGenes: state.addedGenes,
                 addedSpecies: state.addedSpecies,

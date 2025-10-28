@@ -37,6 +37,10 @@ const initialState = {
         checked: false,
         details: ''
     },
+    savedSequenceChange: {
+        checked: false,
+        details: ''
+    },
     otherAlleles: {
         elements: [ { id: 1, name: "" } ],
         saved: false
@@ -189,11 +193,16 @@ export default function(state = initialState, action) {
             };
         }
         case SET_SEQUENCE_CHANGE: {
+            // Check if this is the initial load
+            const isInitialLoad = !state.savedSequenceChange.checked && state.savedSequenceChange.details === '' && !state.isSavedToDB;
+            const newSequenceChange = {checked: action.payload.checked, details: action.payload.details};
             return {
                 ...state,
                 alleles: state.alleles,
                 strains: state.strains,
-                sequenceChange: {checked: action.payload.checked, details: action.payload.details},
+                sequenceChange: newSequenceChange,
+                // Only set savedSequenceChange on initial load from API
+                savedSequenceChange: isInitialLoad ? newSequenceChange : state.savedSequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
                 addedAlleles: state.addedAlleles,
@@ -220,6 +229,7 @@ export default function(state = initialState, action) {
                 alleles: state.alleles,
                 strains: state.strains,
                 sequenceChange: state.sequenceChange,
+                savedSequenceChange: state.sequenceChange,
                 otherAlleles: state.otherAlleles,
                 otherStrains: state.otherStrains,
                 addedAlleles: state.addedAlleles,

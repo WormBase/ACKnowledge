@@ -14,11 +14,23 @@ const initialState = {
     checked: false,
     details: ''
   },
+  savedGeneint: {
+    checked: false,
+    details: ''
+  },
   geneprod: {
     checked: false,
     details: ''
   },
+  savedGeneprod: {
+    checked: false,
+    details: ''
+  },
   genereg: {
+    checked: false,
+    details: ''
+  },
+  savedGenereg: {
     checked: false,
     details: ''
   },
@@ -28,9 +40,13 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SET_GENETIC_INTERACTIONS: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedGeneint.checked && state.savedGeneint.details === '' && !state.isSavedToDB;
       return {
         ...state,
         geneint: action.payload,
+        // Only set savedGeneint on initial load from API
+        savedGeneint: isInitialLoad ? action.payload : state.savedGeneint,
         geneprod: state.geneprod,
         genereg: state.genereg,
         isSavedToDB: false
@@ -46,10 +62,14 @@ export default function(state = initialState, action) {
       };
     }
     case SET_PHYSICAL_INTERACTIONS: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedGeneprod.checked && state.savedGeneprod.details === '' && !state.isSavedToDB;
       return {
         ...state,
         geneint: state.geneint,
         geneprod: action.payload,
+        // Only set savedGeneprod on initial load from API
+        savedGeneprod: isInitialLoad ? action.payload : state.savedGeneprod,
         genereg: state.genereg,
         isSavedToDB: false
       };
@@ -64,11 +84,15 @@ export default function(state = initialState, action) {
       };
     }
     case SET_REGULATORY_INTERACTIONS: {
+      // Check if this is the initial load
+      const isInitialLoad = !state.savedGenereg.checked && state.savedGenereg.details === '' && !state.isSavedToDB;
       return {
         ...state,
         geneint: state.geneint,
         geneprod: state.geneprod,
         genereg: action.payload,
+        // Only set savedGenereg on initial load from API
+        savedGenereg: isInitialLoad ? action.payload : state.savedGenereg,
         isSavedToDB: false
       };
     }
@@ -85,8 +109,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         geneint: state.geneint,
+        savedGeneint: state.geneint,
         geneprod: state.geneprod,
+        savedGeneprod: state.geneprod,
         genereg: state.genereg,
+        savedGenereg: state.genereg,
         isSavedToDB: true
       };
     }
