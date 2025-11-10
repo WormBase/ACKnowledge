@@ -168,7 +168,7 @@ export const fetchOtherData = (paperID) => {
                 }
                 retData.afp_otherantibodies = data.data.afp_otherantibodies;
                 if (retData.afp_otherantibodies !== '') {
-                    retData.afp_otherantibodies = extractEntitiesFromTfpString(retData.afp_otherantibodies, "");
+                    retData.afp_otherantibodies = retData.afp_otherantibodies.split(" | ");
                 } else {
                     retData.afp_otherantibodies = [];
                 }
