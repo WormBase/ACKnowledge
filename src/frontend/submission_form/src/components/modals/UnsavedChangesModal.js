@@ -15,7 +15,6 @@ const UnsavedChangesModal = ({
     show,
     onHide,
     onSaveAndContinue,
-    onContinueWithoutSaving,
     currentWidget,
     targetWidget
 }) => {
@@ -35,9 +34,6 @@ const UnsavedChangesModal = ({
             <Modal.Footer>
                 <Button bsStyle="secondary" onClick={onHide}>
                     Cancel
-                </Button>
-                <Button bsStyle="secondary" onClick={onContinueWithoutSaving}>
-                    Continue Without Saving
                 </Button>
                 <Button bsStyle="primary" onClick={onSaveAndContinue}>
                     Save and Continue

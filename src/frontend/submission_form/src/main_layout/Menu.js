@@ -168,18 +168,6 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
         }
     };
 
-    // Handle continue without saving
-    const handleContinueWithoutSaving = () => {
-        if (pendingNavigation) {
-            dispatch(setSelectedWidget(pendingNavigation.menuIndex));
-            history.push(pendingNavigation.path + urlQuery);
-            onMenuItemClick();
-            window.scrollTo(0, 0);
-            setShowUnsavedModal(false);
-            setPendingNavigation(null);
-        }
-    };
-
     // Handle cancel navigation
     const handleCancelNavigation = () => {
         setShowUnsavedModal(false);
@@ -216,7 +204,6 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
                 show={showUnsavedModal}
                 onHide={handleCancelNavigation}
                 onSaveAndContinue={handleSaveAndContinue}
-                onContinueWithoutSaving={handleContinueWithoutSaving}
                 currentWidget={getWidgetTitle(selectedWidget)}
                 targetWidget={pendingNavigation ? getWidgetTitle(pendingNavigation.menuIndex) : ''}
             />
