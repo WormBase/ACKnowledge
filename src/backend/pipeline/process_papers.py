@@ -114,7 +114,8 @@ def main():
             exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
             exclude_no_author_email=True, exclude_temp_pdf=True)
     logging.info("getting lists of entities")
-    curated_genes = ntt_extractor.get_curated_entities(EntityType.GENE, exclude_id_used_as_name=False)
+    curated_genes = db_manager.generic.get_curated_genes(exclude_id_used_as_name=False, include_seqname=True,
+                                                         include_synonyms=False)
     gene_name_id_map = db_manager.generic.get_gene_name_id_map()
     curated_alleles = ntt_extractor.get_curated_entities(EntityType.VARIATION, exclude_id_used_as_name=False)
     allele_name_id_map = db_manager.generic.get_variation_name_id_map()
