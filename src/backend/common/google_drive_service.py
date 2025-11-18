@@ -1093,66 +1093,43 @@ class GoogleDriveService:
                         instructions_sheet_id = sheet['properties']['sheetId']
             
             # Now set up the data using values API (more reliable)
-            # Set up Strains Data headers
-            strains_headers = [[
-                'Strain Name',
-                'Genotype',
-                'Species',
-                'Background Strain',
-                'Outcrossed',
-                'Mutagen',
-                'Made By',
-                'Notes/Comments'
-            ]]
-            
+            # Set up Strains Data sheet with instruction row and headers
+            strains_data_rows = [
+                # Row 1: Instruction text (will be merged and hyperlinked later)
+                ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', ''],
+                # Row 2: Headers
+                ['Strain Name*', 'Genotype', 'Species', 'Notes/Comments']
+            ]
+
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Strains Data!A1:H1',
+                range='Strains Data!A1:D2',
                 valueInputOption='RAW',
-                body={'values': strains_headers}
+                body={'values': strains_data_rows}
             ).execute()
             
             # Set up Instructions sheet data
             # Format IDs in Alliance xref curie format
             paper_id_formatted = f"WB:WBPaper{paper_id}"
             pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
-            
+
             instructions_data = [
-                ['Paper Information', ''],
-                ['WB Paper ID:', paper_id_formatted],
-                ['PMID:', pmid_formatted],
-                ['Title:', paper_title],
-                ['Author:', author_name],
-                ['', ''],
-                ['Instructions', ''],
-                ['Column A - Strain Name:', 'Enter the strain name (e.g., CB1004, BAT1560)'],
-                ['Column B - Genotype:', 'Enter the genotype (e.g., vhp-1(sa366) II; egIs1 [dat-1p::GFP])'],
-                ['Column C - Species:', 'Species name (e.g., C. elegans)'],
-                ['Column D - Background Strain:', 'Parent/background strain if applicable (e.g., N2, CB4856)'],
-                ['Column E - Outcrossed:', 'Number of times outcrossed (e.g., 3x, 6x)'],
-                ['Column F - Mutagen:', 'Mutagen used if applicable (e.g., EMS, UV, CRISPR)'],
-                ['Column G - Made By:', 'Person or lab who created the strain'],
-                ['Column H - Notes/Comments:', 'Any additional information'],
-                ['', ''],
-                ['Examples', ''],
-                ['Standard strain:', 'CB1004, flu-4(e1004), C. elegans, N2, 6x, EMS, Sydney Brenner'],
-                ['CRISPR strain:', 'BAT1560, hmg-3(bar24[hmg-3::3xHA]), C. elegans, N2, 3x, CRISPR, Smith Lab'],
-                ['GFP strain:', 
-                 'PMD153, vhp-1(sa366) II; egIs1 [dat-1p::GFP], C. elegans, CB4856, Not outcrossed, , Jones Lab'],
-                ['', ''],
-                ['How to import existing data:', ''],
-                ['1. Use File > Import', ''],
-                ['2. Select your CSV or Excel file', ''],
-                ['3. Choose "Replace spreadsheet" or "Insert new sheet(s)"', ''],
-                ['4. Map your columns to match the template headers', ''],
-                ['', ''],
-                ['Note:', 'For papers with many strains (>250), you can bulk import your strain list'],
-                ['', 'from an existing spreadsheet or database export.']
+                ['Paper Information', '', '', '', ''],
+                ['WB Paper ID', paper_id_formatted, '', '', ''],
+                ['PMID', pmid_formatted, '', '', ''],
+                ['Title', paper_title, '', '', ''],
+                ['Author', author_name, '', '', ''],
+                ['', '', '', '', ''],
+                ['Instructions (*mandatory)', 'Description', 'Example - Standard Strain', 'Example - GFP Strain', 'Example - CRISPR Strain'],
+                ['*Column A - Strain Name', 'Enter the strain name', 'CB1004', 'PMD153', 'BAT1560'],
+                ['Column B - Genotype', 'Enter the genotype', 'flu-4(e1004) X', 'vhp-1(sa366) II; egIs1 [dat-1p::GFP]', 'hmg-3(bar24[hmg-3::3xHA]) I'],
+                ['Column C - Species', 'Enter the species name', 'C. elegans', 'C. elegans', 'C. elegans'],
+                ['Column D - Notes/Comments', 'Enter any additional information', 'Your comments here', 'Your comments here', 'Your comments here']
             ]
-            
+
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Instructions!A1:B29',
+                range='Instructions!A1:E11',
                 valueInputOption='RAW',
                 body={'values': instructions_data}
             ).execute()
@@ -1160,7 +1137,20 @@ class GoogleDriveService:
             # Apply formatting and column widths (optional, try but don't fail)
             try:
                 format_requests = [
-                    # Format headers in Strains Data sheet
+                    # Merge cells A1:D1 for the instruction text
+                    {
+                        'mergeCells': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 4
+                            },
+                            'mergeType': 'MERGE_ALL'
+                        }
+                    },
+                    # Format row 1 (instruction text) - left alignment and vertical middle (bold will be added via rich text)
                     {
                         'repeatCell': {
                             'range': {
@@ -1168,7 +1158,26 @@ class GoogleDriveService:
                                 'startRowIndex': 0,
                                 'endRowIndex': 1,
                                 'startColumnIndex': 0,
-                                'endColumnIndex': 8
+                                'endColumnIndex': 4
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'horizontalAlignment': 'LEFT',
+                                    'verticalAlignment': 'MIDDLE'
+                                }
+                            },
+                            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment)'
+                        }
+                    },
+                    # Format headers in row 2 of Strains Data sheet
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'startRowIndex': 1,
+                                'endRowIndex': 2,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 4
                             },
                             'cell': {
                                 'userEnteredFormat': {
@@ -1179,15 +1188,65 @@ class GoogleDriveService:
                             'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                         }
                     },
-                    # Auto-resize columns in Strains Data sheet
+                    # Set column widths in Strains Data sheet with sensible defaults
+                    # Column A - Strain Name* (150px)
                     {
-                        'autoResizeDimensions': {
-                            'dimensions': {
+                        'updateDimensionProperties': {
+                            'range': {
                                 'sheetId': strains_sheet_id,
                                 'dimension': 'COLUMNS',
                                 'startIndex': 0,
-                                'endIndex': 8
-                            }
+                                'endIndex': 1
+                            },
+                            'properties': {
+                                'pixelSize': 150
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column B - Genotype (300px for complex genotypes)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 1,
+                                'endIndex': 2
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column C - Species (120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 2,
+                                'endIndex': 3
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column D - Notes/Comments (300px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 3,
+                                'endIndex': 4
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
                         }
                     }
                 ]
@@ -1195,7 +1254,7 @@ class GoogleDriveService:
                 # Add column width adjustments for Instructions sheet if it exists
                 if instructions_sheet_id is not None:
                     format_requests.extend([
-                        # Set column A width (labels column) - wider for the labels
+                        # Column A - Instructions/Labels (280px)
                         {
                             'updateDimensionProperties': {
                                 'range': {
@@ -1205,12 +1264,12 @@ class GoogleDriveService:
                                     'endIndex': 1
                                 },
                                 'properties': {
-                                    'pixelSize': 250  # Width for labels column
+                                    'pixelSize': 280
                                 },
                                 'fields': 'pixelSize'
                             }
                         },
-                        # Set column B width (values column) - wider for content
+                        # Column B - Description (350px)
                         {
                             'updateDimensionProperties': {
                                 'range': {
@@ -1220,12 +1279,57 @@ class GoogleDriveService:
                                     'endIndex': 2
                                 },
                                 'properties': {
-                                    'pixelSize': 500  # Width for content column
+                                    'pixelSize': 350
                                 },
                                 'fields': 'pixelSize'
                             }
                         },
-                        # Format the headers in Instructions sheet
+                        # Column C - Example - Standard Strain (250px)
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 2,
+                                    'endIndex': 3
+                                },
+                                'properties': {
+                                    'pixelSize': 250
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Column D - Example - GFP Strain (250px)
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 3,
+                                    'endIndex': 4
+                                },
+                                'properties': {
+                                    'pixelSize': 250
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Column E - Example - CRISPR Strain (250px)
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 4,
+                                    'endIndex': 5
+                                },
+                                'properties': {
+                                    'pixelSize': 250
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Format Paper Information header (row 1)
                         {
                             'repeatCell': {
                                 'range': {
@@ -1233,93 +1337,105 @@ class GoogleDriveService:
                                     'startRowIndex': 0,
                                     'endRowIndex': 1,
                                     'startColumnIndex': 0,
-                                    'endColumnIndex': 2
+                                    'endColumnIndex': 1
                                 },
                                 'cell': {
                                     'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
+                                        'textFormat': {'bold': True, 'fontSize': 12}
                                     }
                                 },
                                 'fields': 'userEnteredFormat.textFormat'
                             }
                         },
+                        # Format Instructions header row (row 7)
                         {
                             'repeatCell': {
                                 'range': {
                                     'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 5,
-                                    'endRowIndex': 6,
+                                    'startRowIndex': 6,
+                                    'endRowIndex': 7,
                                     'startColumnIndex': 0,
-                                    'endColumnIndex': 1
+                                    'endColumnIndex': 5
                                 },
                                 'cell': {
                                     'userEnteredFormat': {
+                                        'backgroundColor': {'red': 0.8, 'green': 0.8, 'blue': 0.8},
                                         'textFormat': {'bold': True}
                                     }
                                 },
-                                'fields': 'userEnteredFormat.textFormat'
-                            }
-                        },
-                        {
-                            'repeatCell': {
-                                'range': {
-                                    'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 15,
-                                    'endRowIndex': 16,
-                                    'startColumnIndex': 0,
-                                    'endColumnIndex': 1
-                                },
-                                'cell': {
-                                    'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
-                                    }
-                                },
-                                'fields': 'userEnteredFormat.textFormat'
-                            }
-                        },
-                        {
-                            'repeatCell': {
-                                'range': {
-                                    'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 20,
-                                    'endRowIndex': 21,
-                                    'startColumnIndex': 0,
-                                    'endColumnIndex': 1
-                                },
-                                'cell': {
-                                    'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
-                                    }
-                                },
-                                'fields': 'userEnteredFormat.textFormat'
-                            }
-                        },
-                        {
-                            'repeatCell': {
-                                'range': {
-                                    'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 26,
-                                    'endRowIndex': 27,
-                                    'startColumnIndex': 0,
-                                    'endColumnIndex': 1
-                                },
-                                'cell': {
-                                    'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
-                                    }
-                                },
-                                'fields': 'userEnteredFormat.textFormat'
+                                'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                             }
                         }
                     ])
-                
+
                 self.sheets_service.spreadsheets().batchUpdate(
                     spreadsheetId=spreadsheet_id,
                     body={'requests': format_requests}
                 ).execute()
+
+                # Add rich text with hyperlink only on "here" in the instruction text (A1)
+                # The text is: "Please fill out the mandatory field (*). Click here for detailed instructions."
+                # We need to link only the word "here" to the Instructions sheet
+                try:
+                    # The full text
+                    full_text = "Please fill out the mandatory field (*). Click here for detailed instructions."
+                    # Find the position of "here"
+                    here_start = full_text.index("here")
+                    here_end = here_start + 4  # length of "here"
+
+                    rich_text_request = {
+                        'updateCells': {
+                            'range': {
+                                'sheetId': strains_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 1
+                            },
+                            'rows': [{
+                                'values': [{
+                                    'userEnteredValue': {
+                                        'stringValue': full_text
+                                    },
+                                    'textFormatRuns': [
+                                        {
+                                            'startIndex': 0,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_start,
+                                            'format': {
+                                                'bold': True,
+                                                'link': {
+                                                    'uri': f'#gid={instructions_sheet_id}'
+                                                }
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_end,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        }
+                                    ]
+                                }]
+                            }],
+                            'fields': 'userEnteredValue,textFormatRuns'
+                        }
+                    }
+
+                    self.sheets_service.spreadsheets().batchUpdate(
+                        spreadsheetId=spreadsheet_id,
+                        body={'requests': [rich_text_request]}
+                    ).execute()
+                except Exception as hyperlink_error:
+                    logger.warning(f"Could not add hyperlink: {hyperlink_error}")
+
             except Exception as format_error:
                 logger.warning(f"Could not apply formatting: {format_error}")
-            
+
             logger.info(f"Successfully set up strains template for {paper_id}")
             
         except Exception as e:
@@ -1327,19 +1443,18 @@ class GoogleDriveService:
             # Try a simpler approach - just add the headers
             try:
                 logger.info("Trying simpler template setup")
-                headers = [[
-                    'Strain Name', 'Genotype', 'Species',
-                    'Background Strain', 'Outcrossed', 'Mutagen',
-                    'Made By', 'Notes/Comments'
-                ]]
-                
+                simple_data = [
+                    ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', ''],
+                    ['Strain Name*', 'Genotype', 'Species', 'Notes/Comments']
+                ]
+
                 self.sheets_service.spreadsheets().values().update(
                     spreadsheetId=spreadsheet_id,
-                    range='A1:H1',
+                    range='A1:D2',
                     valueInputOption='RAW',
-                    body={'values': headers}
+                    body={'values': simple_data}
                 ).execute()
-                
+
                 logger.info("Added basic headers to spreadsheet")
             except Exception as simple_error:
                 logger.error(f"Even simple template setup failed: {simple_error}")
