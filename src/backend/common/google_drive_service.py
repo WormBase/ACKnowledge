@@ -472,61 +472,48 @@ class GoogleDriveService:
                         instructions_sheet_id = sheet['properties']['sheetId']
             
             # Now set up the data using values API (more reliable)
-            # Set up Alleles Data headers
-            alleles_headers = [[
-                'Allele Name',
-                'Gene', 
-                'Sequence Change Type',
-                'Flanking Sequence 5\' (30bp)',
-                'Flanking Sequence 3\' (30bp)',
-                'Strain',
-                'Species',
-                'Notes/Comments'
-            ]]
-            
+            # Set up Alleles Data sheet with instruction row and headers
+            alleles_data_rows = [
+                # Row 1: Instruction text (will be merged and hyperlinked later)
+                ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', '', '', '', '', '', ''],
+                # Row 2: Headers
+                ['Allele Name*', 'Gene', 'Genotype', 'Sequence Change Type', 'Flanking Sequence 5\' (30bp)', 'Flanking Sequence 3\' (30bp)', 'Strain', 'Species', 'Notes/Comments']
+            ]
+
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Alleles Data!A1:H1',
+                range='Alleles Data!A1:I2',
                 valueInputOption='RAW',
-                body={'values': alleles_headers}
+                body={'values': alleles_data_rows}
             ).execute()
             
             # Set up Instructions sheet data
             # Format IDs in Alliance xref curie format
             paper_id_formatted = f"WB:WBPaper{paper_id}"
             pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
-            
+
             instructions_data = [
-                ['Paper Information', ''],
-                ['WB Paper ID:', paper_id_formatted],
-                ['PMID:', pmid_formatted],
-                ['Title:', paper_title],
-                ['Author:', author_name],
-                ['', ''],
-                ['Instructions', ''],
-                ['Column A - Allele Name:', 'Enter the allele name (e.g., e1004, bar24)'],
-                ['Column B - Gene:', 'Enter the gene name (e.g., flu-4, hmg-3)'],
-                ['Column C - Sequence Change Type:', 'deletion, insertion, substitution, etc.'],
-                ['Column D - Flanking Sequence 5\':', '30 base pairs upstream of the change'],
-                ['Column E - Flanking Sequence 3\':', '30 base pairs downstream of the change'],
-                ['Column F - Strain:', 'Strain name (e.g., CB1004, BAT1560)'],
-                ['Column G - Species:', 'Species name (e.g., C. elegans)'],
-                ['Column H - Notes/Comments:', 'Any additional information'],
-                ['', ''],
-                ['Examples', ''],
-                ['Standard allele:', 'flu-4(e1004), flu-4, deletion, ATCG..., GCTA..., CB1004, C. elegans'],
-                ['CRISPR allele:', 'hmg-3(bar24[hmg-3::3xHA]), hmg-3, knock-in, ATCG..., GCTA..., BAT1560, C. elegans'],
-                ['', ''],
-                ['How to import existing data:', ''],
-                ['1. Use File > Import', ''],
-                ['2. Select your CSV or Excel file', ''],
-                ['3. Choose "Replace spreadsheet" or "Insert new sheet(s)"', ''],
-                ['4. Map your columns to match the template headers', '']
+                ['Paper Information', '', '', ''],
+                ['WB Paper ID', paper_id_formatted, '', ''],
+                ['PMID', pmid_formatted, '', ''],
+                ['Title', paper_title, '', ''],
+                ['Author', author_name, '', ''],
+                ['', '', '', ''],
+                ['Instructions (*mandatory)', 'Description', 'Example - Standard allele', 'Example - CRISPR allele'],
+                ['*Column A - Allele Name', 'Enter the allele name', 'ok1387', 'bar24'],
+                ['Column B - Gene', 'Enter the gene name', 'nmur-1', 'hmg-3'],
+                ['Column C - Genotype', 'Enter the genotype', '-', '[hmg-3::3xHA]'],
+                ['Column D - Sequence Change Type', 'Select a value from the dropdown, e.g. sequence deletion', 'sequence deletion', 'engineered allele'],
+                ['Column E - Flanking Sequence 5\'', 'Enter 30 base pairs upstream of the change', 'TTGC....', 'ATCG...'],
+                ['Column F - Flanking Sequence 3\'', 'Enter 30 base pairs downstream of the change', '....TGCT', '...GCTA'],
+                ['Column G - Strain', 'Enter the strain name', 'RB1288', 'BAT1560'],
+                ['Column H - Species', 'Enter the species name', 'C. elegans', 'C. elegans'],
+                ['Column I - Notes/Comments', 'Enter any additional information', 'Your comments here', 'Your comments here']
             ]
-            
+
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Instructions!A1:B25',
+                range='Instructions!A1:D16',
                 valueInputOption='RAW',
                 body={'values': instructions_data}
             ).execute()
@@ -534,7 +521,20 @@ class GoogleDriveService:
             # Apply formatting and column widths (optional, try but don't fail)
             try:
                 format_requests = [
-                    # Format headers in Alleles Data sheet
+                    # Merge cells A1:I1 for the instruction text
+                    {
+                        'mergeCells': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 9
+                            },
+                            'mergeType': 'MERGE_ALL'
+                        }
+                    },
+                    # Format row 1 (instruction text) - left alignment and vertical middle (bold will be added via rich text)
                     {
                         'repeatCell': {
                             'range': {
@@ -542,7 +542,26 @@ class GoogleDriveService:
                                 'startRowIndex': 0,
                                 'endRowIndex': 1,
                                 'startColumnIndex': 0,
-                                'endColumnIndex': 8
+                                'endColumnIndex': 9
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'horizontalAlignment': 'LEFT',
+                                    'verticalAlignment': 'MIDDLE'
+                                }
+                            },
+                            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment)'
+                        }
+                    },
+                    # Format headers in row 2 of Alleles Data sheet
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'startRowIndex': 1,
+                                'endRowIndex': 2,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 9
                             },
                             'cell': {
                                 'userEnteredFormat': {
@@ -553,15 +572,168 @@ class GoogleDriveService:
                             'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                         }
                     },
-                    # Auto-resize columns in Alleles Data sheet
+                    # Add data validation (dropdown) for Sequence Change Type column (D3 onwards)
                     {
-                        'autoResizeDimensions': {
-                            'dimensions': {
+                        'setDataValidation': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'startRowIndex': 2,  # Start from row 3 (0-indexed)
+                                'endRowIndex': 1000,  # Cover enough rows
+                                'startColumnIndex': 3,  # Column D
+                                'endColumnIndex': 4
+                            },
+                            'rule': {
+                                'condition': {
+                                    'type': 'ONE_OF_LIST',
+                                    'values': [
+                                        {'userEnteredValue': 'point/dinucleotide mutation'},
+                                        {'userEnteredValue': 'transposon insertion'},
+                                        {'userEnteredValue': 'sequence insertion'},
+                                        {'userEnteredValue': 'sequence deletion'},
+                                        {'userEnteredValue': 'deletion + insertion'},
+                                        {'userEnteredValue': 'engineered allele'},
+                                        {'userEnteredValue': 'complex alterations'}
+                                    ]
+                                },
+                                'showCustomUi': True,
+                                'strict': False
+                            }
+                        }
+                    },
+                    # Set column widths in Alleles Data sheet with sensible defaults
+                    # Column A - Allele Name* (min 150px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
                                 'sheetId': alleles_sheet_id,
                                 'dimension': 'COLUMNS',
                                 'startIndex': 0,
+                                'endIndex': 1
+                            },
+                            'properties': {
+                                'pixelSize': 150
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column B - Gene (min 120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 1,
+                                'endIndex': 2
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column C - Genotype (150px for construct details)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 2,
+                                'endIndex': 3
+                            },
+                            'properties': {
+                                'pixelSize': 200
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column D - Sequence Change Type (180px for dropdown)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 3,
+                                'endIndex': 4
+                            },
+                            'properties': {
+                                'pixelSize': 200
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column E - Flanking Sequence 5' (30bp) (250px for sequences)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 4,
+                                'endIndex': 5
+                            },
+                            'properties': {
+                                'pixelSize': 250
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column F - Flanking Sequence 3' (30bp) (250px for sequences)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 5,
+                                'endIndex': 6
+                            },
+                            'properties': {
+                                'pixelSize': 250
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column G - Strain (120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 6,
+                                'endIndex': 7
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column H - Species (120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 7,
                                 'endIndex': 8
-                            }
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column I - Notes/Comments (300px max for comments)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 8,
+                                'endIndex': 9
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
                         }
                     }
                 ]
@@ -569,7 +741,7 @@ class GoogleDriveService:
                 # Add column width adjustments for Instructions sheet if it exists
                 if instructions_sheet_id is not None:
                     format_requests.extend([
-                        # Set column A width (labels column) - wider for the labels
+                        # Column A - Instructions/Labels (280px)
                         {
                             'updateDimensionProperties': {
                                 'range': {
@@ -579,12 +751,12 @@ class GoogleDriveService:
                                     'endIndex': 1
                                 },
                                 'properties': {
-                                    'pixelSize': 250  # Width for labels column
+                                    'pixelSize': 280
                                 },
                                 'fields': 'pixelSize'
                             }
                         },
-                        # Set column B width (values column) - wider for content
+                        # Column B - Description (350px)
                         {
                             'updateDimensionProperties': {
                                 'range': {
@@ -594,12 +766,42 @@ class GoogleDriveService:
                                     'endIndex': 2
                                 },
                                 'properties': {
-                                    'pixelSize': 500  # Width for content column
+                                    'pixelSize': 350
                                 },
                                 'fields': 'pixelSize'
                             }
                         },
-                        # Format the headers in Instructions sheet
+                        # Column C - Example - Standard allele (200px)
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 2,
+                                    'endIndex': 3
+                                },
+                                'properties': {
+                                    'pixelSize': 200
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Column D - Example - CRISPR allele (200px)
+                        {
+                            'updateDimensionProperties': {
+                                'range': {
+                                    'sheetId': instructions_sheet_id,
+                                    'dimension': 'COLUMNS',
+                                    'startIndex': 3,
+                                    'endIndex': 4
+                                },
+                                'properties': {
+                                    'pixelSize': 200
+                                },
+                                'fields': 'pixelSize'
+                            }
+                        },
+                        # Format Paper Information header (row 1)
                         {
                             'repeatCell': {
                                 'range': {
@@ -607,65 +809,33 @@ class GoogleDriveService:
                                     'startRowIndex': 0,
                                     'endRowIndex': 1,
                                     'startColumnIndex': 0,
-                                    'endColumnIndex': 2
+                                    'endColumnIndex': 1
                                 },
                                 'cell': {
                                     'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
+                                        'textFormat': {'bold': True, 'fontSize': 12}
                                     }
                                 },
                                 'fields': 'userEnteredFormat.textFormat'
                             }
                         },
+                        # Format Instructions header row (row 7)
                         {
                             'repeatCell': {
                                 'range': {
                                     'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 5,
-                                    'endRowIndex': 6,
+                                    'startRowIndex': 6,
+                                    'endRowIndex': 7,
                                     'startColumnIndex': 0,
-                                    'endColumnIndex': 1
+                                    'endColumnIndex': 4
                                 },
                                 'cell': {
                                     'userEnteredFormat': {
+                                        'backgroundColor': {'red': 0.8, 'green': 0.8, 'blue': 0.8},
                                         'textFormat': {'bold': True}
                                     }
                                 },
-                                'fields': 'userEnteredFormat.textFormat'
-                            }
-                        },
-                        {
-                            'repeatCell': {
-                                'range': {
-                                    'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 15,
-                                    'endRowIndex': 16,
-                                    'startColumnIndex': 0,
-                                    'endColumnIndex': 1
-                                },
-                                'cell': {
-                                    'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
-                                    }
-                                },
-                                'fields': 'userEnteredFormat.textFormat'
-                            }
-                        },
-                        {
-                            'repeatCell': {
-                                'range': {
-                                    'sheetId': instructions_sheet_id,
-                                    'startRowIndex': 19,
-                                    'endRowIndex': 20,
-                                    'startColumnIndex': 0,
-                                    'endColumnIndex': 1
-                                },
-                                'cell': {
-                                    'userEnteredFormat': {
-                                        'textFormat': {'bold': True}
-                                    }
-                                },
-                                'fields': 'userEnteredFormat.textFormat'
+                                'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                             }
                         }
                     ])
@@ -674,9 +844,70 @@ class GoogleDriveService:
                     spreadsheetId=spreadsheet_id,
                     body={'requests': format_requests}
                 ).execute()
+
+                # Add rich text with hyperlink only on "here" in the instruction text (A1)
+                # The text is: "Please fill out the mandatory field (*). Click here for detailed instructions."
+                # We need to link only the word "here" to the Instructions sheet
+                try:
+                    # The full text
+                    full_text = "Please fill out the mandatory field (*). Click here for detailed instructions."
+                    # Find the position of "here"
+                    here_start = full_text.index("here")
+                    here_end = here_start + 4  # length of "here"
+
+                    rich_text_request = {
+                        'updateCells': {
+                            'range': {
+                                'sheetId': alleles_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 1
+                            },
+                            'rows': [{
+                                'values': [{
+                                    'userEnteredValue': {
+                                        'stringValue': full_text
+                                    },
+                                    'textFormatRuns': [
+                                        {
+                                            'startIndex': 0,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_start,
+                                            'format': {
+                                                'bold': True,
+                                                'link': {
+                                                    'uri': f'#gid={instructions_sheet_id}'
+                                                }
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_end,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        }
+                                    ]
+                                }]
+                            }],
+                            'fields': 'userEnteredValue,textFormatRuns'
+                        }
+                    }
+
+                    self.sheets_service.spreadsheets().batchUpdate(
+                        spreadsheetId=spreadsheet_id,
+                        body={'requests': [rich_text_request]}
+                    ).execute()
+                except Exception as hyperlink_error:
+                    logger.warning(f"Could not add hyperlink: {hyperlink_error}")
+
             except Exception as format_error:
                 logger.warning(f"Could not apply formatting: {format_error}")
-            
+
             logger.info(f"Successfully set up alleles template for {paper_id}")
             
         except Exception as e:
@@ -684,19 +915,20 @@ class GoogleDriveService:
             # Try a simpler approach - just add the headers
             try:
                 logger.info("Trying simpler template setup")
-                headers = [[
-                    'Allele Name', 'Gene', 'Sequence Change Type',
-                    'Flanking Sequence 5\' (30bp)', 'Flanking Sequence 3\' (30bp)',
-                    'Strain', 'Species', 'Notes/Comments'
-                ]]
-                
+                simple_data = [
+                    ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', '', '', '', '', '', ''],
+                    ['Allele Name*', 'Gene', 'Genotype', 'Sequence Change Type',
+                     'Flanking Sequence 5\' (30bp)', 'Flanking Sequence 3\' (30bp)',
+                     'Strain', 'Species', 'Notes/Comments']
+                ]
+
                 self.sheets_service.spreadsheets().values().update(
                     spreadsheetId=spreadsheet_id,
-                    range='A1:H1',
+                    range='A1:I2',
                     valueInputOption='RAW',
-                    body={'values': headers}
+                    body={'values': simple_data}
                 ).execute()
-                
+
                 logger.info("Added basic headers to spreadsheet")
             except Exception as simple_error:
                 logger.error(f"Even simple template setup failed: {simple_error}")
