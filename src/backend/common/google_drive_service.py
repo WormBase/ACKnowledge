@@ -1590,7 +1590,7 @@ class GoogleDriveService:
                     'addSheet': {
                         'properties': {
                             'title': 'Instructions',
-                            'index': 0
+                            'index': 1
                         }
                     }
                 })
@@ -1613,23 +1613,19 @@ class GoogleDriveService:
                     elif sheet['properties']['title'] == 'Instructions':
                         instructions_sheet_id = sheet['properties']['sheetId']
 
-            # Set up Transgenes Data sheet headers
-            transgenes_headers = [[
-                'Transgene Name',
-                'Genotype/Construct',
-                'Species',
-                'Integrated/Extrachromosomal',
-                'Expressed Gene(s)',
-                'Promoter(s)',
-                'Markers',
-                'Notes/Comments'
-            ]]
+            # Set up Transgenes Data sheet with instruction row and headers
+            transgenes_data_rows = [
+                # Row 1: Instruction text (will be merged and hyperlinked later)
+                ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', '', '', '', '', ''],
+                # Row 2: Headers
+                ['Transgene Name*', 'Genotype/Construct*', 'Species', 'Integrated/Extrachromosomal', 'Expressed Gene(s)', 'Promoter(s)', 'Markers', 'Notes/Comments']
+            ]
 
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Transgenes Data!A1:H1',
+                range='Transgenes Data!A1:H2',
                 valueInputOption='RAW',
-                body={'values': transgenes_headers}
+                body={'values': transgenes_data_rows}
             ).execute()
 
             # Set up Instructions sheet data
@@ -1638,40 +1634,26 @@ class GoogleDriveService:
             pmid_formatted = f"PMID:{pmid}" if pmid else "Not available"
 
             instructions_data = [
-                ['Paper Information', ''],
-                ['WB Paper ID:', paper_id_formatted],
-                ['PMID:', pmid_formatted],
-                ['Title:', paper_title],
-                ['Author:', author_name],
-                ['', ''],
-                ['Instructions', ''],
-                ['Column A - Transgene Name:', 'Enter the transgene name (e.g., eaIs15, sqEx67, ctIs40)'],
-                ['Column B - Genotype/Construct:', 'Enter the construct details (e.g., [Ppie-1::HIM-5::GFP::pie-1])'],
-                ['Column C - Species:', 'Species name (e.g., C. elegans)'],
-                ['Column D - Integrated/Extrachromosomal:', 'Type: "Integrated" or "Extrachromosomal"'],
-                ['Column E - Expressed Gene(s):', 'Genes expressed by the transgene (e.g., GFP, mCherry)'],
-                ['Column F - Promoter(s):', 'Promoter(s) used (e.g., pie-1p, myo-3p, unc-119p)'],
-                ['Column G - Markers:', 'Selectable markers if any (e.g., rol-6, unc-119(+))'],
-                ['Column H - Notes/Comments:', 'Any additional information'],
-                ['', ''],
-                ['Examples', ''],
-                ['Integrated transgene:', 'eaIs15, [Ppie-1::HIM-5::GFP::pie-1], C. elegans, Integrated, GFP::HIM-5, pie-1p, , '],
-                ['Extrachromosomal array:', 'sqEx67, [rgef-1p::mCherry::GFP::lgg-1 + rol-6], C. elegans, Extrachromosomal, mCherry::GFP::LGG-1, rgef-1p, rol-6, Fluorescent autophagy marker'],
-                ['Multi-gene construct:', 'ctIs40, [Punc-119::sid-1 + Punc-119::GFP], C. elegans, Integrated, SID-1::GFP, unc-119p, , Pan-neuronal expression'],
-                ['', ''],
-                ['How to import existing data:', ''],
-                ['1. Use File > Import', ''],
-                ['2. Select your CSV or Excel file', ''],
-                ['3. Choose "Replace spreadsheet" or "Insert new sheet(s)"', ''],
-                ['4. Map your columns to match the template headers', ''],
-                ['', ''],
-                ['Note:', 'For papers with many transgenes (>250), you can bulk import your transgene list'],
-                ['', 'from an existing spreadsheet or database export.']
+                ['Paper Information', '', '', ''],
+                ['WB Paper ID:', paper_id_formatted, '', ''],
+                ['PMID:', pmid_formatted, '', ''],
+                ['Title:', paper_title, '', ''],
+                ['Author:', author_name, '', ''],
+                ['', '', '', ''],
+                ['Instructions (*mandatory)', 'Description', 'Example - Integrated transgene', 'Example - Extrachromosomal transgene'],
+                ['*Column A - Transgene Name', 'Enter the transgene name', 'eaIs15', 'sqEx67'],
+                ['*Column B - Genotype/Construct', 'Enter the genotype of the construct', '[Ppie-1::HIM-5::GFP::pie-1]', '[rgef-1p::mCherry::GFP::lgg-1 + rol-6]'],
+                ['Column C - Species', 'Enter the species name', 'C. elegans', 'C. elegans'],
+                ['Column D - Integrated/Extrachromosomal', 'Enter "Integrated" or "Extrachromosomal"', 'Integrated', 'Extrachromosomal'],
+                ['Column E - Expressed Gene(s)', 'Enter the gene(s) expressed by the transgene', 'him-5', 'lgg-1'],
+                ['Column F - Promoter(s)', 'Enter the promoter(s) used', 'pie-1', 'rgef-1'],
+                ['Column G - Marker(s)', 'Enter the selectable marker(s) if any', '', 'rol-6'],
+                ['Column H - Notes/Comments', 'Enter any additional information', '', '']
             ]
 
             self.sheets_service.spreadsheets().values().update(
                 spreadsheetId=spreadsheet_id,
-                range='Instructions!A1:B31',
+                range='Instructions!A1:D15',
                 valueInputOption='RAW',
                 body={'values': instructions_data}
             ).execute()
@@ -1679,13 +1661,45 @@ class GoogleDriveService:
             # Apply formatting and column widths (optional, try but don't fail)
             try:
                 format_requests = [
-                    # Format headers in Transgenes Data sheet
+                    # Merge cells A1:H1 for the instruction text
+                    {
+                        'mergeCells': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 8
+                            },
+                            'mergeType': 'MERGE_ALL'
+                        }
+                    },
+                    # Format row 1 (instruction text) - left alignment and vertical middle (bold will be added via rich text)
                     {
                         'repeatCell': {
                             'range': {
                                 'sheetId': transgenes_sheet_id,
                                 'startRowIndex': 0,
                                 'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 8
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'horizontalAlignment': 'LEFT',
+                                    'verticalAlignment': 'MIDDLE'
+                                }
+                            },
+                            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment)'
+                        }
+                    },
+                    # Format headers in row 2 of Transgenes Data sheet
+                    {
+                        'repeatCell': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'startRowIndex': 1,
+                                'endRowIndex': 2,
                                 'startColumnIndex': 0,
                                 'endColumnIndex': 8
                             },
@@ -1698,18 +1712,188 @@ class GoogleDriveService:
                             'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                         }
                     },
-                    # Auto-resize columns in Transgenes Data sheet
+                    # Set column widths in Transgenes Data sheet with sensible defaults
+                    # Column A - Transgene Name* (150px)
                     {
-                        'autoResizeDimensions': {
-                            'dimensions': {
+                        'updateDimensionProperties': {
+                            'range': {
                                 'sheetId': transgenes_sheet_id,
                                 'dimension': 'COLUMNS',
                                 'startIndex': 0,
-                                'endIndex': 8
-                            }
+                                'endIndex': 1
+                            },
+                            'properties': {
+                                'pixelSize': 150
+                            },
+                            'fields': 'pixelSize'
                         }
                     },
-                    # Format Instructions sheet headers
+                    # Column B - Genotype/Construct* (300px for complex constructs)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 1,
+                                'endIndex': 2
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column C - Species (120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 2,
+                                'endIndex': 3
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column D - Integrated/Extrachromosomal (200px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 3,
+                                'endIndex': 4
+                            },
+                            'properties': {
+                                'pixelSize': 200
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column E - Expressed Gene(s) (150px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 4,
+                                'endIndex': 5
+                            },
+                            'properties': {
+                                'pixelSize': 150
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column F - Promoter(s) (150px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 5,
+                                'endIndex': 6
+                            },
+                            'properties': {
+                                'pixelSize': 150
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column G - Markers (120px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 6,
+                                'endIndex': 7
+                            },
+                            'properties': {
+                                'pixelSize': 120
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column H - Notes/Comments (300px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 7,
+                                'endIndex': 8
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column A - Instructions/Labels (280px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': instructions_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 0,
+                                'endIndex': 1
+                            },
+                            'properties': {
+                                'pixelSize': 280
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column B - Description (350px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': instructions_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 1,
+                                'endIndex': 2
+                            },
+                            'properties': {
+                                'pixelSize': 350
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column C - Example - Integrated transgene (250px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': instructions_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 2,
+                                'endIndex': 3
+                            },
+                            'properties': {
+                                'pixelSize': 250
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Column D - Example - Extrachromosomal transgene (300px)
+                    {
+                        'updateDimensionProperties': {
+                            'range': {
+                                'sheetId': instructions_sheet_id,
+                                'dimension': 'COLUMNS',
+                                'startIndex': 3,
+                                'endIndex': 4
+                            },
+                            'properties': {
+                                'pixelSize': 300
+                            },
+                            'fields': 'pixelSize'
+                        }
+                    },
+                    # Format Paper Information header (row 1)
                     {
                         'repeatCell': {
                             'range': {
@@ -1717,25 +1901,33 @@ class GoogleDriveService:
                                 'startRowIndex': 0,
                                 'endRowIndex': 1,
                                 'startColumnIndex': 0,
-                                'endColumnIndex': 2
+                                'endColumnIndex': 1
                             },
                             'cell': {
                                 'userEnteredFormat': {
                                     'textFormat': {'bold': True, 'fontSize': 12}
                                 }
                             },
-                            'fields': 'userEnteredFormat(textFormat)'
+                            'fields': 'userEnteredFormat.textFormat'
                         }
                     },
-                    # Auto-resize columns in Instructions sheet
+                    # Format Instructions header row (row 7)
                     {
-                        'autoResizeDimensions': {
-                            'dimensions': {
+                        'repeatCell': {
+                            'range': {
                                 'sheetId': instructions_sheet_id,
-                                'dimension': 'COLUMNS',
-                                'startIndex': 0,
-                                'endIndex': 2
-                            }
+                                'startRowIndex': 6,
+                                'endRowIndex': 7,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 4
+                            },
+                            'cell': {
+                                'userEnteredFormat': {
+                                    'backgroundColor': {'red': 0.8, 'green': 0.8, 'blue': 0.8},
+                                    'textFormat': {'bold': True}
+                                }
+                            },
+                            'fields': 'userEnteredFormat(backgroundColor,textFormat)'
                         }
                     }
                 ]
@@ -1744,6 +1936,66 @@ class GoogleDriveService:
                     spreadsheetId=spreadsheet_id,
                     body={'requests': format_requests}
                 ).execute()
+
+                # Add rich text with hyperlink only on "here" in the instruction text (A1)
+                # The text is: "Please fill out the mandatory field (*). Click here for detailed instructions."
+                # We need to link only the word "here" to the Instructions sheet
+                try:
+                    # The full text
+                    full_text = "Please fill out the mandatory field (*). Click here for detailed instructions."
+                    # Find the position of "here"
+                    here_start = full_text.index("here")
+                    here_end = here_start + 4  # length of "here"
+
+                    rich_text_request = {
+                        'updateCells': {
+                            'range': {
+                                'sheetId': transgenes_sheet_id,
+                                'startRowIndex': 0,
+                                'endRowIndex': 1,
+                                'startColumnIndex': 0,
+                                'endColumnIndex': 1
+                            },
+                            'rows': [{
+                                'values': [{
+                                    'userEnteredValue': {
+                                        'stringValue': full_text
+                                    },
+                                    'textFormatRuns': [
+                                        {
+                                            'startIndex': 0,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_start,
+                                            'format': {
+                                                'bold': True,
+                                                'link': {
+                                                    'uri': f'#gid={instructions_sheet_id}'
+                                                }
+                                            }
+                                        },
+                                        {
+                                            'startIndex': here_end,
+                                            'format': {
+                                                'bold': True
+                                            }
+                                        }
+                                    ]
+                                }]
+                            }],
+                            'fields': 'userEnteredValue,textFormatRuns'
+                        }
+                    }
+
+                    self.sheets_service.spreadsheets().batchUpdate(
+                        spreadsheetId=spreadsheet_id,
+                        body={'requests': [rich_text_request]}
+                    ).execute()
+                except Exception as hyperlink_error:
+                    logger.warning(f"Could not add hyperlink: {hyperlink_error}")
 
                 logger.info("Successfully formatted transgenes spreadsheet")
 
@@ -1754,17 +2006,18 @@ class GoogleDriveService:
             logger.error(f"Error setting up transgenes template: {e}")
             # If complex setup fails, try simple headers
             try:
-                headers = [[
-                    'Transgene Name', 'Genotype/Construct', 'Species',
-                    'Integrated/Extrachromosomal', 'Expressed Gene(s)',
-                    'Promoter(s)', 'Markers', 'Notes/Comments'
-                ]]
+                simple_data = [
+                    ['Please fill out the mandatory field (*). Click here for detailed instructions.', '', '', '', '', '', '', ''],
+                    ['Transgene Name*', 'Genotype/Construct*', 'Species',
+                     'Integrated/Extrachromosomal', 'Expressed Gene(s)',
+                     'Promoter(s)', 'Markers', 'Notes/Comments']
+                ]
 
                 self.sheets_service.spreadsheets().values().update(
                     spreadsheetId=spreadsheet_id,
-                    range='A1:H1',
+                    range='A1:H2',
                     valueInputOption='RAW',
-                    body={'values': headers}
+                    body={'values': simple_data}
                 ).execute()
 
                 logger.info("Added basic headers to spreadsheet")
