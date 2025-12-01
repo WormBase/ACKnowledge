@@ -60,6 +60,12 @@ const SaveButton = ({
             hasChanges = hasChanges || !arraysEqual(widgetState.diseaseNames, widgetState.savedDiseaseNames);
         }
 
+        // Helper function to check if checkbox state has changed from saved state
+        const checkboxChanged = (current, saved) => {
+            if (!current || !saved) return false;
+            return current.checked !== saved.checked || current.details !== saved.details;
+        };
+
         hasChanges = hasChanges ||
             (widgetState.addedGenes && widgetState.addedGenes.length > 0) ||
             (widgetState.addedSpecies && widgetState.addedSpecies.length > 0) ||
@@ -69,30 +75,31 @@ const SaveButton = ({
             (widgetState.newStrains && widgetState.newStrains.length > 0) ||
             (widgetState.addedTransgenes && widgetState.addedTransgenes.length > 0) ||
             (widgetState.addedDiseaseNames && widgetState.addedDiseaseNames.length > 0) ||
-            (widgetState.newAntibodies && widgetState.newAntibodies.checked) ||
             (widgetState.comments && typeof widgetState.comments === 'string' && widgetState.comments.trim() !== '') ||
             (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.anatomical_term && typeof widgetState.otherExpressionEntities.anatomical_term === 'string' && widgetState.otherExpressionEntities.anatomical_term.trim() !== '') ||
             (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.life_stage && typeof widgetState.otherExpressionEntities.life_stage === 'string' && widgetState.otherExpressionEntities.life_stage.trim() !== '') ||
             (widgetState.otherExpressionEntities && widgetState.otherExpressionEntities.cellular_component && typeof widgetState.otherExpressionEntities.cellular_component === 'string' && widgetState.otherExpressionEntities.cellular_component.trim() !== '') ||
             (widgetState.otherPhenotypes && widgetState.otherPhenotypes.worm_phenotypes && typeof widgetState.otherPhenotypes.worm_phenotypes === 'string' && widgetState.otherPhenotypes.worm_phenotypes.trim() !== '') ||
             (widgetState.otherPhenotypes && widgetState.otherPhenotypes.phenotype_entity && typeof widgetState.otherPhenotypes.phenotype_entity === 'string' && widgetState.otherPhenotypes.phenotype_entity.trim() !== '') ||
-            (widgetState.geneModel && widgetState.geneModel.checked) ||
-            (widgetState.sequenceChange && widgetState.sequenceChange.checked) ||
-            (widgetState.expression && widgetState.expression.checked) ||
-            (widgetState.siteOfAction && widgetState.siteOfAction.checked) ||
-            (widgetState.timeOfAction && widgetState.timeOfAction.checked) ||
-            (widgetState.additionalExpr && widgetState.additionalExpr.checked) ||
-            (widgetState.geneint && widgetState.geneint.checked) ||
-            (widgetState.geneprod && widgetState.geneprod.checked) ||
-            (widgetState.genereg && widgetState.genereg.checked) ||
-            (widgetState.allelePheno && widgetState.allelePheno.checked) ||
-            (widgetState.rnaiPheno && widgetState.rnaiPheno.checked) ||
-            (widgetState.overexprPheno && widgetState.overexprPheno.checked) ||
-            (widgetState.chemPheno && widgetState.chemPheno.checked) ||
-            (widgetState.envPheno && widgetState.envPheno.checked) ||
-            (widgetState.enzymaticAct && widgetState.enzymaticAct.checked) ||
-            (widgetState.othergenefunc && widgetState.othergenefunc.checked) ||
-            (widgetState.disease && widgetState.disease.checked);
+            // Check checkboxes for various widgets - only if changed from saved state
+            checkboxChanged(widgetState.geneModel, widgetState.savedGeneModel) ||
+            checkboxChanged(widgetState.sequenceChange, widgetState.savedSequenceChange) ||
+            checkboxChanged(widgetState.expression, widgetState.savedExpression) ||
+            checkboxChanged(widgetState.siteOfAction, widgetState.savedSiteOfAction) ||
+            checkboxChanged(widgetState.timeOfAction, widgetState.savedTimeOfAction) ||
+            checkboxChanged(widgetState.additionalExpr, widgetState.savedAdditionalExpr) ||
+            checkboxChanged(widgetState.geneint, widgetState.savedGeneint) ||
+            checkboxChanged(widgetState.geneprod, widgetState.savedGeneprod) ||
+            checkboxChanged(widgetState.genereg, widgetState.savedGenereg) ||
+            checkboxChanged(widgetState.allelePheno, widgetState.savedAllelePheno) ||
+            checkboxChanged(widgetState.rnaiPheno, widgetState.savedRnaiPheno) ||
+            checkboxChanged(widgetState.overexprPheno, widgetState.savedOverexprPheno) ||
+            checkboxChanged(widgetState.chemPheno, widgetState.savedChemPheno) ||
+            checkboxChanged(widgetState.envPheno, widgetState.savedEnvPheno) ||
+            checkboxChanged(widgetState.enzymaticAct, widgetState.savedEnzymaticAct) ||
+            checkboxChanged(widgetState.othergenefunc, widgetState.savedOthergenefunc) ||
+            checkboxChanged(widgetState.disease, widgetState.savedDisease) ||
+            checkboxChanged(widgetState.newAntibodies, widgetState.savedNewAntibodies);
 
         return hasChanges;
     };
