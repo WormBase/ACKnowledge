@@ -99,9 +99,9 @@ const Reagent = () => {
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="Here you can find transgenes that have been experimentally studied in your paper. Please
+                alertTextNotSaved={<>Here you can find transgenes that have been <strong>experimentally studied</strong> in your paper. Please
                     validate the list as for the previous section. You can also submit information about antibodies
-                    mentioned or generated in the study."
+                    mentioned or generated in the study.</>}
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />

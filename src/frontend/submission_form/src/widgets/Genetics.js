@@ -185,8 +185,8 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="Here you can find alleles and strains that have been experimentally studied in your paper.
-                    Please validate the list as for the previous section. You can also submit a new allele name and indicate an allele sequence change."
+                alertTextNotSaved={<>Here you can find alleles and strains that have been <strong>experimentally studied</strong> in your paper.
+                    Please validate the list as for the previous section. You can also submit a new allele name and indicate an allele sequence change.</>}
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />

@@ -83,9 +83,9 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
             <InstructionsAlert
                 alertTitleNotSaved=""
                 alertTitleSaved="Well done!"
-                alertTextNotSaved="In this page you will see genes and species that have been experimentally studied in your
+                alertTextNotSaved={<>In this page you will see genes and species that have been <strong>experimentally studied</strong> in your
                     paper. Please validate the list by adding/removing entries. You can also
-                    notify us for gene model updates."
+                    notify us for gene model updates.</>}
                 alertTextSaved="The data for this page has been saved, you can modify it any time."
                 saved={isSavedToDB}
             />
