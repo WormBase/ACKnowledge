@@ -300,7 +300,7 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
                                 eventKey={MENU_INDEX[WIDGET.HELP]} onClick={onMenuItemClick}>{WIDGET_TITLE[WIDGET.HELP]}
                             </NavItem></IndexLinkContainer>
                         <NavItem href="https://www.youtube.com/embed/ZONK4qe_-w8?start=86&end=1011" target="_blank">
-                            WormBase Community Curation Webinar <Glyphicon glyph="new-window"/>
+                            WormBase Community Curation Webinar (refers to an older version of the form) <Glyphicon glyph="new-window"/>
                         </NavItem>
                         <NavItem href="mailto:help.acknowledge@wormbase.org">
                             Contact us <Glyphicon glyph="envelope"/>
