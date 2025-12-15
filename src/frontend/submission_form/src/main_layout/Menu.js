@@ -139,7 +139,7 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
         // If no unsaved changes, navigate directly
         if (!hasChanges) {
             dispatch(setSelectedWidget(targetMenuIndex));
-            history.push(targetPath + urlQuery);
+            history.push('/' + targetPath + urlQuery);
             onMenuItemClick();
             window.scrollTo(0, 0);
             return;
@@ -159,7 +159,7 @@ const Menu = ({urlQuery, onMenuItemClick = () => {}, history}) => {
             dispatch(saveAllUnsavedWidgets());
             setTimeout(() => {
                 dispatch(setSelectedWidget(pendingNavigation.menuIndex));
-                history.push(pendingNavigation.path + urlQuery);
+                history.push('/' + pendingNavigation.path + urlQuery);
                 onMenuItemClick();
                 window.scrollTo(0, 0);
                 setShowUnsavedModal(false);

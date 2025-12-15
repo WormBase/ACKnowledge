@@ -82,47 +82,51 @@ const Expression = () =>{
                                                                                                           overlay={tooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger> <AutoDetectedBadge/>
                             </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: unc-47 is expressed in GABAergic motor neurons."
-                                         onClick={() => dispatch(setExpression(true, expression.details))}
-                                         value={expression.details}
-                                         onChange={(event) => {
-                                             dispatch(setExpression(true, event.target.value));
-                                         }}
-                            />
+                            {expression.checked && (
+                                <FormControl type="text" placeholder="E.g.: unc-47 is expressed in GABAergic motor neurons."
+                                             value={expression.details}
+                                             onChange={(event) => {
+                                                 dispatch(setExpression(true, event.target.value));
+                                             }}
+                                />
+                            )}
                             <Checkbox checked={siteOfAction.checked} onClick={() => dispatch(toggleSiteOfAction())}>
                                 <strong>Site of action data</strong> <OverlayTrigger placement="top"
                                                                                      overlay={siteTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: Expressing AVR-14 specifically in AVA sufficed to rescue AVA inhibition following tail stimulation."
-                                         onClick={() => dispatch(setSiteOfAction(true, siteOfAction.details))}
-                                         value={siteOfAction.details}
-                                         onChange={(event) => {
-                                             dispatch(setSiteOfAction(true, event.target.value));
-                                         }}
-                            />
+                            {siteOfAction.checked && (
+                                <FormControl type="text" placeholder="E.g.: Expressing AVR-14 specifically in AVA sufficed to rescue AVA inhibition following tail stimulation."
+                                             value={siteOfAction.details}
+                                             onChange={(event) => {
+                                                 dispatch(setSiteOfAction(true, event.target.value));
+                                             }}
+                                />
+                            )}
                             <Checkbox checked={timeOfAction.checked} onClick={() => dispatch(toggleTimeOfAction())}>
                                 <strong>Time of action data</strong> <OverlayTrigger placement="top"
                                                                                      overlay={timeTooltip}>
                                 <Glyphicon glyph="question-sign"/></OverlayTrigger>
                             </Checkbox>
-                            <FormControl type="text" placeholder="E.g.: CDK-4 regulates size during L3 larval stage in seam cells."
-                                         onClick={() => dispatch(setTimeOfAction(true, timeOfAction.details))}
-                                         value={timeOfAction.details}
-                                         onChange={(event) => {
-                                             dispatch(setTimeOfAction(true, event.target.value));
-                                         }}
-                            />
+                            {timeOfAction.checked && (
+                                <FormControl type="text" placeholder="E.g.: CDK-4 regulates size during L3 larval stage in seam cells."
+                                             value={timeOfAction.details}
+                                             onChange={(event) => {
+                                                 dispatch(setTimeOfAction(true, event.target.value));
+                                             }}
+                                />
+                            )}
                             <Checkbox checked={additionalExpr.checked} onClick={() => dispatch(toggleAdditionalExpr())}>
                                 <strong>Additional type of expression data</strong>
                             </Checkbox>
-                            <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
-                                         onClick={() => dispatch(setAdditionalExpr(true, additionalExpr.details))}
-                                         value={additionalExpr.details}
-                                         onChange={(event) => {
-                                             dispatch(setAdditionalExpr(true, event.target.value));
-                                         }}
-                            />
+                            {additionalExpr.checked && (
+                                <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
+                                             value={additionalExpr.details}
+                                             onChange={(event) => {
+                                                 dispatch(setAdditionalExpr(true, event.target.value));
+                                             }}
+                                />
+                            )}
                         </Form>
                     </div>
                 </Panel.Body>

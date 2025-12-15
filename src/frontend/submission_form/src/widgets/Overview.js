@@ -172,17 +172,18 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                                         <strong>Gene model correction/update</strong></Checkbox>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-sm-12">
-                                    <FormControl type="text" placeholder="E.g.: We found a new variant of Y71H2B.8 with a different splice site."
-                                                 value={geneModel.details}
-                                                 onClick={() => dispatch(setGeneModel(true, geneModel.details))}
-                                                 onChange={(event) => {
-                                                     dispatch(setGeneModel(true, event.target.value))
-                                                 }}
-                                    />
+                            {geneModel.checked && (
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <FormControl type="text" placeholder="E.g.: We found a new variant of Y71H2B.8 with a different splice site."
+                                                     value={geneModel.details}
+                                                     onChange={(event) => {
+                                                         dispatch(setGeneModel(true, event.target.value))
+                                                     }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             <div className="row">
                                 <div className="col-sm-12">&nbsp;</div>
                             </div>

@@ -200,13 +200,14 @@ const Reagent = () => {
                         <div className="container-fluid">
                             <Form>
                                 <FormGroup>
-                                    <Checkbox checked={newAntibodies.checked} onClick={dispatch(toggleNewAntibodies)}>
+                                    <Checkbox checked={newAntibodies.checked} onClick={() => dispatch(toggleNewAntibodies())}>
                                         <strong>Newly generated antibodies</strong>
                                     </Checkbox>
-                                    <FormControl type="text" placeholder="Enter antibody name and details here"
-                                                 onClick={() => dispatch(setNewAntibodies())}
-                                                 value={newAntibodies.details}
-                                                 onChange={(event) => {dispatch(setNewAntibodies(true, event.target.value))}}/>
+                                    {newAntibodies.checked && (
+                                        <FormControl type="text" placeholder="Enter antibody name and details here"
+                                                     value={newAntibodies.details}
+                                                     onChange={(event) => {dispatch(setNewAntibodies(true, event.target.value))}}/>
+                                    )}
                                     <br/>
                                     <ControlLabel>Other Antibodies Used</ControlLabel>
                                     <FormControl componentClass="textarea" rows="5" placeholder="Insert antibodies here (optionally followed by PMID: 'antibody_name || PMID'), one per line"
