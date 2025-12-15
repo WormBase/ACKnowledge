@@ -25,19 +25,33 @@ const About = () => {
             <h4><strong>References</strong></h4>
             <ol>
                 <li>
-                    Valerio Arnaboldi, Daniela Raciti, Kimberly Van Auken, Juancarlos N Chan, Hans-Michael Müller,
-                    Paul W Sternberg, <i>Text mining meets community curation: a newly designed curation platform to
-                    improve author experience and participation at WormBase</i>, Database, Volume 2020, 2020, baaa006,
-                    <a target='_blank' href="https://doi.org/10.1093/database/baaa006"> https://doi.org/10.1093/database/baaa006</a>
+                    Raciti D, Van Auken KM, Arnaboldi V, Tabone CJ, Muller HM, Sternberg PW. <i>Characterization and
+                    automated classification of sentences in the biomedical literature: a case study for biocuration of
+                    gene expression and protein kinase activity</i>. Database (Oxford). 2025 Jan 18;2025:baaf063.
+                    doi: <a target='_blank' href="https://doi.org/10.1093/database/baaf063">10.1093/database/baaf063</a>.
+                    PMID: 41026497; PMCID: PMC12482909.
                 </li>
                 <li>
-                    Ruihua Fang, Gary Schindelman, Kimberly Van Auken, Jolene Fernandes, Wen Chen, et al.,
-                    <i>Automatic categorization of diverse experimental information in the bioscience literature</i>, BMC Bioinformatics, 2012, <a target='_blank' href="https://doi.org/10.1186/1471-2105-13-16">https://doi.org/10.1186/1471-2105-13-16</a>
+                    Arnaboldi V, Raciti D, Van Auken K, Chan JN, Müller HM, Sternberg PW. <i>Text mining meets community
+                    curation: a newly designed curation platform to improve author experience and participation at
+                    WormBase</i>. Database (Oxford). 2020 Jan 1;2020:baaa006.
+                    doi: <a target='_blank' href="https://doi.org/10.1093/database/baaa006">10.1093/database/baaa006</a>.
+                    PMID: 32185395; PMCID: PMC7078066.
                 </li>
                 <li>
-                    Hans-Michael Müller, Kimberly Van Auken, Yuling Li, Paul W Sternberg,
-                    <i>Textpresso Central: a customizable platform for searching, text mining, viewing, and curating biomedical literature</i>,
-                    BMC Bioinformatics, 2018 9;19(1):94, <a target='_blank' href="https://doi.org/10.1186/s12859-018-2103-8">https://doi.org/10.1186/s12859-018-2103-8</a>
+                    Müller HM, Van Auken KM, Li Y, Sternberg PW. <i>Textpresso Central: a customizable platform for
+                    searching, text mining, viewing, and curating biomedical literature</i>. BMC Bioinformatics. 2018
+                    Mar 9;19(1):94.
+                    doi: <a target='_blank' href="https://doi.org/10.1186/s12859-018-2103-8">10.1186/s12859-018-2103-8</a>.
+                    PMID: 29523070; PMCID: PMC5845379.
+                </li>
+                <li>
+                    Fang R, Schindelman G, Van Auken K, Fernandes J, Chen W, Wang X, Davis P, Tuli MA, Marygold SJ,
+                    Millburn G, Matthews B, Zhang H, Brown N, Gelbart WM, Sternberg PW. <i>Automatic categorization of
+                    diverse experimental information in the bioscience literature</i>. BMC Bioinformatics. 2012 Jan
+                    26;13:16.
+                    doi: <a target='_blank' href="https://doi.org/10.1186/1471-2105-13-16">10.1186/1471-2105-13-16</a>.
+                    PMID: 22280404; PMCID: PMC3305665.
                 </li>
             </ol>
         </div>
