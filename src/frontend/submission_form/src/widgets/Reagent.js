@@ -122,7 +122,7 @@ const Reagent = () => {
                             addItemFunction={(transgene) => dispatch(addTransgene(transgene))}
                             remItemFunction={(transgene) => dispatch(removeTransgene(transgene))}
                             searchType={"transgene"}
-                            defaultExactMatchOnly={false}
+                            defaultExactMatchOnly={true}
                             exactMatchTooltip={"Check this to search for exact transgene names only"}
                             autocompletePlaceholder={"Type transgene names, one per line or separated by commas. For example:\nctIs40\nWBTransgene00000647"}
                         />

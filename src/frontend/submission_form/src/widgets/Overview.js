@@ -73,7 +73,7 @@ const Overview = ({hideGenes, toggleEntityVisibilityCallback}) => {
                 addItemFunction={(gene) => dispatch(addGene(gene))}
                 remItemFunction={(gene) => dispatch(removeGene(gene))}
                 searchType={"gene"}
-                defaultExactMatchOnly={false}
+                defaultExactMatchOnly={true}
                 exactMatchTooltip={'Check this to search for exact gene names only'}
                 autocompletePlaceholder={"Type gene names, one per line or separated by commas. For example:\nunc-26\ndpy-5\nWBGene00001234"}
             />);

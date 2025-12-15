@@ -175,7 +175,7 @@ const Genetics = ({hideAlleles, hideStrains, toggleEntityVisibilityCallback}) =>
                 addItemFunction={(strain) => dispatch(addStrain(strain))}
                 remItemFunction={(strain) => dispatch(removeStrain(strain))}
                 searchType={"strain"}
-                defaultExactMatchOnly={false}
+                defaultExactMatchOnly={true}
                 exactMatchTooltip={"Check this to search for exact strain names only"}
                 autocompletePlaceholder={"Type strain names, one per line or separated by commas. For example:\nCB4856\nWBStrain00004222"}
             />);
