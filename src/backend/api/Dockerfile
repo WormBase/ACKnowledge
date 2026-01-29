@@ -30,6 +30,12 @@ ENV GROBID_API_URL=http://cervino.caltech.edu:8070/api
 ENV PAPER_INFO_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper"
 ENV AUTOCOMPLETE_API="https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/datatype_objects.cgi?action=autocompleteXHR"
 
+# Cognito authentication for AGR/ABC API access
+ENV COGNITO_ADMIN_CLIENT_ID=""
+ENV COGNITO_ADMIN_CLIENT_SECRET=""
+ENV COGNITO_TOKEN_URL=""
+ENV COGNITO_ADMIN_SCOPE=""
+
 # Gunicorn worker configuration
 ENV GUNICORN_WORKERS=4
 ENV GUNICORN_MAX_REQUESTS=1000

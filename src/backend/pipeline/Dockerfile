@@ -23,6 +23,12 @@ ENV SSH_USER=""
 ENV SSH_PASSWD=""
 ENV GROBID_API_URL="http://cervino.caltech.edu:8070/api"
 
+# Cognito authentication for AGR/ABC API access
+ENV COGNITO_ADMIN_CLIENT_ID=""
+ENV COGNITO_ADMIN_CLIENT_SECRET=""
+ENV COGNITO_TOKEN_URL=""
+ENV COGNITO_ADMIN_SCOPE=""
+
 ADD src/backend/pipeline/crontab /etc/cron.d/afp-cron
 ENV PYTHONPATH=$PYTHONPATH:/usr/src/app/
 
