@@ -3,6 +3,44 @@ import React from 'react';
 const ReleaseNotes = () => {
     return (
         <div>
+            <h3>Version 6.0</h3>
+            Release date: 01-28-2026
+            <h4>Introduction</h4>
+            <p>ACKnowledge 6.0 marks a significant milestone in our transition to the Alliance of Genome Resources
+                ecosystem. This release features a completely redesigned user interface to improve the user experience,
+                including a new multiselect component to manage lists of entities, a fully mobile-responsive interface,
+                enhanced save functionality, and improved form navigation.</p>
+
+            <h4>Main Updates</h4>
+            <ul>
+                <li>Completely redesigned user interface with new multiselect component for managing entity lists</li>
+                <li>Fully mobile-responsive interface with hamburger menu navigation</li>
+                <li>Enhanced save functionality with improved change detection and progress tracking</li>
+                <li>Google Drive integration for uploading large allele, strain, and transgene spreadsheets</li>
+            </ul>
+            <h5><strong>User Updates</strong></h5>
+            <ul>
+                <li>Added collapsible sections for entering new entities (alleles, strains, genes, species, transgenes)</li>
+                <li>Improved instructions with better formatting and emphasis on key terms</li>
+                <li>Added smooth scrolling when navigating to add/removal mode components</li>
+                <li>Added pulsing animation to the Finish button for better visibility</li>
+                <li>Form now automatically navigates to Comments section when all other sections are complete</li>
+                <li>Updated tooltips for improved clarity on removal mode and submission process</li>
+                <li>Improved expression tooltip with additional guidance</li>
+                <li>Added tooltip to 'Other Gene Function' checkbox</li>
+                <li>Enhanced person selector with improved selection handling</li>
+            </ul>
+            <h5><strong>Bug Fixes</strong></h5>
+            <ul>
+                <li>Fixed disease checkbox state handling to properly clear data when unchecked</li>
+                <li>Fixed antibodies processing to correctly handle multiple entries</li>
+                <li>Fixed gene retrieval to use proper database manager for curated genes</li>
+                <li>Fixed false modification flags for auto-populated checkbox data</li>
+                <li>Fixed whitespace trimming in person name search</li>
+                <li>Improved submitter name resolution in coauthor notification emails</li>
+                <li>Fixed handling of finalized submissions in backend</li>
+                <li>Removed legacy 'checked' value filtering from disease details</li>
+            </ul>
             <h3>Version 5.0</h3>
             Release date: 02-11-2025
             <h4>Introduction</h4>
@@ -92,7 +130,7 @@ const ReleaseNotes = () => {
                 <li>Updated user facing communications and forms</li>
                 <li>Updated internal documentation</li>
                 <li>Created an ACKnowledge logo</li>
-                <li>Created an ‘About’ widget on the author curation form</li>
+                <li>Created an 'About' widget on the author curation form</li>
                 <li>Provided project description</li>
                 <li>Added NLM funding information</li>
                 <li>Listed published references</li>
@@ -103,7 +141,7 @@ const ReleaseNotes = () => {
             </ul>
             <h5><strong>User Updates</strong></h5>
             <ul>
-                <li>Enabled access to author’s additional publications via the author curation portal
+                <li>Enabled access to author's additional publications via the author curation portal
                     (https://acp.acknowledge.textpressolab.com) from the author submission form and from all user-facing
                     communications (emails)
                 </li>
@@ -117,7 +155,7 @@ const ReleaseNotes = () => {
                     resubmission
                 </li>
                 <li>Proof papers are now excluded by the processing pipeline</li>
-                <li>Improved authors’ email extraction</li>
+                <li>Improved authors' email extraction</li>
                 <li>Additional minor bug fixes</li>
             </ul>
             <h5><strong>Curator Dashboard Updates</strong></h5>
@@ -130,7 +168,7 @@ const ReleaseNotes = () => {
             Release date: 09-16-2021
             <h4>Introduction</h4>
             <p>Based on valuable user feedback, we continue to improve the Author First Pass experience. In addition
-                to providing more streamlined ways to enter entities, we’ve added further instructions for adding new
+                to providing more streamlined ways to enter entities, we've added further instructions for adding new
                 entities, and a link to look up specific entities in WormBase. We now flag papers for enzymatic
                 activity and include a free-text field to describe other gene functions. We updated the FAQs and
                 provide a link to the Author First Pass webinar presented in February 2021. Lastly, to thank authors
