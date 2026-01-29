@@ -1,4 +1,4 @@
-agr-curation-api-client==0.5.2
+agr-curation-api-client==0.8.2
 # aiohappyeyeballs==2.4.3  # May not be available on all PyPI mirrors
 aiohttp==3.10.10
 aiosignal==1.2.0
