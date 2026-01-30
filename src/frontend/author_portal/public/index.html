@@ -24,6 +24,14 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Unregister any previously installed service workers to prevent stale caching
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          registrations.forEach(function(registration) { registration.unregister(); });
+        });
+      }
+    </script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

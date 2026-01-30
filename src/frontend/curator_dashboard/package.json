@@ -15,7 +15,6 @@
     "query-string": "^6.4.2",
     "react": "^16.8.6",
     "react-bootstrap": "^1.6.4",
-    "react-cache-buster": "^0.1.8",
     "react-dom": "^16.8.6",
     "react-loading-overlay": "^1.0.1",
     "react-query": "^3.26.0",
@@ -27,9 +26,8 @@
     "string-strip-html": "^4.3.15"
   },
   "scripts": {
-    "generate-meta-tag": "node ./node_modules/react-cache-buster/dist/generate-meta-tag.js",
     "start": "react-scripts start",
-    "build": "npm run generate-meta-tag && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
