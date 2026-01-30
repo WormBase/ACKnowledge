@@ -7,7 +7,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "axios": "^0.21.1",
-    "bootstrap": "^4.6.0",
     "d3": "latest",
     "highcharts": "^9.2.2",
     "highcharts-react-official": "^3.0.0",
