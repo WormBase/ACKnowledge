@@ -8,6 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "axios": "^0.22.0",
+    "bootstrap": "^4.6.0",
     "lodash": "^4.17.21",
     "paginated-list": "^2.0.8",
     "query-string": "7.0.1",
@@ -21,7 +22,6 @@
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0"
   },
-  "devDependencies": {},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
