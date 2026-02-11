@@ -85,24 +85,51 @@ class FeedbackFormReader:
         self.db = db_manager
         self.admin_emails = admin_emails
         self.email_passwd = email_passwd
+        config = load_config_from_file()
+        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
 
     def on_post(self, req, resp):
         with self.db:
             paper_id = self.db.afp.get_paper_id_from_passwd(req.media["passwd"]) if "passwd" in req.media else None
             if paper_id:
-                logger.info("paper found")
+                logger.info(f"Paper found: {paper_id}")
 
                 person_id = self.db.afp.get_latest_contributor_id(paper_id=paper_id)
                 if person_id:
                     person_id = person_id.replace('two', '')
                 else:
-                    person_id = req.media["person_id"]
+                    person_id = req.media.get("person_id")
 
                 if person_id:
                     fullname = self.db.person.get_fullname_from_personid(person_id="two" + person_id)
-                    resp.body = '{{"fullname": "{}", "person_id": "{}"}}'.format(fullname, person_id)
-                    resp.status = falcon.HTTP_200
-
+                    if fullname and fullname != "Unknown user":
+                        logger.info(f"User identified: {fullname} (WBPerson{person_id}) for paper {paper_id}")
+                        resp.body = json.dumps({"fullname": fullname, "person_id": person_id})
+                    else:
+                        logger.warning(
+                            f"User not found for person_id WBPerson{person_id}, paper {paper_id}"
+                        )
+                        resp.body = json.dumps({"fullname": None, "person_id": None,
+                                                "error": "user_not_found"})
+                        self.email_manager.send_user_error_notification(
+                            error_type="User Not Found",
+                            paper_id=paper_id,
+                            person_id=f"WBPerson{person_id}",
+                            details=f"Person ID WBPerson{person_id} does not resolve to a valid user in the database.",
+                            recipients=self.admin_emails
+                        )
+                else:
+                    logger.warning(f"No person_id provided or found for paper {paper_id}")
+                    resp.body = json.dumps({"fullname": None, "person_id": None,
+                                            "error": "user_not_found"})
+                    self.email_manager.send_user_error_notification(
+                        error_type="Missing Person ID",
+                        paper_id=paper_id,
+                        person_id=None,
+                        details="No person_id was provided in the request or found as a previous contributor.",
+                        recipients=self.admin_emails
+                    )
+                resp.status = falcon.HTTP_200
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)
 
@@ -247,6 +274,10 @@ class FeedbackFormWriter:
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
                     tiny_url = data.read().decode('utf-8')
                     dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
+                    self.logger.info(
+                        f"Submission received for paper {paper_id} by person_id {person_id}, "
+                        f"email: {author_email}, form_url: {tiny_url}, dashboard: {dashboard_url}"
+                    )
                     self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
                                                                                        paper_journal, author_email,
                                                                                        self.admin_emails, dashboard_url,
@@ -265,7 +296,7 @@ class FeedbackFormWriter:
                             all_author_emails = [email for email in all_author_emails if email]
                     else:
                         # If no emails found in afp table, at least send to the current author
-                        all_author_emails = [author_email]
+                        all_author_emails = [author_email] if author_email else []
                     
                     # Separate the submitting author from coauthors
                     coauthor_emails = [email for email in all_author_emails if email != author_email]
@@ -288,10 +319,23 @@ class FeedbackFormWriter:
                         submitter_name = author_email
                     
                     # Send thank you email to the submitting author
-                    self.email_manager.send_new_sub_thanks_email(
-                        paper_id=paper_id, paper_title=paper_title, test=self.test,
-                        recipients=([author_email] if not self.test else self.admin_emails))
-                    
+                    if author_email:
+                        self.email_manager.send_new_sub_thanks_email(
+                            paper_id=paper_id, paper_title=paper_title, test=self.test,
+                            recipients=([author_email] if not self.test else self.admin_emails))
+                    else:
+                        self.logger.warning(
+                            f"No email found for person_id {person_id}, skipping thank you email"
+                        )
+                        self.email_manager.send_user_error_notification(
+                            error_type="Missing Author Email",
+                            paper_id=paper_id,
+                            person_id=person_id,
+                            details="Author email is missing. Thank you email was not sent.",
+                            recipients=self.admin_emails,
+                            test=self.test
+                        )
+
                     # Send notification email to coauthors (if any)
                     if coauthor_emails and not self.test:
                         self.email_manager.send_coauthor_notification_email(

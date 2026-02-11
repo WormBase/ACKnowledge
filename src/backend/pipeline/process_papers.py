@@ -267,7 +267,10 @@ def main():
                         afp_base_url=args.afp_base_url, paper_id=paper.paper_id, passwd=passwd, genes=genes_id_name,
                         alleles=alleles_id_name, strains=strains_id_name, title=paper.title, journal=paper.journal,
                         pmid=paper.pmid, corresponding_author_id=author[0].person_id, doi=paper.doi)
-                    logger.debug("Author specific link: " + author_specific_form_link)
+                    logger.info(
+                        f"Sending email to {author[1]} (person_id: {author[0].person_id}) "
+                        f"for paper {paper.paper_id}: {author_specific_form_link}"
+                    )
                     if not args.dev_mode:
                         email_manager.send_email_to_author(
                             paper.paper_id, paper.title, paper.journal, author_specific_form_link, [author[1]], coauthor_emails)

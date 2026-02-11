@@ -52,6 +52,10 @@ def main():
                 if not args.dev_mode:
                     # For reminders, we send to all authors at once, so coauthor list includes all other authors
                     coauthor_emails = authors_emails
+                    logger.info(
+                        f"Sending reminder for paper {paper_id} to {authors_emails}, "
+                        f"link: {afp_link}"
+                    )
                     email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
                                                           paper_journal=paper_journal, afp_link=afp_link,
                                                           recipients=authors_emails, final_call=False,
@@ -59,7 +63,7 @@ def main():
                     logger.info("going to sleep for ~30 minutes")
                     time.sleep(2000)
             else:
-                logger.warning("skipping email address removed from db")
+                logger.warning(f"No AFP link found for paper {paper_id}, skipping reminder")
     logger.info("Pipeline finished successfully")
 
 

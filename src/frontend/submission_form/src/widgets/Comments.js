@@ -53,6 +53,7 @@ const Other = () => {
     const savedComments = useSelector((state) => state.comments.savedComments);
     const person = useSelector((state) => state.person.person);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
+    const isUserMissing = !person.personId;
 
     return (
         <div>
@@ -253,25 +254,31 @@ const Other = () => {
                     }}>!</div>
                 )}
                 
-                <OverlayTrigger 
-                    placement="left" 
+                <OverlayTrigger
+                    placement="left"
                     overlay={
                         <Tooltip id="submit-tooltip">
-                            {isSubmissionFinalized 
-                                ? (comments !== savedComments 
-                                    ? <strong>You have unsaved comments. Click here to re-submit your changes to WormBase.</strong>
-                                    : "Your submission has been finalized. To make further changes: 1) Edit any section, 2) Save those changes using 'Save current progress', 3) Return here and click this button to re-submit.")
-                                : allOtherWidgetsSavedToDB 
-                                    ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
-                                    : "Please complete and save all other sections before submitting."
+                            {isUserMissing
+                                ? "You must select your identity in the sidebar before submitting."
+                                : isSubmissionFinalized
+                                    ? (comments !== savedComments
+                                        ? <strong>You have unsaved comments. Click here to re-submit your changes to WormBase.</strong>
+                                        : "Your submission has been finalized. To make further changes: 1) Edit any section, 2) Save those changes using 'Save current progress', 3) Return here and click this button to re-submit.")
+                                    : allOtherWidgetsSavedToDB
+                                        ? <strong>All sections are complete! Click here to finalize and submit your data to WormBase.</strong>
+                                        : "Please complete and save all other sections before submitting."
                             }
                         </Tooltip>
                     }
                 >
-                    <Button 
-                        bsStyle={isSubmissionFinalized ? "primary" : allOtherWidgetsSavedToDB ? "success" : "primary"} 
+                    <Button
+                        bsStyle={isUserMissing ? "danger" : isSubmissionFinalized ? "primary" : allOtherWidgetsSavedToDB ? "success" : "primary"}
                         bsSize={isSubmissionFinalized ? "small" : allOtherWidgetsSavedToDB ? "large" : "small"}
                         onClick={() => {
+                            if (isUserMissing) {
+                                alert("Please select your identity using the 'Select user' button in the sidebar before submitting.");
+                                return;
+                            }
                             if (allOtherWidgetsSavedToDB) {
                                 const payload = {
                                     comments: comments,
@@ -283,7 +290,7 @@ const Other = () => {
                                 dispatch(showSectionsNotCompleted());
                             }
                         }}
-                        disabled={isSubmissionFinalized && comments === savedComments}
+                        disabled={(isSubmissionFinalized && comments === savedComments) || isUserMissing}
                         style={{
                             ...(allOtherWidgetsSavedToDB && !isSubmissionFinalized ? {
                                 animation: 'pulse-glow 2s infinite',

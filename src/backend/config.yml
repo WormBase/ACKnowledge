@@ -132,6 +132,19 @@ emails:
                                   <br/>
                                   <br/>"
 
+  subject_user_error: "ACKnowledge User Error Alert"
+  content_user_error: "<h3>ACKnowledge User Error Alert</h3>
+                        <p>A user encountered an error while using the ACKnowledge form.</p>
+                        <br/>
+                        <table border='1' cellpadding='5' cellspacing='0' style='border-collapse: collapse;'>
+                            <tr><td><b>Error Type</b></td><td>{}</td></tr>
+                            <tr><td><b>Paper ID</b></td><td>{}</td></tr>
+                            <tr><td><b>Person ID</b></td><td>{}</td></tr>
+                            <tr><td><b>Details</b></td><td>{}</td></tr>
+                        </table>
+                        <br/>
+                        <p style='font-size: 0.9em; color: #666;'>This is an automated alert from the ACKnowledge system.</p>"
+
   subject_partial_submissions: "ACKnowledge Monthly Partial Submissions Report - {}"
   content_partial_submissions: "<h2>ACKnowledge Partial Submissions Report - {}</h2>
                                 <p>Papers with incomplete submissions (started but not finished) since {}.</p>

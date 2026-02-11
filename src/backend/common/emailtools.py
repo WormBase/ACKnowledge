@@ -34,6 +34,8 @@ class EmailManager(object):
         self.subject_email_new_sub_thanks = config["emails"]["subject_new_sub_thanks"]
         self.content_email_coauthor_notification = config["emails"]["content_coauthor_notification"]
         self.subject_email_coauthor_notification = config["emails"]["subject_coauthor_notification"]
+        self.content_email_user_error = config["emails"]["content_user_error"]
+        self.subject_email_user_error = config["emails"]["subject_user_error"]
         self.email_user = config["emails"]["email_user"]
         self.email_user = config["emails"]["email_user"]
         self.server_host = config["emails"]["server_host"]
@@ -41,6 +43,10 @@ class EmailManager(object):
         self.email_passwd = email_passwd
 
     def send_email(self, subject, content, recipients):
+        recipients = [r for r in recipients if r]
+        if not recipients:
+            logger.warning("No valid recipients for email with subject: %s", subject)
+            return
         body = MIMEText(content, "html")
         msg = MIMEMultipart('alternative')
         msg.attach(body)
@@ -58,7 +64,8 @@ class EmailManager(object):
         except Exception as e:
             logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent. Exception message: " + str(e))
 
-    def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str], coauthor_emails: List[str] = None):
+    def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str],
+                             coauthor_emails: List[str] = None):
         coauthor_list = ", ".join(coauthor_emails) if coauthor_emails else "none available"
         content = self.content_email_to_author.format(paper_title, paper_journal, paper_id, afp_link, coauthor_list)
         subject = self.subject_email_to_author
@@ -137,9 +144,19 @@ class EmailManager(object):
             subject = "[Dev Test] " + subject
         self.send_email(subject=subject, content=content, recipients=recipients)
     
-    def send_coauthor_notification_email(self, paper_id, paper_title, submitter_name, recipients: List[str], test: bool = False):
+    def send_coauthor_notification_email(self, paper_id, paper_title, submitter_name, recipients: List[str],
+                                         test: bool = False):
         content = self.content_email_coauthor_notification.format(submitter_name, paper_title, paper_id)
         subject = self.subject_email_coauthor_notification
+        if test:
+            subject = "[Dev Test] " + subject
+        self.send_email(subject=subject, content=content, recipients=recipients)
+
+    def send_user_error_notification(self, error_type, paper_id, person_id, details, recipients: List[str],
+                                     test: bool = False):
+        content = self.content_email_user_error.format(error_type, paper_id or "N/A",
+                                                       person_id or "N/A", details)
+        subject = self.subject_email_user_error
         if test:
             subject = "[Dev Test] " + subject
         self.send_email(subject=subject, content=content, recipients=recipients)

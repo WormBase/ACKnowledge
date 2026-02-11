@@ -113,29 +113,39 @@ const PersonSelector = () => {
                 </div>
             </div>
     }
+    const isUserMissing = !person.personId;
+
     return (
         <div className="person-selector-compact">
+            {isUserMissing && (
+                <Alert bsStyle="warning" style={{marginBottom: '10px'}}>
+                    <Glyphicon glyph="warning-sign" style={{marginRight: '6px'}} />
+                    <strong>User not identified.</strong> Please select your identity using the
+                    "Change user" button below before submitting.
+                </Alert>
+            )}
             <div style={{marginBottom: '8px'}}>
                 <div style={{fontSize: '12px', color: '#666', marginBottom: '2px'}}>
                     Author/Community Curator:
                 </div>
-                <div style={{fontSize: '14px', fontWeight: 'bold', color: '#333'}}>
-                    {person.name} (WBPerson{person.personId})
+                <div style={{fontSize: '14px', fontWeight: 'bold', color: isUserMissing ? '#a94442' : '#333'}}>
+                    {isUserMissing ? 'Not identified' : `${person.name} (WBPerson${person.personId})`}
                 </div>
             </div>
-            
+
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px', marginBottom: '8px'}}>
-                <OverlayTrigger overlay={<Tooltip id="tooltip">Change the submitter to ensure proper attribution of your curation contribution</Tooltip>}>
-                    <Button 
-                        className="change-user-btn-subtle"
-                        bsSize="small" 
+                <OverlayTrigger overlay={<Tooltip id="tooltip">{isUserMissing ? 'You must select your identity before submitting' : 'Change the submitter to ensure proper attribution of your curation contribution'}</Tooltip>}>
+                    <Button
+                        className={isUserMissing ? '' : 'change-user-btn-subtle'}
+                        bsStyle={isUserMissing ? 'warning' : 'default'}
+                        bsSize="small"
                         onClick={() => setShow(true)}
                         style={{
                             fontSize: '12px',
                             padding: '4px 8px'
                         }}
                     >
-                        Change user
+                        {isUserMissing ? 'Select user' : 'Change user'}
                     </Button>
                 </OverlayTrigger>
                 

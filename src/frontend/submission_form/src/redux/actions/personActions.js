@@ -13,7 +13,11 @@ export const fetchPersonData = (passwd, personId) => {
         dispatch(fetchPersonDataRequest());
         axios.post(process.env.REACT_APP_API_DB_READ_ENDPOINT, {person_id: personId, passwd: passwd})
             .then(result => {
-                dispatch(setPerson(result.data.fullname, result.data.person_id));
+                if (result.data.error === "user_not_found") {
+                    dispatch(setPerson('', undefined));
+                } else {
+                    dispatch(setPerson(result.data.fullname, result.data.person_id));
+                }
                 dispatch(fetchPersonDataSuccess());
             })
             .catch(error => {
