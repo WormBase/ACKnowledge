@@ -107,28 +107,34 @@ const Other = () => {
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <a 
-                                        href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        style={{
-                                            fontSize: '13px',
-                                            color: '#0066cc',
-                                            textDecoration: 'none',
-                                            borderBottom: '1px solid #0066cc',
-                                            fontWeight: '500'
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.color = '#004499';
-                                            e.target.style.borderBottomColor = '#004499';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.color = '#0066cc';
-                                            e.target.style.borderBottomColor = '#0066cc';
-                                        }}
-                                    >
-                                        Update contact info <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                                    </a>
+                                    {isUserMissing ? (
+                                        <span style={{fontSize: '13px', color: '#999'}}>
+                                            Update contact info (select a user first)
+                                        </span>
+                                    ) : (
+                                        <a
+                                            href={"https://wormbase.org/submissions/person.cgi?action=Display&number=WBPerson" + person.personId}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '13px',
+                                                color: '#0066cc',
+                                                textDecoration: 'none',
+                                                borderBottom: '1px solid #0066cc',
+                                                fontWeight: '500'
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.target.style.color = '#004499';
+                                                e.target.style.borderBottomColor = '#004499';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.target.style.color = '#0066cc';
+                                                e.target.style.borderBottomColor = '#0066cc';
+                                            }}
+                                        >
+                                            Update contact info <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -150,30 +156,36 @@ const Other = () => {
                             <br/>
                             <div className="row">
                                 <div className="col-sm-5">
-                                    <OverlayTrigger placement="top" overlay={lineageTooltip}>
-                                        <a 
-                                            href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            style={{
-                                                fontSize: '13px',
-                                                color: '#0066cc',
-                                                textDecoration: 'none',
-                                                borderBottom: '1px solid #0066cc',
-                                                fontWeight: '500'
-                                            }}
-                                            onMouseOver={(e) => {
-                                                e.target.style.color = '#004499';
-                                                e.target.style.borderBottomColor = '#004499';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.target.style.color = '#0066cc';
-                                                e.target.style.borderBottomColor = '#0066cc';
-                                            }}
-                                        >
-                                            Update lineage <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
-                                        </a>
-                                    </OverlayTrigger>
+                                    {isUserMissing ? (
+                                        <span style={{fontSize: '13px', color: '#999'}}>
+                                            Update lineage (select a user first)
+                                        </span>
+                                    ) : (
+                                        <OverlayTrigger placement="top" overlay={lineageTooltip}>
+                                            <a
+                                                href={"https://wormbase.org/submissions/person_lineage.cgi?action=Display&number=WBPerson" + person.personId}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                    fontSize: '13px',
+                                                    color: '#0066cc',
+                                                    textDecoration: 'none',
+                                                    borderBottom: '1px solid #0066cc',
+                                                    fontWeight: '500'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.target.style.color = '#004499';
+                                                    e.target.style.borderBottomColor = '#004499';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.target.style.color = '#0066cc';
+                                                    e.target.style.borderBottomColor = '#0066cc';
+                                                }}
+                                            >
+                                                Update lineage <Glyphicon glyph="new-window" style={{fontSize: '10px'}}/>
+                                            </a>
+                                        </OverlayTrigger>
+                                    )}
                                 </div>
                             </div>
                         </div>

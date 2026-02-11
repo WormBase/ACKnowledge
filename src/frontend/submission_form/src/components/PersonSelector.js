@@ -121,7 +121,7 @@ const PersonSelector = () => {
                 <Alert bsStyle="warning" style={{marginBottom: '10px'}}>
                     <Glyphicon glyph="warning-sign" style={{marginRight: '6px'}} />
                     <strong>User not identified.</strong> Please select your identity using the
-                    "Change user" button below before submitting.
+                    "Select user" button below before submitting.
                 </Alert>
             )}
             <div style={{marginBottom: '8px'}}>

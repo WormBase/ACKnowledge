@@ -85,8 +85,6 @@ class FeedbackFormReader:
         self.db = db_manager
         self.admin_emails = admin_emails
         self.email_passwd = email_passwd
-        config = load_config_from_file()
-        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
 
     def on_post(self, req, resp):
         with self.db:
@@ -111,24 +109,10 @@ class FeedbackFormReader:
                         )
                         resp.body = json.dumps({"fullname": None, "person_id": None,
                                                 "error": "user_not_found"})
-                        self.email_manager.send_user_error_notification(
-                            error_type="User Not Found",
-                            paper_id=paper_id,
-                            person_id=f"WBPerson{person_id}",
-                            details=f"Person ID WBPerson{person_id} does not resolve to a valid user in the database.",
-                            recipients=self.admin_emails
-                        )
                 else:
                     logger.warning(f"No person_id provided or found for paper {paper_id}")
                     resp.body = json.dumps({"fullname": None, "person_id": None,
                                             "error": "user_not_found"})
-                    self.email_manager.send_user_error_notification(
-                        error_type="Missing Person ID",
-                        paper_id=paper_id,
-                        person_id=None,
-                        details="No person_id was provided in the request or found as a previous contributor.",
-                        recipients=self.admin_emails
-                    )
                 resp.status = falcon.HTTP_200
             else:
                 raise falcon.HTTPError(falcon.HTTP_401)
@@ -156,7 +140,7 @@ class FeedbackFormWriter:
                 if "gene_list" in req.media:
                     self.db.afp.set_gene_list(genes=req.media["gene_list"], paper_id=paper_id)
                     if self.db.afp.author_has_submitted(paper_id=paper_id):
-                        person_id = req.media["person_id"]
+                        person_id = req.media.get("person_id", "")
                         self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                         self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
                         self.db.afp.set_last_touched(paper_id=paper_id)
@@ -167,7 +151,7 @@ class FeedbackFormWriter:
                 if "species_list" in req.media:
                     self.db.afp.set_submitted_species_list(species=req.media["species_list"], paper_id=paper_id)
                     if self.db.afp.author_has_submitted(paper_id=paper_id):
-                        person_id = req.media["person_id"]
+                        person_id = req.media.get("person_id", "")
                         self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
                         self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
                         self.db.afp.set_last_touched(paper_id=paper_id)
@@ -252,8 +236,14 @@ class FeedbackFormWriter:
 
                 # comments
                 if "comments" in req.media:
+                    person_id = req.media.get("person_id", "")
+                    if not person_id:
+                        self.logger.error(f"Submission attempted without person_id for paper {paper_id}")
+                        raise falcon.HTTPBadRequest(
+                            title="Missing person_id",
+                            description="A valid user identity is required to submit."
+                        )
                     self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
-                    person_id = req.media["person_id"]
                     self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
                     self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
@@ -268,7 +258,7 @@ class FeedbackFormWriter:
                           urllib.parse.quote(paper_title) + "&journal=" + \
                           urllib.parse.quote(paper_journal) + "&pmid=" + \
                           self.db.paper.get_pmid(paper_id) + "&personid=" + \
-                          req.media["person_id"][3:] + \
+                          person_id[3:] + \
                           "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
                           urllib.parse.quote(doi)
                     data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
@@ -316,7 +306,7 @@ class FeedbackFormWriter:
                     # If name not found or is None/empty, use fallback
                     if not submitter_name or submitter_name == "Unknown user" or submitter_name.strip() == "":
                         self.logger.warning(f"Could not get submitter name for person_id {person_id}, using email as fallback")
-                        submitter_name = author_email
+                        submitter_name = author_email or "Unknown author"
                     
                     # Send thank you email to the submitting author
                     if author_email:
