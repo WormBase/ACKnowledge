@@ -261,17 +261,16 @@ class FeedbackFormWriter:
                           person_id[3:] + \
                           "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
                           urllib.parse.quote(doi)
-                    data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(url))
-                    tiny_url = data.read().decode('utf-8')
+                    form_url = url
                     dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
                     self.logger.info(
                         f"Submission received for paper {paper_id} by person_id {person_id}, "
-                        f"email: {author_email}, form_url: {tiny_url}, dashboard: {dashboard_url}"
+                        f"email: {author_email}, form_url: {form_url}, dashboard: {dashboard_url}"
                     )
                     self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
                                                                                        paper_journal, author_email,
                                                                                        self.admin_emails, dashboard_url,
-                                                                                       tiny_url,
+                                                                                       form_url,
                                                                                        self.test)
                     # Get all author emails for the paper
                     all_author_emails_result = self.db.afp.get_contact_emails(paper_id)

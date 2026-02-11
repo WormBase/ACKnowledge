@@ -5,9 +5,6 @@ import logging
 import json
 from datetime import datetime, timedelta
 from collections import defaultdict
-from urllib.request import urlopen
-import urllib.parse
-
 from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.common.config import load_config_from_file
@@ -170,14 +167,9 @@ def format_report_rows(partial_submissions, afp_base_url):
         # Use the form link from the database
         form_url = paper['form_link'] if paper['form_link'] else "N/A"
         
-        # Create short URL if we have a form link
+        # Create form link HTML
         if form_url != "N/A":
-            try:
-                data = urlopen("http://tinyurl.com/api-create.php?url=" + urllib.parse.quote(form_url))
-                tiny_url = data.read().decode('utf-8')
-                form_link_html = f'<a href="{tiny_url}">Open Form</a>'
-            except:
-                form_link_html = f'<a href="{form_url}">Open Form</a>'
+            form_link_html = f'<a href="{form_url}">Open Form</a>'
         else:
             form_link_html = "N/A"
         
