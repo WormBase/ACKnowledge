@@ -67,7 +67,7 @@ multiprocess==0.70.15
 multivolumefile==0.2.3
 murmurhash==1.0.10
 networkx==3.1
-nltk==3.6.3
+nltk==3.9.2
 numpy==1.19.5
 oauthlib==3.3.1
 openpyxl==3.1.2
