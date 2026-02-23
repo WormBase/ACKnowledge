@@ -1,11 +1,29 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
+import {withRouter} from "react-router-dom";
 import FAQsingle from "../components/FAQsingle";
 import './FAQ.css';
 
-const FAQ = () => {
+const FAQ = ({history, location}) => {
+    const faqRef = useRef(null);
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            const link = e.target.closest('a[data-internal-link]');
+            if (link) {
+                e.preventDefault();
+                const path = link.getAttribute('href');
+                history.push(path + location.search);
+            }
+        };
+        const el = faqRef.current;
+        if (el) {
+            el.addEventListener('click', handleClick);
+            return () => el.removeEventListener('click', handleClick);
+        }
+    }, [history, location.search]);
 
     return (
-        <div>
+        <div ref={faqRef}>
             <h4><strong>Frequently Asked Questions</strong></h4>
             <h4>General Information on ACKnowledge and Community Curation</h4>
             <ol>
@@ -65,7 +83,7 @@ const FAQ = () => {
             <h4>Types of Data Submitted through the ACKnowledge Form</h4>
             <ol>
                 <li><FAQsingle question={"How are the different types of data identified?"}
-                               answer={"Wherever possible, we use machine learning to automate identification of different types of data, e.g. anatomical expression patterns, RNAi phenotypes, and genetic interactions. Automatically identified data types are indicated on the form with the <span style=\"display:inline-flex;align-items:center;font-size:12px;color:#333;background-color:#ffffff;padding:4px 8px;border-radius:12px;border:2px solid #ddd;font-weight:normal;box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);vertical-align:middle\"><span style=\"margin-right:6px;color:#ffd700;font-size:14px\">&#9889;</span>Auto-identified</span> tag. More information about some of our approaches can be found in the <a href='/about'><strong>About Section</strong></a>."}/></li>
+                               answer={"Wherever possible, we use machine learning to automate identification of different types of data, e.g. anatomical expression patterns, RNAi phenotypes, and genetic interactions. Automatically identified data types are indicated on the form with the <span style=\"display:inline-flex;align-items:center;font-size:12px;color:#333;background-color:#ffffff;padding:4px 8px;border-radius:12px;border:2px solid #ddd;font-weight:normal;box-shadow:0 1px 2px rgba(0, 0, 0, 0.1);vertical-align:middle\"><span style=\"margin-right:6px;color:#ffd700;font-size:14px\">&#9889;</span>Auto-identified</span> tag. More information about some of our approaches can be found in the <a href='/about' data-internal-link='true'><strong>About Section</strong></a>."}/></li>
                 <li><FAQsingle question={"Can I submit other types of data not listed in the ACKnowledge form?"}
                                answer={"If your paper includes data types not listed in the ACKnowledge form, please let us know by adding a note in the '<i>Please give us your feedback</i>' field in the '<i>Comments and submit</i>' widget."}/></li>
             </ol>
@@ -96,4 +114,4 @@ const FAQ = () => {
     );
 }
 
-export default FAQ;
+export default withRouter(FAQ);
