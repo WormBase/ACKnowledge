@@ -7,6 +7,8 @@ COPY src/frontend/submission_form .
 RUN npm cache clean --force
 RUN npm install --legacy-peer-deps --silent
 RUN npm run build --production
+# Remove auto-generated service worker files to prevent stale caching
+RUN rm -f /usr/src/app/build/service-worker.js /usr/src/app/build/precache-manifest.*.js
 
 FROM nginx:1.15.2-alpine
 
