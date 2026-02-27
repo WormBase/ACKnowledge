@@ -3,7 +3,6 @@
   "version": "5.0.1",
   "private": true,
   "dependencies": {
-    "bootstrap": "3.3.7",
     "axios": "^0.21.1",
     "history": "^4.7.2",
     "immutable": "^4.0.0-rc.12",
