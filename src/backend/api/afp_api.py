@@ -28,6 +28,9 @@ class HandleCORS(object):
         if req.method == 'OPTIONS':
             raise HTTPStatus(falcon.HTTP_200, body='\n')
 
+    def process_response(self, req, resp, resource, req_succeeded):
+        resp.set_header('Cache-Control', 'no-store')
+
 
 def main():
     parser = argparse.ArgumentParser(description="Find new documents in WormBase collection and pre-populate data "
