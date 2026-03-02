@@ -18,6 +18,12 @@ emails:
                       <br/>
                       If you would like to flag* your paper for detailed curation, please click <a href={}>here</a>.<br/>
                       <br/>
+                      <b>Having trouble opening or using the form?</b> Please try a hard refresh of the page before contacting us. A hard refresh forces your browser to reload the page from the server instead of using a cached version:<br/>
+                      <ul>
+                      <li><b>Windows/Linux:</b> Press <b>Ctrl + Shift + R</b> or <b>Ctrl + F5</b> (works in Chrome, Firefox, and Edge)</li>
+                      <li><b>Mac:</b> Press <b>Cmd + Shift + R</b> (Chrome, Firefox) or <b>Cmd + Option + R</b> (Safari)</li>
+                      </ul>
+                      <br/>
                       *Flagging your paper involves validating automatically extracted entities and identifying the types of data present.<br/>
                       <br/>
                       You can view all your papers already in the ACKnowledge system on the 
@@ -87,6 +93,12 @@ emails:
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
                      <a href={}>ACKnowledge Curation Form for your paper</a>.<br/>
+                     <br/>
+                     <b>Having trouble opening or using the form?</b> Please try a hard refresh of the page before contacting us. A hard refresh forces your browser to reload the page from the server instead of using a cached version:<br/>
+                     <ul>
+                     <li><b>Windows/Linux:</b> Press <b>Ctrl + Shift + R</b> or <b>Ctrl + F5</b> (works in Chrome, Firefox, and Edge)</li>
+                     <li><b>Mac:</b> Press <b>Cmd + Shift + R</b> (Chrome, Firefox) or <b>Cmd + Option + R</b> (Safari)</li>
+                     </ul>
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
                      <br/>
