@@ -21,7 +21,8 @@ const RespRateTSChart = () => {
                 dataLabels: {
                     enabled: true
                 },
-                enableMouseTracking: false
+                enableMouseTracking: false,
+                connectNulls: true
             }
         },
         xAxis: {
