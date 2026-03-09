@@ -39,7 +39,7 @@ const RespRateTSChart = () => {
         series: [
             {
                 name: "Response rate (%)",
-                data: data.isSuccess ? data.data.data.map(statArr => parseFloat((statArr[1][4] * 100).toFixed(2))) : []
+                data: data.isSuccess ? data.data.data.map(statArr => statArr[1][0] > 0 ? parseFloat((statArr[1][4] * 100).toFixed(2)) : null) : []
             },
             {
                 name: "Full submissions",
