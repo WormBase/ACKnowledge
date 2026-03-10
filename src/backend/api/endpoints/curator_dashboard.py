@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 
 import falcon
 import numpy as np
@@ -192,11 +192,122 @@ class CuratorDashboardReader:
                             {"sentences": sentences})
         return fulltext, sentences, counter_list, json.dumps(res.json()["classes"])
 
+    def _compute_entity_confirmation_rates(self):
+        entity_types = {
+            "genes": "genestudied",
+            "species": "species",
+            "alleles": "variation",
+            "strains": "strain",
+            "transgenes": "transgene"
+        }
+        results = {}
+        for label, table_name in entity_types.items():
+            with self.db.afp.get_cursor() as curs:
+                curs.execute(
+                    "SELECT tfp_{t}.tfp_{t}, afp_{t}.afp_{t} "
+                    "FROM tfp_{t} "
+                    "JOIN afp_{t} ON tfp_{t}.joinkey = afp_{t}.joinkey "
+                    "JOIN afp_version ON tfp_{t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON tfp_{t}.joinkey = afp_lasttouched.joinkey "
+                    "WHERE afp_version.afp_version = '2'".format(t=table_name)
+                )
+                rows = curs.fetchall()
+
+            total_extracted = 0
+            total_confirmed = 0
+            total_added = 0
+            total_removed = 0
+            num_papers = len(rows)
+
+            for tfp_val, afp_val in rows:
+                extracted = set(
+                    e.strip() for e in (tfp_val or "").split(" | ") if e.strip()
+                )
+                submitted = set(
+                    e.strip() for e in (afp_val or "").split(" | ") if e.strip()
+                )
+                confirmed = extracted & submitted
+                removed = extracted - submitted
+                added = submitted - extracted
+
+                total_extracted += len(extracted)
+                total_confirmed += len(confirmed)
+                total_removed += len(removed)
+                total_added += len(added)
+
+            confirmation_rate = round(
+                (total_confirmed / total_extracted * 100) if total_extracted > 0 else 0, 1
+            )
+            results[label] = {
+                "total_extracted": total_extracted,
+                "total_confirmed": total_confirmed,
+                "total_removed": total_removed,
+                "total_added": total_added,
+                "confirmation_rate": confirmation_rate,
+                "num_papers": num_papers
+            }
+        return results
+
+    def _compute_confirmation_rates_timeseries(self, bin_period='y'):
+        entity_types = {
+            "genes": "genestudied",
+            "species": "species",
+            "alleles": "variation",
+            "strains": "strain",
+            "transgenes": "transgene"
+        }
+        import pandas as pd
+
+        period_data = defaultdict(lambda: defaultdict(lambda: {"extracted": 0, "confirmed": 0}))
+
+        for label, table_name in entity_types.items():
+            with self.db.afp.get_cursor() as curs:
+                curs.execute(
+                    "SELECT tfp_{t}.tfp_{t}, afp_{t}.afp_{t}, afp_email.afp_timestamp "
+                    "FROM tfp_{t} "
+                    "JOIN afp_{t} ON tfp_{t}.joinkey = afp_{t}.joinkey "
+                    "JOIN afp_version ON tfp_{t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON tfp_{t}.joinkey = afp_lasttouched.joinkey "
+                    "JOIN afp_email ON tfp_{t}.joinkey = afp_email.joinkey "
+                    "WHERE afp_version.afp_version = '2'".format(t=table_name)
+                )
+                rows = curs.fetchall()
+
+            for tfp_val, afp_val, email_ts in rows:
+                ts = pd.Timestamp(email_ts, tz='UTC')
+                period_key = ts.to_period(bin_period).strftime('%Y-%m')
+
+                extracted = set(
+                    e.strip() for e in (tfp_val or "").split(" | ") if e.strip()
+                )
+                submitted = set(
+                    e.strip() for e in (afp_val or "").split(" | ") if e.strip()
+                )
+                confirmed = extracted & submitted
+
+                period_data[period_key][label]["extracted"] += len(extracted)
+                period_data[period_key][label]["confirmed"] += len(confirmed)
+
+        result = []
+        for period_key in sorted(period_data.keys()):
+            period_rates = {}
+            for label in entity_types.keys():
+                data = period_data[period_key][label]
+                rate = round(
+                    (data["confirmed"] / data["extracted"] * 100)
+                    if data["extracted"] > 0 else 0, 1
+                )
+                period_rates[label] = rate
+            result.append([period_key, period_rates])
+        return result
+
     def on_post(self, req, resp, req_type):
         with self.db:
             if req_type != "stats_totals" and req_type != "papers" and req_type != "contributors" \
                     and req_type != "most_emailed" and req_type != "all_papers" and req_type != "entities_count" and \
-                    req_type != "paper_stats" and req_type != "stats_timeseries":
+                    req_type != "paper_stats" and req_type != "stats_timeseries" and req_type != "stats_kpi" and \
+                    req_type != "time_to_submit" and req_type != "entity_confirmation_rates" and \
+                    req_type != "data_type_flags_stats" and req_type != "confirmation_rates_timeseries":
                 if "paper_id" not in req.media:
                     raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
                 paper_id = req.media["paper_id"]
@@ -508,4 +619,109 @@ class CuratorDashboardReader:
                     bin_size = req.media["bin_size"]
                     stats_ts = self.db.afp.get_stats_timeseries(bin_period=bin_size)
                     resp.body = json.dumps(stats_ts)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "stats_kpi":
+                    num_no_submission = self.db.afp.get_paper_ids_afp_no_submission(count=True)
+                    num_full_submission = self.db.afp.get_paper_ids_afp_full_submission(count=True)
+                    num_partial_submission = self.db.afp.get_paper_ids_afp_partial_submission(count=True)
+                    total_processed = num_no_submission + num_full_submission + num_partial_submission
+                    response_rate = round(
+                        (num_full_submission / total_processed * 100) if total_processed > 0 else 0, 1
+                    )
+                    num_contributors = self.db.afp.get_num_contributors()
+
+                    with self.db.afp.get_cursor() as curs:
+                        curs.execute(
+                            "SELECT AVG(days) FROM ("
+                            "SELECT (CAST(afp_lasttouched.afp_lasttouched AS BIGINT) - "
+                            "EXTRACT(EPOCH FROM afp_email.afp_timestamp)) / 86400.0 AS days "
+                            "FROM afp_lasttouched "
+                            "JOIN afp_version ON afp_lasttouched.joinkey = afp_version.joinkey "
+                            "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
+                            "WHERE afp_version.afp_version = '2'"
+                            ") sub WHERE days >= 0"
+                        )
+                        avg_days_result = curs.fetchone()
+                    avg_time_to_submit = (
+                        round(float(avg_days_result[0]), 1)
+                        if avg_days_result and avg_days_result[0] else 0
+                    )
+
+                    resp.body = json.dumps({
+                        "total_processed": total_processed,
+                        "response_rate": response_rate,
+                        "avg_time_to_submit_days": avg_time_to_submit,
+                        "papers_awaiting": num_no_submission,
+                        "unique_contributors": num_contributors,
+                        "full_submissions": num_full_submission,
+                        "partial_submissions": num_partial_submission
+                    })
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "time_to_submit":
+                    with self.db.afp.get_cursor() as curs:
+                        curs.execute(
+                            "SELECT "
+                            "(CAST(afp_lasttouched.afp_lasttouched AS BIGINT) - "
+                            "EXTRACT(EPOCH FROM afp_email.afp_timestamp)) / 86400.0 "
+                            "FROM afp_lasttouched "
+                            "JOIN afp_version ON afp_lasttouched.joinkey = afp_version.joinkey "
+                            "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
+                            "WHERE afp_version.afp_version = '2'"
+                        )
+                        rows = curs.fetchall()
+                    days_list = [round(float(row[0]), 1) for row in rows if row[0] is not None]
+                    resp.body = json.dumps({"days_to_submit": days_list})
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "entity_confirmation_rates":
+                    results = self._compute_entity_confirmation_rates()
+                    resp.body = json.dumps(results)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "data_type_flags_stats":
+                    flag_tables = {
+                        "Expression": "afp_otherexpr",
+                        "Seq. change": "afp_seqchange",
+                        "Genetic int.": "afp_geneint",
+                        "Physical int.": "afp_geneprod",
+                        "Regulatory int.": "afp_genereg",
+                        "Allele phenotype": "afp_newmutant",
+                        "RNAi phenotype": "afp_rnai",
+                        "Overexpr. phenotype": "afp_overexpr",
+                        "Gene model update": "afp_structcorr",
+                        "Antibody": "afp_antibody",
+                        "Site of action": "afp_siteaction",
+                        "Time of action": "afp_timeaction",
+                        "RNAseq": "afp_rnaseq",
+                        "Chemical phenotype": "afp_chemphen",
+                        "Environmental phenotype": "afp_envpheno",
+                        "Enzymatic activity": "afp_catalyticact",
+                        "Disease": "afp_humdis",
+                        "Additional expression": "afp_additionalexpr"
+                    }
+                    flag_counts = {}
+                    with self.db.afp.get_cursor() as curs:
+                        for display_name, table_name in flag_tables.items():
+                            col_name = table_name
+                            curs.execute(
+                                "SELECT COUNT(DISTINCT {t}.joinkey) "
+                                "FROM {t} "
+                                "JOIN afp_lasttouched ON {t}.joinkey = afp_lasttouched.joinkey "
+                                "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
+                                "WHERE afp_version.afp_version = '2' "
+                                "AND {t}.{c} IS NOT NULL AND {t}.{c} != ''".format(
+                                    t=table_name, c=col_name
+                                )
+                            )
+                            result = curs.fetchone()
+                            flag_counts[display_name] = int(result[0]) if result else 0
+                    resp.body = json.dumps(flag_counts)
+                    resp.status = falcon.HTTP_200
+
+                elif req_type == "confirmation_rates_timeseries":
+                    bin_size = (req.media or {}).get("bin_size", "y")
+                    result = self._compute_confirmation_rates_timeseries(bin_size)
+                    resp.body = json.dumps(result)
                     resp.status = falcon.HTTP_200

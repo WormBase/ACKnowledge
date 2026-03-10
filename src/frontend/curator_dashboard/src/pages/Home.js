@@ -83,7 +83,7 @@ const Home = () => {
                         <Card.Body>
                             <h1 className="text-center"><FontAwesomeIcon icon={faChartBar}/></h1>
                             <Card.Text>
-                                Read statistics about the data extracted by ACKnowledge
+                                View extraction accuracy, data type frequencies, and confirmation rate trends
                             </Card.Text>
                         </Card.Body>
                     </Card>
