@@ -256,8 +256,6 @@ class CuratorDashboardReader:
             "strains": "strain",
             "transgenes": "transgene"
         }
-        import pandas as pd
-
         period_data = defaultdict(lambda: defaultdict(lambda: {"extracted": 0, "confirmed": 0}))
 
         for label, table_name in entity_types.items():
@@ -274,8 +272,12 @@ class CuratorDashboardReader:
                 rows = curs.fetchall()
 
             for tfp_val, afp_val, email_ts in rows:
-                ts = pd.Timestamp(email_ts, tz='UTC')
-                period_key = ts.to_period(bin_period).strftime('%Y-%m')
+                if email_ts is None:
+                    continue
+                if bin_period == 'y':
+                    period_key = email_ts.strftime('%Y')
+                else:
+                    period_key = email_ts.strftime('%Y-%m')
 
                 extracted = set(
                     e.strip() for e in (tfp_val or "").split(" | ") if e.strip()
@@ -660,19 +662,37 @@ class CuratorDashboardReader:
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "time_to_submit":
+                    bin_size = (req.media or {}).get("bin_size", "y")
                     with self.db.afp.get_cursor() as curs:
                         curs.execute(
                             "SELECT "
                             "(CAST(afp_lasttouched.afp_lasttouched AS BIGINT) - "
-                            "EXTRACT(EPOCH FROM afp_email.afp_timestamp)) / 86400.0 "
+                            "EXTRACT(EPOCH FROM afp_email.afp_timestamp)) / 86400.0, "
+                            "afp_email.afp_timestamp "
                             "FROM afp_lasttouched "
                             "JOIN afp_version ON afp_lasttouched.joinkey = afp_version.joinkey "
                             "JOIN afp_email ON afp_lasttouched.joinkey = afp_email.joinkey "
                             "WHERE afp_version.afp_version = '2'"
                         )
                         rows = curs.fetchall()
-                    days_list = [round(float(row[0]), 1) for row in rows if row[0] is not None]
-                    resp.body = json.dumps({"days_to_submit": days_list})
+                    period_data = defaultdict(list)
+                    for days_val, email_ts in rows:
+                        if days_val is None or email_ts is None:
+                            continue
+                        days = float(days_val)
+                        if days < 0:
+                            continue
+                        if bin_size == 'y':
+                            period_key = email_ts.strftime('%Y')
+                        else:
+                            period_key = email_ts.strftime('%Y-%m')
+                        period_data[period_key].append(days)
+                    result = []
+                    for period_key in sorted(period_data.keys()):
+                        vals = period_data[period_key]
+                        avg = round(sum(vals) / len(vals), 1) if vals else 0
+                        result.append([period_key, avg, len(vals)])
+                    resp.body = json.dumps(result)
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "entity_confirmation_rates":

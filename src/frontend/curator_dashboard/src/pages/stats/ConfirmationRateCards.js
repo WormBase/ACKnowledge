@@ -33,7 +33,11 @@ const ConfirmationRateCards = () => {
 
     return (
         <div>
-            <h5 className="mb-3">Extraction Accuracy</h5>
+            <h5 className="mb-1">Extraction Accuracy</h5>
+            <p className="text-muted mb-3">
+                Comparing entities automatically extracted by the pipeline against author-validated submissions.
+                The confirmation rate measures how often authors kept the pipeline's predictions.
+            </p>
             <Row className="mb-4">
                 {Object.entries(entityLabels).map(([key, label]) => {
                     const entity = rates[key] || {};

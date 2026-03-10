@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import {useQuery} from "react-query";
@@ -6,8 +6,13 @@ import axios from "axios";
 import {Spinner} from "react-bootstrap";
 
 const TimeToSubmitChart = () => {
-    const {data, isLoading, isSuccess} = useQuery('timeToSubmit', () =>
-        axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/time_to_submit")
+    const [binSize, setBinSize] = useState('y');
+    const {data, isLoading, isSuccess} = useQuery(
+        'timeToSubmit' + binSize,
+        () => axios.post(
+            process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/time_to_submit",
+            {bin_size: binSize}
+        )
     );
 
     if (isLoading) {
@@ -18,73 +23,63 @@ const TimeToSubmitChart = () => {
         );
     }
 
-    const daysData = isSuccess ? data.data.days_to_submit : [];
+    const tsData = isSuccess ? data.data : [];
+    const showYearOnly = binSize.includes('y');
 
-    // Bin the data into buckets manually for a clean column chart
-    const maxDays = Math.min(Math.max(...daysData), 365);
-    const binSize = 7; // weekly bins
-    const numBins = Math.ceil(maxDays / binSize);
-    const bins = new Array(numBins).fill(0);
-
-    daysData.forEach(d => {
-        if (d >= 0 && d <= maxDays) {
-            const idx = Math.min(Math.floor(d / binSize), numBins - 1);
-            bins[idx]++;
+    const categories = tsData.map(item => {
+        if (showYearOnly) {
+            return item[0].split('-')[0];
         }
+        return item[0];
     });
 
-    const categories = bins.map((_, i) => {
-        const start = i * binSize;
-        const end = start + binSize;
-        return start + '-' + end + 'd';
-    });
+    const avgDays = tsData.map(item => item[1]);
+    const counts = tsData.map(item => item[2]);
 
     const options = {
-        chart: {type: 'column'},
-        title: {text: 'Time to Submit (days after email)'},
-        subtitle: {text: 'Distribution of author response times'},
-        xAxis: {
-            categories: categories,
-            title: {text: 'Days after email'},
-            labels: {
-                rotation: -45,
-                step: Math.max(1, Math.floor(numBins / 15))
-            }
-        },
-        yAxis: {
-            title: {text: 'Number of papers'},
+        title: {text: 'Average Time to Submit Over Time'},
+        subtitle: {text: 'Mean number of days between email and author submission'},
+        xAxis: {categories: categories},
+        yAxis: [{
+            title: {text: 'Average days'},
             min: 0
-        },
-        tooltip: {
-            headerFormat: '<b>{point.x}</b><br/>',
-            pointFormat: '{point.y} papers'
-        },
+        }, {
+            title: {text: 'Number of submissions'},
+            opposite: true,
+            min: 0
+        }],
+        tooltip: {shared: true},
         plotOptions: {
-            column: {
-                color: '#17a2b8',
-                borderWidth: 0,
-                pointPadding: 0.05,
-                groupPadding: 0
+            line: {
+                dataLabels: {enabled: true, format: '{y}d'},
+                enableMouseTracking: true
             }
         },
-        legend: {enabled: false},
         series: [{
-            name: 'Papers',
-            data: bins
+            name: 'Avg. days to submit',
+            data: avgDays,
+            color: '#17a2b8',
+            tooltip: {valueSuffix: ' days'},
+            yAxis: 0
+        }, {
+            name: 'Submissions',
+            data: counts,
+            type: 'column',
+            color: '#dee2e6',
+            tooltip: {valueSuffix: ' papers'},
+            yAxis: 1
         }]
     };
-
-    const median = daysData.length > 0
-        ? [...daysData].sort((a, b) => a - b)[Math.floor(daysData.length / 2)]
-        : 0;
 
     return (
         <div>
             <HighchartsReact highcharts={Highcharts} options={options} />
-            <p className="text-center text-muted">
-                Median: <strong>{Math.round(median)} days</strong>
-                {' | '}Total submissions: <strong>{daysData.length}</strong>
-            </p>
+            Interval period
+            <br/>
+            <select onChange={(event) => setBinSize(event.target.value)}>
+                <option value="y">1 year</option>
+                <option value="m">1 month</option>
+            </select>
         </div>
     );
 };
