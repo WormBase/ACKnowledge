@@ -109,7 +109,6 @@ const MenuAndWidgets = (props) => {
                (widgetState.expression && widgetState.expression.checked) ||
                (widgetState.siteOfAction && widgetState.siteOfAction.checked) ||
                (widgetState.timeOfAction && widgetState.timeOfAction.checked) ||
-               (widgetState.additionalExpr && widgetState.additionalExpr.checked) ||
                (widgetState.geneint && widgetState.geneint.checked) ||
                (widgetState.geneprod && widgetState.geneprod.checked) ||
                (widgetState.genereg && widgetState.genereg.checked) ||

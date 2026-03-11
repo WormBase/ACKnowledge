@@ -53,10 +53,6 @@ const OtherYesNoDataTypesTab = () => {
                     <FlaggedInfoRow title="Human disease model" afpChecked={queryRes.data.data.afp_humdis_checked}
                                     afpDetails={queryRes.data.data.afp_humdis_details}
                     />
-                    <FlaggedInfoRow title="Additional type of expression data"
-                                    afpChecked={queryRes.data.data.afp_additionalexpr === null ? "null" : queryRes.data.data.afp_additionalexpr !== ""? "True" : "False"}
-                                    afpDetails={queryRes.data.data.afp_additionalexpr === null ? "null" : queryRes.data.data.afp_additionalexpr}
-                    />
                     <FlaggedInfoRow title="Other gene function"
                                     afpChecked={queryRes.data.data.afp_othergenefunc_checked}
                                     afpDetails={queryRes.data.data.afp_othergenefunc_details}

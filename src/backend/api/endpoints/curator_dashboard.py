@@ -131,9 +131,6 @@ class CuratorDashboardReader:
         afp_envpheno_checked, afp_envpheno_details = self.get_class_author_sub_val("afp_envpheno", paper_id)
         afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
         afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val_json("afp_humdis", paper_id)
-        afp_additionalexpr = self.db._get_single_field(paper_id, "afp_additionalexpr")
-        if afp_additionalexpr == 'null':
-            afp_additionalexpr = ''
         afp_othergenefunc_checked, afp_othergenefunc_details = self.get_class_author_sub_val("afp_othergenefunc", paper_id)
         return {"afp_modchange_checked": afp_modchange_checked, "afp_modchange_details": afp_modchange_details,
                 "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
@@ -144,7 +141,7 @@ class CuratorDashboardReader:
                 "afp_catalyticact_checked": afp_catalyticact_checked, "afp_catalyticact_details":
                     afp_catalyticact_details,
                 "afp_humdis_checked": afp_humdis_checked, "afp_humdis_details": afp_humdis_details,
-                "afp_additionalexpr": afp_additionalexpr, "afp_othergenefunc_checked": afp_othergenefunc_checked,
+                "afp_othergenefunc_checked": afp_othergenefunc_checked,
                 "afp_othergenefunc_details": afp_othergenefunc_details}
 
     def get_other_data_types(self, paper_id):
@@ -383,7 +380,7 @@ class CuratorDashboardReader:
                                 '"afp_chemphen_checked": "{}", "afp_chemphen_details": {}, ' \
                                 '"afp_envpheno_checked": "{}", "afp_envpheno_details": {}, ' \
                                 '"afp_humdis_checked": "{}", "afp_humdis_details": {}, ' \
-                                '"afp_additionalexpr": {}, "afp_othergenefunc_checked": "{}", ' \
+                                '"afp_othergenefunc_checked": "{}", ' \
                                 '"afp_othergenefunc_details": {}}}'.format(
                                             other_yn["afp_modchange_checked"], json.dumps(other_yn["afp_modchange_details"]),
                                             other_yn["afp_newantibody_checked"], json.dumps(other_yn["afp_newantibody_details"]),
@@ -392,7 +389,7 @@ class CuratorDashboardReader:
                                             other_yn["afp_chemphen_checked"], json.dumps(other_yn["afp_chemphen_details"]),
                                             other_yn["afp_envpheno_checked"], json.dumps(other_yn["afp_envpheno_details"]),
                                             other_yn["afp_humdis_checked"], json.dumps(other_yn["afp_humdis_details"]),
-                                            json.dumps(other_yn["afp_additionalexpr"]), other_yn["afp_othergenefunc_checked"],
+                                            other_yn["afp_othergenefunc_checked"],
                                             json.dumps(other_yn["afp_othergenefunc_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
@@ -718,8 +715,7 @@ class CuratorDashboardReader:
                         "Chemical phenotype": "afp_chemphen",
                         "Environmental phenotype": "afp_envpheno",
                         "Enzymatic activity": "afp_catalyticact",
-                        "Disease": "afp_humdis",
-                        "Additional expression": "afp_additionalexpr"
+                        "Disease": "afp_humdis"
                     }
                     flag_counts = {}
                     with self.db.afp.get_cursor() as curs:

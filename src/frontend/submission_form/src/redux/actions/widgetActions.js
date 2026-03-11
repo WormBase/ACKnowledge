@@ -175,7 +175,6 @@ const hasWidgetChanges = (widgetState) => {
            checkboxChanged(widgetState.expression, widgetState.savedExpression) ||
            checkboxChanged(widgetState.siteOfAction, widgetState.savedSiteOfAction) ||
            checkboxChanged(widgetState.timeOfAction, widgetState.savedTimeOfAction) ||
-           checkboxChanged(widgetState.additionalExpr, widgetState.savedAdditionalExpr) ||
            checkboxChanged(widgetState.geneint, widgetState.savedGeneint) ||
            checkboxChanged(widgetState.geneprod, widgetState.savedGeneprod) ||
            checkboxChanged(widgetState.genereg, widgetState.savedGenereg) ||
@@ -252,7 +251,6 @@ export const saveAllUnsavedWidgets = () => {
                 anatomic_expr: getCheckboxDBVal((state.expression.expression && state.expression.expression.checked) || false, (state.expression.expression && state.expression.expression.details) || ""),
                 site_action: getCheckboxDBVal((state.expression.siteOfAction && state.expression.siteOfAction.checked) || false, (state.expression.siteOfAction && state.expression.siteOfAction.details) || ""),
                 time_action: getCheckboxDBVal((state.expression.timeOfAction && state.expression.timeOfAction.checked) || false, (state.expression.timeOfAction && state.expression.timeOfAction.details) || ""),
-                additional_expr: getCheckboxDBVal((state.expression.additionalExpr && state.expression.additionalExpr.checked) || false, (state.expression.additionalExpr && state.expression.additionalExpr.details) || ""),
                 passwd: paperPassword
             };
             promises.push({

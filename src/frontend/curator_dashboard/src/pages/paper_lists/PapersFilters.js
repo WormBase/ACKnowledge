@@ -150,8 +150,6 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                                                 onChange={() => dispatch(togglePaperListFilter("envpheno", "manual"))}/>
                                                                     <Form.Check checked={paperListFilters.manualFilters.has("humdis")} type="checkbox" label="Human disease model"
                                                                                 onChange={() => dispatch(togglePaperListFilter("humdis", "manual"))}/>
-                                                                    <Form.Check checked={paperListFilters.manualFilters.has("additionalexpr")} type="checkbox" label="Additional type of expression data"
-                                                                                onChange={() => dispatch(togglePaperListFilter("additionalexpr", "manual"))}/>
                                                                     <Form.Check checked={paperListFilters.manualFilters.has("othergenefunc")} type="checkbox" label="Other gene function"
                                                                                 onChange={() => dispatch(togglePaperListFilter("othergenefunc", "manual"))}/>
                                                                 </Col>
@@ -199,8 +197,6 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                                                 onChange={() => dispatch(togglePaperListFilter("catalyticact", "curation"))}/>
                                                                     <Form.Check checked={paperListFilters.curationFilters.has("humdis")} type="checkbox" label="Human disease model"
                                                                                 onChange={() => dispatch(togglePaperListFilter("humdis", "curation"))}/>
-                                                                    <Form.Check checked={paperListFilters.curationFilters.has("additionalexpr")} type="checkbox" label="Additional type of expression data"
-                                                                                onChange={() => dispatch(togglePaperListFilter("additionalexpr", "curation"))}/>
                                                                 </Col>
                                                             </Row>
                                                         </Container>

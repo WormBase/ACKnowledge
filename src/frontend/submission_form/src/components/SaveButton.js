@@ -87,7 +87,6 @@ const SaveButton = ({
             checkboxChanged(widgetState.expression, widgetState.savedExpression) ||
             checkboxChanged(widgetState.siteOfAction, widgetState.savedSiteOfAction) ||
             checkboxChanged(widgetState.timeOfAction, widgetState.savedTimeOfAction) ||
-            checkboxChanged(widgetState.additionalExpr, widgetState.savedAdditionalExpr) ||
             checkboxChanged(widgetState.geneint, widgetState.savedGeneint) ||
             checkboxChanged(widgetState.geneprod, widgetState.savedGeneprod) ||
             checkboxChanged(widgetState.genereg, widgetState.savedGenereg) ||

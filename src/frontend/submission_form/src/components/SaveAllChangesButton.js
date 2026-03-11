@@ -65,8 +65,7 @@ const SaveCurrentWidgetButton = () => {
             case 4: // Expression
                 return (currentWidgetData.anatomicExpression.checked ||
                         currentWidgetData.siteOfAction.checked ||
-                        currentWidgetData.timeOfAction.checked ||
-                        currentWidgetData.additionalExpr.checked);
+                        currentWidgetData.timeOfAction.checked);
             case 5: // Interactions
                 return (currentWidgetData.geneticInteractions.checked ||
                         currentWidgetData.physicalInteractions.checked ||

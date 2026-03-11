@@ -8,14 +8,12 @@ import InstructionsAlert from "../components/InstructionsAlert";
 import AutoDetectedBadge from "../components/AutoDetectedBadge";
 import {useDispatch, useSelector} from "react-redux";
 import {
-    setAdditionalExpr,
     setExpression,
     setSiteOfAction,
     setTimeOfAction,
     toggleExpression,
     toggleSiteOfAction,
-    toggleTimeOfAction,
-    toggleAdditionalExpr
+    toggleTimeOfAction
 } from "../redux/actions/expressionActions";
 import {getCheckboxDBVal} from "../AFPValues";
 import {WIDGET} from "../constants";
@@ -27,7 +25,6 @@ const Expression = () =>{
     const expression = useSelector((state) => state.expression.expression);
     const siteOfAction = useSelector((state) => state.expression.siteOfAction);
     const timeOfAction = useSelector((state) => state.expression.timeOfAction);
-    const additionalExpr = useSelector((state) => state.expression.additionalExpr);
     const isSavedToDB = useSelector((state) => state.expression.isSavedToDB);
     const paperPassword = useSelector((state) => state.paper.paperData.paperPasswd);
 
@@ -116,17 +113,6 @@ const Expression = () =>{
                                              }}
                                 />
                             )}
-                            <Checkbox checked={additionalExpr.checked} onClick={() => dispatch(toggleAdditionalExpr())}>
-                                <strong>Additional type of expression data</strong>
-                            </Checkbox>
-                            {additionalExpr.checked && (
-                                <FormControl type="text" placeholder="E.g., qPCR, Proteomics"
-                                             value={additionalExpr.details}
-                                             onChange={(event) => {
-                                                 dispatch(setAdditionalExpr(true, event.target.value));
-                                             }}
-                                />
-                            )}
                         </Form>
                     </div>
                 </Panel.Body>
@@ -150,7 +136,6 @@ const Expression = () =>{
                         anatomic_expr: getCheckboxDBVal(expression.checked, expression.details),
                         site_action: getCheckboxDBVal(siteOfAction.checked, siteOfAction.details),
                         time_action: getCheckboxDBVal(timeOfAction.checked, timeOfAction.details),
-                        additional_expr: getCheckboxDBVal(additionalExpr.checked, additionalExpr.details),
                         passwd: paperPassword
                     }}
                     widgetName={WIDGET.EXPRESSION}

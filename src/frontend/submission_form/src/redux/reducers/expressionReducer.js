@@ -5,8 +5,6 @@ import {
   TOGGLE_SITE_OF_ACTION,
   SET_TIME_OF_ACTION,
   TOGGLE_TIME_OF_ACTION,
-  SET_ADDITIONAL_EXPR,
-  TOGGLE_ADDITIONAL_EXPR,
   SET_IS_EXPRESSION_SAVED_TO_DB
 } from "../actions/expressionActions";
 
@@ -36,14 +34,6 @@ const initialState = {
     checked: false,
     details: ''
   },
-  additionalExpr: {
-    checked: false,
-    details: ''
-  },
-  savedAdditionalExpr: {
-    checked: false,
-    details: ''
-  },
   isSavedToDB: false
 };
 
@@ -59,7 +49,6 @@ export default function(state = initialState, action) {
         savedExpression: isInitialLoad ? action.payload : state.savedExpression,
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
     }
@@ -69,7 +58,6 @@ export default function(state = initialState, action) {
         expression: {checked: !state.expression.checked, details: ''},
         siteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
-        additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
     }
@@ -83,7 +71,6 @@ export default function(state = initialState, action) {
         // Only set savedSiteOfAction on initial load from API
         savedSiteOfAction: isInitialLoad ? action.payload : state.savedSiteOfAction,
         timeOfAction: state.timeOfAction,
-        additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
     }
@@ -93,7 +80,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: {checked: !state.siteOfAction.checked, details: ''},
         timeOfAction: state.timeOfAction,
-        additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
     }
@@ -107,7 +93,6 @@ export default function(state = initialState, action) {
         timeOfAction: action.payload,
         // Only set savedTimeOfAction on initial load from API
         savedTimeOfAction: isInitialLoad ? action.payload : state.savedTimeOfAction,
-        additionalExpr: state.additionalExpr,
         isSavedToDB: false
       };
     }
@@ -117,31 +102,6 @@ export default function(state = initialState, action) {
         expression: state.expression,
         siteOfAction: state.siteOfAction,
         timeOfAction: {checked: !state.timeOfAction.checked, details: ''},
-        additionalExpr: state.additionalExpr,
-        isSavedToDB: false
-      };
-    }
-    case SET_ADDITIONAL_EXPR: {
-      // Check if this is the initial load
-      const isInitialLoad = !state.savedAdditionalExpr.checked && state.savedAdditionalExpr.details === '' && !state.isSavedToDB;
-      return {
-        ...state,
-        expression: state.expression,
-        siteOfAction: state.siteOfAction,
-        timeOfAction: state.timeOfAction,
-        additionalExpr: action.payload,
-        // Only set savedAdditionalExpr on initial load from API
-        savedAdditionalExpr: isInitialLoad ? action.payload : state.savedAdditionalExpr,
-        isSavedToDB: false
-      };
-    }
-    case TOGGLE_ADDITIONAL_EXPR: {
-      return {
-        ...state,
-        expression: state.expression,
-        siteOfAction: state.siteOfAction,
-        timeOfAction: state.timeOfAction,
-        additionalExpr: {checked: !state.additionalExpr.checked, details: ''},
         isSavedToDB: false
       };
     }
@@ -154,8 +114,6 @@ export default function(state = initialState, action) {
         savedSiteOfAction: state.siteOfAction,
         timeOfAction: state.timeOfAction,
         savedTimeOfAction: state.timeOfAction,
-        additionalExpr: state.additionalExpr,
-        savedAdditionalExpr: state.additionalExpr,
         isSavedToDB: true
       };
     }

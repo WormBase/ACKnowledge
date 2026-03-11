@@ -192,10 +192,6 @@ class FeedbackFormWriter:
                     self.db.afp.set_submitted_site_action(site_action=req.media["site_action"], paper_id=paper_id)
                 if "time_action" in req.media:
                     self.db.afp.set_submitted_time_action(time_action=req.media["time_action"], paper_id=paper_id)
-                if "additional_expr" in req.media:
-                    self.db.afp.set_submitted_additional_expr(additional_expr=req.media["additional_expr"],
-                                                              paper_id=paper_id)
-
                 # interactions
                 if "gene_int" in req.media:
                     self.db.afp.set_submitted_gene_int(gene_int=req.media["gene_int"], paper_id=paper_id)

@@ -25,7 +25,6 @@ import {
     setTfpTransgenes
 } from "./reagentActions";
 import {
-    setAdditionalExpr,
     setExpression,
     setIsExpressionSavedToDB,
     setSiteOfAction,
@@ -134,10 +133,7 @@ export const fetchPaperData = (paper_id, paper_passwd) => {
                 dispatch(setSiteOfAction(siteOfAction.isChecked(), siteOfAction.details()));
                 let timeOfAction = getCheckbxOrSingleFieldFromWBAPIData(result.data.timeaction, undefined);
                 dispatch(setTimeOfAction(timeOfAction.isChecked(), timeOfAction.details()));
-                let additionalExpr = getCheckbxOrSingleFieldFromWBAPIData(result.data.additionalexpr, undefined);
-                dispatch(setAdditionalExpr(additionalExpr.isChecked(), additionalExpr.details()));
-                if (expression.prevSaved() && siteOfAction.prevSaved() && timeOfAction.prevSaved() &&
-                    additionalExpr.prevSaved()) {
+                if (expression.prevSaved() && siteOfAction.prevSaved() && timeOfAction.prevSaved()) {
                     dispatch(setIsExpressionSavedToDB());
                 }
 
