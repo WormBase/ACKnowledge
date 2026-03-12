@@ -17,6 +17,41 @@ If you have questions about the ACKnowledge project, please contact <a href="mai
 
 # Release Notes
 
+## Version 6.0
+
+### Release date
+01-28-2026
+
+### Introduction
+ACKnowledge 6.0 marks a significant milestone in our transition to the Alliance of Genome Resources ecosystem. This release features a completely redesigned user interface to improve the user experience, including a new multiselect component to manage lists of entities, a fully mobile-responsive interface, enhanced save functionality, and improved form navigation.
+
+### Main Updates
+- Completely redesigned user interface with new multiselect component for managing entity lists
+- Fully mobile-responsive interface with hamburger menu navigation
+- Enhanced save functionality with improved change detection and progress tracking
+- Google Drive integration for uploading large allele, strain, and transgene spreadsheets
+
+### User Updates
+- Added collapsible sections for entering new entities (alleles, strains, genes, species, transgenes)
+- Improved instructions with better formatting and emphasis on key terms
+- Added smooth scrolling when navigating to add/removal mode components
+- Added pulsing animation to the Finish button for better visibility
+- Form now automatically navigates to Comments section when all other sections are complete
+- Updated tooltips for improved clarity on removal mode and submission process
+- Improved expression tooltip with additional guidance
+- Added tooltip to 'Other Gene Function' checkbox
+- Enhanced person selector with improved selection handling
+
+### Bug Fixes
+- Fixed disease checkbox state handling to properly clear data when unchecked
+- Fixed antibodies processing to correctly handle multiple entries
+- Fixed gene retrieval to use proper database manager for curated genes
+- Fixed false modification flags for auto-populated checkbox data
+- Fixed whitespace trimming in person name search
+- Improved submitter name resolution in coauthor notification emails
+- Fixed handling of finalized submissions in backend
+- Removed legacy 'checked' value filtering from disease details
+
 ## Version 5.0
 
 ### Release date
