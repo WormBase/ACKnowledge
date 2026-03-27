@@ -79,15 +79,7 @@ const LateralMenu = ({onMenuItemClick = () => {}}) => {
                 <Col sm="10">
                     <IndexLinkContainer to={"stats" + args}
                                         active={true}>
-                        <a className="aw" onClick={onMenuItemClick}><h6>Overall Stats</h6></a>
-                    </IndexLinkContainer>
-                </Col>
-            </Row>
-            <Row>
-                <Col sm="10">
-                    <IndexLinkContainer to={"papers_stats" + args}
-                                        active={true}>
-                        <a className="aw" onClick={onMenuItemClick}><h6>Extraction stats</h6></a>
+                        <a className="aw" onClick={onMenuItemClick}><h6>Statistics</h6></a>
                     </IndexLinkContainer>
                 </Col>
             </Row>

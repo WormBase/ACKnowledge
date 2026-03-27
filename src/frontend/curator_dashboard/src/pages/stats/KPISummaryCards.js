@@ -1,20 +1,12 @@
 import React from "react";
-import {Card, Col, Row, Spinner} from "react-bootstrap";
+import {Card, Col, Row} from "react-bootstrap";
 import {useQuery} from "react-query";
 import axios from "axios";
 
 const KPISummaryCards = () => {
-    const {data, isLoading, isSuccess} = useQuery('statsKpi', () =>
+    const {data, isSuccess} = useQuery('statsKpi', () =>
         axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/stats_kpi")
     );
-
-    if (isLoading) {
-        return (
-            <div className="text-center p-3">
-                <Spinner animation="border" />
-            </div>
-        );
-    }
 
     const kpi = isSuccess ? data.data : {};
 

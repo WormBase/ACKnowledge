@@ -5,13 +5,21 @@ import Main from './Main';
 import {Provider} from "react-redux";
 import store from "./redux/store";
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: false,
+        }
+    }
+});
+
 class App extends Component {
   render() {
       let developmentBanner = "";
       if (process.env.NODE_ENV === "development") {
           developmentBanner = <div id="devBanner"><h3>Development Site</h3></div>;
       }
-      const queryClient = new QueryClient();
       return (
           <div>
               {developmentBanner}
