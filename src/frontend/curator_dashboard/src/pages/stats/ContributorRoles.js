@@ -17,7 +17,11 @@ const ROLE_COLORS = {
     "Asst. professor": '#dc3545',
     "Sabbatical": '#795548',
     "Highschool": '#ff9800',
-    "Other/Unknown": '#6c757d',
+    "No lineage data": '#6c757d',
+    "Expired role": '#adb5bd',
+    "Unknown in database": '#ced4da',
+    "No timestamp": '#dee2e6',
+    "Other": '#495057',
 };
 
 const ContributorRoles = () => {
@@ -65,8 +69,10 @@ const ContributorRoles = () => {
                 <strong>How roles are determined:</strong> Roles reflect the contributor's position at the time of submission,
                 based on the WormBase person database. <strong>PI</strong> = listed in the PI table.{' '}
                 <strong>PI (estimated)</strong> = not in the PI table but recorded as having supervised students
-                or postdocs, indicating PI-level status.{' '}<strong>Other/Unknown</strong> = no role data
-                available for the submission period.
+                or postdocs, indicating PI-level status.{' '}
+                <strong>No lineage data</strong> = person not found in the WormBase person database.{' '}
+                <strong>Expired role</strong> = has a known role but date range doesn't cover the submission period.{' '}
+                <strong>Unknown in database</strong> = person exists but role is explicitly marked as unknown.
             </p>
         </div>
     );

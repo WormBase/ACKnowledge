@@ -6,7 +6,9 @@ import axios from "axios";
 const ALL_ROLES = [
     "PI", "PI (estimated)", "Postdoc", "PhD", "Masters", "Undergrad",
     "Research staff", "Lab visitor", "Collaborator",
-    "Asst. professor", "Sabbatical", "Highschool", "Other/Unknown"
+    "Asst. professor", "Sabbatical", "Highschool",
+    "No lineage data", "Expired role", "Unknown in database",
+    "No timestamp", "Other",
 ];
 
 const ContributorRolesSummary = () => {

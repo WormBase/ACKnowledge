@@ -17,12 +17,18 @@ const ROLE_COLORS = {
     "Asst. professor": '#dc3545',
     "Sabbatical": '#795548',
     "Highschool": '#ff9800',
-    "Other/Unknown": '#6c757d',
+    "No lineage data": '#6c757d',
+    "Expired role": '#adb5bd',
+    "Unknown in database": '#ced4da',
+    "No timestamp": '#dee2e6',
+    "Other": '#495057',
 };
 const ALL_ROLES = [
     "PI", "PI (estimated)", "Postdoc", "PhD", "Masters", "Undergrad",
     "Research staff", "Lab visitor", "Collaborator",
-    "Asst. professor", "Sabbatical", "Highschool", "Other/Unknown"
+    "Asst. professor", "Sabbatical", "Highschool",
+    "No lineage data", "Expired role", "Unknown in database",
+    "No timestamp", "Other",
 ];
 
 const ContributorRolesTimeSeries = () => {

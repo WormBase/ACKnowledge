@@ -805,10 +805,10 @@ class CuratorDashboardReader:
         1. Explicit PI (two_pis table)
         2. Supervisor roles (with* prefix in two_lineage) → PI
         3. Direct roles (Phd, Postdoc, etc.) with overlapping date range
-        4. Other/Unknown
+        4. Characterize why role is unknown
         """
         if submission_date is None:
-            return "Other/Unknown"
+            return "No timestamp"
         sub_year = submission_date.year
 
         # Check explicit PI status
@@ -837,10 +837,13 @@ class CuratorDashboardReader:
             "Sabbatical": "Sabbatical",
             "Highschool": "Highschool",
         }
+        has_expired_role = False
+        has_unknown_role = False
         for role, date1, date2 in lineage_rows:
             if role is None or role.startswith("with"):
                 continue
             if role == "Unknown":
+                has_unknown_role = True
                 continue
             if role not in role_map:
                 continue
@@ -857,20 +860,28 @@ class CuratorDashboardReader:
                 end_year = 9999
             if start_year <= sub_year <= end_year:
                 return role_map[role]
+            has_expired_role = True
 
-        return "Other/Unknown"
+        # Characterize why role could not be determined
+        if not lineage_rows and not pi_dates:
+            return "No lineage data"
+        if has_expired_role:
+            return "Expired role"
+        if has_unknown_role:
+            return "Unknown in database"
+        return "Other"
 
     def _compute_contributor_roles(self):
         """Compute submission counts by contributor role at submission time."""
         with self.db.afp.get_cursor() as curs:
             curs.execute(
                 "SELECT afp_contributor.afp_contributor, "
-                "afp_email.afp_timestamp "
+                "afp_contributor.afp_timestamp "
                 "FROM afp_contributor "
-                "JOIN afp_version ON afp_contributor.joinkey = afp_version.joinkey "
+                "JOIN afp_version ON afp_contributor.joinkey = "
+                "afp_version.joinkey "
                 "JOIN afp_lasttouched ON afp_contributor.joinkey = "
                 "afp_lasttouched.joinkey "
-                "JOIN afp_email ON afp_contributor.joinkey = afp_email.joinkey "
                 "WHERE afp_version.afp_version = '2'"
             )
             submissions = curs.fetchall()
@@ -919,7 +930,9 @@ class CuratorDashboardReader:
         for role in [
             "PI", "PI (estimated)", "Postdoc", "PhD", "Masters",
             "Undergrad", "Research staff", "Lab visitor", "Collaborator",
-            "Asst. professor", "Sabbatical", "Highschool", "Other/Unknown"
+            "Asst. professor", "Sabbatical", "Highschool",
+            "No lineage data", "Expired role", "Unknown in database",
+            "No timestamp", "Other",
         ]:
             count = role_counts.get(role, 0)
             results[role] = {
@@ -936,12 +949,12 @@ class CuratorDashboardReader:
         with self.db.afp.get_cursor() as curs:
             curs.execute(
                 "SELECT afp_contributor.afp_contributor, "
-                "afp_email.afp_timestamp "
+                "afp_contributor.afp_timestamp "
                 "FROM afp_contributor "
-                "JOIN afp_version ON afp_contributor.joinkey = afp_version.joinkey "
+                "JOIN afp_version ON afp_contributor.joinkey = "
+                "afp_version.joinkey "
                 "JOIN afp_lasttouched ON afp_contributor.joinkey = "
                 "afp_lasttouched.joinkey "
-                "JOIN afp_email ON afp_contributor.joinkey = afp_email.joinkey "
                 "WHERE afp_version.afp_version = '2'"
             )
             submissions = curs.fetchall()
@@ -974,7 +987,9 @@ class CuratorDashboardReader:
         all_roles = [
             "PI", "PI (estimated)", "Postdoc", "PhD", "Masters",
             "Undergrad", "Research staff", "Lab visitor", "Collaborator",
-            "Asst. professor", "Sabbatical", "Highschool", "Other/Unknown"
+            "Asst. professor", "Sabbatical", "Highschool",
+            "No lineage data", "Expired role", "Unknown in database",
+            "No timestamp", "Other",
         ]
         period_roles = defaultdict(Counter)
         for contributor, email_ts in submissions:
