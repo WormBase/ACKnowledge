@@ -341,8 +341,11 @@ class CuratorDashboardReader:
 
         with self.db.afp.get_cursor() as curs:
             curs.execute(
-                "SELECT DISTINCT joinkey FROM afp_version "
-                "WHERE afp_version = '2'"
+                "SELECT DISTINCT afp_version.joinkey "
+                "FROM afp_version "
+                "JOIN afp_lasttouched ON afp_version.joinkey = "
+                "afp_lasttouched.joinkey "
+                "WHERE afp_version.afp_version = '2'"
             )
             submitted_papers = set(row[0] for row in curs.fetchall())
 
@@ -353,6 +356,8 @@ class CuratorDashboardReader:
                     "SELECT DISTINCT {t}.joinkey "
                     "FROM {t} "
                     "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON {t}.joinkey = "
+                    "afp_lasttouched.joinkey "
                     "WHERE afp_version.afp_version = '2' "
                     "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
                         t=afp_table
@@ -429,6 +434,16 @@ class CuratorDashboardReader:
         results = {}
 
         with self.db.afp.get_cursor() as curs:
+            # Get all papers with final submissions
+            curs.execute(
+                "SELECT DISTINCT afp_version.joinkey "
+                "FROM afp_version "
+                "JOIN afp_lasttouched ON afp_version.joinkey = "
+                "afp_lasttouched.joinkey "
+                "WHERE afp_version.afp_version = '2'"
+            )
+            submitted_papers = set(row[0] for row in curs.fetchall())
+
             for display_name, (afp_flag, cur_flag) in all_flags.items():
                 afp_table = "afp_{}".format(afp_flag)
 
@@ -437,6 +452,8 @@ class CuratorDashboardReader:
                     "SELECT DISTINCT {t}.joinkey "
                     "FROM {t} "
                     "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON {t}.joinkey = "
+                    "afp_lasttouched.joinkey "
                     "WHERE afp_version.afp_version = '2' "
                     "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
                         t=afp_table
@@ -457,37 +474,39 @@ class CuratorDashboardReader:
                     if row[1] in ('positive', 'curated')
                 )
 
-                # Only compute agreement among curator-reviewed papers
-                reviewed_and_submitted = curator_reviewed & author_positive
-                # For papers curator reviewed: does author agree?
-                both_positive = len(author_positive & curator_positive)
-                curator_reviewed_count = len(curator_reviewed)
+                # Restrict Author vs Curator to papers where the author
+                # actually submitted a form; papers with no submission
+                # should not count as "author negative"
+                ac_universe = curator_reviewed & submitted_papers
+                ac_curator_pos = curator_positive & submitted_papers
+                ac_count = len(ac_universe)
+                both_positive = len(author_positive & ac_curator_pos)
 
-                # Agreement: among curator-reviewed papers, how often do
-                # author and curator agree (both positive or both negative)?
+                # Agreement: among submitted & reviewed papers, how
+                # often do author and curator agree?
                 agree_count = 0
-                for paper in curator_reviewed:
+                for paper in ac_universe:
                     author_yes = paper in author_positive
-                    curator_yes = paper in curator_positive
+                    curator_yes = paper in ac_curator_pos
                     if author_yes == curator_yes:
                         agree_count += 1
 
                 accuracy = round(
-                    (agree_count / curator_reviewed_count * 100)
-                    if curator_reviewed_count > 0 else 0, 1
+                    (agree_count / ac_count * 100)
+                    if ac_count > 0 else 0, 1
                 )
 
                 # Compute precision, recall, F1 for author vs curator
                 # (treating curator as ground truth)
-                # Among reviewed papers:
+                # Among submitted & reviewed papers:
                 # TP = both positive, FP = author+ curator-,
                 # FN = author- curator+
                 tp_ac = both_positive
                 fp_ac = len(
-                    (author_positive & curator_reviewed) - curator_positive
+                    (author_positive & ac_universe) - ac_curator_pos
                 )
                 fn_ac = len(
-                    (curator_positive & curator_reviewed) - author_positive
+                    ac_curator_pos - author_positive
                 )
                 precision_ac = round(
                     (tp_ac / (tp_ac + fp_ac) * 100)
@@ -504,6 +523,7 @@ class CuratorDashboardReader:
                 )
 
                 # Predicted vs Curator (auto-detected flags only)
+                # Also restricted to submitted papers
                 auto_detected = {
                     "otherexpr", "seqchange", "geneint", "geneprod",
                     "genereg", "newmutant", "rnai", "overexpr",
@@ -511,7 +531,7 @@ class CuratorDashboardReader:
                 }
                 pc_accuracy = 0
                 pc_f1 = 0
-                if afp_flag in auto_detected and curator_reviewed_count > 0:
+                if afp_flag in auto_detected and ac_count > 0:
                     curs.execute(
                         "SELECT DISTINCT cur_paper FROM cur_blackbox "
                         "WHERE cur_datatype = %s "
@@ -522,20 +542,20 @@ class CuratorDashboardReader:
                         r[0] for r in curs.fetchall()
                     )
                     tp_pc = len(
-                        pred_positive & curator_positive & curator_reviewed
+                        pred_positive & ac_curator_pos & ac_universe
                     )
                     agree_pc = sum(
-                        1 for p in curator_reviewed
-                        if (p in pred_positive) == (p in curator_positive)
+                        1 for p in ac_universe
+                        if (p in pred_positive) == (p in ac_curator_pos)
                     )
                     pc_accuracy = round(
-                        agree_pc / curator_reviewed_count * 100, 1
+                        agree_pc / ac_count * 100, 1
                     )
                     fp_pc = len(
-                        (pred_positive & curator_reviewed) - curator_positive
+                        (pred_positive & ac_universe) - ac_curator_pos
                     )
                     fn_pc = len(
-                        (curator_positive & curator_reviewed) - pred_positive
+                        ac_curator_pos - pred_positive
                     )
                     prec_pc = (
                         (tp_pc / (tp_pc + fp_pc) * 100)
@@ -552,8 +572,8 @@ class CuratorDashboardReader:
 
                 results[display_name] = {
                     "author_flagged": len(author_positive),
-                    "curator_validated": len(curator_positive),
-                    "curator_reviewed": curator_reviewed_count,
+                    "curator_validated": len(ac_curator_pos),
+                    "curator_reviewed": ac_count,
                     "both_positive": both_positive,
                     "accuracy_ac": accuracy,
                     "f1_ac": f1_ac,
@@ -1000,6 +1020,8 @@ class CuratorDashboardReader:
             curs.execute(
                 "SELECT afp_version.joinkey, afp_email.afp_timestamp "
                 "FROM afp_version "
+                "JOIN afp_lasttouched ON afp_version.joinkey = "
+                "afp_lasttouched.joinkey "
                 "JOIN afp_email ON afp_version.joinkey = afp_email.joinkey "
                 "WHERE afp_version.afp_version = '2'"
             )
@@ -1026,6 +1048,8 @@ class CuratorDashboardReader:
                     "SELECT DISTINCT {t}.joinkey "
                     "FROM {t} "
                     "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON {t}.joinkey = "
+                    "afp_lasttouched.joinkey "
                     "WHERE afp_version.afp_version = '2' "
                     "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
                         t=afp_table
@@ -1282,6 +1306,8 @@ class CuratorDashboardReader:
             curs.execute(
                 "SELECT afp_version.joinkey, afp_email.afp_timestamp "
                 "FROM afp_version "
+                "JOIN afp_lasttouched ON afp_version.joinkey = "
+                "afp_lasttouched.joinkey "
                 "JOIN afp_email ON afp_version.joinkey = afp_email.joinkey "
                 "WHERE afp_version.afp_version = '2'"
             )
@@ -1296,6 +1322,8 @@ class CuratorDashboardReader:
                 curs.execute(
                     "SELECT DISTINCT {t}.joinkey FROM {t} "
                     "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
+                    "JOIN afp_lasttouched ON {t}.joinkey = "
+                    "afp_lasttouched.joinkey "
                     "WHERE afp_version.afp_version = '2' "
                     "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
                         t=afp_table
