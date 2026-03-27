@@ -1084,6 +1084,157 @@ class CuratorDashboardReader:
             result.append([period_key, period_metrics])
         return result
 
+    def _compute_entity_curator_timeseries(self, bin_period='y'):
+        """Compute entity curator Jaccard per period, binned by author
+        submission date."""
+        entity_types = {
+            "genes": {
+                "tfp_table": "tfp_genestudied",
+                "afp_table": "afp_genestudied",
+                "pap_table": "pap_gene",
+                "pap_col": "pap_gene",
+            },
+            "species": {
+                "tfp_table": "tfp_species",
+                "afp_table": "afp_species",
+                "pap_table": "pap_species",
+                "pap_col": "pap_species",
+            },
+        }
+
+        with self.db.afp.get_cursor() as curs:
+            # Species name -> taxon ID map
+            curs.execute(
+                "SELECT joinkey, pap_species_index "
+                "FROM pap_species_index"
+            )
+            species_map = {
+                name.strip().lower(): tid.strip()
+                for tid, name in curs.fetchall() if name
+            }
+
+            period_data = defaultdict(lambda: defaultdict(
+                lambda: {
+                    "afp": 0, "tfp": 0, "curator": 0,
+                    "cur_and_afp": 0, "cur_and_tfp": 0,
+                }
+            ))
+
+            for label, cfg in entity_types.items():
+                tfp_t = cfg["tfp_table"]
+                afp_t = cfg["afp_table"]
+
+                curs.execute(
+                    "SELECT {tfp}.joinkey, {tfp}.{tfp}, {afp}.{afp}, "
+                    "afp_email.afp_timestamp "
+                    "FROM {tfp} "
+                    "JOIN {afp} ON {tfp}.joinkey = {afp}.joinkey "
+                    "JOIN afp_version ON {tfp}.joinkey = "
+                    "afp_version.joinkey "
+                    "JOIN afp_lasttouched ON {tfp}.joinkey = "
+                    "afp_lasttouched.joinkey "
+                    "JOIN afp_email ON {tfp}.joinkey = "
+                    "afp_email.joinkey "
+                    "WHERE afp_version.afp_version = '2'".format(
+                        tfp=tfp_t, afp=afp_t
+                    )
+                )
+                paper_rows = curs.fetchall()
+
+                # Get curator entities
+                pap_t = cfg["pap_table"]
+                pap_c = cfg["pap_col"]
+                paper_ids = set(r[0] for r in paper_rows)
+                curator_entities = defaultdict(set)
+                if paper_ids:
+                    curs.execute(
+                        "SELECT joinkey, {c} FROM {t} "
+                        "WHERE (pap_evidence LIKE "
+                        "'Curator_confirmed%%' "
+                        "OR pap_evidence LIKE "
+                        "'Manually_connected%%') "
+                        "AND joinkey IN %s".format(
+                            c=pap_c, t=pap_t
+                        ),
+                        (tuple(paper_ids),)
+                    )
+                    for jk, val in curs.fetchall():
+                        if val and val.strip():
+                            curator_entities[jk].add(val.strip())
+
+                for jk, tfp_val, afp_val, email_ts in paper_rows:
+                    if email_ts is None:
+                        continue
+                    curated = curator_entities.get(jk, set())
+                    if not curated:
+                        continue
+
+                    pk = (
+                        email_ts.strftime('%Y')
+                        if bin_period == 'y'
+                        else email_ts.strftime('%Y-%m')
+                    )
+
+                    # Normalize IDs
+                    if label == "genes":
+                        afp_set = set(
+                            self._extract_entity_id(e)
+                            for e in (afp_val or "").split(" | ")
+                            if e.strip()
+                        )
+                        tfp_set = set(
+                            self._extract_entity_id(e)
+                            for e in (tfp_val or "").split(" | ")
+                            if e.strip()
+                        )
+                    else:
+                        afp_set = set()
+                        for e in (afp_val or "").split(" | "):
+                            e = e.strip()
+                            if e:
+                                tid = species_map.get(e.lower())
+                                if tid:
+                                    afp_set.add(tid)
+                        tfp_set = set()
+                        for e in (tfp_val or "").split(" | "):
+                            e = e.strip()
+                            if e:
+                                tid = species_map.get(e.lower())
+                                if tid:
+                                    tfp_set.add(tid)
+
+                    d = period_data[pk][label]
+                    d["afp"] += len(afp_set)
+                    d["tfp"] += len(tfp_set)
+                    d["curator"] += len(curated)
+                    d["cur_and_afp"] += len(curated & afp_set)
+                    d["cur_and_tfp"] += len(curated & tfp_set)
+
+        def avg(vals):
+            return round(sum(vals) / len(vals), 1) if vals else 0
+
+        result = {}
+        for pk in period_data:
+            jac_ac_vals = []
+            jac_tc_vals = []
+            for label in entity_types:
+                d = period_data[pk][label]
+                union_ac = d["afp"] + d["curator"] - d["cur_and_afp"]
+                union_tc = d["tfp"] + d["curator"] - d["cur_and_tfp"]
+                if union_ac > 0:
+                    jac_ac_vals.append(
+                        d["cur_and_afp"] / union_ac * 100
+                    )
+                if union_tc > 0:
+                    jac_tc_vals.append(
+                        d["cur_and_tfp"] / union_tc * 100
+                    )
+            result[pk] = {
+                "jaccard_author_curator": avg(jac_ac_vals),
+                "jaccard_pipeline_curator": avg(jac_tc_vals),
+            }
+        return result
+
     def _compute_overall_timeseries(self, bin_period='y'):
         """Compute overall accuracy and F1 over time for three pairs.
 
@@ -1096,25 +1247,10 @@ class CuratorDashboardReader:
             bin_period
         )
 
-        # Get overall entity curator Jaccard (not per-period, used as
-        # constant reference lines)
-        entity_curator = self._compute_entity_curator_agreement()
-        ent_jaccard_ac_vals = [
-            entity_curator[k]["jaccard_author_curator"]
-            for k in entity_curator
-            if entity_curator[k]["papers_with_curator_data"] > 0
-        ]
-        ent_jaccard_tc_vals = [
-            entity_curator[k]["jaccard_pipeline_curator"]
-            for k in entity_curator
-            if entity_curator[k]["papers_with_curator_data"] > 0
-        ]
-        ent_jaccard_ac_avg = round(
-            sum(ent_jaccard_ac_vals) / len(ent_jaccard_ac_vals), 1
-        ) if ent_jaccard_ac_vals else 0
-        ent_jaccard_tc_avg = round(
-            sum(ent_jaccard_tc_vals) / len(ent_jaccard_tc_vals), 1
-        ) if ent_jaccard_tc_vals else 0
+        # Compute entity curator Jaccard per period, binned by submission date
+        entity_curator_ts = self._compute_entity_curator_timeseries(
+            bin_period
+        )
 
         # Also compute author-vs-curator and predicted-vs-curator over time
         # using cur_curdata timestamps for binning
@@ -1317,8 +1453,14 @@ class CuratorDashboardReader:
 
             result.append([period_key, {
                 "entities_pred_vs_author_jaccard": avg(ent_jaccard_vals),
-                "entities_author_vs_curator_jaccard": ent_jaccard_ac_avg,
-                "entities_pred_vs_curator_jaccard": ent_jaccard_tc_avg,
+                "entities_author_vs_curator_jaccard": (
+                    entity_curator_ts.get(period_key, {})
+                    .get("jaccard_author_curator", 0)
+                ),
+                "entities_pred_vs_curator_jaccard": (
+                    entity_curator_ts.get(period_key, {})
+                    .get("jaccard_pipeline_curator", 0)
+                ),
                 "flags_pred_vs_author_accuracy": avg(flg_acc),
                 "flags_pred_vs_author_f1": avg(flg_f1),
                 "flags_author_vs_curator_accuracy": avg(ac_agree_counts),
