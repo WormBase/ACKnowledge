@@ -614,6 +614,15 @@ class CuratorDashboardReader:
                 if name:
                     species_name_to_id[name.strip().lower()] = taxon_id.strip()
 
+            # Papers with completed gene curation
+            curs.execute(
+                "SELECT DISTINCT joinkey FROM pap_curation_done "
+                "WHERE pap_curation_done = 'genestudied'"
+            )
+            genes_curation_done = set(
+                r[0] for r in curs.fetchall()
+            )
+
             for label, cfg in [
                 ("genes", {
                     "tfp_table": "tfp_genestudied",
@@ -646,6 +655,11 @@ class CuratorDashboardReader:
                 )
                 paper_data = {}
                 for joinkey, tfp_val, afp_val in curs.fetchall():
+                    # For genes, only include papers with completed
+                    # gene curation
+                    if (label == "genes"
+                            and joinkey not in genes_curation_done):
+                        continue
                     raw_extracted = set(
                         e.strip() for e in (tfp_val or "").split(" | ")
                         if e.strip()
@@ -1152,6 +1166,15 @@ class CuratorDashboardReader:
                 for tid, name in curs.fetchall() if name
             }
 
+            # Papers with completed gene curation
+            curs.execute(
+                "SELECT DISTINCT joinkey FROM pap_curation_done "
+                "WHERE pap_curation_done = 'genestudied'"
+            )
+            genes_curation_done = set(
+                r[0] for r in curs.fetchall()
+            )
+
             period_data = defaultdict(lambda: defaultdict(
                 lambda: {
                     "afp": 0, "tfp": 0, "curator": 0,
@@ -1203,6 +1226,11 @@ class CuratorDashboardReader:
 
                 for jk, tfp_val, afp_val, email_ts in paper_rows:
                     if email_ts is None:
+                        continue
+                    # For genes, only include papers with completed
+                    # gene curation
+                    if (label == "genes"
+                            and jk not in genes_curation_done):
                         continue
                     curated = curator_entities.get(jk, set())
                     if not curated:
