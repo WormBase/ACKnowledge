@@ -43,6 +43,7 @@ const EntityDetailTable = () => {
                         <th>Extracted</th>
                         <th>Author Submitted</th>
                         <th>Pred vs Author Jaccard</th>
+                        <th>Curator Rev.</th>
                         <th>Author vs Curator Jaccard</th>
                         <th>Pred vs Curator Jaccard</th>
                     </tr>
@@ -61,6 +62,7 @@ const EntityDetailTable = () => {
                                 <td style={{color: rateColor(entity.jaccard_pred_author || 0)}}>
                                     <strong>{entity.jaccard_pred_author || 0}%</strong>
                                 </td>
+                                <td>{curAvail ? (cur.papers_with_curator_data || 0) : "\u2014"}</td>
                                 <td>{curAvail ? (
                                     <span style={{color: rateColor(cur.jaccard_author_curator || 0)}}>
                                         <strong>{cur.jaccard_author_curator || 0}%</strong>
@@ -80,7 +82,9 @@ const EntityDetailTable = () => {
                 Curator comparison for alleles, strains, and transgenes is pending ABC API integration.
             </p>
             <p className="mt-1 mb-0" style={{fontSize: '0.85em', background: '#fff3cd', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ffc107'}}>
-                <strong>Note:</strong> Curator gene data reflects targeted curation (avg. ~2 genes/paper)
+                <strong>Note:</strong> Gene curator comparison is restricted to papers
+                marked as completed for gene curation (pap_curation_done).
+                Curator gene data reflects targeted curation (avg. ~2 genes/paper)
                 vs. comprehensive author submissions (avg. ~22 genes/paper).
                 Low Jaccard for genes reflects different scope — curators only
                 confirm genes relevant to their specific curation task, not the
