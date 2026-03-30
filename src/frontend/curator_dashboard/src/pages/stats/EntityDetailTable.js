@@ -84,11 +84,8 @@ const EntityDetailTable = () => {
             <p className="mt-1 mb-0" style={{fontSize: '0.85em', background: '#fff3cd', padding: '8px 12px', borderRadius: '4px', border: '1px solid #ffc107'}}>
                 <strong>Note:</strong> Gene curator comparison is restricted to papers
                 marked as completed for gene curation (pap_curation_done).
-                Curator gene data reflects targeted curation (avg. ~2 genes/paper)
-                vs. comprehensive author submissions (avg. ~22 genes/paper).
-                Low Jaccard for genes reflects different scope — curators only
-                confirm genes relevant to their specific curation task, not the
-                full list. Species lists are closer in size, resulting in higher overlap.
+                Only a small number of ACKnowledge papers have completed gene
+                curation, so the sample size may be very limited.
             </p>
         </div>
     );
