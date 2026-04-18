@@ -28,6 +28,40 @@ AFP_WATCHERS_TABLES = {
 logger = logging.getLogger(__name__)
 
 
+def filter_and_format_disease_submissions(papers_val):
+    """Filter and reformat afp_humdis submissions for the curator digest.
+
+    For each (paper_id, raw_value):
+      - JSON dict with checked=false -> dropped.
+      - JSON dict with checked=true  -> display string built from the
+        'comment' field and the 'name' field of each entry in 'diseases'.
+        Falls back to "Checked" when both are empty.
+      - Anything else (legacy non-JSON, JSON that isn't a dict) -> kept
+        with its original value so pre-JSON submissions still surface.
+    """
+    out = {}
+    for pap_id, val in papers_val.items():
+        try:
+            data = json.loads(val)
+        except (json.JSONDecodeError, TypeError):
+            out[pap_id] = val
+            continue
+        if not isinstance(data, dict):
+            out[pap_id] = val
+            continue
+        if not data.get("checked", False):
+            continue
+        comment = (data.get("comment") or "").strip()
+        names = [d.get("name", "") for d in data.get("diseases", []) if d.get("name")]
+        parts = []
+        if comment:
+            parts.append(comment)
+        if names:
+            parts.append("diseases: " + ", ".join(names))
+        out[pap_id] = "; ".join(parts) if parts else "Checked"
+    return out
+
+
 def main():
     parser = argparse.ArgumentParser(description="Send digest to curators for data submitted through the AFP")
     parser.add_argument("-N", "--db-name", metavar="db_name", dest="db_name", type=str)
@@ -55,6 +89,8 @@ def main():
             for table_to_watch in tables_to_watch:
                 positive_papers_val = db_manager.afp.get_positive_paper_ids_sumbitted_last_month_for_data_type(
                     table_to_watch, tazendra_user=args.tazendra_user, tazendra_password=args.tazendra_password)
+                if table_to_watch == "afp_humdis":
+                    positive_papers_val = filter_and_format_disease_submissions(positive_papers_val)
                 if len(positive_papers_val) > 0:
                     if table_to_watch == "afp_othertransgene" or table_to_watch == "afp_otherantibody" or table_to_watch == "afp_otherspecies":
                         positive_papers_val = {pap_id: ", ".join([tr_data["name"] for tr_data in json.loads(val)]) for
