@@ -85,7 +85,7 @@ psycopg2-binary==2.9.9
 # py7zr==0.20.6  # Requires pyzstd which needs gcc to compile
 pyarrow==13.0.0
 pyarrow-hotfix==0.7
-pyasn1==0.4.8
+pyasn1==0.6.3
 pyasn1-modules==0.4.1
 # pybcj==1.0.2  # May not be available on all PyPI mirrors
 pycparser==2.21
