@@ -247,75 +247,76 @@ def main():
         # Get partial submissions
         logger.info(f"Fetching partial submissions since {start_date}")
         partial_submissions = get_partial_submissions(db_manager, args.afp_base_url, start_date)
-        
-        if partial_submissions:
-            logger.info(f"Found {len(partial_submissions)} partial submissions")
-            
-            # Format the report rows
-            rows_html = format_report_rows(partial_submissions, args.afp_base_url)
-            
-            # Get email configuration from config file
-            email_config = config.get('emails', {})
-            
-            # Determine recipients from config or use defaults
-            if args.test:
-                recipients = ["valearna@caltech.edu"]  # Test recipient
-            else:
-                recipients = email_config.get('partial_submissions_recipients', 
-                                             ['daniela@wormbase.org', 'vanauken@caltech.edu'])
-            
-            # Format subject and content using templates from config
-            current_date_str = datetime.now().strftime("%B %d, %Y")
-            month_year_str = datetime.now().strftime("%B %Y")
-            start_date_str = start_date.strftime("%B %d, %Y")
-            
-            # Get subject and content templates
-            subject_template = email_config.get('subject_partial_submissions', 
-                                               "ACKnowledge Monthly Partial Submissions Report - {}")
-            content_template = email_config.get('content_partial_submissions',
-                                               "<h2>Report</h2><p>No template found</p>")
-            
-            # Format the email
-            subject = subject_template.format(month_year_str)
-            content = content_template.format(
-                current_date_str,
-                start_date_str,
-                rows_html,
-                len(partial_submissions)
-            )
-            
-            # Send email using the email manager
-            email_manager.send_email(
-                subject=subject,
-                content=content,
-                recipients=recipients
-            )
-            
-            logger.info(f"Partial submissions report sent to {', '.join(recipients)}")
-        else:
-            logger.info("No partial submissions found for the specified period")
-            
-            # Optionally send a notification that there are no partial submissions
-            if not args.test:
+
+        with email_manager:
+            if partial_submissions:
+                logger.info(f"Found {len(partial_submissions)} partial submissions")
+
+                # Format the report rows
+                rows_html = format_report_rows(partial_submissions, args.afp_base_url)
+
+                # Get email configuration from config file
                 email_config = config.get('emails', {})
-                recipients = email_config.get('partial_submissions_recipients', 
-                                             ['daniela@wormbase.org', 'vanauken@caltech.edu'])
-                
-                subject = f"ACKnowledge Monthly Partial Submissions Report - {datetime.now().strftime('%B %Y')}"
-                content = f"""
-                <h2>ACKnowledge Partial Submissions Report - {datetime.now().strftime("%B %d, %Y")}</h2>
-                <p>No partial submissions found since {start_date.strftime("%B %d, %Y")}.</p>
-                <br/>
-                <p>All papers have either been fully submitted or have not been started.</p>
-                """
-                
+
+                # Determine recipients from config or use defaults
+                if args.test:
+                    recipients = ["valearna@caltech.edu"]  # Test recipient
+                else:
+                    recipients = email_config.get('partial_submissions_recipients',
+                                                  ['daniela@wormbase.org', 'vanauken@caltech.edu'])
+
+                # Format subject and content using templates from config
+                current_date_str = datetime.now().strftime("%B %d, %Y")
+                month_year_str = datetime.now().strftime("%B %Y")
+                start_date_str = start_date.strftime("%B %d, %Y")
+
+                # Get subject and content templates
+                subject_template = email_config.get('subject_partial_submissions',
+                                                    "ACKnowledge Monthly Partial Submissions Report - {}")
+                content_template = email_config.get('content_partial_submissions',
+                                                    "<h2>Report</h2><p>No template found</p>")
+
+                # Format the email
+                subject = subject_template.format(month_year_str)
+                content = content_template.format(
+                    current_date_str,
+                    start_date_str,
+                    rows_html,
+                    len(partial_submissions)
+                )
+
+                # Send email using the email manager
                 email_manager.send_email(
                     subject=subject,
                     content=content,
                     recipients=recipients
                 )
-                logger.info(f"No partial submissions notification sent to {', '.join(recipients)}")
-    
+
+                logger.info(f"Partial submissions report sent to {', '.join(recipients)}")
+            else:
+                logger.info("No partial submissions found for the specified period")
+
+                # Optionally send a notification that there are no partial submissions
+                if not args.test:
+                    email_config = config.get('emails', {})
+                    recipients = email_config.get('partial_submissions_recipients',
+                                                  ['daniela@wormbase.org', 'vanauken@caltech.edu'])
+
+                    subject = f"ACKnowledge Monthly Partial Submissions Report - {datetime.now().strftime('%B %Y')}"
+                    content = f"""
+                    <h2>ACKnowledge Partial Submissions Report - {datetime.now().strftime("%B %d, %Y")}</h2>
+                    <p>No partial submissions found since {start_date.strftime("%B %d, %Y")}.</p>
+                    <br/>
+                    <p>All papers have either been fully submitted or have not been started.</p>
+                    """
+
+                    email_manager.send_email(
+                        subject=subject,
+                        content=content,
+                        recipients=recipients
+                    )
+                    logger.info(f"No partial submissions notification sent to {', '.join(recipients)}")
+
     except Exception as e:
         logger.error(f"Error generating partial submissions report: {e}")
         raise

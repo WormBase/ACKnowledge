@@ -84,7 +84,7 @@ def main():
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
-    with db_manager:
+    with db_manager, email_manager:
         for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
             for table_to_watch in tables_to_watch:
                 positive_papers_val = db_manager.afp.get_positive_paper_ids_sumbitted_last_month_for_data_type(

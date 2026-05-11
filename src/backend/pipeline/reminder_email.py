@@ -36,7 +36,7 @@ def main():
     config = load_config_from_file()
     email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
     # first reminder after one month
-    with db_manager:
+    with db_manager, email_manager:
         blacklisted_email_addresses = set(db_manager.generic.get_blacklisted_email_addresses())
         for paper_id_email_arr in db_manager.afp.get_papers_emails_no_submission_emailed_between(1, 5):
             paper_id = paper_id_email_arr[0]
