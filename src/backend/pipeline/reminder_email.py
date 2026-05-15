@@ -20,6 +20,7 @@ def main():
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-S", "--email-user", metavar="email_user", dest="email_user", type=str)
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-d", "--dev-mode", dest="dev_mode", action="store_true")
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
@@ -34,9 +35,9 @@ def main():
 
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     config = load_config_from_file()
-    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd, email_user=args.email_user)
     # first reminder after one month
-    with db_manager:
+    with db_manager, email_manager:
         blacklisted_email_addresses = set(db_manager.generic.get_blacklisted_email_addresses())
         for paper_id_email_arr in db_manager.afp.get_papers_emails_no_submission_emailed_between(1, 5):
             paper_id = paper_id_email_arr[0]

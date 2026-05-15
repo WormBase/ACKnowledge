@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class EmailManager(object):
 
-    def __init__(self, config, email_passwd):
+    def __init__(self, config, email_passwd, email_user):
         self.from_addr = config["emails"]["from_address"]
         self.reply_to_addr = config["emails"]["reply_to_address"]
         self.content_email_to_author = config["emails"]["content_to_author"]
@@ -36,11 +36,38 @@ class EmailManager(object):
         self.subject_email_coauthor_notification = config["emails"]["subject_coauthor_notification"]
         self.content_email_user_error = config["emails"]["content_user_error"]
         self.subject_email_user_error = config["emails"]["subject_user_error"]
-        self.email_user = config["emails"]["email_user"]
-        self.email_user = config["emails"]["email_user"]
+        self.email_user = email_user
         self.server_host = config["emails"]["server_host"]
         self.server_port = config["emails"]["server_port"]
         self.email_passwd = email_passwd
+        self._smtp = None
+        self._persistent = False
+
+    def __enter__(self):
+        # Hold one authenticated SMTP connection open for the duration of the
+        # `with` block so a batch of sends costs one AUTH instead of one per
+        # message. Gmail rate-limits AUTH attempts independently of message
+        # volume, so reusing the connection is what prevents 454 lockouts.
+        self._persistent = True
+        self._connect()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self._persistent = False
+        self._close()
+
+    def _connect(self):
+        smtp = smtplib.SMTP_SSL(self.server_host, self.server_port, timeout=30)
+        smtp.login(self.email_user, self.email_passwd)
+        self._smtp = smtp
+
+    def _close(self):
+        if self._smtp is not None:
+            try:
+                self._smtp.quit()
+            except Exception:
+                pass
+            self._smtp = None
 
     def send_email(self, subject, content, recipients):
         recipients = [r for r in recipients if r]
@@ -56,13 +83,33 @@ class EmailManager(object):
         msg['To'] = ", ".join(recipients)
 
         try:
-            server_ssl = smtplib.SMTP_SSL(self.server_host, self.server_port)
-            server_ssl.login(self.email_user, self.email_passwd)
-            server_ssl.send_message(msg)
+            if self._persistent:
+                # Gmail drops idle sockets after a few minutes; if that happened
+                # since the last send, reconnect once and retry transparently.
+                try:
+                    if self._smtp is None:
+                        self._connect()
+                    self._smtp.send_message(msg)
+                except (smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError,
+                        ConnectionResetError, BrokenPipeError, OSError):
+                    self._close()
+                    self._connect()
+                    self._smtp.send_message(msg)
+            else:
+                smtp = smtplib.SMTP_SSL(self.server_host, self.server_port, timeout=30)
+                try:
+                    smtp.login(self.email_user, self.email_passwd)
+                    smtp.send_message(msg)
+                finally:
+                    try:
+                        smtp.quit()
+                    except Exception:
+                        pass
             logger.info("Email sent to: " + ", ".join(recipients))
-            server_ssl.quit()
         except Exception as e:
-            logger.fatal("Can't connect to smtp server. ACKnowledge emails not sent. Exception message: " + str(e))
+            logger.fatal(
+                "Can't send email via smtp server. ACKnowledge emails not sent. "
+                "Exception type: %s, message: %r", type(e).__name__, e)
 
     def send_email_to_author(self, paper_id, paper_title: str, paper_journal: str, afp_link, recipients: List[str],
                              coauthor_emails: List[str] = None):

@@ -10,11 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class AuthorPapersPageReader:
-    def __init__(self, db_manager: WBDBManager, email_passwd: str, afp_base_url: str):
+    def __init__(self, db_manager: WBDBManager, email_passwd: str, email_user: str, afp_base_url: str):
         self.db = db_manager
         self.logger = logging.getLogger("AFP API for Author Dashboard")
         config = load_config_from_file()
-        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
+        self.email_manager = EmailManager(config=config, email_passwd=email_passwd, email_user=email_user)
         self.afp_base_url = afp_base_url
 
     def on_post(self, req, resp, req_type):

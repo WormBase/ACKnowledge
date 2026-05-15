@@ -13,6 +13,7 @@ COPY src/backend src/backend
 
 
 ENV EMAIL_PASSWD=""
+ENV EMAIL_SMTP_USER=""
 ENV DB_HOST=""
 ENV DB_NAME=""
 ENV DB_USER=""
