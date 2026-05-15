@@ -121,13 +121,13 @@ class FeedbackFormReader:
 class FeedbackFormWriter:
 
     def __init__(self, db_manager: WBDBManager, admin_emails: List[str], email_passwd: str,
-                 afp_base_url: str, test):
+                 email_user: str, afp_base_url: str, test):
         self.db = db_manager
         self.logger = logging.getLogger("AFP API")
         self.admin_emails = admin_emails
         self.afp_base_url = afp_base_url
         config = load_config_from_file()
-        self.email_manager = EmailManager(config=config, email_passwd=email_passwd)
+        self.email_manager = EmailManager(config=config, email_passwd=email_passwd, email_user=email_user)
         self.test = test
 
     def on_post(self, req, resp):

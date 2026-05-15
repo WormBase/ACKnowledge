@@ -48,6 +48,7 @@ def main():
     parser.add_argument("-a", "--admin-emails", metavar="admin_emails", dest="admin_emails", type=str, nargs="+",
                         help="list of email addresses of administrators")
     parser.add_argument("-e", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-S", "--email-user", metavar="email_user", dest="email_user", type=str)
     parser.add_argument("-u", "--afp-base-url", metavar="afp_base_url", dest="afp_base_url", type=str)
     parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
     parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
@@ -62,8 +63,8 @@ def main():
     app = falcon.App(middleware=[HandleCORS()])
     db_manager = WBDBManager(dbname=args.db_name, host=args.db_host, password=args.db_password, user=args.db_user)
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager, admin_emails=args.admin_emails,
-                                              email_passwd=args.email_passwd, afp_base_url=args.afp_base_url,
-                                              test=args.dev_mode)
+                                              email_passwd=args.email_passwd, email_user=args.email_user,
+                                              afp_base_url=args.afp_base_url, test=args.dev_mode)
     app.add_route('/api/write', feedback_form_writer)
     feedback_form_reader = FeedbackFormReader(db_manager=db_manager, admin_emails=args.admin_emails,
                                               email_passwd=args.email_passwd)
@@ -81,7 +82,7 @@ def main():
                                                       tazendra_password=args.tazendra_password)
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager, afp_base_url=args.afp_base_url,
-                                                  email_passwd=args.email_passwd)
+                                                  email_passwd=args.email_passwd, email_user=args.email_user)
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
     alleles_spreadsheet_creator = AllelesSpreadsheetCreator(db_manager=db_manager)
     app.add_route('/api/create_alleles_spreadsheet', alleles_spreadsheet_creator)
@@ -108,6 +109,7 @@ else:
     feedback_form_writer = FeedbackFormWriter(db_manager=db_manager,
                                               admin_emails=os.environ['ADMINS'].split(','),
                                               email_passwd=os.environ['EMAIL_PASSWD'],
+                                              email_user=os.environ['EMAIL_SMTP_USER'],
                                               afp_base_url=os.environ['AFP_BASE_URL'],
                                               test=os.environ.get('DEV_MODE', False) in [True, 'True'])
     app.add_route('/api/write', feedback_form_writer)
@@ -128,7 +130,8 @@ else:
     app.add_route('/api/read_admin/{req_type}', curator_dashboard_reader)
     author_papers_reader = AuthorPapersPageReader(db_manager=db_manager,
                                                   afp_base_url=os.environ['AFP_BASE_URL'],
-                                                  email_passwd=os.environ['EMAIL_PASSWD'])
+                                                  email_passwd=os.environ['EMAIL_PASSWD'],
+                                                  email_user=os.environ['EMAIL_SMTP_USER'])
     app.add_route('/api/read_authdash/{req_type}', author_papers_reader)
     alleles_spreadsheet_creator = AllelesSpreadsheetCreator(db_manager=db_manager)
     app.add_route('/api/create_alleles_spreadsheet', alleles_spreadsheet_creator)

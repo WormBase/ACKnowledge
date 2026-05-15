@@ -69,6 +69,7 @@ def main():
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str)
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-S", "--email-user", metavar="email_user", dest="email_user", type=str)
     parser.add_argument("-w", "--tazendra-username", metavar="tazendra_user", dest="tazendra_user", type=str)
     parser.add_argument("-z", "--tazendra-password", metavar="tazendra_password", dest="tazendra_password", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
@@ -83,7 +84,7 @@ def main():
 
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     config = load_config_from_file()
-    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd, email_user=args.email_user)
     with db_manager, email_manager:
         for afp_watcher, tables_to_watch in AFP_WATCHERS_TABLES.items():
             for table_to_watch in tables_to_watch:

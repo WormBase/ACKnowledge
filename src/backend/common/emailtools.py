@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class EmailManager(object):
 
-    def __init__(self, config, email_passwd):
+    def __init__(self, config, email_passwd, email_user):
         self.from_addr = config["emails"]["from_address"]
         self.reply_to_addr = config["emails"]["reply_to_address"]
         self.content_email_to_author = config["emails"]["content_to_author"]
@@ -36,8 +36,7 @@ class EmailManager(object):
         self.subject_email_coauthor_notification = config["emails"]["subject_coauthor_notification"]
         self.content_email_user_error = config["emails"]["content_user_error"]
         self.subject_email_user_error = config["emails"]["subject_user_error"]
-        self.email_user = config["emails"]["email_user"]
-        self.email_user = config["emails"]["email_user"]
+        self.email_user = email_user
         self.server_host = config["emails"]["server_host"]
         self.server_port = config["emails"]["server_port"]
         self.email_passwd = email_passwd

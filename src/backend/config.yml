@@ -1,8 +1,7 @@
 emails:
-  from_address: "Wormbase ACKnowledge<no-reply.acknowledge@wormbase.org>"
+  from_address: "Wormbase ACKnowledge<no-reply@acknowledge.textpressolab.com>"
   reply_to_address: "Wormbase ACKnowledge<help.acknowledge@wormbase.org>"
-  email_user: "outreach@wormbase.org"
-  server_host: "smtp.gmail.com"
+  server_host: "email-smtp.us-east-1.amazonaws.com"
   server_port: 465
 
   subject_to_author: "Help Wormbase curate your paper"

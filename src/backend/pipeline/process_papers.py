@@ -72,6 +72,7 @@ def main():
     parser.add_argument("-P", "--db-password", metavar="db_password", dest="db_password", type=str, default="")
     parser.add_argument("-H", "--db-host", metavar="db_host", dest="db_host", type=str)
     parser.add_argument("-p", "--email-password", metavar="email_passwd", dest="email_passwd", type=str)
+    parser.add_argument("-S", "--email-user", metavar="email_user", dest="email_user", type=str)
     parser.add_argument("-l", "--log-file", metavar="log_file", dest="log_file", type=str, default=None,
                         help="path to the log file to generate. Default ./afp_pipeline.log")
     parser.add_argument("-L", "--log-level", dest="log_level", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR',
@@ -93,7 +94,7 @@ def main():
     logging.basicConfig(filename=args.log_file, level=args.log_level,
                         format='%(asctime)s - %(name)s - %(levelname)s:%(message)s')
     config = load_config_from_file()
-    email_manager = EmailManager(config=config, email_passwd=args.email_passwd)
+    email_manager = EmailManager(config=config, email_passwd=args.email_passwd, email_user=args.email_user)
 
     db_manager = WBDBManager(dbname=args.db_name, user=args.db_user, password=args.db_password, host=args.db_host)
     ntt_extractor = NttExtractor(db_manager=db_manager.generic)
