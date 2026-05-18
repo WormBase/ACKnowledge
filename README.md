@@ -1,18 +1,23 @@
 ![ACKnowledge logo](src/frontend/submission_form/public/lockup-with-rule-color-100.jpg)
 
-<img src="src/frontend/submission_form/public/specific-aims-figure.jpg" alt="ACKnowledge specific aims figure" align="right" width="33%"/>
+<img src="src/frontend/submission_form/public/specific-aims-figure-bordered.jpg" alt="ACKnowledge specific aims figure" align="right" width="33%" hspace="20"/>
 
-The Author Curation to Knowledgebase project (ACKnowledge) aims at facilitating author curation to biological knowledgebases.</p>
+<div align="justify">
+
+The Author Curation to Knowledgebase project (ACKnowledge) aims at facilitating author curation to biological knowledgebases.
 
 Biological knowledgebases serve as a critical resource for researchers and accelerate scientific discoveries by providing manually curated, machine-readable data collections. At present, the aggregation and manual curation of biological data is a labor-intensive process that relies almost entirely on professional biocurators. Biocuration, however, is greatly aided when authors directly participate in the process.
 
 ACKnowledge employs a semi-automated curation pipeline that identifies biological entities and data types (for example, genes and anatomic expression) from newly published research articles and then automatically emails authors to review the extracted information through a dedicated web interface. During the curation process, authors may modify extracted data, an important quality control measure. Participating authors are publicly acknowledged for their contribution in the knowledgebase.
 
-The ACKnowledge system, currently implemented by WormBase for the <i>C. elegans</i> literature and soon to be implemented for other species, couples statistical methods and state-of-the-art text mining algorithms to identify entities and data types.</p>
+The ACKnowledge system, currently implemented by WormBase for the <i>C. elegans</i> literature and soon to be implemented for other species, couples statistical methods and state-of-the-art text mining algorithms to identify entities and data types.
 
-Additional tools in the ACKnowledge system include software to send automated reminder emails to authors who have not completed their submissions, a notification system to inform knowledgebase curators about new author submissions, and a dashboard for curators to monitor submission status.</p>
+Additional tools in the ACKnowledge system include software to send automated reminder emails to authors who have not completed their submissions, a notification system to inform knowledgebase curators about new author submissions, and a dashboard for curators to monitor submission status.
 
-The ACKnowledge project was supported (2021-2025) by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.</p>
+The ACKnowledge project was supported (2021-2025) by grant RO1 OD023041 from the National Library of Medicine at the US National Institutes of Health.
+
+</div>
+
 If you have questions about the ACKnowledge project, please contact <a href="mailto:help.acknowledge@wormbase.org">help.acknowledge@wormbase.org</a>.</p>
 
 [ACKnowledge Github repository](https://github.com/WormBase/ACKnowledge)
