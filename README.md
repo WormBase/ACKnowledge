@@ -1,6 +1,6 @@
 ![ACKnowledge logo](src/frontend/submission_form/public/lockup-with-rule-color-100.jpg)
 
-<img src="src/frontend/submission_form/public/specific-aims-figure.jpg" alt="ACKnowledge specific aims figure" align="right" width="33%" hspace="20"/>
+<img src="src/frontend/submission_form/public/specific-aims-figure-bordered.jpg" alt="ACKnowledge specific aims figure" align="right" width="33%" hspace="20"/>
 
 <div align="justify">
 
