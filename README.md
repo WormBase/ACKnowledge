@@ -1,5 +1,7 @@
 ![ACKnowledge logo](src/frontend/submission_form/public/lockup-with-rule-color-100.jpg)
 
+<img src="src/frontend/submission_form/public/specific-aims-figure.jpg" alt="ACKnowledge specific aims figure" align="right" width="33%"/>
+
 The Author Curation to Knowledgebase project (ACKnowledge) aims at facilitating author curation to biological knowledgebases.</p>
 
 Biological knowledgebases serve as a critical resource for researchers and accelerate scientific discoveries by providing manually curated, machine-readable data collections. At present, the aggregation and manual curation of biological data is a labor-intensive process that relies almost entirely on professional biocurators. Biocuration, however, is greatly aided when authors directly participate in the process.
