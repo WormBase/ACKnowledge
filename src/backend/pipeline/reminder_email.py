@@ -7,7 +7,7 @@ import time
 from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.common.config import load_config_from_file
-from src.backend.common.emailtools import EmailManager
+from src.backend.common.emailtools import EmailManager, to_redirect_url
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +58,8 @@ def main():
                         f"link: {afp_link}"
                     )
                     email_manager.send_reminder_to_author(paper_id=paper_id, paper_title=paper_title,
-                                                          paper_journal=paper_journal, afp_link=afp_link,
+                                                          paper_journal=paper_journal,
+                                                          afp_link=to_redirect_url(args.afp_base_url, afp_link),
                                                           recipients=authors_emails, final_call=False,
                                                           coauthor_emails=coauthor_emails)
                     logger.info("going to sleep for ~30 minutes")

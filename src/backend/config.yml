@@ -15,7 +15,7 @@ emails:
                       <br/>
                       This process is part of our <a href='https://wormbase.github.io/ACKnowledge/'>ACKnowledge</a> community curation project.<br/>
                       <br/>
-                      If you would like to flag* your paper for detailed curation, please click <a href={}>here</a>.<br/>
+                      If you would like to flag* your paper for detailed curation, please click <a href=\"{}\">here</a>.<br/>
                       <br/>
                       <b>Having trouble opening or using the form?</b> Please try a hard refresh of the page before contacting us. A hard refresh forces your browser to reload the page from the server instead of using a cached version:<br/>
                       <ul>
@@ -26,13 +26,13 @@ emails:
                       *Flagging your paper involves validating automatically extracted entities and identifying the types of data present.<br/>
                       <br/>
                       You can view all your papers already in the ACKnowledge system on the 
-                      <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a>.<br/>
+                      <a href=\"https://acp.acknowledge.textpressolab.com\">Author Curation Portal</a>.<br/>
                       <br/>
                       In addition, WormBase has launched microPublication Biology, a peer-reviewed journal<br/>
                       that publishes citable, single experimental results, such as those often omitted from standard<br/>
                       journal articles due to space constraints or confirmatory or negative results. If you have such<br/>
                       unpublished data generated during this study, we encourage you to submit it
-                      <a href=https://www.micropublication.org/submit-new-article/>here</a>.<br/>
+                      <a href=\"https://www.micropublication.org/submit-new-article/\">here</a>.<br/>
                       <br/>
                       This form has been submitted also to your coauthors, for which we have an email: {}. We recommend that you coordinate with them on who will fill out the form.<br/>
                       <br/>
@@ -51,7 +51,7 @@ emails:
                   <br/>
                   has empty entity lists.<br/>
                   <br/>
-                  This is the <a href={}>link</a> to the form for the paper.<br/>
+                  This is the <a href=\"{}\">link</a> to the form for the paper.<br/>
                   <br/>"
 
   subject_summary: "New papers processed by the ACKnowledge Pipeline"
@@ -68,8 +68,8 @@ emails:
                     Journal: {}<br/>
                     Author email: {}<br/>
                     <br/>
-                    <a href={}>ACKnowledge admin dashboard</a><br/>
-                    <a href={}>ACKnowledge form for authors</a><br/>
+                    <a href=\"{}\">ACKnowledge admin dashboard</a><br/>
+                    <a href=\"{}\">ACKnowledge form for authors</a><br/>
                     <br/>"
 
   subject_digest_alert: "New positive papers flagged by author through ACKnowledge for {}"
@@ -91,7 +91,7 @@ emails:
                      \"{}\", {}. WBPaper{}<br/>
                      <br/>
                      We would like to remind you that it is still possible to submit your response by visiting the
-                     <a href={}>ACKnowledge Curation Form for your paper</a>.<br/>
+                     <a href=\"{}\">ACKnowledge Curation Form for your paper</a>.<br/>
                      <br/>
                      <b>Having trouble opening or using the form?</b> Please try a hard refresh of the page before contacting us. A hard refresh forces your browser to reload the page from the server instead of using a cached version:<br/>
                      <ul>
@@ -101,7 +101,7 @@ emails:
                      <br/>
                      If you have started on the form, but not finished, you may resume your submission to complete the process.<br/>
                      <br/>
-                     You can view all your papers already in the ACKnowledge system on the <a href=https://acp.acknowledge.textpressolab.com>Author Curation Portal</a>.<br/>
+                     You can view all your papers already in the ACKnowledge system on the <a href=\"https://acp.acknowledge.textpressolab.com\">Author Curation Portal</a>.<br/>
                      <br/>
                      This form has been submitted also to your coauthors, for which we have an email: {}. We recommend that you coordinate with them on who will fill out the form.<br/>
                      <br/>

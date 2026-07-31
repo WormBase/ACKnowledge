@@ -11,7 +11,7 @@ from urllib.request import urlopen
 from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.common.config import load_config_from_file
-from src.backend.common.emailtools import EmailManager
+from src.backend.common.emailtools import EmailManager, to_redirect_url
 from src.backend.common.google_drive_service import GoogleDriveService
 
 logger = logging.getLogger(__name__)
@@ -257,11 +257,11 @@ class FeedbackFormWriter:
                           person_id[3:] + \
                           "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
                           urllib.parse.quote(doi)
-                    form_url = url
+                    form_url = to_redirect_url(self.afp_base_url, url)
                     dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
                     self.logger.info(
                         f"Submission received for paper {paper_id} by person_id {person_id}, "
-                        f"email: {author_email}, form_url: {form_url}, dashboard: {dashboard_url}"
+                        f"email: {author_email}, form_url: {url}, dashboard: {dashboard_url}"
                     )
                     self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
                                                                                        paper_journal, author_email,

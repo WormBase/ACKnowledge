@@ -1,6 +1,8 @@
+import base64
 import logging
 import smtplib
 import urllib.parse
+import zlib
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,6 +11,45 @@ from urllib.request import urlopen
 
 
 logger = logging.getLogger(__name__)
+
+# Version of the encoded form-link format, carried in the redirect path so the
+# encoding can change without breaking links already sitting in authors'
+# inboxes (reminder emails reference them for weeks).
+FORM_LINK_VERSION = "1"
+
+
+def encode_form_url(url: str) -> str:
+    """Pack a submission form URL into a single URL-safe path segment.
+
+    Some mail gateways re-encode message bodies as quoted-printable without
+    escaping the literal '=' characters already present. A recipient's client
+    then decodes every '=' followed by two hex digits, which silently destroys
+    'paper=00069459', 'passwd=1784767777...' and 'hide_genes=false' while
+    leaving 'title=WDR-5...' intact. base64url without padding restricts the
+    token to [A-Za-z0-9-_], so there is nothing left for such a decoder - or
+    for an HTML entity parser - to corrupt. See issue #424.
+    """
+    compressor = zlib.compressobj(9, zlib.DEFLATED, -zlib.MAX_WBITS)
+    packed = compressor.compress(url.encode("utf-8")) + compressor.flush()
+    return base64.urlsafe_b64encode(packed).decode("ascii").rstrip("=")
+
+
+def decode_form_url(token: str) -> str:
+    """Recover the URL packed by encode_form_url.
+
+    Raises ValueError if the token is malformed or truncated.
+    """
+    try:
+        packed = base64.urlsafe_b64decode(token + "=" * (-len(token) % 4))
+        return zlib.decompress(packed, -zlib.MAX_WBITS).decode("utf-8")
+    except (ValueError, zlib.error) as exc:
+        raise ValueError("malformed form URL token: {}".format(exc)) from exc
+
+
+def to_redirect_url(afp_base_url: str, form_url: str) -> str:
+    """Build the short, filter-proof link that goes into emails to authors."""
+    return "{}/api/f/{}/{}".format(afp_base_url.rstrip("/"), FORM_LINK_VERSION,
+                                   encode_form_url(form_url))
 
 
 class EmailManager(object):
@@ -126,7 +167,7 @@ class EmailManager(object):
 
     def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str]):
         if paper_ids:
-            paperid_list = "<br/>".join(["<a href=" + url + ">" + paper_id + "</a>" for paper_id, url in
+            paperid_list = "<br/>".join(['<a href="' + url + '">' + paper_id + "</a>" for paper_id, url in
                                          zip(paper_ids, urls)])
         else:
             paperid_list = "No papers processed this time"

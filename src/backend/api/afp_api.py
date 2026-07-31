@@ -10,6 +10,7 @@ from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.api.endpoints.author_portal import AuthorPapersPageReader
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
+from src.backend.api.endpoints.form_redirect import FormLinkRedirect
 from src.backend.api.endpoints.submission_form import FeedbackFormWriter, FeedbackFormReader, PaperInfoReader, \
     AutocompleteReader, DiseaseAutocompleteReader, AllelesSpreadsheetCreator, StrainsSpreadsheetCreator, \
     TransgenesSpreadsheetCreator
@@ -90,6 +91,8 @@ def main():
     app.add_route('/api/create_strains_spreadsheet', strains_spreadsheet_creator)
     transgenes_spreadsheet_creator = TransgenesSpreadsheetCreator(db_manager=db_manager)
     app.add_route('/api/create_transgenes_spreadsheet', transgenes_spreadsheet_creator)
+    form_link_redirect = FormLinkRedirect(afp_base_url=args.afp_base_url)
+    app.add_route('/api/f/{version}/{token}', form_link_redirect)
 
     httpd = simple_server.make_server('0.0.0.0', args.port, app)
     httpd.serve_forever()
@@ -139,3 +142,5 @@ else:
     app.add_route('/api/create_strains_spreadsheet', strains_spreadsheet_creator)
     transgenes_spreadsheet_creator = TransgenesSpreadsheetCreator(db_manager=db_manager)
     app.add_route('/api/create_transgenes_spreadsheet', transgenes_spreadsheet_creator)
+    form_link_redirect = FormLinkRedirect(afp_base_url=os.environ['AFP_BASE_URL'])
+    app.add_route('/api/f/{version}/{token}', form_link_redirect)
