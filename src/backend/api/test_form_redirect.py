@@ -3,7 +3,11 @@ import falcon.testing
 import pytest
 
 from src.backend.api.endpoints.form_redirect import FormLinkRedirect
-from src.backend.common.emailtools import FORM_LINK_VERSION, encode_form_url
+from src.backend.common.emailtools import (
+    FORM_LINK_VERSION,
+    encode_form_url,
+    encode_form_url_v1,
+)
 
 FULL_URL = (
     "https://acknowledge.textpressolab.com?paper=00069459"
@@ -54,4 +58,42 @@ def test_corrupted_token_is_not_found(client):
 
 def test_token_for_a_foreign_host_is_rejected(client):
     result = _get(client, encode_form_url("https://evil.example.com/steal"))
+    assert result.status_code == 404
+
+
+def test_link_minted_at_the_previous_version_still_redirects(client):
+    result = _get(client, encode_form_url_v1(FULL_URL), version="1")
+    assert result.status_code == 302
+    assert result.headers['location'] == FULL_URL
+
+
+def test_host_that_urlsplit_refuses_to_parse_is_not_found(client):
+    """urlsplit raises ValueError for netlocs that change under NFKC
+    normalization; unhandled that is a 500 on a public endpoint."""
+    result = _get(client, encode_form_url("https://acknowledge.textpressolab.com℀/x"))
+    assert result.status_code == 404
+
+
+def test_carriage_return_in_the_target_is_rejected(client):
+    """urlsplit strips CR/LF before parsing, so the host check passes while the
+    raw string still carries them into the Location header."""
+    result = _get(client, encode_form_url(
+        "https://acknowledge.textpressolab.com/x\r\nSet-Cookie: pwned=1"))
+    assert result.status_code == 404
+
+
+def test_tab_in_the_target_is_rejected(client):
+    result = _get(client, encode_form_url(
+        "https://acknowledge.textpressolab.com/x\ty"))
+    assert result.status_code == 404
+
+
+def test_token_that_decompresses_to_a_huge_url_is_not_found(client):
+    huge = "https://acknowledge.textpressolab.com/" + "A" * 3_000_000
+    result = _get(client, encode_form_url(huge))
+    assert result.status_code == 404
+
+
+def test_absurdly_long_token_is_rejected_before_decoding(client):
+    result = _get(client, "A" * 20000)
     assert result.status_code == 404

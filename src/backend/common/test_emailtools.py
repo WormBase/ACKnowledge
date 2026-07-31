@@ -1,11 +1,15 @@
 import quopri
+import random
 
 import pytest
 
 from src.backend.common.emailtools import (
     FORM_LINK_VERSION,
+    MAX_FORM_URL_BYTES,
+    build_html_message,
     decode_form_url,
     encode_form_url,
+    encode_form_url_v1,
     to_redirect_url,
 )
 
@@ -84,3 +88,66 @@ def test_the_gateway_mangling_reproduces_the_reported_corruption():
 def test_encoded_link_survives_the_gateway_mangling():
     link = to_redirect_url("https://acknowledge.textpressolab.com", FULL_URL)
     assert _mangle_like_a_mail_gateway(link) == link
+
+
+TOKEN_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+
+
+def test_no_single_character_corruption_decodes_to_a_different_url():
+    """A format meant to survive corruption has to be able to detect it.
+
+    Raw deflate carries no checksum, so two thirds of single-character
+    corruptions used to decode into a plausible but wrong URL instead of
+    failing.
+    """
+    token = encode_form_url(FULL_URL)
+    rng = random.Random(11)
+    for _ in range(3000):
+        pos = rng.randrange(len(token))
+        replacement = rng.choice([c for c in TOKEN_ALPHABET if c != token[pos]])
+        corrupted = token[:pos] + replacement + token[pos + 1:]
+        try:
+            decoded = decode_form_url(corrupted)
+        except ValueError:
+            continue
+        assert decoded == FULL_URL, "corruption decoded silently to {!r}".format(decoded)
+
+
+def test_links_minted_at_an_older_version_still_decode():
+    """Reminder emails reference links for weeks; a version bump must not
+    invalidate what is already sitting in authors' inboxes."""
+    assert FORM_LINK_VERSION != "1", "this test is meaningless while we still emit v1"
+    assert decode_form_url(encode_form_url_v1(FULL_URL), version="1") == FULL_URL
+
+
+def test_unknown_version_is_rejected():
+    with pytest.raises(ValueError):
+        decode_form_url(encode_form_url(FULL_URL), version="99")
+
+
+def test_token_expanding_beyond_the_limit_is_rejected():
+    """The endpoint decompresses attacker-supplied data; without a cap a short
+    token expands to megabytes."""
+    oversized = "https://acknowledge.textpressolab.com/" + "A" * (MAX_FORM_URL_BYTES + 1)
+    with pytest.raises(ValueError):
+        decode_form_url(encode_form_url(oversized))
+
+
+def test_email_body_is_encoded_within_the_rfc_line_length_limit():
+    """RFC 5322 caps a line at 998 octets. Our templates render to a single
+    ~2700 character line, and an over-long line is what invites a gateway to
+    re-encode the body in the first place."""
+    content = "<a href=\"https://x.test/a?b=00\">" + "x " * 2000 + "</a>"
+    msg = build_html_message("subject", content, "from@x.test", "reply@x.test",
+                             ["to@x.test"])
+    payload = msg.get_payload()[0]
+    assert payload["Content-Transfer-Encoding"] == "base64"
+    assert max(len(line) for line in msg.as_string().split("\n")) <= 998
+
+
+def test_email_body_round_trips_through_the_mime_encoding():
+    content = "<p>café — in C. elegans</p>"
+    msg = build_html_message("subject", content, "from@x.test", "reply@x.test",
+                             ["to@x.test"])
+    payload = msg.get_payload()[0]
+    assert payload.get_payload(decode=True).decode("utf-8") == content

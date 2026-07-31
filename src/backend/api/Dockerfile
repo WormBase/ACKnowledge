@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y git
 
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-RUN pip3 install gunicorn
+# >=22 rejects control characters in response header values. The form link
+# redirect validates its target itself, but keep the server-side check too.
+RUN pip3 install 'gunicorn>=22'
 RUN python3 -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 
 COPY src/backend src/backend

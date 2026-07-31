@@ -281,7 +281,8 @@ def main():
                         )
                         if not args.dev_mode:
                             email_manager.send_email_to_author(
-                                paper.paper_id, paper.title, paper.journal, author_specific_email_link, [author[1]], coauthor_emails)
+                                paper.paper_id, paper.title, paper.journal,
+                                author_specific_email_link, [author[1]], coauthor_emails)
                     if args.dev_mode:
                         email_manager.send_email_to_author(paper.paper_id, paper.title, paper.journal,
                                                            to_redirect_url(args.afp_base_url,
