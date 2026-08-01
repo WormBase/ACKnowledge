@@ -1,6 +1,8 @@
+import base64
 import logging
 import smtplib
 import urllib.parse
+import zlib
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,6 +11,104 @@ from urllib.request import urlopen
 
 
 logger = logging.getLogger(__name__)
+
+# Version of the encoded form-link format we currently emit, carried in the
+# redirect path. Decoding dispatches through FORM_LINK_DECODERS rather than
+# comparing against this constant, so when the format next changes you add a
+# decoder and bump this, and links already sitting in authors' inboxes keep
+# resolving - reminder emails reference them for weeks.
+FORM_LINK_VERSION = "1"
+
+# Real form URLs are a few hundred bytes. The endpoint decompresses untrusted
+# input, so cap both ends: without a limit a 4 KB token expands to ~3 MB.
+MAX_FORM_URL_BYTES = 4096
+MAX_FORM_TOKEN_CHARS = 3000
+
+
+def _b64url_decode(token: str) -> bytes:
+    return base64.urlsafe_b64decode(token + "=" * (-len(token) % 4))
+
+
+def _inflate(packed: bytes, wbits: int) -> str:
+    decompressor = zlib.decompressobj(wbits)
+    data = decompressor.decompress(packed, MAX_FORM_URL_BYTES)
+    if decompressor.unconsumed_tail:
+        raise ValueError("form URL token expands beyond {} bytes".format(MAX_FORM_URL_BYTES))
+    # decompressobj, unlike zlib.decompress, does not finalise the stream, so
+    # nothing has verified the trailing Adler-32 yet. eof is only set on
+    # Z_STREAM_END, which zlib reaches solely after the checksum matches.
+    if not decompressor.eof:
+        raise ValueError("form URL token is truncated")
+    if decompressor.unused_data:
+        raise ValueError("form URL token has trailing data")
+    return data.decode("utf-8")
+
+
+def encode_form_url(url: str) -> str:
+    """Pack a submission form URL into a single URL-safe path segment.
+
+    Some mail gateways re-encode message bodies as quoted-printable without
+    escaping the literal '=' characters already present. A recipient's client
+    then decodes every '=' followed by two hex digits, which silently destroys
+    'paper=00069459', 'passwd=1784767777...' and 'hide_genes=false' while
+    leaving 'title=WDR-5...' intact. base64url without padding restricts the
+    token to [A-Za-z0-9-_], so there is nothing left for such a decoder - or
+    for an HTML entity parser - to corrupt. See issue #424.
+
+    The zlib container (rather than raw deflate) costs 8 characters and adds an
+    Adler-32 checksum, so a token damaged in transit fails loudly instead of
+    decoding into a plausible but wrong URL.
+    """
+    return base64.urlsafe_b64encode(
+        zlib.compress(url.encode("utf-8"), 9)).decode("ascii").rstrip("=")
+
+
+FORM_LINK_DECODERS = {
+    "1": lambda token: _inflate(_b64url_decode(token), zlib.MAX_WBITS),
+}
+
+
+def decode_form_url(token: str, version: str = FORM_LINK_VERSION) -> str:
+    """Recover the URL packed by encode_form_url.
+
+    Raises ValueError if the version is unknown or the token is malformed,
+    truncated, corrupted or oversized.
+    """
+    decoder = FORM_LINK_DECODERS.get(version)
+    if decoder is None:
+        raise ValueError("unsupported form link version: {!r}".format(version))
+    if len(token) > MAX_FORM_TOKEN_CHARS:
+        raise ValueError("form URL token longer than {} characters".format(MAX_FORM_TOKEN_CHARS))
+    try:
+        return decoder(token)
+    except (ValueError, zlib.error) as exc:
+        raise ValueError("malformed form URL token: {}".format(exc)) from exc
+
+
+def to_redirect_url(afp_base_url: str, form_url: str) -> str:
+    """Build the opaque, filter-proof link that goes into emails to authors."""
+    return "{}/api/f/{}/{}".format(afp_base_url.rstrip("/"), FORM_LINK_VERSION,
+                                   encode_form_url(form_url))
+
+
+def build_html_message(subject, content, from_addr, reply_to_addr, recipients):
+    """Assemble the outgoing HTML message.
+
+    The charset is pinned to utf-8 so the body is base64 encoded and wrapped at
+    76 columns. Left to itself, MIMEText picks us-ascii for an ASCII body and
+    emits it as 7bit, which for our templates means a single ~2700 character
+    line - well past the 998 octet limit in RFC 5322 section 2.1.1. An
+    over-long line is what prompts a gateway to re-encode the body, and a
+    gateway that re-encodes to quoted-printable without escaping '=' is what
+    corrupted these links in the first place (issue #424).
+    """
+    msg = MIMEMultipart("alternative")
+    msg.attach(MIMEText(content, "html", "utf-8"))
+    msg["Subject"] = subject
+    msg["From"] = from_addr
+    msg["reply-to"] = reply_to_addr
+    msg["To"] = ", ".join(recipients)
+    return msg
 
 
 class EmailManager(object):
@@ -74,13 +174,8 @@ class EmailManager(object):
         if not recipients:
             logger.warning("No valid recipients for email with subject: %s", subject)
             return
-        body = MIMEText(content, "html")
-        msg = MIMEMultipart('alternative')
-        msg.attach(body)
-        msg['Subject'] = subject
-        msg['From'] = self.from_addr
-        msg['reply-to'] = self.reply_to_addr
-        msg['To'] = ", ".join(recipients)
+        msg = build_html_message(subject, content, self.from_addr, self.reply_to_addr,
+                                 recipients)
 
         try:
             if self._persistent:
@@ -126,7 +221,7 @@ class EmailManager(object):
 
     def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str]):
         if paper_ids:
-            paperid_list = "<br/>".join(["<a href=" + url + ">" + paper_id + "</a>" for paper_id, url in
+            paperid_list = "<br/>".join(['<a href="' + url + '">' + paper_id + "</a>" for paper_id, url in
                                          zip(paper_ids, urls)])
         else:
             paperid_list = "No papers processed this time"
