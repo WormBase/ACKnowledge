@@ -97,5 +97,28 @@ def test_token_that_decompresses_to_a_huge_url_is_not_found(client):
 
 
 def test_absurdly_long_token_is_rejected_before_decoding(client):
-    result = _get(client, "A" * 20000)
-    assert result.status_code == 404
+    """A valid but oversized token: garbage of the same length would be
+    rejected as unparseable anyway and would not exercise the length cap."""
+    oversized = encode_form_url("https://acknowledge.textpressolab.com/" + "h" * 2_500_000)
+    assert len(oversized) > 3000
+    assert _get(client, oversized).status_code == 404
+
+
+def test_non_latin1_target_is_rejected(client):
+    """A target can be on our own origin, free of control characters, and still
+    impossible to put in a header: WSGI encodes header values as latin-1, so a
+    non-Latin-1 character means the worker raises after start_response. Falcon's
+    test client does not model that, so this has to be asserted directly."""
+    for target in ("https://acknowledge.textpressolab.com/中",
+                   "https://acknowledge.textpressolab.com/x y"):
+        assert _get(client, encode_form_url(target)).status_code == 404
+
+
+def test_head_is_served_like_get(client):
+    """Mail security scanners probe links before the recipient clicks, often
+    with HEAD. A 405 there can get the link flagged as broken - which matters
+    for a link whose entire purpose is surviving mail gateways."""
+    token = encode_form_url(FULL_URL)
+    result = client.simulate_head('/api/f/{}/{}'.format(FORM_LINK_VERSION, token))
+    assert result.status_code == 302
+    assert result.headers['location'] == FULL_URL

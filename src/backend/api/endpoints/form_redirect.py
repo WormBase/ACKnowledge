@@ -42,13 +42,24 @@ class FormLinkRedirect(object):
         return (actual.scheme, actual.netloc) == (expected.scheme, expected.netloc)
 
     @staticmethod
-    def _has_control_characters(url):
-        """urlsplit strips CR, LF and TAB before parsing, so a target can pass
-        the host check while still carrying them. Emitting that raw into the
-        Location header is header injection; gunicorn >= 22 rejects it, but we
-        must not depend on the WSGI server for this.
+    def _is_unsafe_in_a_header(url):
+        """Whether this target cannot be safely emitted as a Location header.
+
+        Two distinct hazards, both invisible to the host check:
+
+        urlsplit strips CR, LF and TAB before parsing, so a target carrying
+        them still looks like ours. Emitting that raw is header injection;
+        gunicorn >= 22 rejects it, but we must not rely on the WSGI server.
+
+        WSGI encodes header values as latin-1, so a target on our own origin
+        with a non-Latin-1 character makes the worker raise after
+        start_response - an unauthenticated 500. Falcon's test client does not
+        model that encoding step, so only a positive test catches it.
+
+        A legitimate form URL is percent-encoded and therefore printable ASCII,
+        so requiring that subsumes both cases.
         """
-        return any(char < ' ' or char == '\x7f' for char in url)
+        return not all(' ' <= char <= '~' for char in url)
 
     def on_get(self, req, resp, version, token):
         try:
@@ -56,11 +67,16 @@ class FormLinkRedirect(object):
         except ValueError as exc:
             logger.warning("Undecodable form link token: %s", exc)
             raise falcon.HTTPNotFound()
-        if self._has_control_characters(form_url):
-            logger.warning("Form link target contains control characters, refusing to redirect")
+        if self._is_unsafe_in_a_header(form_url):
+            logger.warning("Form link target is not printable ASCII, refusing to redirect")
             raise falcon.HTTPNotFound()
         if not self._is_own_url(form_url):
             logger.warning("Form link token pointing outside %s, refusing to redirect",
                            self.afp_base_url)
             raise falcon.HTTPNotFound()
         raise falcon.HTTPFound(form_url)
+
+    # Mail security scanners probe links before the recipient clicks, and a 405
+    # can get the link flagged as broken. The endpoint is stateless, so serving
+    # a probe costs nothing and consumes nothing.
+    on_head = on_get
