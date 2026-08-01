@@ -4,12 +4,12 @@ import random
 import pytest
 
 from src.backend.common.emailtools import (
+    FORM_LINK_DECODERS,
     FORM_LINK_VERSION,
     MAX_FORM_URL_BYTES,
     build_html_message,
     decode_form_url,
     encode_form_url,
-    encode_form_url_v1,
     to_redirect_url,
 )
 
@@ -113,11 +113,15 @@ def test_no_single_character_corruption_decodes_to_a_different_url():
         assert decoded == FULL_URL, "corruption decoded silently to {!r}".format(decoded)
 
 
-def test_links_minted_at_an_older_version_still_decode():
-    """Reminder emails reference links for weeks; a version bump must not
-    invalidate what is already sitting in authors' inboxes."""
-    assert FORM_LINK_VERSION != "1", "this test is meaningless while we still emit v1"
-    assert decode_form_url(encode_form_url_v1(FULL_URL), version="1") == FULL_URL
+def test_decoding_dispatches_through_the_version_registry(monkeypatch):
+    """Decoding must look the version up rather than compare it against the
+    version we currently emit. Otherwise bumping FORM_LINK_VERSION invalidates
+    every link already sitting in an author's inbox, which is the exact failure
+    the version exists to prevent - reminder emails reference links for weeks.
+    """
+    monkeypatch.setitem(FORM_LINK_DECODERS, "2", lambda token: "https://later.test/")
+    assert decode_form_url("anything", version="2") == "https://later.test/"
+    assert decode_form_url(encode_form_url(FULL_URL), version=FORM_LINK_VERSION) == FULL_URL
 
 
 def test_unknown_version_is_rejected():

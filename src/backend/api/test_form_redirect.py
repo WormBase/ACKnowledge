@@ -4,9 +4,9 @@ import pytest
 
 from src.backend.api.endpoints.form_redirect import FormLinkRedirect
 from src.backend.common.emailtools import (
+    FORM_LINK_DECODERS,
     FORM_LINK_VERSION,
     encode_form_url,
-    encode_form_url_v1,
 )
 
 FULL_URL = (
@@ -61,10 +61,12 @@ def test_token_for_a_foreign_host_is_rejected(client):
     assert result.status_code == 404
 
 
-def test_link_minted_at_the_previous_version_still_redirects(client):
-    result = _get(client, encode_form_url_v1(FULL_URL), version="1")
-    assert result.status_code == 302
-    assert result.headers['location'] == FULL_URL
+def test_every_registered_version_is_served(client, monkeypatch):
+    """Guards against reintroducing an equality check on FORM_LINK_VERSION,
+    which would 404 links minted before a version bump."""
+    monkeypatch.setitem(FORM_LINK_DECODERS, "2", lambda token: FULL_URL)
+    assert _get(client, encode_form_url(FULL_URL), version=FORM_LINK_VERSION).status_code == 302
+    assert _get(client, "anything", version="2").status_code == 302
 
 
 def test_host_that_urlsplit_refuses_to_parse_is_not_found(client):

@@ -12,11 +12,12 @@ from urllib.request import urlopen
 
 logger = logging.getLogger(__name__)
 
-# Version of the encoded form-link format we currently emit. Older versions
-# stay decodable via FORM_LINK_DECODERS below: reminder emails reference links
-# for weeks, so bumping this must never invalidate what is already sitting in
-# an author's inbox.
-FORM_LINK_VERSION = "2"
+# Version of the encoded form-link format we currently emit, carried in the
+# redirect path. Decoding dispatches through FORM_LINK_DECODERS rather than
+# comparing against this constant, so when the format next changes you add a
+# decoder and bump this, and links already sitting in authors' inboxes keep
+# resolving - reminder emails reference them for weeks.
+FORM_LINK_VERSION = "1"
 
 # Real form URLs are a few hundred bytes. The endpoint decompresses untrusted
 # input, so cap both ends: without a limit a 4 KB token expands to ~3 MB.
@@ -43,14 +44,6 @@ def _inflate(packed: bytes, wbits: int) -> str:
     return data.decode("utf-8")
 
 
-def encode_form_url_v1(url: str) -> str:
-    """Legacy raw-deflate encoding. Decode-only: kept so links already sent
-    keep working. Exposed for tests; nothing in production should emit it."""
-    compressor = zlib.compressobj(9, zlib.DEFLATED, -zlib.MAX_WBITS)
-    packed = compressor.compress(url.encode("utf-8")) + compressor.flush()
-    return base64.urlsafe_b64encode(packed).decode("ascii").rstrip("=")
-
-
 def encode_form_url(url: str) -> str:
     """Pack a submission form URL into a single URL-safe path segment.
 
@@ -71,8 +64,7 @@ def encode_form_url(url: str) -> str:
 
 
 FORM_LINK_DECODERS = {
-    "1": lambda token: _inflate(_b64url_decode(token), -zlib.MAX_WBITS),
-    "2": lambda token: _inflate(_b64url_decode(token), zlib.MAX_WBITS),
+    "1": lambda token: _inflate(_b64url_decode(token), zlib.MAX_WBITS),
 }
 
 
