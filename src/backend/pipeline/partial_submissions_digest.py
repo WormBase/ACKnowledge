@@ -92,6 +92,17 @@ def get_partial_submissions(db_manager, afp_base_url, start_date=None):
     return partial_submissions
 
 
+def rollback_aborted_transaction(db_manager):
+    """
+    Clear an aborted transaction so that later queries on the shared
+    connection can still run
+    """
+    try:
+        db_manager.conn.rollback()
+    except Exception as e:
+        logger.warning(f"Could not roll back the aborted transaction: {e}")
+
+
 def get_widgets_info_for_papers(db_manager, paper_ids):
     """
     Check which widgets have been completed for each of the given papers
@@ -120,6 +131,13 @@ def get_widgets_info_for_papers(db_manager, paper_ids):
                 # Logged at WARNING on purpose: swallowing this at DEBUG level is
                 # what let the report claim zero partial submissions every month.
                 logger.warning(f"Could not check table {table_name}: {e}")
+                # get_cursor() shares one cursor and connection across these
+                # queries and never rolls back, so a failed statement leaves the
+                # transaction aborted and every table after it would raise
+                # InFailedSqlTransaction - turning one unreadable table back into
+                # an empty report. Nothing here writes, so a rollback costs us
+                # nothing.
+                rollback_aborted_transaction(db_manager)
                 continue
 
             for joinkey, last_modified in rows:

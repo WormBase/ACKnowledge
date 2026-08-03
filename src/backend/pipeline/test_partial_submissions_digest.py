@@ -15,17 +15,41 @@ from src.backend.pipeline.partial_submissions_digest import (
 PDT = timezone(timedelta(hours=-7))
 
 
+class FakeConnection:
+    """Models psycopg2's aborted-transaction behaviour.
+
+    wbtools' get_cursor() hands out one shared cursor per connection and never
+    rolls back, so a failed statement leaves the transaction aborted and every
+    later one raises until something calls rollback(). A fake that forgets this
+    lets a connection-poisoning bug pass the suite while emptying the report in
+    production.
+    """
+
+    def __init__(self):
+        self.aborted = False
+        self.rollbacks = 0
+
+    def rollback(self):
+        self.aborted = False
+        self.rollbacks += 1
+
+
 class FakeCursor:
     """Cursor over an in-memory {table: {joinkey: timestamp}} fixture."""
 
-    def __init__(self, tables, broken_tables):
+    def __init__(self, conn, tables, broken_tables):
+        self.conn = conn
         self.tables = tables
         self.broken_tables = broken_tables
         self.rows = []
 
     def execute(self, query, params=None):
+        if self.conn.aborted:
+            raise RuntimeError("current transaction is aborted, commands ignored "
+                               "until end of transaction block")
         table = re.search(r"FROM (\w+)", query).group(1)
         if table in self.broken_tables:
+            self.conn.aborted = True
             raise RuntimeError('relation "{}" does not exist'.format(table))
         joinkeys = set(params[0]) if params else set()
         self.rows = [(joinkey, timestamp) for joinkey, timestamp
@@ -68,6 +92,7 @@ class FakeDBManager:
     def __init__(self, partial_ids=(), tables=None, broken_tables=()):
         self.afp = FakeAFP(partial_ids)
         self.paper = FakePaper()
+        self.conn = FakeConnection()
         self.tables = tables or {}
         self.broken_tables = set(broken_tables)
 
@@ -79,7 +104,7 @@ class FakeDBManager:
 
     @contextmanager
     def get_cursor(self):
-        yield FakeCursor(self.tables, self.broken_tables)
+        yield FakeCursor(self.conn, self.tables, self.broken_tables)
 
 
 def test_widget_info_counts_categories_backed_by_rows():
@@ -129,6 +154,24 @@ def test_broken_table_is_logged_not_swallowed(caplog):
 
     assert info["total_completed"] == 1
     assert any("afp_humdis" in record.message for record in caplog.records)
+
+
+def test_one_unreadable_table_does_not_zero_out_the_others():
+    # afp_genestudied is the first table probed, so if a failure poisons the
+    # shared transaction every later widget reads as empty - which is the
+    # original "no partial submissions" bug wearing a different hat.
+    db = FakeDBManager(
+        tables={"afp_genestudied": {"00001": datetime(2026, 7, 2, tzinfo=PDT)},
+                "afp_humdis": {"00001": datetime(2026, 7, 3, tzinfo=PDT)},
+                "afp_comment": {"00001": datetime(2026, 7, 4, tzinfo=PDT)}},
+        broken_tables=["afp_genestudied"],
+    )
+    info = get_widgets_info_for_papers(db, ["00001"])["00001"]
+
+    assert info["widgets"]["Disease"] is True
+    assert info["widgets"]["Comments"] is True
+    assert info["total_completed"] == 2
+    assert db.conn.rollbacks == 1
 
 
 def test_partial_submissions_reports_papers_with_data():
