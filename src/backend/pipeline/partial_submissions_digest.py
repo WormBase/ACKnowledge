@@ -2,9 +2,7 @@
 
 import argparse
 import logging
-import json
-from datetime import datetime, timedelta
-from collections import defaultdict
+from datetime import datetime, timezone
 from wbtools.db.dbmanager import WBDBManager
 
 from src.backend.common.config import load_config_from_file
@@ -13,141 +11,129 @@ from src.backend.common.emailtools import EmailManager
 # Widget categories for tracking completion
 WIDGET_CATEGORIES = ["Overview", "Genetics", "Reagent", "Expression", "Interactions", "Phenotypes", "Disease", "Comments"]
 
+# Tables backing each widget, keyed by the category names above. A widget
+# counts as completed when a row exists for the paper: the form writes a row
+# on save, and an empty value is a deliberate "nothing to report" answer
+# rather than an untouched widget.
+WIDGET_TABLE_MAPPINGS = {
+    "Overview": ["afp_genestudied", "afp_species", "afp_otherspecies", "afp_structcorr"],
+    "Genetics": ["afp_variation", "afp_strain", "afp_structcorr", "afp_seqchange",
+                 "afp_othervariation", "afp_otherstrain"],
+    "Reagent": ["afp_transgene", "afp_othertransgene", "afp_antibody", "afp_otherantibody"],
+    "Expression": ["afp_otherexpr", "afp_siteaction", "afp_timeaction", "afp_rnaseq"],
+    "Interactions": ["afp_geneprod", "afp_genereg", "afp_geneint"],
+    "Phenotypes": ["afp_newmutant", "afp_rnai", "afp_overexpr", "afp_chemphen",
+                   "afp_envpheno", "afp_catalyticact", "afp_othergenefunc"],
+    "Disease": ["afp_humdis"],
+    "Comments": ["afp_comment"]
+}
+
 logger = logging.getLogger(__name__)
 
 
 def get_partial_submissions(db_manager, afp_base_url, start_date=None):
     """
     Get papers with partial submissions - those that have some data but haven't been fully submitted
+
+    "Partial" means the same thing here as it does on the curator dashboard,
+    and comes from the same query (wbtools' QUERY_PAPER_IDS_PARTIAL_SUBMISSION):
+    the paper is in the AFP system, at least one widget holds data, and there
+    is no afp_lasttouched row - that row is written on final submission, so its
+    absence is what distinguishes a partial submission from a complete one.
     """
-    partial_submissions = []
-    
     # If no start_date specified, use the beginning of current year
     if start_date is None:
         start_date = datetime(2025, 1, 1)
-    
+    # afp_timestamp columns are 'timestamp with time zone', so psycopg2 returns
+    # aware datetimes; the CLI default and -s both produce naive ones, and
+    # comparing the two raises TypeError.
+    if start_date.tzinfo is None:
+        start_date = start_date.replace(tzinfo=timezone.utc)
+
+    partial_submissions = []
+
     with db_manager:
-        # Get papers that have been processed but may not have completed submission
-        # We'll use a similar approach to reminder_email.py
-        # First get papers that were emailed recently (which means they're in the AFP system)
-        papers_to_check = []
-        
-        # Get papers that have been emailed but not submitted (similar to reminder_email.py)
-        try:
-            # Get papers emailed in the last year (365 days)
-            for paper_data in db_manager.afp.get_papers_emails_no_submission_emailed_between(1, 365):
-                paper_id = paper_data[0]
-                papers_to_check.append(paper_id)
-        except Exception as e:
-            logger.debug(f"Could not get papers from emailed list: {e}")
-        
-        # Also check papers that have been modified but not submitted
-        # This requires querying the database directly
-        try:
-            query = """
-                SELECT DISTINCT joinkey FROM afp 
-                WHERE afp_lasttouched IS NOT NULL 
-                AND afp_lasttouched >= %s
-                AND (afp_version IS NULL OR afp_version = '')
-            """
-            results = db_manager.execute_query(query, (start_date,))
-            for row in results:
-                if row[0] not in papers_to_check:
-                    papers_to_check.append(row[0])
-        except Exception as e:
-            logger.debug(f"Could not query afp table directly: {e}")
-        
-        # Now check each paper
-        for paper_id in papers_to_check:
+        paper_ids = db_manager.afp.get_paper_ids_afp_partial_submission()
+        logger.info(f"{len(paper_ids)} papers with a partial submission on record")
+        widgets_by_paper = get_widgets_info_for_papers(db_manager, paper_ids)
+
+        for paper_id in sorted(widgets_by_paper):
+            widgets_info = widgets_by_paper[paper_id]
+
+            # Only include if there's at least some widget data
+            if widgets_info['total_completed'] == 0:
+                continue
+
+            # Report on what the author has worked on since start_date
+            last_activity = max(widgets_info['dates'].values()) if widgets_info['dates'] else None
+            if last_activity is not None and last_activity < start_date:
+                continue
+
             try:
-                # Check if paper has been fully submitted
-                if db_manager.afp.author_has_submitted(paper_id):
-                    continue  # Skip fully submitted papers
-                
-                # Check if paper has any activity
-                if not db_manager.afp.author_has_modified(paper_id):
-                    continue  # Skip papers with no activity
-                
-                # Get paper details
                 paper_title = db_manager.paper.get_paper_title(paper_id)
                 paper_journal = db_manager.paper.get_paper_journal(paper_id)
                 paper_pmid = db_manager.paper.get_pmid(paper_id)
-                
-                # Get AFP form link
                 afp_form_link = db_manager.afp.get_afp_form_link(paper_id, afp_base_url)
-                
-                # Get widget completion information
-                widgets_info = get_completed_widgets_info(db_manager, paper_id)
-                
-                # Only include if there's at least some widget data
-                if widgets_info['total_completed'] > 0:
-                    paper_info = {
-                        'paper_id': paper_id,
-                        'title': paper_title if paper_title else "No title available",
-                        'journal': paper_journal if paper_journal else "Unknown",
-                        'pmid': paper_pmid if paper_pmid else "N/A",
-                        'form_link': afp_form_link,
-                        'widgets_completed': widgets_info['widgets'],
-                        'total_completed': widgets_info['total_completed'],
-                        'completion_dates': widgets_info['dates']
-                    }
-                    partial_submissions.append(paper_info)
             except Exception as e:
-                logger.debug(f"Error processing paper {paper_id}: {e}")
+                logger.warning(f"Skipping paper {paper_id}, could not read its details: {e}")
                 continue
-    
+
+            partial_submissions.append({
+                'paper_id': paper_id,
+                'title': paper_title if paper_title else "No title available",
+                'journal': paper_journal if paper_journal else "Unknown",
+                'pmid': paper_pmid if paper_pmid else "N/A",
+                'form_link': afp_form_link,
+                'widgets_completed': widgets_info['widgets'],
+                'total_completed': widgets_info['total_completed'],
+                'completion_dates': widgets_info['dates']
+            })
+
     return partial_submissions
 
 
-def get_completed_widgets_info(db_manager, paper_id):
+def get_widgets_info_for_papers(db_manager, paper_ids):
     """
-    Check which widgets have been completed for a given paper
-    Returns a summary of widget completion status
+    Check which widgets have been completed for each of the given papers
+    Returns {paper_id: summary of widget completion status}
+
+    One query per widget table covering every paper at once, rather than per
+    (paper, table): a monthly report spans hundreds of papers, and the latter
+    shape issued ~30 queries for each of them.
     """
-    widgets_info = {
-        'widgets': {},
-        'dates': {},
-        'total_completed': 0
-    }
-    
-    # Map widget categories to the corresponding database tables
-    # Check for row existence, not content - empty strings still mean the widget was saved
-    widget_table_mappings = {
-        "Overview": ["afp_genestudied", "afp_species", "afp_otherspecies", "afp_structcorr"],
-        "Genetics": ["afp_variation", "afp_strain", "afp_structcorr", "afp_seqchange", 
-                     "afp_othervariation", "afp_otherstrain"],
-        "Reagent": ["afp_transgene", "afp_othertransgene", "afp_antibody", "afp_otherantibody"],
-        "Expression": ["afp_otherexpr", "afp_siteaction", "afp_timeaction", "afp_rnaseq"],
-        "Interactions": ["afp_geneprod", "afp_genereg", "afp_geneint"],
-        "Phenotypes": ["afp_newmutant", "afp_rnai", "afp_overexpr", "afp_chemphen", 
-                       "afp_envpheno", "afp_catalyticact", "afp_othergenefunc"],
-        "Disease": ["afp_humdis"],
-        "Comments": ["afp_comment"]
-    }
-    
-    # Check each widget category by looking for row existence in tables
-    for widget_name, table_names in widget_table_mappings.items():
-        widget_has_data = False
-        
+    widgets_info = {paper_id: {'widgets': {category: False for category in WIDGET_CATEGORIES},
+                               'dates': {},
+                               'total_completed': 0}
+                    for paper_id in paper_ids}
+    joinkeys = list(widgets_info.keys())
+    if not joinkeys:
+        return widgets_info
+
+    for widget_name, table_names in WIDGET_TABLE_MAPPINGS.items():
         for table_name in table_names:
             try:
-                # Check if any rows exist in this table for this paper
-                # Use direct SQL query to check row existence
-                paper_id_clean = paper_id.replace('WBPaper', '') if paper_id.startswith('WBPaper') else paper_id
-                query = f"SELECT COUNT(*) FROM {table_name} WHERE joinkey = %s"
-                result = db_manager.execute_query(query, (paper_id_clean,))
-                
-                if result and result[0][0] > 0:
-                    widget_has_data = True
-                    break  # At least one table has rows
+                with db_manager.get_cursor() as curs:
+                    curs.execute(f"SELECT joinkey, max(afp_timestamp) FROM {table_name} "
+                                 f"WHERE joinkey = ANY(%s) GROUP BY joinkey", (joinkeys,))
+                    rows = curs.fetchall()
             except Exception as e:
-                logger.debug(f"Could not check table {table_name} for paper {paper_id}: {e}")
+                # Logged at WARNING on purpose: swallowing this at DEBUG level is
+                # what let the report claim zero partial submissions every month.
+                logger.warning(f"Could not check table {table_name}: {e}")
                 continue
-        
-        widgets_info['widgets'][widget_name] = widget_has_data
-        if widget_has_data:
-            widgets_info['total_completed'] += 1
-    
+
+            for joinkey, last_modified in rows:
+                paper_widgets = widgets_info.get(joinkey)
+                if paper_widgets is None:
+                    continue
+                if not paper_widgets['widgets'][widget_name]:
+                    paper_widgets['widgets'][widget_name] = True
+                    paper_widgets['total_completed'] += 1
+                # A widget can span several tables; report the most recent edit
+                known_date = paper_widgets['dates'].get(widget_name)
+                if last_modified and (known_date is None or last_modified > known_date):
+                    paper_widgets['dates'][widget_name] = last_modified
+
     return widgets_info
 
 
