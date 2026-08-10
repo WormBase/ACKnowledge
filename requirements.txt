@@ -79,7 +79,7 @@ pdfminer.six==20201018
 pluggy==1.3.0
 preshed==3.0.9
 proto-plus==1.26.1
-protobuf==3.20.3
+protobuf==5.29.6
 psutil==5.9.0
 psycopg2-binary==2.9.9
 # py7zr==0.20.6  # Requires pyzstd which needs gcc to compile
