@@ -97,7 +97,7 @@ PyNaCl==1.5.0
 pyparsing==3.1.4
 PyPDF2==3.0.1
 # pyppmd==1.1.0  # May not be available on all PyPI mirrors
-pytest==7.4.3
+pytest==9.0.3
 python-dateutil==2.8.2
 python-dotenv==1.0.1
 python-jose==3.4.0
