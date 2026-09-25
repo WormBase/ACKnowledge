@@ -22,24 +22,25 @@ def load_papers_from_abc(corpus_manager, db_name, db_user, db_password, db_host,
     date_created_from = (today - timedelta(days=selection_config["date_created_window_days"])).isoformat()
     found = get_wb_paper_ids_from_abc(required_workflow_tags=selection_config["required_workflow_tags"],
                                       date_created_from=date_created_from, date_created_to=today.isoformat())
-    candidates = _unique_paper_ids(found)
+    candidates = _unique_papers(found)
     while corpus_manager.size() < num_papers:
         batch = list(islice(candidates, LOAD_BATCH_SIZE))
         if not batch:
             break
         logger.info(f"Loading {len(batch)} candidate papers selected from ABC")
         corpus_manager.load_from_wb_database(
-            db_name, db_user, db_password, db_host, paper_ids=batch, max_num_papers=num_papers,
+            db_name, db_user, db_password, db_host, paper_ids=[wb_paper_id for wb_paper_id, _ in batch],
+            max_num_papers=num_papers, agr_curies=dict(batch),
             text_source="abc_markdown", must_be_autclass_flagged=False, exclude_afp_processed=True,
             exclude_afp_not_curatable=True, exclude_no_main_text=True, exclude_no_author_email=True,
             exclude_temp_pdf=True)
     logger.info(f"{corpus_manager.size()} papers selected from ABC")
 
 
-def _unique_paper_ids(found):
+def _unique_papers(found):
     # the ABC search can return a paper twice when references are created while it is paged
     seen = set()
-    for wb_paper_id, _ in found:
+    for wb_paper_id, agr_curie in found:
         if wb_paper_id not in seen:
             seen.add(wb_paper_id)
-            yield wb_paper_id
+            yield wb_paper_id, agr_curie
