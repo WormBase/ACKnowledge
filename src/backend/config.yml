@@ -216,3 +216,28 @@ ntt_extraction:
 
   inclusion_list:
     species: ["6239"]
+
+abc_paper_selection:
+  # WB papers created in the ABC in the last date_created_window_days days are candidates
+  date_created_window_days: 730
+  # a candidate must have all these ABC workflow tags, grouped by ABC search facet
+  required_workflow_tags:
+    file_workflow:
+      - ATP:0000163  # file converted to text
+    email_extraction:
+      - ATP:0000355  # email extraction complete
+    entity_extraction:
+      - ATP:0000214  # gene extraction complete
+      - ATP:0000215  # allele extraction complete
+      - ATP:0000250  # strain extraction complete
+      - ATP:0000251  # transgenic allele extraction complete
+      - ATP:0000203  # species extraction complete
+    reference_classification:
+      - ATP:0000170  # expression classification complete (otherexpr)
+      - ATP:0000168  # catalytic activity classification complete (catalyticact)
+      - ATP:0000171  # genetic interaction classification complete (geneint)
+      - ATP:0000244  # physical interaction classification complete (geneprod)
+      - ATP:0000245  # regulatory interaction classification complete (genereg)
+      - ATP:0000222  # RNAi classification complete (rnai)
+      - ATP:0000247  # allele phenotype classification complete (newmutant)
+      - ATP:0000248  # transgene overexpression phenotype classification complete (overexpr)

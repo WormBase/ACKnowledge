@@ -2,7 +2,6 @@
 
 import argparse
 import time
-from datetime import datetime, timedelta
 
 from wbtools.db.dbmanager import WBDBManager
 from wbtools.lib.nlp.common import EntityType
@@ -12,6 +11,7 @@ from wbtools.literature.corpus import CorpusManager
 
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import *
+from src.backend.pipeline.abc_paper_selection import load_papers_from_abc
 from src.backend.pipeline.obsolete_strains_filter import ObsoleteStrainsFilter
 
 logger = logging.getLogger(__name__)
@@ -105,15 +105,12 @@ def main():
     if args.paper_ids:
         cm.load_from_wb_database(
             args.db_name, args.db_user, args.db_password, args.db_host,
-            must_be_autclass_flagged=True, exclude_no_main_text=True,
-            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=args.paper_ids)
+            must_be_autclass_flagged=False, exclude_no_main_text=True,
+            exclude_no_author_email=True, exclude_temp_pdf=True, paper_ids=args.paper_ids,
+            text_source="abc_markdown")
     else:
-        cm.load_from_wb_database(
-            args.db_name, args.db_user, args.db_password, args.db_host,
-            from_date=(datetime.now() - timedelta(days=2*365))
-                .strftime("%m-%d-%Y"), max_num_papers=args.num_papers, must_be_autclass_flagged=True,
-            exclude_afp_processed=True, exclude_afp_not_curatable=True, exclude_no_main_text=True,
-            exclude_no_author_email=True, exclude_temp_pdf=True)
+        load_papers_from_abc(cm, args.db_name, args.db_user, args.db_password, args.db_host,
+                             selection_config=config["abc_paper_selection"], num_papers=args.num_papers)
     logging.info("getting lists of entities")
     curated_genes = db_manager.generic.get_curated_genes(exclude_id_used_as_name=False, include_seqname=True,
                                                          include_synonyms=False)
