@@ -141,7 +141,7 @@ tzdata==2023.3
 uritemplate==4.1.1
 urllib3==1.26.18
 wasabi==1.1.2
-wbtools==3.5.0
+wbtools==3.5.1
 weasel==0.3.4
 # xxhash==3.4.1  # May not be available on all PyPI mirrors
 yarl==1.12.0
