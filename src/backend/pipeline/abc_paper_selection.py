@@ -15,8 +15,9 @@ def load_papers_from_abc(corpus_manager, db_name, db_user, db_password, db_host,
 
     Candidates are the WB papers created in the configured window that have all the required ABC workflow tags,
     newest first. They are loaded in batches through the corpus manager, which skips the papers already
-    processed by ACKnowledge and the ones that are not curatable. Errors from the ABC (ABCRequestError)
-    propagate: they stop the run before any paper is processed.
+    processed by ACKnowledge and the ones that are not curatable. The paper text is not loaded: the entities come
+    from the ABC entity extractor (SCRUM-6592). Errors from the ABC (ABCRequestError) propagate: they stop the run
+    before any paper is processed.
     """
     today = today or date.today()
     date_created_from = (today - timedelta(days=selection_config["date_created_window_days"])).isoformat()
@@ -30,10 +31,9 @@ def load_papers_from_abc(corpus_manager, db_name, db_user, db_password, db_host,
         logger.info(f"Loading {len(batch)} candidate papers selected from ABC")
         corpus_manager.load_from_wb_database(
             db_name, db_user, db_password, db_host, paper_ids=[wb_paper_id for wb_paper_id, _ in batch],
-            max_num_papers=num_papers, agr_curies=dict(batch),
-            text_source="abc_markdown", must_be_autclass_flagged=False, exclude_afp_processed=True,
-            exclude_afp_not_curatable=True, exclude_no_main_text=True, exclude_no_author_email=True,
-            exclude_temp_pdf=True)
+            max_num_papers=num_papers, agr_curies=dict(batch), load_pdf_files=False,
+            must_be_autclass_flagged=False, exclude_afp_processed=True, exclude_afp_not_curatable=True,
+            exclude_no_author_email=True)
     logger.info(f"{corpus_manager.size()} papers selected from ABC")
 
 

@@ -54,9 +54,9 @@ def test_batches_are_loaded_with_the_abc_filters():
     run(cm, candidates(3), num_papers=5)
     assert cm.calls == [{"paper_ids": ["00000001", "00000002", "00000003"], "max_num_papers": 5,
                          "agr_curies": {"00000001": "AGRKB:1", "00000002": "AGRKB:2", "00000003": "AGRKB:3"},
-                         "text_source": "abc_markdown", "must_be_autclass_flagged": False,
+                         "load_pdf_files": False, "must_be_autclass_flagged": False,
                          "exclude_afp_processed": True, "exclude_afp_not_curatable": True,
-                         "exclude_no_main_text": True, "exclude_no_author_email": True, "exclude_temp_pdf": True}]
+                         "exclude_no_author_email": True}]
 
 
 def test_candidates_are_loaded_in_batches():

@@ -241,3 +241,8 @@ abc_paper_selection:
       - ATP:0000222  # RNAi classification complete (rnai)
       - ATP:0000247  # allele phenotype classification complete (newmutant)
       - ATP:0000248  # transgene overexpression phenotype classification complete (overexpr)
+
+abc_entities:
+  # SCRUM-6592: from this date the pipeline pre-populates entities from the ABC entity extractor. tfp_* values
+  # dated on or after it come from the ABC and must not be imported into the ABC as ACKnowledge_pipeline tags.
+  import_cutoff: 2026-09-25
