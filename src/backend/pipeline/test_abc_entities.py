@@ -48,6 +48,20 @@ def test_missing_name_falls_back_to_the_id():
     assert values["alleles"] == ["WBVar00088809;%;WBVar00088809"]
 
 
+def test_name_equal_to_the_curie_is_treated_as_missing():
+    # the ABC returns the curie itself as entity_name when it cannot resolve the name
+    values = to_tfp_values(entities(gene=[("WB:WBGene00002974", "WB:WBGene00002974")],
+                                    strain=[("WB:WBStrain00043982", "WB:WBStrain00043982")]), EXCLUSIONS)
+    assert values["genes"] == ["00002974;%;WBGene00002974"]
+    assert values["strains"] == ["WBStrain00043982;%;WBStrain00043982"]
+
+
+def test_species_without_a_real_name_is_dropped():
+    values = to_tfp_values(entities(species=[("NCBITaxon:6239", "NCBITaxon:6239"), ("NCBITaxon:7227", None),
+                                             ("NCBITaxon:6238", "Caenorhabditis briggsae")]), EXCLUSIONS)
+    assert values["species"] == ["Caenorhabditis briggsae"]
+
+
 def test_values_are_sorted_by_name():
     values = to_tfp_values(entities(gene=[("WB:WBGene00000009", "zyg-1"), ("WB:WBGene00000001", "aak-2")]),
                            EXCLUSIONS)

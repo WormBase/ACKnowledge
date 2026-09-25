@@ -20,7 +20,11 @@ def to_tfp_values(entities, exclusion_lists):
         by_id = {}
         for entity, name in entities.get(entity_type, []):
             short_id = entity.split(":", 1)[1]
-            if not name:
+            # the ABC returns the curie itself as the name when it cannot resolve it
+            if not name or name == entity:
+                if entity_type == "species":
+                    logger.warning(f"ABC species {entity} has no name, skipping it")
+                    continue
                 logger.warning(f"ABC {entity_type} {entity} has no name, using its id")
                 name = short_id
             if (short_id if entity_type == "species" else name) in excluded:
