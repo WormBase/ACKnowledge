@@ -30,3 +30,6 @@ yarn-error.log*
 
 # Claude configuration
 CLAUDE.md
+
+# design specs and implementation plans stay local (not versioned)
+docs/superpowers/
