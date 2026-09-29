@@ -3,13 +3,17 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import {useQuery} from "react-query";
 import axios from "axios";
-import {Form} from "react-bootstrap";
+import {Alert, Form} from "react-bootstrap";
+import {CLASSIFIER_STATS_WARNING, isUnavailable} from "../../lib/abcClassifiers";
 
 const AutoDetectedFlagsChart = () => {
     const [showTN, setShowTN] = useState(true);
     const {data, isSuccess} = useQuery('flagsConfusionMatrix', () =>
         axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/data_type_flags_confusion_matrix")
     );
+    if (isUnavailable(data)) {
+        return <Alert variant="warning">{CLASSIFIER_STATS_WARNING}</Alert>;
+    }
 
     const matrix = isSuccess ? data.data : {};
 

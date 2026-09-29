@@ -9,6 +9,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {resetPaperListFilters, setCombineFiltersBy, togglePaperListFilter} from "../../redux/actions";
 import Collapse from "react-bootstrap/Collapse";
 import {Button} from "react-bootstrap";
+import {CLASSIFICATION_FILTERS_WARNING} from "../../lib/abcClassifiers";
 
 const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
 
@@ -109,6 +110,7 @@ const PapersFilters = ({papersPerPage, setNumPapersPerPageCallback}) => {
                                                             <Row>
                                                                 <Col sm="6">
                                                                     <strong>Automatically flagged data types (NNs)</strong>
+                                                                    <br/><small className="text-muted">{CLASSIFICATION_FILTERS_WARNING}</small>
                                                                 </Col>
                                                                 <Col sm="6">
                                                                     <strong>Manually flagged data types</strong>

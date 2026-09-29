@@ -4,6 +4,7 @@ import {useQuery} from "react-query";
 import axios from "axios";
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import {CLASSIFIER_STATS_WARNING, predictedFlagsUnavailable} from "../../lib/abcClassifiers";
 
 const rateColor = (rate) => {
     if (rate >= 80) return '#28a745';
@@ -25,6 +26,16 @@ const MetricCard = ({title, rows, borderColor}) => (
                     <small className="text-muted">{row.label}</small>
                 </div>
             ))}
+        </Card.Body>
+    </Card>
+);
+
+const UnavailableCard = ({title}) => (
+    <Card className="text-center" style={{borderTop: '3px solid #6c757d'}}>
+        <Card.Body style={{padding: '12px 10px'}}>
+            <small className="text-muted"><strong>{title}</strong></small>
+            <hr style={{margin: '6px 0'}}/>
+            <small className="text-muted">{CLASSIFIER_STATS_WARNING}</small>
         </Card.Body>
     </Card>
 );
@@ -83,7 +94,8 @@ const FlagsTrendsChart = ({tsData, binSize}) => {
     ];
 
     const series = [];
-    pairs.forEach(pair => {
+    const predUnavailable = predictedFlagsUnavailable(tsData);
+    pairs.filter(pair => !predUnavailable || pair.key === 'flags_author_vs_curator').forEach(pair => {
         series.push({
             name: pair.label + ' Accuracy',
             data: tsData.map(item => item[1][pair.key + '_accuracy'] || 0),
@@ -135,6 +147,7 @@ const OverallAgreementCards = () => {
     const d = isSuccess ? data.data : {};
     const ent = d.entities || {};
     const flg = d.flags || {};
+    const classifierUnavailable = Boolean(d.classifier_stats_unavailable);
     const tsData = tsRaw ? tsRaw.data : [];
 
     return (
@@ -172,14 +185,16 @@ const OverallAgreementCards = () => {
             <h6 className="text-muted">Data Type Flags (Accuracy &amp; F1)</h6>
             <Row className="mb-3">
                 <Col md={4}>
-                    <MetricCard
-                        title="Predicted vs Author"
-                        borderColor={rateColor(flg.predicted_vs_author_accuracy || 0)}
-                        rows={[
-                            {label: 'Accuracy', value: flg.predicted_vs_author_accuracy || 0},
-                            {label: 'F1 Score', value: flg.predicted_vs_author_f1 || 0},
-                        ]}
-                    />
+                    {classifierUnavailable ? <UnavailableCard title="Predicted vs Author"/> : (
+                        <MetricCard
+                            title="Predicted vs Author"
+                            borderColor={rateColor(flg.predicted_vs_author_accuracy || 0)}
+                            rows={[
+                                {label: 'Accuracy', value: flg.predicted_vs_author_accuracy || 0},
+                                {label: 'F1 Score', value: flg.predicted_vs_author_f1 || 0},
+                            ]}
+                        />
+                    )}
                 </Col>
                 <Col md={4}>
                     <MetricCard
@@ -192,14 +207,16 @@ const OverallAgreementCards = () => {
                     />
                 </Col>
                 <Col md={4}>
-                    <MetricCard
-                        title="Predicted vs Curator"
-                        borderColor={rateColor(flg.predicted_vs_curator_accuracy || 0)}
-                        rows={[
-                            {label: 'Accuracy', value: flg.predicted_vs_curator_accuracy || 0},
-                            {label: 'F1 Score', value: flg.predicted_vs_curator_f1 || 0},
-                        ]}
-                    />
+                    {classifierUnavailable ? <UnavailableCard title="Predicted vs Curator"/> : (
+                        <MetricCard
+                            title="Predicted vs Curator"
+                            borderColor={rateColor(flg.predicted_vs_curator_accuracy || 0)}
+                            rows={[
+                                {label: 'Accuracy', value: flg.predicted_vs_curator_accuracy || 0},
+                                {label: 'F1 Score', value: flg.predicted_vs_curator_f1 || 0},
+                            ]}
+                        />
+                    )}
                 </Col>
             </Row>
             <FlagsTrendsChart tsData={tsData} binSize={binSize} />

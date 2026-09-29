@@ -1,4 +1,5 @@
 import {extractEntitiesFromTfpString} from "../AFPValues";
+import {isChecked} from "./abcClassifiers";
 
 export const downloadFile = async (fileContent, fileName, fileType, fileExtension) => {
         const blob = new Blob([fileContent], {type: fileType});
@@ -80,21 +81,21 @@ export const downloadCSVSpreadsheet = async (paperID) => {
                 formContent += "New Strains reported\nList here\n\n";
                 formContent += "New Transgenes reported\nList here\n\n";
                 formContent += "Known Antobodies used in the study\nList here\n\n";
-                formContent += "Are you reporting an allele sequence change? (Auto-identified)\n" + (flags["svm_seqchange_checked"] ? "Yes" : "No") + "\n\n";
+                formContent += "Are you reporting an allele sequence change?\nNo\n\n";
                 formContent += "Are you reporting a Gene model update and gene sequence connection?\nNo\n\n";
                 formContent += "Did you generate a new antibody? If yes specify\nNo\n\n";
 
                 formContent += "*** Section 2: Datatypes ***\nConfirm if your paper contains any of the data types below\n\n";
-                formContent += "Anatomic Expression data in WT condition (Auto-identified)\n" + (flags["svm_otherexpr_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Anatomic Expression data in WT condition (Auto-identified)\n" + (isChecked(flags["svm_otherexpr_checked"]) ? "Yes" : "No") + "\n\n";
                 formContent += "Site of action data\nNo\n\n";
                 formContent += "Time of action data\nNo\n\n";
                 formContent += "RNAseq data\nNo\n\n";
-                formContent += "Genetic Interactions (Auto-identified)\n" + (flags["svm_geneint_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Physical Interactions (Auto-identified)\n" + (flags["svm_geneprod_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Regulatory Interactions (Auto-identified)\n" + (flags["svm_genereg_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Allele-Phenotype data (Auto-identified)\n" + (flags["svm_newmutant_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Allele-RNAi data (Auto-identified)\n" + (flags["svm_rnai_checked"] ? "Yes": "No") + "\n\n";
-                formContent += "Transgene Overexpression Phenotype data (Auto-identified)\n" + (flags["svm_overexpr_checked"] ? "Yes": "No") + "\n\n";
+                formContent += "Genetic Interactions (Auto-identified)\n" + (isChecked(flags["svm_geneint_checked"]) ? "Yes" : "No") + "\n\n";
+                formContent += "Physical Interactions (Auto-identified)\n" + (isChecked(flags["svm_geneprod_checked"]) ? "Yes" : "No") + "\n\n";
+                formContent += "Regulatory Interactions (Auto-identified)\n" + (isChecked(flags["svm_genereg_checked"]) ? "Yes" : "No") + "\n\n";
+                formContent += "Allele-Phenotype data (Auto-identified)\n" + (isChecked(flags["svm_newmutant_checked"]) ? "Yes" : "No") + "\n\n";
+                formContent += "Allele-RNAi data (Auto-identified)\n" + (isChecked(flags["svm_rnai_checked"]) ? "Yes" : "No") + "\n\n";
+                formContent += "Transgene Overexpression Phenotype data (Auto-identified)\n" + (isChecked(flags["svm_overexpr_checked"]) ? "Yes" : "No") + "\n\n";
                 formContent += "Chemical Induced Phenotype Data\nNo\n\n";
                 formContent += "Environmental Induced Phenotype Data\nNo\n\n";
                 formContent += "Enzymatic activity Data\nNo\n\n";

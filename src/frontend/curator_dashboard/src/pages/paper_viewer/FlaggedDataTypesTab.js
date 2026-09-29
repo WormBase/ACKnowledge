@@ -5,11 +5,25 @@ import {fetchFlaggedData} from "../../redux/actions";
 import {useQuery} from "react-query";
 import {useSelector} from "react-redux";
 import {Spinner} from "react-bootstrap";
+import {classifierValue} from "../../lib/abcClassifiers";
+
+const FLAGGED_DATATYPES = [
+    {datatype: "otherexpr", title: "Anatomic expression data in WT condition"},
+    {datatype: "seqchange", title: "Allele sequence change", manualOnly: true},
+    {datatype: "geneint", title: "Genetic interactions"},
+    {datatype: "geneprod", title: "Physical interactions"},
+    {datatype: "genereg", title: "Regulatory interactions"},
+    {datatype: "newmutant", title: "Allele phenotype"},
+    {datatype: "rnai", title: "RNAi phenotype"},
+    {datatype: "overexpr", title: "Transgene overexpression phenotype"},
+    {datatype: "catalyticact", title: "Enzymatic activity"},
+];
 
 const FlaggedDataTypesTab = () => {
     const paperID = useSelector((state) => state.paperID);
     const queryRes = useQuery('paperFlagged' + paperID, () =>
         fetchFlaggedData(paperID));
+    const data = queryRes.isSuccess ? queryRes.data.data : {};
 
     return(
         <div>
@@ -40,24 +54,11 @@ const FlaggedDataTypesTab = () => {
                             <hr/>
                         </div>
                     </div>
-                    <FlaggedDiffRow title="Anatomic expression data in WT condition" afpChecked={queryRes.data.data.afp_otherexpr_checked}
-                                    tfpChecked={queryRes.data.data.svm_otherexpr_checked} afpDetails={queryRes.data.data.afp_otherexpr_details}/>
-                    <FlaggedDiffRow title="Allele sequence change" afpChecked={queryRes.data.data.afp_seqchange_checked}
-                                    tfpChecked={queryRes.data.data.svm_seqchange_checked} afpDetails={queryRes.data.data.afp_seqchange_details}/>
-                    <FlaggedDiffRow title="Genetic interactions" afpChecked={queryRes.data.data.afp_geneint_checked}
-                                    tfpChecked={queryRes.data.data.svm_geneint_checked} afpDetails={queryRes.data.data.afp_geneint_details}/>
-                    <FlaggedDiffRow title="Physical interactions" afpChecked={queryRes.data.data.afp_geneprod_checked}
-                                    tfpChecked={queryRes.data.data.svm_geneprod_checked} afpDetails={queryRes.data.data.afp_geneprod_details}/>
-                    <FlaggedDiffRow title="Regulatory interactions" afpChecked={queryRes.data.data.afp_genereg_checked}
-                                    tfpChecked={queryRes.data.data.svm_genereg_checked} afpDetails={queryRes.data.data.afp_genereg_details}/>
-                    <FlaggedDiffRow title="Allele phenotype" afpChecked={queryRes.data.data.afp_newmutant_checked}
-                                    tfpChecked={queryRes.data.data.svm_newmutant_checked} afpDetails={queryRes.data.data.afp_newmutant_details}/>
-                    <FlaggedDiffRow title="RNAi phenotype" afpChecked={queryRes.data.data.afp_rnai_checked}
-                                    tfpChecked={queryRes.data.data.svm_rnai_checked} afpDetails={queryRes.data.data.afp_rnai_details}/>
-                    <FlaggedDiffRow title="Transgene overexpression phenotype" afpChecked={queryRes.data.data.afp_overexpr_checked}
-                                    tfpChecked={queryRes.data.data.svm_overexpr_checked} afpDetails={queryRes.data.data.afp_overexpr_details}/>
-                    <FlaggedDiffRow title="Enzymatic activity" afpChecked={queryRes.data.data.afp_catalyticact_checked}
-                                    tfpChecked={queryRes.data.data.svm_catalyticact_checked} afpDetails={queryRes.data.data.afp_catalyticact_details}/>
+                    {FLAGGED_DATATYPES.map(({datatype, title, manualOnly}) =>
+                        <FlaggedDiffRow key={datatype} title={title}
+                                        afpChecked={data["afp_" + datatype + "_checked"]}
+                                        tfpChecked={classifierValue(data["svm_" + datatype + "_checked"], manualOnly)}
+                                        afpDetails={data["afp_" + datatype + "_details"]}/>)}
                 </div>
                 : null}
         </div>

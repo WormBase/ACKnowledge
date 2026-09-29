@@ -1,5 +1,6 @@
 import React from "react";
-import {Table} from "react-bootstrap";
+import {Alert, Table} from "react-bootstrap";
+import {CLASSIFIER_STATS_WARNING, isUnavailable} from "../../lib/abcClassifiers";
 import {useQuery} from "react-query";
 import axios from "axios";
 
@@ -8,6 +9,9 @@ const rateColor = (rate) => {
     if (rate >= 60) return '#ffc107';
     return '#dc3545';
 };
+
+const AUTO_DETECTED_FLAGS = ["Expression", "Seq. change", "Genetic int.", "Physical int.", "Regulatory int.",
+    "Allele phenotype", "RNAi phenotype", "Overexpr. phenotype", "Enzymatic activity"];
 
 const AutoDetectedFlagsTable = () => {
     const {data: matrixData} = useQuery('flagsConfusionMatrix', () =>
@@ -19,6 +23,47 @@ const AutoDetectedFlagsTable = () => {
 
     const matrix = matrixData ? matrixData.data : {};
     const curator = curatorData ? curatorData.data : {};
+
+    if (isUnavailable(matrixData)) {
+        return (
+            <div>
+                <Alert variant="warning">{CLASSIFIER_STATS_WARNING}</Alert>
+                <Table striped bordered hover size="sm" responsive>
+                    <thead>
+                        <tr>
+                            <th>Data Type</th>
+                            <th>Author Flagged</th>
+                            <th>Curator Rev.</th>
+                            <th>Author vs Curator Acc.</th>
+                            <th>Author vs Curator F1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {AUTO_DETECTED_FLAGS.filter(name => curator[name]).map(name => {
+                            const cur = curator[name];
+                            return (
+                                <tr key={name}>
+                                    <td><strong>{name}</strong></td>
+                                    <td>{cur.author_flagged}</td>
+                                    <td>{cur.curator_reviewed || 0}</td>
+                                    <td>{cur.curator_reviewed > 0 ? (
+                                        <span style={{color: rateColor(cur.accuracy_ac)}}>
+                                            <strong>{cur.accuracy_ac}%</strong>
+                                        </span>
+                                    ) : "—"}</td>
+                                    <td>{cur.both_positive > 0 ? (
+                                        <span style={{color: rateColor(cur.f1_ac)}}>
+                                            <strong>{cur.f1_ac}%</strong>
+                                        </span>
+                                    ) : "—"}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
+            </div>
+        );
+    }
 
     const sorted = Object.entries(matrix)
         .sort((a, b) => (b[1].tp + b[1].fn) - (a[1].tp + a[1].fn));

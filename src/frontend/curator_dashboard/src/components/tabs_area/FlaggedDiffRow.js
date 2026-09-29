@@ -1,4 +1,5 @@
 import React from 'react';
+import {authorChanged} from "../../lib/abcClassifiers";
 
 const FlaggedDiffRow = ({title, tfpChecked, afpChecked, afpDetails}) => {
     return(
@@ -15,7 +16,7 @@ const FlaggedDiffRow = ({title, tfpChecked, afpChecked, afpDetails}) => {
                     Details: <strong>{afpDetails !== "'null'" && afpDetails !== "null" ? afpDetails : "N/A"}</strong>
                 </div>
                 <div className="col-sm-3">
-                    <strong>{afpDetails !== "'null'" && afpDetails !== "null"? tfpChecked !== afpChecked ? "Yes" : "No" : "N/A"}</strong>
+                    <strong>{authorChanged(tfpChecked, afpChecked, afpDetails)}</strong>
                 </div>
             </div>
             <div className="row">

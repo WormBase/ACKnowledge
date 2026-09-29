@@ -3,7 +3,8 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import {useQuery} from "react-query";
 import axios from "axios";
-import {Spinner} from "react-bootstrap";
+import {Alert, Spinner} from "react-bootstrap";
+import {CLASSIFIER_STATS_WARNING, predictedFlagsUnavailable} from "../../lib/abcClassifiers";
 
 const OverallTrends = () => {
     const [binSize, setBinSize] = useState('y');
@@ -25,6 +26,7 @@ const OverallTrends = () => {
     }
 
     const tsData = isSuccess ? data.data : [];
+    const predUnavailable = predictedFlagsUnavailable(tsData);
     const showYearOnly = binSize.includes('y');
 
     const categories = tsData.map(item => {
@@ -52,7 +54,7 @@ const OverallTrends = () => {
             {key: 'flags_author_vs_curator', label: 'Author vs Curator', color: '#28a745'},
             {key: 'flags_pred_vs_curator', label: 'Predicted vs Curator', color: '#dc3545'},
         ];
-        pairs.forEach(pair => {
+        pairs.filter(pair => !predUnavailable || pair.key === 'flags_author_vs_curator').forEach(pair => {
             series.push({
                 name: pair.label + ' Accuracy',
                 data: tsData.map(item => item[1][pair.key + '_accuracy'] || 0),
@@ -102,6 +104,8 @@ const OverallTrends = () => {
                     <option value="m">1 month</option>
                 </select>
             </div>
+            {view === 'flags' && predUnavailable ?
+                <Alert variant="warning" className="mt-2">{CLASSIFIER_STATS_WARNING}</Alert> : null}
         </div>
     );
 };

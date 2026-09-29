@@ -10,32 +10,78 @@ from urllib.request import urlopen
 
 from wbtools.db.dbmanager import WBDBManager
 
+from src.backend.common.abc_paper_data import (WB_PAPER_ID, ack_pipeline_levels, ack_pipeline_tfp_strings,
+                                               get_ack_pipeline_tags)
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import EmailManager, to_redirect_url
 from src.backend.common.google_drive_service import GoogleDriveService
 
 logger = logging.getLogger(__name__)
 
+MANUAL_ONLY_DATATYPES = ("seqchange",)
+
 
 class PaperInfoReader:
 
     def __init__(self):
         self.base_url = os.getenv("PAPER_INFO_API", "https://caltech-curation.textpressolab.com/pub/cgi-bin/forms/textpresso/first_pass_api.cgi?action=jsonPaper")
+        self.datatype_topics = load_config_from_file()["abc_classifications"]["datatype_topics"]
 
     def on_get(self, req, resp):
         paper_id = req.params["paper"]
         paper_passwd = req.get_param("passwd")
         if not paper_id or not paper_passwd:
             raise falcon.HTTPBadRequest("Missing parameters", "Both 'paper' and 'passwd' parameters are required.")
+        if not WB_PAPER_ID.fullmatch(paper_id):
+            raise falcon.HTTPBadRequest("Invalid parameter", "'paper' must be a WB paper number.")
 
         url = f"{self.base_url}&paper={paper_id}&passwd={paper_passwd}"
         try:
             data = urlopen(url)
-            resp.body = data.read().decode('utf-8')
-            resp.status = falcon.HTTP_200
+            body = data.read().decode('utf-8')
         except Exception as e:
             logger.error(f"Error fetching paper data: {e}")
             raise falcon.HTTPInternalServerError("Error fetching paper data")
+        resp.body = self.add_ack_pipeline_data(paper_id, body)
+        resp.status = falcon.HTTP_200
+
+    def add_ack_pipeline_data(self, paper_id, body):
+        """Replace the Caltech pre-checks and pre-populated entities in the CGI JSON with the paper's
+        ACKnowledge_pipeline tags in the ABC, each where the paper has them (SCRUM-6593).
+
+        seqchange is manual-only: its automated value is always removed.
+        """
+        try:
+            data = json.loads(body)
+        except ValueError:
+            logger.warning(f"Paper info of {paper_id} is not JSON, returning it unchanged")
+            return body
+        if not isinstance(data, dict):
+            return body
+        for datatype in MANUAL_ONLY_DATATYPES:
+            self._field(data, datatype).pop("blackbox", None)
+        tags = get_ack_pipeline_tags(paper_id)
+        if tags is None:
+            return json.dumps(data)
+        levels = ack_pipeline_levels(tags, self.datatype_topics)
+        if levels:
+            for datatype in self.datatype_topics:
+                field = self._field(data, datatype)
+                # a Caltech value must not pre-check a datatype ACKnowledge didn't pre-check
+                field.pop("blackbox", None)
+                if datatype in levels:
+                    field["blackbox"] = levels[datatype]
+        tfp_strings = ack_pipeline_tfp_strings(tags)
+        if tfp_strings is not None:
+            for table, value in tfp_strings.items():
+                self._field(data, table)["tfp"] = value
+        return json.dumps(data)
+
+    @staticmethod
+    def _field(data, key):
+        if not isinstance(data.get(key), dict):
+            data[key] = {}
+        return data[key]
 
 
 class AutocompleteReader:

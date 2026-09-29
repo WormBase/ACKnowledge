@@ -12,10 +12,23 @@ from wbtools.lib.nlp.common import EntityType
 from wbtools.literature.corpus import CorpusManager
 from wbtools.literature.paper import WBPaper
 
+from src.backend.common.abc_paper_data import ack_pipeline_levels, ack_pipeline_tfp_strings, get_ack_pipeline_tags
+from src.backend.common.config import load_config_from_file
+
 logger = logging.getLogger(__name__)
 
 
 MIN_CLASS_VAL = "medium"
+# datatypes of the flagged tab; seqchange is manual-only and never has an automated value
+FLAGGED_DATATYPES = ("otherexpr", "seqchange", "geneint", "geneprod", "genereg", "newmutant", "rnai", "overexpr",
+                     "catalyticact")
+MANUAL_ONLY_DATATYPES = ("seqchange",)
+# lists response key -> tfp_*/afp_* table suffix
+LIST_TABLES = {"genestudied": "genestudied", "species": "species", "alleles": "variation", "strains": "strain",
+               "transgenes": "transgene"}
+CLASSIFIER_STATS_WARNING = ("Classifier statistics are unavailable until the ABC statistics endpoints are available "
+                            "(SCRUM-6600).")
+CLASSIFIER_STATS_UNAVAILABLE = {"unavailable": True, "reason": CLASSIFIER_STATS_WARNING}
 
 
 class CuratorDashboardReader:
@@ -25,6 +38,7 @@ class CuratorDashboardReader:
         self.afp_base_url = afp_base_url
         self.tazendra_username = tazendra_username
         self.tazendra_password = tazendra_password
+        self.datatype_topics = load_config_from_file()["abc_classifications"]["datatype_topics"]
 
     @staticmethod
     def transform_none_to_string(val):
@@ -34,20 +48,21 @@ class CuratorDashboardReader:
             return val
 
     def get_all_lists(self, paper_id):
-        tfp_genestudied = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_genestudied"))
-        afp_genestudied = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_genestudied"))
-        tfp_species = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_species"))
-        afp_species = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_species"))
-        tfp_alleles = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_variation"))
-        afp_alleles = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_variation"))
-        tfp_strains = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_strain"))
-        afp_strains = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_strain"))
-        tfp_transgenes = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_transgene"))
-        afp_transgenes = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_transgene"))
-        return {"tfp_genestudied": tfp_genestudied, "afp_genestudied": afp_genestudied, "tfp_species": tfp_species,
-                "afp_species": afp_species, "tfp_alleles": tfp_alleles, "afp_alleles": afp_alleles,
-                "tfp_strains": tfp_strains, "afp_strains": afp_strains, "tfp_transgenes": tfp_transgenes,
-                "afp_transgenes": afp_transgenes}
+        """Get the pre-populated (tfp) and author (afp) entities of a paper.
+
+        The pre-populated entities come from the paper's ACKnowledge_pipeline tags in the ABC, if it has any, and
+        otherwise from the tfp_* tables.
+        """
+        tags = get_ack_pipeline_tags(paper_id)
+        abc_tfp = ack_pipeline_tfp_strings(tags) if tags is not None else None
+        lists = {}
+        for key, table in LIST_TABLES.items():
+            if abc_tfp is not None:
+                lists["tfp_" + key] = abc_tfp[table]
+            else:
+                lists["tfp_" + key] = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_" + table))
+            lists["afp_" + key] = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_" + table))
+        return lists
 
     def get_class_author_sub_val(self, table_name, paper_id):
         afp_val = self.db._get_single_field(paper_id, table_name)
@@ -78,49 +93,28 @@ class CuratorDashboardReader:
 
 
     def get_all_flagged_data_types(self, paper_id):
-        classifications = self.db.paper.get_automated_classification_values(paper_id)
-        svm_otherexpr = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                  cl="otherexpr", min_value=MIN_CLASS_VAL)
-        afp_otherexpr_checked, afp_otherexpr_details = self.get_class_author_sub_val("afp_otherexpr", paper_id)
-        svm_seqchange = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                  cl="seqchange", min_value=MIN_CLASS_VAL)
-        afp_seqchange_checked, afp_seqchange_details = self.get_class_author_sub_val("afp_seqchange", paper_id)
-        svm_geneint = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                cl="geneint", min_value=MIN_CLASS_VAL)
-        afp_geneint_checked, afp_geneint_details = self.get_class_author_sub_val("afp_geneint", paper_id)
-        svm_geneprod = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                 cl="geneprod", min_value=MIN_CLASS_VAL)
-        afp_geneprod_checked, afp_geneprod_details = self.get_class_author_sub_val("afp_geneprod", paper_id)
-        svm_genereg = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                cl="genereg", min_value=MIN_CLASS_VAL)
-        afp_genereg_checked, afp_genereg_details = self.get_class_author_sub_val("afp_genereg", paper_id)
-        svm_newmutant = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                  cl="newmutant", min_value=MIN_CLASS_VAL)
-        afp_newmutant_checked, afp_newmutant_details = self.get_class_author_sub_val("afp_newmutant", paper_id)
-        svm_rnai = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                             cl="rnai", min_value=MIN_CLASS_VAL)
-        afp_rnai_checked, afp_rnai_details = self.get_class_author_sub_val("afp_rnai", paper_id)
-        svm_overexpr = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                 cl="overexpr", min_value=MIN_CLASS_VAL)
-        afp_overexpr_checked, afp_overexpr_details = self.get_class_author_sub_val("afp_overexpr", paper_id)
-        svm_catalyticact = self.db.paper.is_paper_positive_for_class(automated_classification_values=classifications,
-                                                                     cl="catalyticact", min_value=MIN_CLASS_VAL)
-        afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
-        return {"svm_otherexpr_checked": svm_otherexpr, "afp_otherexpr_checked": afp_otherexpr_checked,
-                "afp_otherexpr_details": afp_otherexpr_details,
-                "svm_seqchange_checked": svm_seqchange, "afp_seqchange_checked": afp_seqchange_checked,
-                "afp_seqchange_details": afp_seqchange_details, "svm_geneint_checked": svm_geneint,
-                "afp_geneint_checked": afp_geneint_checked, "afp_geneint_details": afp_geneint_details,
-                "svm_geneprod_checked": svm_geneprod, "afp_geneprod_checked": afp_geneprod_checked,
-                "afp_geneprod_details": afp_geneprod_details, "svm_genereg_checked": svm_genereg,
-                "afp_genereg_checked": afp_genereg_checked, "afp_genereg_details": afp_genereg_details,
-                "svm_newmutant_checked": svm_newmutant, "afp_newmutant_checked": afp_newmutant_checked,
-                "afp_newmutant_details": afp_newmutant_details, "svm_rnai_checked": svm_rnai,
-                "afp_rnai_checked": afp_rnai_checked, "afp_rnai_details": afp_rnai_details,
-                "svm_overexpr_checked": svm_overexpr, "afp_overexpr_checked": afp_overexpr_checked,
-                "afp_overexpr_details": afp_overexpr_details,
-                "svm_catalyticact_checked": svm_catalyticact, "afp_catalyticact_checked": afp_catalyticact_checked,
-                "afp_catalyticact_details": afp_catalyticact_details}
+        """Get what ACKnowledge pre-checked (svm_*) and what the author answered (afp_*) for the flagged datatypes.
+
+        The pre-checks come from the paper's ACKnowledge_pipeline classification tags in the ABC, if it has any, and
+        otherwise from the Caltech cur_blackbox values (MEDIUM and above).
+        """
+        tags = get_ack_pipeline_tags(paper_id)
+        levels = ack_pipeline_levels(tags, self.datatype_topics) if tags is not None else {}
+        classifications = None if levels else self.db.paper.get_automated_classification_values(paper_id)
+        flagged = {}
+        for datatype in FLAGGED_DATATYPES:
+            if datatype in MANUAL_ONLY_DATATYPES:
+                pre_checked = False
+            elif levels:
+                pre_checked = levels.get(datatype, "NEG") != "NEG"
+            else:
+                pre_checked = self.db.paper.is_paper_positive_for_class(
+                    automated_classification_values=classifications, cl=datatype, min_value=MIN_CLASS_VAL)
+            flagged[f"svm_{datatype}_checked"] = pre_checked
+            checked, details = self.get_class_author_sub_val(f"afp_{datatype}", paper_id)
+            flagged[f"afp_{datatype}_checked"] = checked
+            flagged[f"afp_{datatype}_details"] = details
+        return flagged
 
     def get_all_yes_no_data_types(self, paper_id):
         afp_modchange_checked, afp_modchange_details = self.get_class_author_sub_val("afp_structcorr", paper_id)
@@ -320,95 +314,13 @@ class CuratorDashboardReader:
             result.append([period_key, period_rates])
         return result
 
-    def _compute_data_type_flags_confusion_matrix(self):
-        """Compute TP/FP/FN/TN for auto-detected data type flags.
-
-        Compares automated prediction (cur_blackbox) against author response
-        (afp_* tables). Only considers papers with full submissions.
-        """
-        auto_detected_flags = {
-            "Expression": "otherexpr",
-            "Seq. change": "seqchange",
-            "Genetic int.": "geneint",
-            "Physical int.": "geneprod",
-            "Regulatory int.": "genereg",
-            "Allele phenotype": "newmutant",
-            "RNAi phenotype": "rnai",
-            "Overexpr. phenotype": "overexpr",
-            "Enzymatic activity": "catalyticact",
-        }
-        results = {}
-
-        with self.db.afp.get_cursor() as curs:
-            curs.execute(
-                "SELECT DISTINCT afp_version.joinkey "
-                "FROM afp_version "
-                "JOIN afp_lasttouched ON afp_version.joinkey = "
-                "afp_lasttouched.joinkey "
-                "WHERE afp_version.afp_version = '2'"
-            )
-            submitted_papers = set(row[0] for row in curs.fetchall())
-
-            for display_name, flag_name in auto_detected_flags.items():
-                afp_table = "afp_{}".format(flag_name)
-
-                curs.execute(
-                    "SELECT DISTINCT {t}.joinkey "
-                    "FROM {t} "
-                    "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
-                    "JOIN afp_lasttouched ON {t}.joinkey = "
-                    "afp_lasttouched.joinkey "
-                    "WHERE afp_version.afp_version = '2' "
-                    "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
-                        t=afp_table
-                    )
-                )
-                author_positive = set(row[0] for row in curs.fetchall())
-
-                curs.execute(
-                    "SELECT DISTINCT cur_paper FROM cur_blackbox "
-                    "WHERE cur_datatype = %s "
-                    "AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')",
-                    (flag_name,)
-                )
-                predicted_positive = set(
-                    row[0] for row in curs.fetchall()
-                ) & submitted_papers
-
-                tp = len(author_positive & predicted_positive)
-                fp = len(predicted_positive - author_positive)
-                fn = len(author_positive - predicted_positive)
-                tn = len(submitted_papers - author_positive - predicted_positive)
-                total = len(submitted_papers)
-
-                precision = round(
-                    (tp / (tp + fp) * 100) if (tp + fp) > 0 else 0, 1
-                )
-                recall = round(
-                    (tp / (tp + fn) * 100) if (tp + fn) > 0 else 0, 1
-                )
-                accuracy = round(
-                    ((tp + tn) / total * 100) if total > 0 else 0, 1
-                )
-
-                f1 = round(
-                    (2 * precision * recall / (precision + recall))
-                    if (precision + recall) > 0 else 0, 1
-                )
-
-                results[display_name] = {
-                    "papers": total, "tp": tp, "fp": fp, "fn": fn, "tn": tn,
-                    "precision": precision, "recall": recall,
-                    "accuracy": accuracy, "f1": f1,
-                }
-        return results
-
     def _compute_data_type_flags_curator_agreement(self):
         """Compute curator validation and agreement with authors for all 17
         data type flags using the cur_curdata table.
 
         Agreement is computed only among papers where the curator has made
         a decision (positive, negative, or curated), not all submitted papers.
+        Predicted vs curator values are None until the ABC statistics endpoints are available (SCRUM-6600).
         """
         # AFP flag name -> cur_curdata datatype name mapping
         # Most match, but some differ
@@ -522,54 +434,6 @@ class CuratorDashboardReader:
                     if (precision_ac + recall_ac) > 0 else 0, 1
                 )
 
-                # Predicted vs Curator (auto-detected flags only)
-                # Also restricted to submitted papers
-                auto_detected = {
-                    "otherexpr", "seqchange", "geneint", "geneprod",
-                    "genereg", "newmutant", "rnai", "overexpr",
-                    "catalyticact",
-                }
-                pc_accuracy = 0
-                pc_f1 = 0
-                if afp_flag in auto_detected and ac_count > 0:
-                    curs.execute(
-                        "SELECT DISTINCT cur_paper FROM cur_blackbox "
-                        "WHERE cur_datatype = %s "
-                        "AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')",
-                        (afp_flag,)
-                    )
-                    pred_positive = set(
-                        r[0] for r in curs.fetchall()
-                    )
-                    tp_pc = len(
-                        pred_positive & ac_curator_pos & ac_universe
-                    )
-                    agree_pc = sum(
-                        1 for p in ac_universe
-                        if (p in pred_positive) == (p in ac_curator_pos)
-                    )
-                    pc_accuracy = round(
-                        agree_pc / ac_count * 100, 1
-                    )
-                    fp_pc = len(
-                        (pred_positive & ac_universe) - ac_curator_pos
-                    )
-                    fn_pc = len(
-                        ac_curator_pos - pred_positive
-                    )
-                    prec_pc = (
-                        (tp_pc / (tp_pc + fp_pc) * 100)
-                        if (tp_pc + fp_pc) > 0 else 0
-                    )
-                    rec_pc = (
-                        (tp_pc / (tp_pc + fn_pc) * 100)
-                        if (tp_pc + fn_pc) > 0 else 0
-                    )
-                    pc_f1 = round(
-                        (2 * prec_pc * rec_pc / (prec_pc + rec_pc))
-                        if (prec_pc + rec_pc) > 0 else 0, 1
-                    )
-
                 results[display_name] = {
                     "author_flagged": len(author_positive),
                     "curator_validated": len(ac_curator_pos),
@@ -577,8 +441,8 @@ class CuratorDashboardReader:
                     "both_positive": both_positive,
                     "accuracy_ac": accuracy,
                     "f1_ac": f1_ac,
-                    "accuracy_pc": pc_accuracy,
-                    "f1_pc": pc_f1,
+                    "accuracy_pc": None,
+                    "f1_pc": None,
                 }
         return results
 
@@ -1030,113 +894,6 @@ class CuratorDashboardReader:
             ])
         return result
 
-    def _compute_data_type_flags_accuracy_timeseries(self, bin_period='y'):
-        """Compute prediction precision and recall over time for
-        auto-detected flags."""
-        auto_detected_flags = {
-            "Expression": "otherexpr",
-            "Seq. change": "seqchange",
-            "Genetic int.": "geneint",
-            "Physical int.": "geneprod",
-            "Regulatory int.": "genereg",
-            "Allele phenotype": "newmutant",
-            "RNAi phenotype": "rnai",
-            "Overexpr. phenotype": "overexpr",
-            "Enzymatic activity": "catalyticact",
-        }
-
-        with self.db.afp.get_cursor() as curs:
-            curs.execute(
-                "SELECT afp_version.joinkey, afp_email.afp_timestamp "
-                "FROM afp_version "
-                "JOIN afp_lasttouched ON afp_version.joinkey = "
-                "afp_lasttouched.joinkey "
-                "JOIN afp_email ON afp_version.joinkey = afp_email.joinkey "
-                "WHERE afp_version.afp_version = '2'"
-            )
-            paper_timestamps = {}
-            for joinkey, ts in curs.fetchall():
-                if ts is not None:
-                    paper_timestamps[joinkey] = ts
-
-            prediction_positive = defaultdict(set)
-            for flag_name in auto_detected_flags.values():
-                curs.execute(
-                    "SELECT DISTINCT cur_paper FROM cur_blackbox "
-                    "WHERE cur_datatype = %s "
-                    "AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')",
-                    (flag_name,)
-                )
-                for (paper_id,) in curs.fetchall():
-                    prediction_positive[flag_name].add(paper_id)
-
-            author_positive = defaultdict(set)
-            for flag_name in auto_detected_flags.values():
-                afp_table = "afp_{}".format(flag_name)
-                curs.execute(
-                    "SELECT DISTINCT {t}.joinkey "
-                    "FROM {t} "
-                    "JOIN afp_version ON {t}.joinkey = afp_version.joinkey "
-                    "JOIN afp_lasttouched ON {t}.joinkey = "
-                    "afp_lasttouched.joinkey "
-                    "WHERE afp_version.afp_version = '2' "
-                    "AND {t}.{t} IS NOT NULL AND {t}.{t} != ''".format(
-                        t=afp_table
-                    )
-                )
-                for (joinkey,) in curs.fetchall():
-                    author_positive[flag_name].add(joinkey)
-
-        period_data = defaultdict(
-            lambda: defaultdict(
-                lambda: {"tp": 0, "fp": 0, "fn": 0, "tn": 0}
-            )
-        )
-        period_totals = defaultdict(int)
-        for joinkey, ts in paper_timestamps.items():
-            period_key = (
-                ts.strftime('%Y') if bin_period == 'y'
-                else ts.strftime('%Y-%m')
-            )
-            period_totals[period_key] += 1
-            for display_name, flag_name in auto_detected_flags.items():
-                pred = joinkey in prediction_positive[flag_name]
-                auth = joinkey in author_positive[flag_name]
-                if pred and auth:
-                    period_data[period_key][display_name]["tp"] += 1
-                elif pred and not auth:
-                    period_data[period_key][display_name]["fp"] += 1
-                elif not pred and auth:
-                    period_data[period_key][display_name]["fn"] += 1
-                else:
-                    period_data[period_key][display_name]["tn"] += 1
-
-        result = []
-        for period_key in sorted(period_data.keys()):
-            period_metrics = {}
-            total = period_totals[period_key]
-            for display_name in auto_detected_flags:
-                d = period_data[period_key][display_name]
-                tp, fp, fn, tn = d["tp"], d["fp"], d["fn"], d["tn"]
-                precision = (
-                    (tp / (tp + fp) * 100) if (tp + fp) > 0 else 0
-                )
-                recall = (
-                    (tp / (tp + fn) * 100) if (tp + fn) > 0 else 0
-                )
-                accuracy = round(
-                    ((tp + tn) / total * 100) if total > 0 else 0, 1
-                )
-                f1 = round(
-                    (2 * precision * recall / (precision + recall))
-                    if (precision + recall) > 0 else 0, 1
-                )
-                period_metrics[display_name] = {
-                    "accuracy": accuracy, "f1": f1,
-                }
-            result.append([period_key, period_metrics])
-        return result
-
     def _compute_entity_curator_timeseries(self, bin_period='y'):
         """Compute entity curator Jaccard per period, binned by author
         submission date."""
@@ -1305,23 +1062,18 @@ class CuratorDashboardReader:
     def _compute_overall_timeseries(self, bin_period='y'):
         """Compute overall accuracy and F1 over time for three pairs.
 
-        Predicted vs Author: from entity and flag timeseries.
-        Author vs Curator: from flag curator agreement binned by time.
-        Predicted vs Curator: from flag predictions vs curator binned by time.
+        Predicted vs Author and Predicted vs Curator: entities only. The flag values are None until the ABC
+        statistics endpoints are available (SCRUM-6600).
+        Author vs Curator: from flag curator agreement binned by submission date.
         """
         entity_ts = self._compute_confirmation_rates_timeseries(bin_period)
-        flags_ts = self._compute_data_type_flags_accuracy_timeseries(
-            bin_period
-        )
 
         # Compute entity curator Jaccard per period, binned by submission date
         entity_curator_ts = self._compute_entity_curator_timeseries(
             bin_period
         )
 
-        # Also compute author-vs-curator and predicted-vs-curator over time
-        # using cur_curdata timestamps for binning
-        auto_detected_flags = {
+        all_flags = {
             "Expression": ("otherexpr", "otherexpr"),
             "Seq. change": ("seqchange", "seqchange"),
             "Genetic int.": ("geneint", "geneint"),
@@ -1331,9 +1083,6 @@ class CuratorDashboardReader:
             "RNAi phenotype": ("rnai", "rnai"),
             "Overexpr. phenotype": ("overexpr", "overexpr"),
             "Enzymatic activity": ("catalyticact", "catalyticact"),
-        }
-        all_flags = dict(auto_detected_flags)
-        all_flags.update({
             "Gene model update": ("structcorr", "structcorr"),
             "Antibody": ("antibody", "antibody"),
             "Site of action": ("siteaction", "siteaction"),
@@ -1342,7 +1091,7 @@ class CuratorDashboardReader:
             "Chemical phenotype": ("chemphen", "chemphen"),
             "Environmental phenotype": ("envpheno", "envpheno"),
             "Disease": ("humdis", "humandisease"),
-        })
+        }
 
         with self.db.afp.get_cursor() as curs:
             # Get submitted papers with timestamps
@@ -1394,56 +1143,20 @@ class CuratorDashboardReader:
                     if r[1] in ('positive', 'curated')
                 )
 
-            # Get prediction positive (auto-detected only)
-            pred_pos = {}
-            for display_name, (afp_flag, _) in auto_detected_flags.items():
-                curs.execute(
-                    "SELECT DISTINCT cur_paper FROM cur_blackbox "
-                    "WHERE cur_datatype = %s "
-                    "AND UPPER(cur_blackbox) IN ('HIGH', 'MEDIUM')",
-                    (afp_flag,)
-                )
-                pred_pos[display_name] = set(
-                    r[0] for r in curs.fetchall()
-                )
-
         def avg(vals):
             return round(sum(vals) / len(vals), 1) if vals else 0
 
-        # Merge entity and flag timeseries
         entity_by_period = {item[0]: item[1] for item in entity_ts}
-        flags_by_period = {item[0]: item[1] for item in flags_ts}
-        all_periods = set(entity_by_period) | set(flags_by_period)
+        paper_periods = {
+            jk: ts.strftime('%Y') if bin_period == 'y' else ts.strftime('%Y-%m')
+            for jk, ts in paper_ts.items()
+        }
+        all_periods = set(entity_by_period) | set(paper_periods.values())
 
-        # Also bin author-vs-curator by submission period
         result = []
         for period_key in sorted(all_periods):
             ent = entity_by_period.get(period_key, {})
-            flg = flags_by_period.get(period_key, {})
-
-            # Predicted vs Author
-            # Entity timeseries returns plain Jaccard floats,
-            # flag timeseries returns {accuracy, f1} dicts
-            pa_acc = [
-                v for v in ent.values() if isinstance(v, (int, float))
-            ] + [
-                v["accuracy"] for v in flg.values() if isinstance(v, dict)
-            ]
-            pa_f1 = [
-                v for v in ent.values() if isinstance(v, (int, float))
-            ] + [
-                v["f1"] for v in flg.values() if isinstance(v, dict)
-            ]
-
-            # Papers in this period
-            period_papers = set()
-            for jk, ts in paper_ts.items():
-                pk = (
-                    ts.strftime('%Y') if bin_period == 'y'
-                    else ts.strftime('%Y-%m')
-                )
-                if pk == period_key:
-                    period_papers.add(jk)
+            period_papers = {jk for jk, pk in paper_periods.items() if pk == period_key}
 
             # Author vs Curator (among papers in this period)
             ac_agree_counts = []
@@ -1476,50 +1189,10 @@ class CuratorDashboardReader:
                 ac_agree_counts.append(acc)
                 ac_f1_vals.append(f1)
 
-            # Predicted vs Curator (auto-detected flags only)
-            pc_acc_vals = []
-            pc_f1_vals = []
-            for display_name in auto_detected_flags:
-                reviewed_in_period = (
-                    curator_reviewed[display_name] & period_papers
-                )
-                if not reviewed_in_period:
-                    continue
-                p_pos = pred_pos.get(display_name, set()) & period_papers
-                c_pos_set = curator_pos[display_name] & period_papers
-                tp = len(p_pos & c_pos_set & reviewed_in_period)
-                agree = sum(
-                    1 for p in reviewed_in_period
-                    if (p in p_pos) == (p in c_pos_set)
-                )
-                acc = agree / len(reviewed_in_period) * 100
-                fp = len(
-                    (p_pos & reviewed_in_period) - c_pos_set
-                )
-                fn = len(
-                    (c_pos_set & reviewed_in_period) - p_pos
-                )
-                prec = (tp / (tp + fp) * 100) if (tp + fp) > 0 else 0
-                rec = (tp / (tp + fn) * 100) if (tp + fn) > 0 else 0
-                f1 = (
-                    2 * prec * rec / (prec + rec)
-                ) if (prec + rec) > 0 else 0
-                pc_acc_vals.append(acc)
-                pc_f1_vals.append(f1)
-
             # Entity timeseries returns plain Jaccard floats
             ent_jaccard_vals = [
                 v for v in ent.values()
                 if isinstance(v, (int, float))
-            ]
-            # Flag timeseries returns {accuracy, f1} dicts
-            flg_acc = [
-                v["accuracy"] for v in flg.values()
-                if isinstance(v, dict)
-            ]
-            flg_f1 = [
-                v["f1"] for v in flg.values()
-                if isinstance(v, dict)
             ]
 
             result.append([period_key, {
@@ -1532,27 +1205,27 @@ class CuratorDashboardReader:
                     entity_curator_ts.get(period_key, {})
                     .get("jaccard_pipeline_curator", 0)
                 ),
-                "flags_pred_vs_author_accuracy": avg(flg_acc),
-                "flags_pred_vs_author_f1": avg(flg_f1),
+                "flags_pred_vs_author_accuracy": None,
+                "flags_pred_vs_author_f1": None,
                 "flags_author_vs_curator_accuracy": avg(ac_agree_counts),
                 "flags_author_vs_curator_f1": avg(ac_f1_vals),
-                "flags_pred_vs_curator_accuracy": avg(pc_acc_vals),
-                "flags_pred_vs_curator_f1": avg(pc_f1_vals),
+                "flags_pred_vs_curator_accuracy": None,
+                "flags_pred_vs_curator_f1": None,
             }])
         return result
 
     def _compute_overall_agreement(self):
-        """Compute stats for overview cards, split by entities and flags."""
+        """Compute stats for overview cards, split by entities and flags.
+
+        The flag values involving the classifiers are None until the ABC statistics endpoints are available
+        (SCRUM-6600).
+        """
         entity_rates = self._compute_entity_confirmation_rates()
         entity_jaccard_pa = [
             entity_rates[k]["jaccard_pred_author"]
             for k in entity_rates
             if entity_rates[k]["total_extracted"] > 0
         ]
-
-        flag_matrix = self._compute_data_type_flags_confusion_matrix()
-        flag_acc_pa = [flag_matrix[k]["accuracy"] for k in flag_matrix]
-        flag_f1_pa = [flag_matrix[k]["f1"] for k in flag_matrix]
 
         entity_curator = self._compute_entity_curator_agreement()
         entity_jaccard_ac = [
@@ -1577,16 +1250,6 @@ class CuratorDashboardReader:
             for k in flag_curator
             if flag_curator[k].get("curator_reviewed", 0) > 0
         ]
-        flag_acc_pc = [
-            flag_curator[k]["accuracy_pc"]
-            for k in flag_curator
-            if flag_curator[k].get("accuracy_pc", 0) > 0
-        ]
-        flag_f1_pc = [
-            flag_curator[k]["f1_pc"]
-            for k in flag_curator
-            if flag_curator[k].get("accuracy_pc", 0) > 0
-        ]
 
         def avg(vals):
             return round(sum(vals) / len(vals), 1) if vals else 0
@@ -1598,13 +1261,14 @@ class CuratorDashboardReader:
                 "predicted_vs_curator": avg(entity_jaccard_tc),
             },
             "flags": {
-                "predicted_vs_author_accuracy": avg(flag_acc_pa),
-                "predicted_vs_author_f1": avg(flag_f1_pa),
+                "predicted_vs_author_accuracy": None,
+                "predicted_vs_author_f1": None,
                 "author_vs_curator_accuracy": avg(flag_acc_ac),
                 "author_vs_curator_f1": avg(flag_f1_ac),
-                "predicted_vs_curator_accuracy": avg(flag_acc_pc),
-                "predicted_vs_curator_f1": avg(flag_f1_pc),
+                "predicted_vs_curator_accuracy": None,
+                "predicted_vs_curator_f1": None,
             },
+            "classifier_stats_unavailable": CLASSIFIER_STATS_WARNING,
         }
 
     def on_post(self, req, resp, req_type):
@@ -1653,41 +1317,13 @@ class CuratorDashboardReader:
                         "true" if is_old_afp else "false")
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
-                    lists_dict = self.get_all_lists(paper_id)
-                    resp.body = '{{"tfp_genestudied": "{}", "afp_genestudied": "{}", "tfp_species": "{}", "afp_species": ' \
-                                '"{}", "tfp_alleles": "{}", "afp_alleles": "{}", "tfp_strains": "{}", "afp_strains": ' \
-                                '"{}", "tfp_transgenes": "{}", "afp_transgenes": "{}"}}'.format(
-                        lists_dict["tfp_genestudied"], lists_dict["afp_genestudied"], lists_dict["tfp_species"],
-                        lists_dict["afp_species"], lists_dict["tfp_alleles"], lists_dict["afp_alleles"],
-                        lists_dict["tfp_strains"], lists_dict["afp_strains"], lists_dict["tfp_transgenes"],
-                        lists_dict["afp_transgenes"])
+                    resp.body = json.dumps(self.get_all_lists(paper_id))
                     resp.status = falcon.HTTP_200
                 elif req_type == "flagged":
                     flagged_dict = self.get_all_flagged_data_types(paper_id)
-                    resp.body = '{{"svm_otherexpr_checked": "{}", "afp_otherexpr_checked": "{}", ' \
-                                '"afp_otherexpr_details": {}, "svm_seqchange_checked": "{}", ' \
-                                '"afp_seqchange_checked": "{}", ' \
-                                '"afp_seqchange_details": {}, "svm_geneint_checked": "{}", ' \
-                                '"afp_geneint_checked": "{}", "afp_geneint_details": {}, ' \
-                                '"svm_geneprod_checked": "{}", "afp_geneprod_checked": "{}" ,' \
-                                '"afp_geneprod_details": {}, "svm_genereg_checked": "{}",' \
-                                '"afp_genereg_checked": "{}", "afp_genereg_details": {}, ' \
-                                '"svm_newmutant_checked": "{}", "afp_newmutant_checked": "{}", ' \
-                                '"afp_newmutant_details": {}, "svm_rnai_checked": "{}",' \
-                                ' "afp_rnai_checked": "{}", "afp_rnai_details": {}, ' \
-                                '"svm_catalyticact_checked": "{}", "afp_catalyticact_checked": "{}", ' \
-                                '"afp_catalyticact_details": {}, ' \
-                                '"svm_overexpr_checked": "{}", "afp_overexpr_checked": "{}", ' \
-                                '"afp_overexpr_details": {}}}'.format(
-                        flagged_dict["svm_otherexpr_checked"], flagged_dict["afp_otherexpr_checked"], json.dumps(flagged_dict["afp_otherexpr_details"]),
-                        flagged_dict["svm_seqchange_checked"], flagged_dict["afp_seqchange_checked"], json.dumps(flagged_dict["afp_seqchange_details"]),
-                        flagged_dict["svm_geneint_checked"], flagged_dict["afp_geneint_checked"], json.dumps(flagged_dict["afp_geneint_details"]),
-                        flagged_dict["svm_geneprod_checked"], flagged_dict["afp_geneprod_checked"], json.dumps(flagged_dict["afp_geneprod_details"]),
-                        flagged_dict["svm_genereg_checked"], flagged_dict["afp_genereg_checked"], json.dumps(flagged_dict["afp_genereg_details"]),
-                        flagged_dict["svm_newmutant_checked"], flagged_dict["afp_newmutant_checked"], json.dumps(flagged_dict["afp_newmutant_details"]),
-                        flagged_dict["svm_rnai_checked"], flagged_dict["afp_rnai_checked"], json.dumps(flagged_dict["afp_rnai_details"]),
-                        flagged_dict["svm_catalyticact_checked"], flagged_dict["afp_catalyticact_checked"], json.dumps(flagged_dict["afp_catalyticact_details"]),
-                        flagged_dict["svm_overexpr_checked"], flagged_dict["afp_overexpr_checked"], json.dumps(flagged_dict["afp_overexpr_details"]))
+                    # the values are sent as strings ("True", "False", "null"), as the frontend expects
+                    resp.body = json.dumps({key: value if key.endswith("_details") else str(value)
+                                            for key, value in flagged_dict.items()})
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
                     other_yn = self.get_all_yes_no_data_types(paper_id)
@@ -1764,7 +1400,10 @@ class CuratorDashboardReader:
                     from_offset = req.media["from"]
                     count = req.media["count"]
                     list_type = req.media["list_type"]
-                    svm_filters = req.media["svm_filters"].split(",")
+                    # the automated datatype filters read cur_blackbox: disabled until SCRUM-6599. For the submitted
+                    # list they filter on the authors' answers (wbtools merges them into the manual filters).
+                    classification_filters_available = list_type == "submitted"
+                    svm_filters = req.media["svm_filters"].split(",") if classification_filters_available else None
                     manual_filters = req.media["manual_filters"].split(",")
                     curation_filters = req.media["curation_filters"].split(",")
                     combine_filters = req.media["combine_filters"]
@@ -1844,13 +1483,17 @@ class CuratorDashboardReader:
                                              self.db.afp.get_list_papers_no_entities(from_offset, count)])
                     else:
                         raise falcon.HTTPError(falcon.HTTP_BAD_REQUEST)
-                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}}}'.format(
-                        list_ids, num_papers)
+                    resp.body = '{{"list_elements": [{}], "total_num_elements": {}, ' \
+                                '"classification_filters_available": {}}}'.format(
+                        list_ids, num_papers, "true" if classification_filters_available else "false")
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "all_papers":
                     list_type = req.media["list_type"]
-                    svm_filters = req.media["svm_filters"].split(",")
+                    # the automated datatype filters read cur_blackbox: disabled until SCRUM-6599. For the submitted
+                    # list they filter on the authors' answers (wbtools merges them into the manual filters).
+                    classification_filters_available = list_type == "submitted"
+                    svm_filters = req.media["svm_filters"].split(",") if classification_filters_available else None
                     manual_filters = req.media["manual_filters"].split(",")
                     curation_filters = req.media["curation_filters"].split(",")
                     combine_filters = req.media["combine_filters"]
@@ -2060,9 +1703,8 @@ class CuratorDashboardReader:
                     resp.body = json.dumps(result)
                     resp.status = falcon.HTTP_200
 
-                elif req_type == "data_type_flags_confusion_matrix":
-                    results = self._compute_data_type_flags_confusion_matrix()
-                    resp.body = json.dumps(results)
+                elif req_type in ("data_type_flags_confusion_matrix", "data_type_flags_accuracy_timeseries"):
+                    resp.body = json.dumps(CLASSIFIER_STATS_UNAVAILABLE)
                     resp.status = falcon.HTTP_200
 
                 elif req_type == "data_type_flags_curator_agreement":
@@ -2089,16 +1731,6 @@ class CuratorDashboardReader:
                     bin_size = (req.media or {}).get("bin_size", "y")
                     results = self._compute_contributor_roles_timeseries(
                         bin_size
-                    )
-                    resp.body = json.dumps(results)
-                    resp.status = falcon.HTTP_200
-
-                elif req_type == "data_type_flags_accuracy_timeseries":
-                    bin_size = (req.media or {}).get("bin_size", "y")
-                    results = (
-                        self._compute_data_type_flags_accuracy_timeseries(
-                            bin_size
-                        )
                     )
                     resp.body = json.dumps(results)
                     resp.status = falcon.HTTP_200

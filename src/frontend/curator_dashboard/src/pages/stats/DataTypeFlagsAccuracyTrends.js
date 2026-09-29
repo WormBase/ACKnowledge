@@ -3,6 +3,8 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import {useQuery} from "react-query";
 import axios from "axios";
+import {Alert} from "react-bootstrap";
+import {CLASSIFIER_STATS_WARNING, isUnavailable} from "../../lib/abcClassifiers";
 
 const COLORS = {
     "Expression": '#007bff',
@@ -19,7 +21,7 @@ const COLORS = {
 const DataTypeFlagsAccuracyTrends = () => {
     const [binSize, setBinSize] = useState('y');
     const [metric, setMetric] = useState('f1');
-    const [pair, setPair] = useState('predicted_vs_author');
+    const [pair, setPair] = useState('author_vs_curator');
 
     const {data: paData} = useQuery(
         'flagsAccuracyTS' + binSize,
@@ -32,11 +34,13 @@ const DataTypeFlagsAccuracyTrends = () => {
         axios.post(process.env.REACT_APP_API_DB_READ_ADMIN_ENDPOINT + "/data_type_flags_curator_agreement")
     );
 
-    const tsData = paData ? paData.data : [];
+    const paUnavailable = isUnavailable(paData);
+    const tsData = paData && !paUnavailable ? paData.data : [];
     const curator = curatorData ? curatorData.data : {};
     const showYearOnly = binSize.includes('y');
 
-    const categories = tsData.map(item => {
+    // without the predicted-vs-author periods, the curator agreement reference lines span one category
+    const categories = paUnavailable ? ["All time"] : tsData.map(item => {
         if (showYearOnly) return item[0].split('-')[0];
         return item[0];
     });
@@ -107,9 +111,9 @@ const DataTypeFlagsAccuracyTrends = () => {
             <div className="mt-2">
                 Comparison:&nbsp;
                 <select value={pair} onChange={(e) => setPair(e.target.value)}>
-                    <option value="predicted_vs_author">Predicted vs Author</option>
+                    <option value="predicted_vs_author" disabled={paUnavailable}>Predicted vs Author</option>
                     <option value="author_vs_curator">Author vs Curator</option>
-                    <option value="predicted_vs_curator">Predicted vs Curator</option>
+                    <option value="predicted_vs_curator" disabled={paUnavailable}>Predicted vs Curator</option>
                 </select>
                 &nbsp;&nbsp;Metric:&nbsp;
                 <select value={metric} onChange={(e) => setMetric(e.target.value)}>
@@ -122,6 +126,7 @@ const DataTypeFlagsAccuracyTrends = () => {
                     <option value="m">1 month</option>
                 </select>
             </div>
+            {paUnavailable ? <Alert variant="warning" className="mt-2">{CLASSIFIER_STATS_WARNING}</Alert> : null}
         </div>
     );
 };
