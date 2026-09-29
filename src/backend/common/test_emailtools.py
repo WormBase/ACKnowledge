@@ -1,9 +1,11 @@
 import quopri
 import random
+from unittest import mock
 
 import pytest
 
 from src.backend.common.emailtools import (
+    EmailManager,
     FORM_LINK_DECODERS,
     FORM_LINK_VERSION,
     MAX_FORM_URL_BYTES,
@@ -155,3 +157,19 @@ def test_email_body_round_trips_through_the_mime_encoding():
                              ["to@x.test"])
     payload = msg.get_payload()[0]
     assert payload.get_payload(decode=True).decode("utf-8") == content
+
+
+def test_summary_lists_papers_whose_abc_write_failed():
+    manager = EmailManager.__new__(EmailManager)
+    manager.content_email_summary = "Processed:<br/>{}<br/>"
+    manager.subject_email_summary = "Summary"
+    with mock.patch.object(manager, "send_email") as send:
+        manager.send_summary_email_to_admin(urls=["https://tiny/1"], paper_ids=["00000002"], recipients=["a@x.org"],
+                                            abc_failed_paper_ids=["00000001"])
+    content = send.call_args[1]["content"]
+    assert '<a href="https://tiny/1">00000002</a>' in content
+    assert "could not be written to the ABC" in content
+    assert "00000001" in content
+    with mock.patch.object(manager, "send_email") as send:
+        manager.send_summary_email_to_admin(urls=[], paper_ids=[], recipients=["a@x.org"])
+    assert "ABC" not in send.call_args[1]["content"]

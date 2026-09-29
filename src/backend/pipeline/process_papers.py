@@ -3,7 +3,9 @@
 import argparse
 
 from wbtools.db.dbmanager import WBDBManager
+from wbtools.literature.abc_tag_writer import create_topic_entity_tags
 from wbtools.literature.corpus import CorpusManager
+from wbtools.literature.paper import ABCRequestError
 
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import *
@@ -52,17 +54,30 @@ def main():
     else:
         load_papers_from_abc(cm, args.db_name, args.db_user, args.db_password, args.db_host,
                              selection_config=config["abc_paper_selection"], num_papers=args.num_papers)
-    logger.info(f"Entities are taken from the ABC entity extractor: ACKnowledge-extracted entities must not be "
-                f"imported into the ABC after {config['abc_entities']['import_cutoff']} (SCRUM-6592)")
-    tfp_values = get_tfp_values_for_papers(cm.get_all_papers(), config["ntt_extraction"]["exclusion_list"])
+    logger.info("Entities and classifications are taken from the ABC. The pipeline writes what it pre-populates to "
+                "the ABC as ACKnowledge_pipeline tags (SCRUM-6608): the Caltech upload scripts must not import the "
+                "tfp_* rows it creates")
+    tfp_values = get_tfp_values_for_papers(cm.get_all_papers(), config["ntt_extraction"]["exclusion_list"],
+                                           config["abc_classifications"], config["ack_pipeline_tags"])
+    abc_failed_papers = []
     tinyurls = []
     emailed_papers = []
     blacklisted_email_addresses = db_manager.generic.get_blacklisted_email_addresses()
     with email_manager:
         for paper in cm.get_all_papers():
             logging.info("processing paper " + str(paper.paper_id))
-            paper.title = paper.title if paper.title else ""
             values = tfp_values[paper.paper_id]
+            try:
+                # before saving and emailing, so the ABC never lacks what an author was shown
+                created = create_topic_entity_tags(paper.agr_curie, values["ack_pipeline_tags"])
+                logger.info(f"ACKnowledge_pipeline tags for paper {paper.paper_id}: {created} created, "
+                            f"{len(values['ack_pipeline_tags']) - created} already in the ABC")
+            except ABCRequestError as e:
+                logger.error(f"Paper {paper.paper_id} skipped: its ACKnowledge_pipeline tags could not be written to "
+                             f"the ABC: {e}")
+                abc_failed_papers.append(paper.paper_id)
+                continue
+            paper.title = paper.title if paper.title else ""
             genes_id_name = values["genes"]
             alleles_id_name = values["alleles"]
             strains_id_name = values["strains"]
@@ -119,7 +134,8 @@ def main():
                     email_manager.notify_admin_of_paper_without_entities(paper.paper_id, paper.title,
                                                                          paper.journal, feedback_form_tiny_url,
                                                                          args.admin_emails)
-        email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=emailed_papers, recipients=args.admin_emails)
+        email_manager.send_summary_email_to_admin(urls=tinyurls, paper_ids=emailed_papers, recipients=args.admin_emails,
+                                                  abc_failed_paper_ids=abc_failed_papers)
     logger.info("Pipeline finished successfully")
 
 

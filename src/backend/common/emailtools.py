@@ -219,13 +219,17 @@ class EmailManager(object):
         subject = self.subject_email_empty.format(paper_id)
         self.send_email(subject=subject, content=content, recipients=recipients)
 
-    def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str]):
+    def send_summary_email_to_admin(self, urls, paper_ids, recipients: List[str], abc_failed_paper_ids=None):
         if paper_ids:
             paperid_list = "<br/>".join(['<a href="' + url + '">' + paper_id + "</a>" for paper_id, url in
                                          zip(paper_ids, urls)])
         else:
             paperid_list = "No papers processed this time"
         content = self.content_email_summary.format(paperid_list)
+        if abc_failed_paper_ids:
+            content += ("<br/>Papers not processed because their ACKnowledge_pipeline tags could not be written to the "
+                        "ABC (they are retried on the next run):<br/><br/>" + "<br/>".join(abc_failed_paper_ids)
+                        + "<br/>")
         self.send_email(subject=self.subject_email_summary, content=content, recipients=recipients)
 
     def send_new_submission_notification_email_to_admin(self, paper_id, paper_title, paper_journal, paper_email,

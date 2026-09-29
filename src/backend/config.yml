@@ -228,7 +228,7 @@ abc_paper_selection:
       - ATP:0000355  # email extraction complete
     entity_extraction:
       - ATP:0000214  # gene extraction complete
-      - ATP:0000215  # allele extraction complete
+      - ATP:0000398  # classical allele extraction complete (WB extracts alleles as classical alleles, #1318)
       - ATP:0000250  # strain extraction complete
       - ATP:0000251  # transgenic allele extraction complete
       - ATP:0000203  # species extraction complete
@@ -242,7 +242,21 @@ abc_paper_selection:
       - ATP:0000247  # allele phenotype classification complete (newmutant)
       - ATP:0000248  # transgene overexpression phenotype classification complete (overexpr)
 
-abc_entities:
-  # SCRUM-6592: from this date the pipeline pre-populates entities from the ABC entity extractor. tfp_* values
-  # dated on or after it come from the ABC and must not be imported into the ABC as ACKnowledge_pipeline tags.
-  import_cutoff: 2026-09-25
+abc_classifications:
+  # SCRUM-6608: ACKnowledge pre-checks a datatype when the latest ABC WB classifier tag (abc_document_classifier) for
+  # its topic is not negated and has one of precheck_levels. seqchange has no classifier: it is manual-only.
+  datatype_topics:
+    otherexpr: ATP:0000041
+    catalyticact: ATP:0000061
+    geneint: ATP:0000068
+    geneprod: ATP:0000069
+    genereg: ATP:0000070
+    rnai: ATP:0000082
+    newmutant: ATP:0000083
+    overexpr: ATP:0000084
+  precheck_levels: [HIGH, MEDIUM]
+
+ack_pipeline_tags:
+  # SCRUM-6608: the ABC tag source of what the pipeline pre-populates (ACKnowledge_pipeline, WB)
+  tag_source_id: 159
+  created_by: ACKnowledge_pipeline
