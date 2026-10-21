@@ -47,7 +47,7 @@ def test_empty_types_get_one_negated_tag_each():
     negated = sorted(tag["topic"] for tag in tags if tag["negated"])
     assert negated == ["ATP:0000027", "ATP:0000110", "ATP:0000123", "ATP:0000285"]
     assert dict(AUDIT, topic="ATP:0000285", negated=True, data_novelty="ATP:0000334",
-                data_context="ATP:0000323") in tags
+                data_context="ATP:0000325") in tags
 
 
 def test_all_entities_excluded_gives_a_negated_tag():
@@ -55,7 +55,7 @@ def test_all_entities_excluded_gives_a_negated_tag():
     tags = entity_tags(build(fields={"WB:WBStrain00043982": dict(GENE_FIELDS, topic="ATP:0000027")}))
     strain_tags = [tag for tag in tags if tag["topic"] == "ATP:0000027"]
     assert strain_tags == [dict(AUDIT, topic="ATP:0000027", negated=True, data_novelty="ATP:0000334",
-                                data_context="ATP:0000323")]
+                                data_context="ATP:0000325")]
 
 
 def test_classification_positive_only_for_precheck_levels():

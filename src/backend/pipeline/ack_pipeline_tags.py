@@ -5,10 +5,11 @@ logger = logging.getLogger(__name__)
 
 ENTITY_TOPICS = {"gene": "ATP:0000005", "allele": "ATP:0000285", "strain": "ATP:0000027",
                  "transgene": "ATP:0000110", "species": "ATP:0000123"}
-# the conventions of the ABC entity extractor and of the imported ACKnowledge tags
+# the conventions of the ABC entity extractor and of the imported ACKnowledge tags: the pipeline only proposes
+# experimentally studied entities, so the "none found" tags carry ATP:0000325 too, like the extractor's own
+# negatives, and the author's ACKnowledge_form answers can validate them (SCRUM-6622)
 ENTITY_DATA_NOVELTY = "ATP:0000334"
 ENTITY_DATA_CONTEXT = "ATP:0000325"
-NO_ENTITY_DATA_CONTEXT = "ATP:0000323"
 # the values of the ABC WB classifier tags, used if a classifier tag lacks them (the ABC requires data_novelty)
 CLASSIFICATION_DATA_NOVELTY = "ATP:0000335"
 CLASSIFICATION_DATA_CONTEXT = "ATP:0000323"
@@ -40,7 +41,7 @@ def _entity_tags(kept, entity_tag_fields, tag_source):
         if not pairs:
             # "none found": nothing of this type is pre-populated, including when the exclusion lists removed it all
             tags.append(_tag(tag_source, topic=topic, negated=True, data_novelty=ENTITY_DATA_NOVELTY,
-                             data_context=NO_ENTITY_DATA_CONTEXT))
+                             data_context=ENTITY_DATA_CONTEXT))
             continue
         for curie, _ in pairs:
             fields = entity_tag_fields.get(curie) or {}
