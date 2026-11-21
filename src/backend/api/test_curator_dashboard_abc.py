@@ -4,6 +4,7 @@ import falcon
 import falcon.testing
 import pytest
 from wbtools.literature.abc_tags import empty_paper_tags
+from wbtools.literature.ack_form.reverse import READ_FROM_ABC
 
 from src.backend.api.endpoints.curator_dashboard import CuratorDashboardReader
 
@@ -45,9 +46,19 @@ def client(db):
     return falcon.testing.TestClient(app)
 
 
-def post(client, req_type, tags=None, media=None):
+def abc_answers(**overrides):
+    """the ABC answers: the DB_FIELDS values of the tables the ABC holds, overridden by keyword"""
+    values = {table: DB_FIELDS.get(table) for table in READ_FROM_ABC}
+    values.update(overrides)
+    return values
+
+
+def post(client, req_type, tags=None, media=None, afp_values=None):
+    answers = mock.Mock(side_effect=afp_values) if isinstance(afp_values, Exception) else \
+        mock.Mock(return_value=afp_values if afp_values is not None else abc_answers())
     with mock.patch("src.backend.api.endpoints.curator_dashboard.get_ack_pipeline_tags",
-                    return_value=tags) as abc:
+                    return_value=tags) as abc, \
+            mock.patch("src.backend.api.endpoints.curator_dashboard.get_ack_form_afp_values", answers):
         result = client.simulate_post('/api/read_admin/' + req_type, json=media or {"paper_id": "00000001"})
     return result, abc
 
@@ -188,3 +199,56 @@ def test_overall_timeseries_has_no_predicted_flag_values(client, db):
     assert values["flags_pred_vs_curator_f1"] is None
     assert values["flags_author_vs_curator_accuracy"] == 0
     assert "cur_blackbox" not in executed_sql(db)
+
+
+# SCRUM-4141: the author answers come from the paper's ACKnowledge_form tags
+
+def test_lists_afp_from_abc(client):
+    result, _ = post(client, "lists", afp_values=abc_answers(afp_genestudied="00000830;%;ctl-1"))
+    assert result.json["afp_genestudied"] == "00000830;%;ctl-1"
+    assert result.json["tfp_genestudied"] == "00000009;%;zyg-1"
+
+
+def test_flagged_afp_from_abc(client):
+    result, _ = post(client, "flagged", afp_values=abc_answers(afp_rnai="in L4", afp_seqchange=None))
+    assert result.json["afp_rnai_checked"] == "True" and result.json["afp_rnai_details"] == "in L4"
+    assert result.json["afp_seqchange_checked"] == "null"
+
+
+def test_other_yn_afp_from_abc(client):
+    result, _ = post(client, "other_yn", afp_values=abc_answers(afp_structcorr="wrong model"))
+    assert result.json["afp_modchange_checked"] == "True"
+    assert result.json["afp_modchange_details"] == "wrong model"
+
+
+def test_others_from_abc(client):
+    result, _ = post(client, "others", afp_values=abc_answers(afp_otherstrain='[{"id":1,"name":"my strain"}]'))
+    assert result.json["afp_newstrains"] == "my strain"
+    assert result.json["afp_newalleles"] == ""
+
+
+def test_humdis_from_abc(client):
+    disease = '{"checked": true, "comment": "seen in mutants", "diseases": ["ALS (DOID:332)"]}'
+    result, _ = post(client, "other_yn", afp_values=abc_answers(afp_humdis=disease))
+    assert result.json["afp_humdis_checked"] == "True"
+    assert result.json["afp_humdis_details"] == "seen in mutants"
+
+
+def test_comments_still_from_caltech(client, db):
+    db._get_single_field.side_effect = lambda paper_id, table: "nice" if table == "afp_comment" else None
+    result, _ = post(client, "comments")
+    assert result.json["afp_comments"] == "nice"
+
+
+def test_mapped_tables_never_read_from_caltech(client, db):
+    for req_type in ("lists", "flagged", "other_yn", "others"):
+        post(client, req_type)
+    read = {call.args[1] for call in db._get_single_field.call_args_list}
+    assert read & READ_FROM_ABC == set()
+
+
+@pytest.mark.parametrize("req_type", ["lists", "flagged", "other_yn", "others"])
+def test_abc_unreachable_is_an_error(client, req_type):
+    from src.backend.common.abc_paper_data import AbcUnavailableError
+    result, _ = post(client, req_type, afp_values=AbcUnavailableError("ABC down"))
+    assert result.status_code == 500

@@ -33,10 +33,13 @@ def client():
     return falcon.testing.TestClient(app)
 
 
-def read(client, tags, cgi_body=None):
+def read(client, tags, cgi_body=None, afp_values=None):
     cgi_response = mock.Mock()
     cgi_response.read.return_value = (cgi_body if cgi_body is not None else json.dumps(CGI_DATA)).encode("utf-8")
+    answers = mock.Mock(side_effect=afp_values) if isinstance(afp_values, Exception) else \
+        mock.Mock(return_value=afp_values if afp_values is not None else {})
     with mock.patch("src.backend.api.endpoints.submission_form.urlopen", return_value=cgi_response), \
+            mock.patch("src.backend.api.endpoints.submission_form.get_ack_form_afp_values", answers), \
             mock.patch("src.backend.api.endpoints.submission_form.get_ack_pipeline_tags",
                        return_value=tags) as abc:
         result = client.simulate_get('/api/read_paper_info', params={"paper": "00000001", "passwd": "123.4"})
@@ -116,3 +119,56 @@ def test_non_numeric_paper_id_is_a_bad_request(client):
     assert result.status_code == 400
     cgi.assert_not_called()
     abc.assert_not_called()
+
+
+# SCRUM-4141: the saved author answers come from the paper's ACKnowledge_form tags
+
+def test_afp_values_come_from_abc(client):
+    result, _ = read(client, ack_tags(), afp_values={"afp_structcorr": "", "afp_genestudied": "00000830;%;ctl-1"})
+    assert result.json["structcorr"] == {"afp": ""}
+    assert result.json["genestudied"]["afp"] == "00000830;%;ctl-1"
+    assert result.json["genestudied"]["tfp"] == "00000009;%;zyg-1"
+
+
+def test_unmapped_fields_kept_from_cgi(client):
+    cgi = dict(CGI_DATA, comment={"afp": "great form"}, humdis={"afp": '{"checked": true}'})
+    result, _ = read(client, ack_tags(), cgi_body=json.dumps(cgi), afp_values={"afp_structcorr": None})
+    assert result.json["comment"] == {"afp": "great form"}
+    assert result.json["humdis"] == {"afp": '{"checked": true}'}
+
+
+def test_no_form_tags_means_unanswered(client):
+    # every mapped table without a tag is null, whatever Caltech holds
+    result, _ = read(client, ack_tags(), afp_values={"afp_structcorr": None, "afp_genestudied": None,
+                                                     "afp_otherspecies": None})
+    assert result.json["structcorr"] == {"afp": None}
+    assert result.json["genestudied"]["afp"] is None
+    assert result.json["otherspecies"] == {"afp": None}
+
+
+def test_abc_unreachable_is_an_error(client):
+    from src.backend.common.abc_paper_data import AbcUnavailableError
+    result, _ = read(client, ack_tags(), afp_values=AbcUnavailableError("ABC down"))
+    assert result.status_code == 500
+
+
+def test_get_ack_form_afp_values_raises_when_the_abc_fails():
+    from wbtools.literature.paper import ABCRequestError
+    from src.backend.common import abc_paper_data
+    with mock.patch.object(abc_paper_data, "get_abc_curie", return_value="AGRKB:1"), \
+            mock.patch.object(abc_paper_data, "get_ack_form_tags", side_effect=ABCRequestError("boom")):
+        with pytest.raises(abc_paper_data.AbcUnavailableError):
+            abc_paper_data.get_ack_form_afp_values("00000001")
+    with mock.patch.object(abc_paper_data, "get_abc_curie", return_value=None):
+        with pytest.raises(abc_paper_data.AbcUnavailableError):
+            abc_paper_data.get_ack_form_afp_values("00000001")
+
+
+def test_get_ack_form_afp_values_rebuilds_from_tags():
+    from src.backend.common import abc_paper_data
+    tags = [{"topic": "ATP:0000082", "negated": False, "data_novelty": "ATP:0000335", "note": "in L4",
+             "created_by": "WBPerson1"}]
+    with mock.patch.object(abc_paper_data, "get_abc_curie", return_value="AGRKB:1"), \
+            mock.patch.object(abc_paper_data, "get_ack_form_tags", return_value=tags):
+        values = abc_paper_data.get_ack_form_afp_values("00000001")
+    assert values["afp_rnai"] == "in L4" and values["afp_genestudied"] is None

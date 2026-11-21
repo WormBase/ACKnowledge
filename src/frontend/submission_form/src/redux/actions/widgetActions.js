@@ -13,11 +13,28 @@ import {transformEntitiesIntoAfpString, getCheckboxDBVal} from "../../AFPValues"
 
 export const SET_SELECTED_WIDGET = "SET_SELECTED_WIDGET";
 
+/**
+ * add the person saving to a save payload (SCRUM-4141): every save writes the answers to the ABC under the person
+ * who made them. A payload's own person_id is kept; an unidentified user is sent as "twoundefined" (the API saves
+ * those answers as unknown_author).
+ *
+ * @param {object} payload the data to save
+ * @param {object} state the redux state
+ * @returns {object} the payload with person_id
+ */
+export const withPersonId = (payload, state) => {
+    if (payload.person_id !== undefined) {
+        return payload;
+    }
+    const person = state && state.person && state.person.person;
+    return {...payload, person_id: "two" + (person ? person.personId : undefined)};
+};
+
 
 export const saveWidgetData = (dataToSave, widget) => {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(setLoading());
-        axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, dataToSave)
+        axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(dataToSave, getState()))
             .then(result => {
                 switch (widget) {
                     case WIDGET.OVERVIEW:
@@ -61,9 +78,9 @@ export const setSelectedWidget = (selectedWidget) => ({
 })
 
 export const saveWidgetDataSilently = (dataToSave, widget) => {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch(setLoading());
-        axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, dataToSave)
+        axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(dataToSave, getState()))
             .then(result => {
                 switch (widget) {
                     case WIDGET.OVERVIEW:
@@ -210,7 +227,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.OVERVIEW,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, overviewPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(overviewPayload, state))
             });
         }
         
@@ -226,7 +243,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.GENETICS,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, geneticsPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(geneticsPayload, state))
             });
         }
         
@@ -241,7 +258,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.REAGENT,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, reagentPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(reagentPayload, state))
             });
         }
         
@@ -255,7 +272,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.EXPRESSION,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, expressionPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(expressionPayload, state))
             });
         }
         
@@ -270,7 +287,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.INTERACTIONS,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, interactionsPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(interactionsPayload, state))
             });
         }
         
@@ -288,7 +305,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.PHENOTYPES,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, phenotypesPayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(phenotypesPayload, state))
             });
         }
         
@@ -306,7 +323,7 @@ export const saveAllUnsavedWidgets = () => {
             };
             promises.push({
                 widget: WIDGET.DISEASE,
-                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, diseasePayload)
+                promise: axios.post(process.env.REACT_APP_API_DB_WRITE_ENDPOINT, withPersonId(diseasePayload, state))
             });
         }
         

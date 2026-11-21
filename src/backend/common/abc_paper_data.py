@@ -3,6 +3,8 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 from wbtools.literature.abc_tags import ACK_PIPELINE_SOURCE_METHOD, get_abc_curie, get_abc_paper_tags
+from wbtools.literature.ack_form.abc import get_ack_form_tags
+from wbtools.literature.ack_form.reverse import afp_values_from_tags
 
 logger = logging.getLogger(__name__)
 
@@ -123,3 +125,27 @@ def ack_pipeline_tfp_strings(tags) -> Optional[Dict[str, str]]:
         return None
     values = format_tfp_values(kept_entities(tags["entities"][ACK_PIPELINE_SOURCE_METHOD], {}))
     return {table: TFP_SEPARATOR.join(values[key]) for key, table in TFP_TABLES.items()}
+
+
+class AbcUnavailableError(Exception):
+    """the saved author answers can't be read from the ABC"""
+
+
+def get_ack_form_afp_values(wb_paper_id) -> Dict[str, Optional[str]]:
+    """Get the saved author answers of a WB paper as the afp_* values the form and the dashboard parse, rebuilt from
+    the paper's ACKnowledge_form tags in the ABC (SCRUM-4141). None = not answered.
+
+    Raises AbcUnavailableError if the paper's tags can't be read: unlike the pipeline values, there is no fallback to
+    Caltech's copy.
+    """
+    if not isinstance(wb_paper_id, str) or not WB_PAPER_ID.fullmatch(wb_paper_id):
+        raise AbcUnavailableError(f"Not a WB paper id: {wb_paper_id!r}")
+    try:
+        curie = get_abc_curie(wb_paper_id, timeout=INTERACTIVE_TIMEOUT)
+        if curie is None:
+            raise AbcUnavailableError(f"WBPaper{wb_paper_id} is not in the ABC")
+        return afp_values_from_tags(get_ack_form_tags(curie, timeout=INTERACTIVE_TIMEOUT))
+    except AbcUnavailableError:
+        raise
+    except Exception as e:
+        raise AbcUnavailableError(f"ACKnowledge_form tags unavailable for WBPaper{wb_paper_id}: {e}") from e

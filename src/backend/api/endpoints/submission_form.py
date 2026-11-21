@@ -10,7 +10,9 @@ from urllib.request import urlopen
 
 from wbtools.db.dbmanager import WBDBManager
 
-from src.backend.common.abc_paper_data import (WB_PAPER_ID, ack_pipeline_levels, ack_pipeline_tfp_strings,
+from src.backend.api.endpoints.ack_form_abc import sync_paper_to_abc
+from src.backend.common.abc_paper_data import (WB_PAPER_ID, AbcUnavailableError, ack_pipeline_levels,
+                                               ack_pipeline_tfp_strings, get_ack_form_afp_values,
                                                get_ack_pipeline_tags)
 from src.backend.common.config import load_config_from_file
 from src.backend.common.emailtools import EmailManager, to_redirect_url
@@ -19,6 +21,8 @@ from src.backend.common.google_drive_service import GoogleDriveService
 logger = logging.getLogger(__name__)
 
 MANUAL_ONLY_DATATYPES = ("seqchange",)
+# namespace of the per-paper advisory lock that serialises saves of one paper (SCRUM-4141)
+SAVE_LOCK_NAMESPACE = 4141
 
 
 class PaperInfoReader:
@@ -42,7 +46,11 @@ class PaperInfoReader:
         except Exception as e:
             logger.error(f"Error fetching paper data: {e}")
             raise falcon.HTTPInternalServerError("Error fetching paper data")
-        resp.body = self.add_ack_pipeline_data(paper_id, body)
+        try:
+            resp.body = self.add_ack_pipeline_data(paper_id, body)
+        except AbcUnavailableError as e:
+            logger.error(f"Error fetching the saved answers of paper {paper_id}: {e}")
+            raise falcon.HTTPInternalServerError("Error fetching paper data")
         resp.status = falcon.HTTP_200
 
     def add_ack_pipeline_data(self, paper_id, body):
@@ -50,6 +58,10 @@ class PaperInfoReader:
         ACKnowledge_pipeline tags in the ABC, each where the paper has them (SCRUM-6593).
 
         seqchange is manual-only: its automated value is always removed.
+
+        The saved author answers (afp) of the sections the ABC holds are replaced with those rebuilt from the
+        paper's ACKnowledge_form tags (SCRUM-4141); a section without tags is unanswered (null). Raises
+        AbcUnavailableError when they can't be read: Caltech's copy is never shown instead.
         """
         try:
             data = json.loads(body)
@@ -60,6 +72,8 @@ class PaperInfoReader:
             return body
         for datatype in MANUAL_ONLY_DATATYPES:
             self._field(data, datatype).pop("blackbox", None)
+        for table, value in get_ack_form_afp_values(paper_id).items():
+            self._field(data, table[len("afp_"):])["afp"] = value
         tags = get_ack_pipeline_tags(paper_id)
         if tags is None:
             return json.dumps(data)
@@ -177,212 +191,239 @@ class FeedbackFormWriter:
         self.test = test
 
     def on_post(self, req, resp):
+        """Save the answers to Caltech and, as ACKnowledge_form tags, to the ABC: both or neither (SCRUM-4141).
+
+        The Caltech writes stay uncommitted until the ABC accepted the save's batch; an ABC failure rolls them
+        back and the form shows an error. The final-submit emails are sent only after both are saved.
+        """
         paper_id = self.db.afp.get_paper_id_from_passwd(req.media["passwd"]) if "passwd" in req.media else None
-        if paper_id:
-            with self.db:
-                self.logger.info("paper found")
-
-                # overview
-                if "gene_list" in req.media:
-                    self.db.afp.set_gene_list(genes=req.media["gene_list"], paper_id=paper_id)
-                    if self.db.afp.author_has_submitted(paper_id=paper_id):
-                        person_id = req.media.get("person_id", "")
-                        self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_last_touched(paper_id=paper_id)
-
-                if "gene_model_update" in req.media:
-                    self.db.afp.set_gene_model_update(gene_model_update=req.media["gene_model_update"],
-                                                      paper_id=paper_id)
-                if "species_list" in req.media:
-                    self.db.afp.set_submitted_species_list(species=req.media["species_list"], paper_id=paper_id)
-                    if self.db.afp.author_has_submitted(paper_id=paper_id):
-                        person_id = req.media.get("person_id", "")
-                        self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
-                        self.db.afp.set_last_touched(paper_id=paper_id)
-
-                if "other_species" in req.media:
-                    self.db.afp.set_submitted_other_species(other_species=req.media["other_species"], paper_id=paper_id)
-
-                # genetics
-                if "alleles_list" in req.media:
-                    self.db.afp.set_submitted_alleles_list(alleles=req.media["alleles_list"], paper_id=paper_id)
-                if "allele_seq_change" in req.media:
-                    self.db.afp.set_submitted_allele_seq_change(allele_seq_change=req.media["allele_seq_change"],
-                                                                paper_id=paper_id)
-                if "other_alleles" in req.media:
-                    self.db.afp.set_submitted_other_alleles(other_alleles=req.media["other_alleles"], paper_id=paper_id)
-                if "strains_list" in req.media:
-                    self.db.afp.set_submitted_strains_list(strains=req.media["strains_list"], paper_id=paper_id)
-                if "other_strains" in req.media:
-                    self.db.afp.set_submitted_other_strains(other_strains=req.media["other_strains"], paper_id=paper_id)
-
-                # reagent
-                if "transgenes_list" in req.media:
-                    self.db.afp.set_submitted_transgenes_list(transgenes=req.media["transgenes_list"],
-                                                              paper_id=paper_id)
-                if "new_transgenes" in req.media:
-                    self.db.afp.set_submitted_new_transgenes(new_transgenes=req.media["new_transgenes"],
-                                                             paper_id=paper_id)
-                if "new_antibody" in req.media:
-                    self.db.afp.set_submitted_new_antibody(new_antibody=req.media["new_antibody"], paper_id=paper_id)
-                if "other_antibodies" in req.media:
-                    self.db.afp.set_submitted_other_antibodies(other_antibodies=req.media["other_antibodies"],
-                                                               paper_id=paper_id)
-
-                # expression
-                if "anatomic_expr" in req.media:
-                    self.db.afp.set_submitted_anatomic_expr(anatomic_expr=req.media["anatomic_expr"], paper_id=paper_id)
-                if "site_action" in req.media:
-                    self.db.afp.set_submitted_site_action(site_action=req.media["site_action"], paper_id=paper_id)
-                if "time_action" in req.media:
-                    self.db.afp.set_submitted_time_action(time_action=req.media["time_action"], paper_id=paper_id)
-                # interactions
-                if "gene_int" in req.media:
-                    self.db.afp.set_submitted_gene_int(gene_int=req.media["gene_int"], paper_id=paper_id)
-                if "phys_int" in req.media:
-                    self.db.afp.set_submitted_phys_int(phys_int=req.media["phys_int"], paper_id=paper_id)
-                if "gene_reg" in req.media:
-                    self.db.afp.set_submitted_gene_reg(gene_reg=req.media["gene_reg"], paper_id=paper_id)
-
-                # phenotypes
-                if "allele_pheno" in req.media:
-                    self.db.afp.set_submitted_allele_pheno(allele_pheno=req.media["allele_pheno"], paper_id=paper_id)
-                if "rnai_pheno" in req.media:
-                    self.db.afp.set_submitted_rnai_pheno(rnai_pheno=req.media["rnai_pheno"], paper_id=paper_id)
-                if "transover_pheno" in req.media:
-                    self.db.afp.set_submitted_transover_pheno(transover_pheno=req.media["transover_pheno"],
-                                                              paper_id=paper_id)
-                if "chemical" in req.media:
-                    self.db.afp.set_submitted_chemical(chemical=req.media["chemical"], paper_id=paper_id)
-                if "env" in req.media:
-                    self.db.afp.set_submitted_env(env=req.media["env"], paper_id=paper_id)
-                if "protein" in req.media:
-                    self.db.afp.set_submitted_protein(protein=req.media["protein"], paper_id=paper_id)
-                if "othergenefunc" in req.media:
-                    self.db.afp.set_submitted_othergenefunc(othergenefunc=req.media["othergenefunc"], paper_id=paper_id)
-
-                # disease
-                if "disease" in req.media:
-                    # Create structured JSON for disease data
-                    disease_value = req.media["disease"]
-                    comment = disease_value if disease_value != "Checked" and disease_value != "" else ""
-                    diseases = req.media.get("disease_list", []) if isinstance(req.media.get("disease_list"), list) else []
-                    disease_data = {
-                        "checked": disease_value != "" and disease_value != "Checked",
-                        "comment": comment,
-                        "diseases": diseases
-                    }
-                    self.db.afp.set_submitted_disease(disease=json.dumps(disease_data), paper_id=paper_id)
-
-                # comments
-                if "comments" in req.media:
-                    person_id = req.media.get("person_id", "")
-                    if not person_id:
-                        self.logger.error(f"Submission attempted without person_id for paper {paper_id}")
-                        raise falcon.HTTPBadRequest(
-                            title="Missing person_id",
-                            description="A valid user identity is required to submit."
-                        )
-                    self.db.afp.set_submitted_comments(comments=req.media["comments"], paper_id=paper_id)
-                    self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
-                    self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
-                    self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
-                    self.db.afp.set_version(paper_id=paper_id)
-                    self.db.afp.set_last_touched(paper_id=paper_id)
-                    paper_title = self.db.paper.get_paper_title(paper_id)
-                    paper_journal = self.db.paper.get_paper_journal(paper_id)
-                    author_email = self.db.person.get_email(person_id)
-                    doi = self.db.paper.get_doi(paper_id)
-                    doi = doi if doi else ""
-                    url = self.afp_base_url + "?paper=" + paper_id + "&passwd=" + req.media["passwd"] + "&title=" + \
-                          urllib.parse.quote(paper_title) + "&journal=" + \
-                          urllib.parse.quote(paper_journal) + "&pmid=" + \
-                          self.db.paper.get_pmid(paper_id) + "&personid=" + \
-                          person_id[3:] + \
-                          "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
-                          urllib.parse.quote(doi)
-                    form_url = to_redirect_url(self.afp_base_url, url)
-                    dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
-                    self.logger.info(
-                        f"Submission received for paper {paper_id} by person_id {person_id}, "
-                        f"email: {author_email}, form_url: {url}, dashboard: {dashboard_url}"
-                    )
-                    self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
-                                                                                       paper_journal, author_email,
-                                                                                       self.admin_emails, dashboard_url,
-                                                                                       form_url,
-                                                                                       self.test)
-                    # Get all author emails for the paper
-                    all_author_emails_result = self.db.afp.get_contact_emails(paper_id)
-                    if all_author_emails_result:
-                        # Check if result is already a list or a string
-                        if isinstance(all_author_emails_result, list):
-                            all_author_emails = [email.strip() for email in all_author_emails_result if email and email.strip()]
-                        else:
-                            # It's a string, split it
-                            all_author_emails = [email.strip() for email in all_author_emails_result.split(" | ")]
-                            # Remove any empty strings
-                            all_author_emails = [email for email in all_author_emails if email]
-                    else:
-                        # If no emails found in afp table, at least send to the current author
-                        all_author_emails = [author_email] if author_email else []
-                    
-                    # Separate the submitting author from coauthors
-                    coauthor_emails = [email for email in all_author_emails if email != author_email]
-                    
-                    # Get submitter's name for the coauthor notification
-                    person_id = req.media.get("person_id", "")
-                    
-                    # Log for debugging
-                    self.logger.info(f"Getting submitter name for person_id: {person_id}")
-                    
-                    # person_id from frontend already includes "two" prefix
-                    submitter_name = self.db.person.get_fullname_from_personid(person_id)
-                    
-                    # Log the result
-                    self.logger.info(f"Submitter name from DB: {submitter_name}")
-                    
-                    # If name not found or is None/empty, use fallback
-                    if not submitter_name or submitter_name == "Unknown user" or submitter_name.strip() == "":
-                        self.logger.warning(f"Could not get submitter name for person_id {person_id}, using email as fallback")
-                        submitter_name = author_email or "Unknown author"
-                    
-                    # Send thank you email to the submitting author
-                    if author_email:
-                        self.email_manager.send_new_sub_thanks_email(
-                            paper_id=paper_id, paper_title=paper_title, test=self.test,
-                            recipients=([author_email] if not self.test else self.admin_emails))
-                    else:
-                        self.logger.warning(
-                            f"No email found for person_id {person_id}, skipping thank you email"
-                        )
-                        self.email_manager.send_user_error_notification(
-                            error_type="Missing Author Email",
-                            paper_id=paper_id,
-                            person_id=person_id,
-                            details="Author email is missing. Thank you email was not sent.",
-                            recipients=self.admin_emails,
-                            test=self.test
-                        )
-
-                    # Send notification email to coauthors (if any)
-                    if coauthor_emails and not self.test:
-                        self.email_manager.send_coauthor_notification_email(
-                            paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
-                            recipients=coauthor_emails, test=self.test)
-                    elif self.test and coauthor_emails:
-                        # In test mode, send to admin emails
-                        self.email_manager.send_coauthor_notification_email(
-                            paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
-                            recipients=self.admin_emails, test=self.test)
-
-                resp.body = '{"result": "success"}'
-                resp.status = falcon.HTTP_200
-
-        else:
+        if not paper_id:
             raise falcon.HTTPError(falcon.HTTP_401)
+        if "comments" in req.media and not req.media.get("person_id", ""):
+            self.logger.error(f"Submission attempted without person_id for paper {paper_id}")
+            raise falcon.HTTPBadRequest(
+                title="Missing person_id",
+                description="A valid user identity is required to submit."
+            )
+        submission = None
+        abc_written = False
+        try:
+            with self.db.transaction():
+                self.logger.info("paper found")
+                # one save of a paper at a time ("save all" posts every widget at once): the next one waits, then
+                # sees this one's answers in Caltech and its tags in the ABC, so it compares with the real state
+                self.db.afp.curs.execute("SELECT pg_advisory_xact_lock(%s, %s)",
+                                         (SAVE_LOCK_NAMESPACE, int(paper_id)))
+                self._write_answers(paper_id, req.media)
+                if "comments" in req.media:
+                    submission = self._write_final_submission(paper_id, req.media)
+                abc_written = sync_paper_to_abc(self.db, paper_id, req.media)
+        except Exception as e:
+            if abc_written:
+                self.logger.error(f"ABC ahead of Caltech for paper {paper_id}: the ABC batch was applied but the "
+                                  f"Caltech commit failed: {e}")
+            else:
+                self.logger.error(f"Save failed for paper {paper_id}, nothing was saved: {e}")
+            raise falcon.HTTPInternalServerError(
+                title="Save failed",
+                description="Your answers could not be saved. Please try again later.")
+        if submission is not None:
+            self._send_submission_emails(submission)
+        resp.body = '{"result": "success"}'
+        resp.status = falcon.HTTP_200
+
+    def _write_answers(self, paper_id, media):
+        """the afp_* writes of the answers in the request, as before SCRUM-4141 (not committed here)"""
+        # overview
+        if "gene_list" in media:
+            self.db.afp.set_gene_list(genes=media["gene_list"], paper_id=paper_id)
+            if self.db.afp.author_has_submitted(paper_id=paper_id):
+                person_id = media.get("person_id", "")
+                self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
+                self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
+                self.db.afp.set_last_touched(paper_id=paper_id)
+
+        if "gene_model_update" in media:
+            self.db.afp.set_gene_model_update(gene_model_update=media["gene_model_update"],
+                                              paper_id=paper_id)
+        if "species_list" in media:
+            self.db.afp.set_submitted_species_list(species=media["species_list"], paper_id=paper_id)
+            if self.db.afp.author_has_submitted(paper_id=paper_id):
+                person_id = media.get("person_id", "")
+                self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+                self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
+                self.db.afp.set_last_touched(paper_id=paper_id)
+
+        if "other_species" in media:
+            self.db.afp.set_submitted_other_species(other_species=media["other_species"], paper_id=paper_id)
+
+        # genetics
+        if "alleles_list" in media:
+            self.db.afp.set_submitted_alleles_list(alleles=media["alleles_list"], paper_id=paper_id)
+        if "allele_seq_change" in media:
+            self.db.afp.set_submitted_allele_seq_change(allele_seq_change=media["allele_seq_change"],
+                                                        paper_id=paper_id)
+        if "other_alleles" in media:
+            self.db.afp.set_submitted_other_alleles(other_alleles=media["other_alleles"], paper_id=paper_id)
+        if "strains_list" in media:
+            self.db.afp.set_submitted_strains_list(strains=media["strains_list"], paper_id=paper_id)
+        if "other_strains" in media:
+            self.db.afp.set_submitted_other_strains(other_strains=media["other_strains"], paper_id=paper_id)
+
+        # reagent
+        if "transgenes_list" in media:
+            self.db.afp.set_submitted_transgenes_list(transgenes=media["transgenes_list"],
+                                                      paper_id=paper_id)
+        if "new_transgenes" in media:
+            self.db.afp.set_submitted_new_transgenes(new_transgenes=media["new_transgenes"],
+                                                     paper_id=paper_id)
+        if "new_antibody" in media:
+            self.db.afp.set_submitted_new_antibody(new_antibody=media["new_antibody"], paper_id=paper_id)
+        if "other_antibodies" in media:
+            self.db.afp.set_submitted_other_antibodies(other_antibodies=media["other_antibodies"],
+                                                       paper_id=paper_id)
+
+        # expression
+        if "anatomic_expr" in media:
+            self.db.afp.set_submitted_anatomic_expr(anatomic_expr=media["anatomic_expr"], paper_id=paper_id)
+        if "site_action" in media:
+            self.db.afp.set_submitted_site_action(site_action=media["site_action"], paper_id=paper_id)
+        if "time_action" in media:
+            self.db.afp.set_submitted_time_action(time_action=media["time_action"], paper_id=paper_id)
+        # interactions
+        if "gene_int" in media:
+            self.db.afp.set_submitted_gene_int(gene_int=media["gene_int"], paper_id=paper_id)
+        if "phys_int" in media:
+            self.db.afp.set_submitted_phys_int(phys_int=media["phys_int"], paper_id=paper_id)
+        if "gene_reg" in media:
+            self.db.afp.set_submitted_gene_reg(gene_reg=media["gene_reg"], paper_id=paper_id)
+
+        # phenotypes
+        if "allele_pheno" in media:
+            self.db.afp.set_submitted_allele_pheno(allele_pheno=media["allele_pheno"], paper_id=paper_id)
+        if "rnai_pheno" in media:
+            self.db.afp.set_submitted_rnai_pheno(rnai_pheno=media["rnai_pheno"], paper_id=paper_id)
+        if "transover_pheno" in media:
+            self.db.afp.set_submitted_transover_pheno(transover_pheno=media["transover_pheno"],
+                                                      paper_id=paper_id)
+        if "chemical" in media:
+            self.db.afp.set_submitted_chemical(chemical=media["chemical"], paper_id=paper_id)
+        if "env" in media:
+            self.db.afp.set_submitted_env(env=media["env"], paper_id=paper_id)
+        if "protein" in media:
+            self.db.afp.set_submitted_protein(protein=media["protein"], paper_id=paper_id)
+        if "othergenefunc" in media:
+            self.db.afp.set_submitted_othergenefunc(othergenefunc=media["othergenefunc"], paper_id=paper_id)
+
+        # disease
+        if "disease" in media:
+            # Create structured JSON for disease data
+            disease_value = media["disease"]
+            comment = disease_value if disease_value != "Checked" and disease_value != "" else ""
+            diseases = media.get("disease_list", []) if isinstance(media.get("disease_list"), list) else []
+            disease_data = {
+                "checked": disease_value != "" and disease_value != "Checked",
+                "comment": comment,
+                "diseases": diseases
+            }
+            self.db.afp.set_submitted_disease(disease=json.dumps(disease_data), paper_id=paper_id)
+
+    def _write_final_submission(self, paper_id, media) -> dict:
+        """the final-submit Caltech writes, and what the emails sent after the commit need"""
+        person_id = media.get("person_id", "")
+        self.db.afp.set_submitted_comments(comments=media["comments"], paper_id=paper_id)
+        self.db.afp.set_pap_gene_list(paper_id=paper_id, person_id=person_id)
+        self.db.afp.set_pap_species_list(paper_id=paper_id, person_id=person_id)
+        self.db.afp.set_contributor(paper_id=paper_id, person_id=person_id)
+        self.db.afp.set_version(paper_id=paper_id)
+        self.db.afp.set_last_touched(paper_id=paper_id)
+        paper_title = self.db.paper.get_paper_title(paper_id)
+        paper_journal = self.db.paper.get_paper_journal(paper_id)
+        author_email = self.db.person.get_email(person_id)
+        doi = self.db.paper.get_doi(paper_id)
+        doi = doi if doi else ""
+        url = self.afp_base_url + "?paper=" + paper_id + "&passwd=" + media["passwd"] + "&title=" + \
+            urllib.parse.quote(paper_title) + "&journal=" + \
+            urllib.parse.quote(paper_journal) + "&pmid=" + \
+            self.db.paper.get_pmid(paper_id) + "&personid=" + \
+            person_id[3:] + \
+            "&hide_genes=false&hide_alleles=false&hide_strains=false&doi=" + \
+            urllib.parse.quote(doi)
+        # Get all author emails for the paper
+        all_author_emails_result = self.db.afp.get_contact_emails(paper_id)
+        if all_author_emails_result:
+            # Check if result is already a list or a string
+            if isinstance(all_author_emails_result, list):
+                all_author_emails = [email.strip() for email in all_author_emails_result if email and email.strip()]
+            else:
+                # It's a string, split it
+                all_author_emails = [email.strip() for email in all_author_emails_result.split(" | ")]
+                # Remove any empty strings
+                all_author_emails = [email for email in all_author_emails if email]
+        else:
+            # If no emails found in afp table, at least send to the current author
+            all_author_emails = [author_email] if author_email else []
+        # person_id from frontend already includes "two" prefix
+        self.logger.info(f"Getting submitter name for person_id: {person_id}")
+        submitter_name = self.db.person.get_fullname_from_personid(person_id)
+        self.logger.info(f"Submitter name from DB: {submitter_name}")
+        return {"paper_id": paper_id, "person_id": person_id, "paper_title": paper_title,
+                "paper_journal": paper_journal, "author_email": author_email, "url": url,
+                "all_author_emails": all_author_emails, "submitter_name": submitter_name}
+
+    def _send_submission_emails(self, submission: dict):
+        """the final-submit emails, sent once Caltech and the ABC both saved the submission"""
+        paper_id = submission["paper_id"]
+        person_id = submission["person_id"]
+        paper_title = submission["paper_title"]
+        author_email = submission["author_email"]
+        url = submission["url"]
+        form_url = to_redirect_url(self.afp_base_url, url)
+        dashboard_url = "https://dashboard.acknowledge.textpressolab.com/paper?paper_id=" + paper_id
+        self.logger.info(
+            f"Submission received for paper {paper_id} by person_id {person_id}, "
+            f"email: {author_email}, form_url: {url}, dashboard: {dashboard_url}"
+        )
+        self.email_manager.send_new_submission_notification_email_to_admin(paper_id, paper_title,
+                                                                           submission["paper_journal"],
+                                                                           author_email, self.admin_emails,
+                                                                           dashboard_url, form_url, self.test)
+        # Separate the submitting author from coauthors
+        coauthor_emails = [email for email in submission["all_author_emails"] if email != author_email]
+        submitter_name = submission["submitter_name"]
+        # If name not found or is None/empty, use fallback
+        if not submitter_name or submitter_name == "Unknown user" or submitter_name.strip() == "":
+            self.logger.warning(f"Could not get submitter name for person_id {person_id}, using email as fallback")
+            submitter_name = author_email or "Unknown author"
+
+        # Send thank you email to the submitting author
+        if author_email:
+            self.email_manager.send_new_sub_thanks_email(
+                paper_id=paper_id, paper_title=paper_title, test=self.test,
+                recipients=([author_email] if not self.test else self.admin_emails))
+        else:
+            self.logger.warning(
+                f"No email found for person_id {person_id}, skipping thank you email"
+            )
+            self.email_manager.send_user_error_notification(
+                error_type="Missing Author Email",
+                paper_id=paper_id,
+                person_id=person_id,
+                details="Author email is missing. Thank you email was not sent.",
+                recipients=self.admin_emails,
+                test=self.test
+            )
+
+        # Send notification email to coauthors (if any)
+        if coauthor_emails and not self.test:
+            self.email_manager.send_coauthor_notification_email(
+                paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
+                recipients=coauthor_emails, test=self.test)
+        elif self.test and coauthor_emails:
+            # In test mode, send to admin emails
+            self.email_manager.send_coauthor_notification_email(
+                paper_id=paper_id, paper_title=paper_title, submitter_name=submitter_name,
+                recipients=self.admin_emails, test=self.test)
 
 
 class AllelesSpreadsheetCreator:

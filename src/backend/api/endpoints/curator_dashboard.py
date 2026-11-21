@@ -12,7 +12,10 @@ from wbtools.lib.nlp.common import EntityType
 from wbtools.literature.corpus import CorpusManager
 from wbtools.literature.paper import WBPaper
 
-from src.backend.common.abc_paper_data import ack_pipeline_levels, ack_pipeline_tfp_strings, get_ack_pipeline_tags
+from wbtools.literature.ack_form.reverse import READ_FROM_ABC
+
+from src.backend.common.abc_paper_data import (AbcUnavailableError, ack_pipeline_levels, ack_pipeline_tfp_strings,
+                                               get_ack_form_afp_values, get_ack_pipeline_tags)
 from src.backend.common.config import load_config_from_file
 
 logger = logging.getLogger(__name__)
@@ -47,7 +50,13 @@ class CuratorDashboardReader:
         else:
             return val
 
-    def get_all_lists(self, paper_id):
+    def _afp_value(self, afp_values, paper_id, table):
+        """an author answer: from the ABC for the tables it holds (SCRUM-4141), from Caltech otherwise"""
+        if table in READ_FROM_ABC:
+            return afp_values.get(table)
+        return self.db._get_single_field(paper_id, table)
+
+    def get_all_lists(self, paper_id, afp_values):
         """Get the pre-populated (tfp) and author (afp) entities of a paper.
 
         The pre-populated entities come from the paper's ACKnowledge_pipeline tags in the ABC, if it has any, and
@@ -61,11 +70,11 @@ class CuratorDashboardReader:
                 lists["tfp_" + key] = abc_tfp[table]
             else:
                 lists["tfp_" + key] = self.transform_none_to_string(self.db._get_single_field(paper_id, "tfp_" + table))
-            lists["afp_" + key] = self.transform_none_to_string(self.db._get_single_field(paper_id, "afp_" + table))
+            lists["afp_" + key] = self.transform_none_to_string(self._afp_value(afp_values, paper_id, "afp_" + table))
         return lists
 
-    def get_class_author_sub_val(self, table_name, paper_id):
-        afp_val = self.db._get_single_field(paper_id, table_name)
+    def get_class_author_sub_val(self, table_name, paper_id, afp_values):
+        afp_val = self._afp_value(afp_values, paper_id, table_name)
         if afp_val is not None:
             afp_val_checked = afp_val != ""
             afp_val_details = afp_val if afp_val != "Checked" and afp_val != "checked" and afp_val != "" else ""
@@ -74,8 +83,8 @@ class CuratorDashboardReader:
             afp_val_details = 'null'
         return afp_val_checked, afp_val_details
 
-    def get_class_author_sub_val_json(self, table_name, paper_id):
-        afp_val = self.db._get_single_field(paper_id, table_name)
+    def get_class_author_sub_val_json(self, table_name, paper_id, afp_values):
+        afp_val = self._afp_value(afp_values, paper_id, table_name)
         if afp_val is not None:
             try:
                 # Try to parse as JSON
@@ -92,7 +101,7 @@ class CuratorDashboardReader:
         return afp_val_checked, afp_val_details
 
 
-    def get_all_flagged_data_types(self, paper_id):
+    def get_all_flagged_data_types(self, paper_id, afp_values):
         """Get what ACKnowledge pre-checked (svm_*) and what the author answered (afp_*) for the flagged datatypes.
 
         The pre-checks come from the paper's ACKnowledge_pipeline classification tags in the ABC, if it has any, and
@@ -111,21 +120,24 @@ class CuratorDashboardReader:
                 pre_checked = self.db.paper.is_paper_positive_for_class(
                     automated_classification_values=classifications, cl=datatype, min_value=MIN_CLASS_VAL)
             flagged[f"svm_{datatype}_checked"] = pre_checked
-            checked, details = self.get_class_author_sub_val(f"afp_{datatype}", paper_id)
+            checked, details = self.get_class_author_sub_val(f"afp_{datatype}", paper_id, afp_values)
             flagged[f"afp_{datatype}_checked"] = checked
             flagged[f"afp_{datatype}_details"] = details
         return flagged
 
-    def get_all_yes_no_data_types(self, paper_id):
-        afp_modchange_checked, afp_modchange_details = self.get_class_author_sub_val("afp_structcorr", paper_id)
-        afp_newantibody_checked, afp_newantibody_details = self.get_class_author_sub_val("afp_antibody", paper_id)
-        afp_siteaction_checked, afp_siteaction_details = self.get_class_author_sub_val("afp_siteaction", paper_id)
-        afp_timeaction_checked, afp_timeaction_details = self.get_class_author_sub_val("afp_timeaction", paper_id)
-        afp_chemphen_checked, afp_chemphen_details = self.get_class_author_sub_val("afp_chemphen", paper_id)
-        afp_envpheno_checked, afp_envpheno_details = self.get_class_author_sub_val("afp_envpheno", paper_id)
-        afp_catalyticact_checked, afp_catalyticact_details = self.get_class_author_sub_val("afp_catalyticact", paper_id)
-        afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val_json("afp_humdis", paper_id)
-        afp_othergenefunc_checked, afp_othergenefunc_details = self.get_class_author_sub_val("afp_othergenefunc", paper_id)
+    def get_all_yes_no_data_types(self, paper_id, afp_values):
+        def sub_val(table_name):
+            return self.get_class_author_sub_val(table_name, paper_id, afp_values)
+
+        afp_modchange_checked, afp_modchange_details = sub_val("afp_structcorr")
+        afp_newantibody_checked, afp_newantibody_details = sub_val("afp_antibody")
+        afp_siteaction_checked, afp_siteaction_details = sub_val("afp_siteaction")
+        afp_timeaction_checked, afp_timeaction_details = sub_val("afp_timeaction")
+        afp_chemphen_checked, afp_chemphen_details = sub_val("afp_chemphen")
+        afp_envpheno_checked, afp_envpheno_details = sub_val("afp_envpheno")
+        afp_catalyticact_checked, afp_catalyticact_details = sub_val("afp_catalyticact")
+        afp_humdis_checked, afp_humdis_details = self.get_class_author_sub_val_json("afp_humdis", paper_id, afp_values)
+        afp_othergenefunc_checked, afp_othergenefunc_details = sub_val("afp_othergenefunc")
         return {"afp_modchange_checked": afp_modchange_checked, "afp_modchange_details": afp_modchange_details,
                 "afp_newantibody_checked": afp_newantibody_checked, "afp_newantibody_details": afp_newantibody_details,
                 "afp_siteaction_checked": afp_siteaction_checked, "afp_siteaction_details": afp_siteaction_details,
@@ -138,26 +150,36 @@ class CuratorDashboardReader:
                 "afp_othergenefunc_checked": afp_othergenefunc_checked,
                 "afp_othergenefunc_details": afp_othergenefunc_details}
 
-    def get_other_data_types(self, paper_id):
-        othervariations = self.db._get_single_field(paper_id, "afp_othervariation")
+    def get_other_data_types(self, paper_id, afp_values):
+        othervariations = self._afp_value(afp_values, paper_id, "afp_othervariation")
         afp_newalleles = " | ".join([elem['name'] for elem in json.loads(othervariations)]) if \
             othervariations and othervariations != 'null' else ""
-        otherstrains = self.db._get_single_field(paper_id, "afp_otherstrain")
+        otherstrains = self._afp_value(afp_values, paper_id, "afp_otherstrain")
         afp_newstrains = " | ".join([elem['name'] for elem in json.loads(otherstrains)]) if \
             otherstrains and otherstrains != 'null' else ""
-        othertransgenes = self.db._get_single_field(paper_id, "afp_othertransgene")
+        othertransgenes = self._afp_value(afp_values, paper_id, "afp_othertransgene")
         afp_newtransgenes = " | ".join([elem['name'] for elem in json.loads(othertransgenes)]) if \
             othertransgenes and othertransgenes != 'null' else ""
-        otherantibodies = self.db._get_single_field(paper_id, "afp_otherantibody")
+        otherantibodies = self._afp_value(afp_values, paper_id, "afp_otherantibody")
         afp_otherantibodies = " | ".join([elem['name'] for elem in
                                           json.loads(otherantibodies) if
                                           elem["name"] != ""]) if otherantibodies and otherantibodies != 'null' else ""
-        otherspecies = self.db._get_single_field(paper_id, "afp_otherspecies")
+        otherspecies = self._afp_value(afp_values, paper_id, "afp_otherspecies")
         afp_newspecies = " | ".join([elem['name'] for elem in json.loads(otherspecies)]) if \
             otherspecies and otherspecies != 'null' else ""
         return {"afp_newalleles": afp_newalleles, "afp_newstrains": afp_newstrains,
                 "afp_newtransgenes": afp_newtransgenes, "afp_otherantibodies": afp_otherantibodies,
                 "afp_newspecies": afp_newspecies}
+
+    @staticmethod
+    def _abc_answers(paper_id):
+        """the paper's author answers held by the ABC; an error page when they can't be read (no Caltech fallback)"""
+        try:
+            return get_ack_form_afp_values(paper_id)
+        except AbcUnavailableError as e:
+            logger.error(f"Author answers of paper {paper_id} unavailable: {e}")
+            raise falcon.HTTPInternalServerError(title="ABC unavailable",
+                                                 description="The author answers could not be read from the ABC.")
 
     def get_text_from_pdfs(self, paper_id):
         cm = CorpusManager()
@@ -1317,16 +1339,16 @@ class CuratorDashboardReader:
                         "true" if is_old_afp else "false")
                     resp.status = falcon.HTTP_200
                 elif req_type == "lists":
-                    resp.body = json.dumps(self.get_all_lists(paper_id))
+                    resp.body = json.dumps(self.get_all_lists(paper_id, self._abc_answers(paper_id)))
                     resp.status = falcon.HTTP_200
                 elif req_type == "flagged":
-                    flagged_dict = self.get_all_flagged_data_types(paper_id)
+                    flagged_dict = self.get_all_flagged_data_types(paper_id, self._abc_answers(paper_id))
                     # the values are sent as strings ("True", "False", "null"), as the frontend expects
                     resp.body = json.dumps({key: value if key.endswith("_details") else str(value)
                                             for key, value in flagged_dict.items()})
                     resp.status = falcon.HTTP_200
                 elif req_type == "other_yn":
-                    other_yn = self.get_all_yes_no_data_types(paper_id)
+                    other_yn = self.get_all_yes_no_data_types(paper_id, self._abc_answers(paper_id))
                     resp.body = '{{"afp_modchange_checked": "{}", "afp_modchange_details": {}, ' \
                                 '"afp_newantibody_checked": "{}", "afp_newantibody_details": {}, ' \
                                 '"afp_siteaction_checked": "{}", "afp_siteaction_details": {}, ' \
@@ -1347,7 +1369,7 @@ class CuratorDashboardReader:
                                             json.dumps(other_yn["afp_othergenefunc_details"]))
                     resp.status = falcon.HTTP_200
                 elif req_type == "others":
-                    others = self.get_other_data_types(paper_id)
+                    others = self.get_other_data_types(paper_id, self._abc_answers(paper_id))
                     resp.body = '{{"afp_newalleles": {}, "afp_newstrains": {}, "afp_newtransgenes": {}, ' \
                                 '"afp_otherantibodies": {}, "afp_newspecies": {}}}'.format(
                         json.dumps(others["afp_newalleles"]), json.dumps(others["afp_newstrains"]),
